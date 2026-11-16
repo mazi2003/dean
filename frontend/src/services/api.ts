@@ -1,0 +1,481 @@
+import {
+  User,
+  StudentProfile,
+  ScheduleEntry,
+  GradesSummary,
+  RequestType,
+  StudentRequest,
+  Notification,
+  RequestStatus,
+} from '../types';
+import {
+  TEST_USERS,
+  MOCK_REQUEST_TYPES,
+  getMockSchedule,
+  getMockGrades,
+  INITIAL_REQUESTS,
+  INITIAL_NOTIFICATIONS,
+} from './mockData';
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+
+// Local storage keys for persistent demo state
+const STORAGE_KEYS = {
+  CURRENT_USER: 'dean_current_user',
+  REQUESTS: 'dean_mock_requests',
+  NOTIFICATIONS: 'dean_mock_notifications',
+  SCHEDULE_OVERRIDES: 'dean_mock_schedule_overrides',
+};
+
+function getStoredRequests(): StudentRequest[] {
+  const data = localStorage.getItem(STORAGE_KEYS.REQUESTS);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      // ignore
+    }
+  }
+  return [...INITIAL_REQUESTS];
+}
+
+function saveStoredRequests(reqs: StudentRequest[]) {
+  localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(reqs));
+}
+
+function getStoredNotifications(): Notification[] {
+  const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      // ignore
+    }
+  }
+  return [...INITIAL_NOTIFICATIONS];
+}
+
+function saveStoredNotifications(notifs: Notification[]) {
+  localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifs));
+}
+
+export const api = {
+  // ─── Auth ───
+  async login(email: string, password: string): Promise<{ user: User; profile: StudentProfile }> {
+    // Try real API first
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(data.user));
+        return data;
+      }
+    } catch {
+      // Fallback to mock engine
+    }
+
+    // Mock verification
+    const found = TEST_USERS[email.toLowerCase().trim()];
+    if (!found || found.password !== password) {
+      throw new Error('Неверный адрес электронной почты или пароль');
+    }
+
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(found.user));
+    return { user: found.user, profile: found.profile };
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // ignore
+    }
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+  },
+
+  async getCurrentUser(): Promise<{ user: User; profile: StudentProfile } | null> {
+    try {
+      const res = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+      if (res.ok) {
+        const profile = await res.json();
+        return { user: profile, profile };
+      }
+    } catch {
+      // fallback
+    }
+
+    const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    if (!saved) return null;
+    try {
+      const user = JSON.parse(saved) as User;
+      const found = Object.values(TEST_USERS).find(u => u.user.id === user.id);
+      if (found) {
+        return { user: found.user, profile: found.profile };
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  },
+
+  // ─── Profile ───
+  async getProfile(): Promise<StudentProfile> {
+    try {
+      const res = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) throw new Error('Пользователь не авторизован');
+    return current.profile;
+  },
+
+  // ─── Schedule ───
+  async getSchedule(date?: string): Promise<ScheduleEntry[]> {
+    try {
+      const url = date ? `${API_BASE}/schedule?date=${date}` : `${API_BASE}/schedule`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) throw new Error('Пользователь не авторизован');
+
+    const group = current.profile.group || 'ДУ-101';
+    return getMockSchedule(group);
+  },
+
+  // ─── Grades ───
+  async getGrades(): Promise<GradesSummary> {
+    try {
+      const res = await fetch(`${API_BASE}/grades`, { credentials: 'include' });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) throw new Error('Пользователь не авторизован');
+
+    return getMockGrades(current.user.id);
+  },
+
+  // ─── Requests ───
+  async getRequestTypes(): Promise<RequestType[]> {
+    try {
+      const res = await fetch(`${API_BASE}/request-types`, { credentials: 'include' });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return MOCK_REQUEST_TYPES;
+  },
+
+  async getRequests(): Promise<StudentRequest[]> {
+    try {
+      const res = await fetch(`${API_BASE}/requests`, { credentials: 'include' });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) throw new Error('Пользователь не авторизован');
+
+    const all = getStoredRequests();
+    // STRICT DATA ISOLATION: Student sees ONLY their own requests!
+    return all.filter(r => r.studentId === current.user.id);
+  },
+
+  async createRequest(typeCode: string, data: Record<string, any>): Promise<StudentRequest> {
+    try {
+      const res = await fetch(`${API_BASE}/requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ typeCode, data }),
+        credentials: 'include',
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) throw new Error('Пользователь не авторизован');
+
+    const typeDef = MOCK_REQUEST_TYPES.find(t => t.code === typeCode);
+    const sla = typeDef?.slaDays ?? 3;
+    const nowIso = new Date().toISOString();
+    const expDate = new Date();
+    expDate.setDate(expDate.getDate() + sla);
+
+    const newReq: StudentRequest = {
+      id: `req-${Date.now().toString().slice(-6)}`,
+      studentId: current.user.id,
+      studentName: current.user.fullName,
+      studentGroup: current.profile.group,
+      typeCode: (typeCode as any),
+      typeTitle: typeDef?.title ?? 'Заявление',
+      data,
+      status: 'submitted',
+      slaDays: sla,
+      expectedDate: expDate.toISOString().slice(0, 10),
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      history: [
+        {
+          id: `hist-${Date.now()}`,
+          status: 'submitted',
+          createdAt: nowIso,
+          authorName: current.user.fullName,
+          comment: 'Заявление отправлено в деканат на рассмотрение.',
+        },
+      ],
+      digitalDocAvailable: typeCode === 'study_certificate' || typeCode === 'transcript',
+    };
+
+    const all = getStoredRequests();
+    all.unshift(newReq);
+    saveStoredRequests(all);
+
+    // Also add confirmation notification
+    const notifs = getStoredNotifications();
+    notifs.unshift({
+      id: `notif-${Date.now()}`,
+      userId: current.user.id,
+      kind: 'request_update',
+      title: `Заявление принято: ${typeDef?.title}`,
+      message: `Ваше заявление № ${newReq.id} зарегистрировано. Ожидаемый срок готовности: ${newReq.expectedDate}.`,
+      read: false,
+      createdAt: nowIso,
+      link: '/requests',
+      priority: 'normal',
+    });
+    saveStoredNotifications(notifs);
+
+    return newReq;
+  },
+
+  async cancelRequest(requestId: string): Promise<void> {
+    try {
+      const res = await fetch(`${API_BASE}/requests/${requestId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (res.ok) return;
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) throw new Error('Пользователь не авторизован');
+
+    const all = getStoredRequests();
+    const target = all.find(r => r.id === requestId);
+    if (!target) throw new Error('Заявление не найдено');
+    if (target.studentId !== current.user.id) throw new Error('Доступ запрещен');
+    if (target.status !== 'submitted' && target.status !== 'in_review') {
+      throw new Error('Нельзя отменить заявление в текущем статусе');
+    }
+
+    target.status = 'cancelled';
+    target.updatedAt = new Date().toISOString();
+    target.history.push({
+      id: `hist-${Date.now()}`,
+      status: 'cancelled',
+      createdAt: new Date().toISOString(),
+      authorName: current.user.fullName,
+      comment: 'Заявление отменено студентом.',
+    });
+    saveStoredRequests(all);
+  },
+
+  // ─── Notifications ───
+  async getNotifications(): Promise<Notification[]> {
+    try {
+      const res = await fetch(`${API_BASE}/notifications`, { credentials: 'include' });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) throw new Error('Пользователь не авторизован');
+
+    const all = getStoredNotifications();
+    return all.filter(n => n.userId === current.user.id);
+  },
+
+  async markNotificationRead(id: string): Promise<void> {
+    try {
+      await fetch(`${API_BASE}/notifications/${id}/read`, {
+        method: 'PATCH',
+        credentials: 'include',
+      });
+    } catch {
+      // fallback
+    }
+
+    const all = getStoredNotifications();
+    const item = all.find(n => n.id === id);
+    if (item) {
+      item.read = true;
+      saveStoredNotifications(all);
+    }
+  },
+
+  async markAllNotificationsRead(): Promise<void> {
+    try {
+      await fetch(`${API_BASE}/notifications/read-all`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // fallback
+    }
+
+    const current = await this.getCurrentUser();
+    if (!current) return;
+
+    const all = getStoredNotifications();
+    all.forEach(n => {
+      if (n.userId === current.user.id) n.read = true;
+    });
+    saveStoredNotifications(all);
+  },
+
+  // ─── Staff Only APIs ───
+  async getStaffRequests(): Promise<StudentRequest[]> {
+    try {
+      const res = await fetch(`${API_BASE}/staff/requests`, { credentials: 'include' });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    // Staff sees all student requests
+    return getStoredRequests();
+  },
+
+  async updateStaffRequestStatus(
+    requestId: string,
+    status: RequestStatus,
+    comment?: string
+  ): Promise<StudentRequest> {
+    try {
+      const res = await fetch(`${API_BASE}/staff/requests/${requestId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, comment }),
+        credentials: 'include',
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+
+    const all = getStoredRequests();
+    const req = all.find(r => r.id === requestId);
+    if (!req) throw new Error('Заявление не найдено');
+
+    const nowIso = new Date().toISOString();
+    req.status = status;
+    req.updatedAt = nowIso;
+    req.history.push({
+      id: `hist-${Date.now()}`,
+      status,
+      comment: comment || `Статус изменен на "${status}" сотрудником деканата`,
+      createdAt: nowIso,
+      authorName: 'Мария Волкова (Деканат)',
+    });
+    saveStoredRequests(all);
+
+    // Notify student about status change!
+    const notifs = getStoredNotifications();
+    const statusMap: Record<RequestStatus, string> = {
+      submitted: 'Подано',
+      in_review: 'В обработке',
+      needs_info: 'Требуется уточнение',
+      ready: 'Готово к выдаче',
+      rejected: 'Отклонено',
+      cancelled: 'Отменено',
+    };
+
+    notifs.unshift({
+      id: `notif-${Date.now()}`,
+      userId: req.studentId,
+      kind: 'request_update',
+      title: `Статус заявления изменен: ${statusMap[status]}`,
+      message: `${req.typeTitle} (№ ${req.id}): ${comment || 'Статус успешно обновлен деканатом.'}`,
+      read: false,
+      createdAt: nowIso,
+      link: '/requests',
+      priority: status === 'needs_info' ? 'urgent' : status === 'ready' ? 'high' : 'normal',
+    });
+    saveStoredNotifications(notifs);
+
+    return req;
+  },
+
+  // ─── AI Academic Copilot ───
+  async askAssistant(question: string): Promise<string> {
+    try {
+      const res = await fetch(`${API_BASE}/assistant/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question }),
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return data.answer;
+      }
+    } catch {
+      // fallback to smart scoped client response
+    }
+
+    const current = await this.getCurrentUser();
+    const q = question.toLowerCase();
+
+    // Contextual responses tailored to student's real data
+    if (q.includes('пересдач') || q.includes('долг') || q.includes('статистик')) {
+      if (current?.user.id === 'usr-timur-205') {
+        return 'Тимур, у вас зафиксирована академическая задолженность по дисциплине "Статистика" (48 баллов, оценка "2"). Комиссионная пересдача назначена на 28 ноября в 14:00, ауд. А-314 (доц. Ковалев С.А.). Консультация пройдет в среду в 14:00.';
+      } else {
+        return 'У вас нет академических задолженностей! Все текущие предметы сданы успешно.';
+      }
+    }
+
+    if (q.includes('стипенди') || q.includes('пгас') || q.includes('выплат')) {
+      return 'Прием заявлений на повышенную государственную академическую стипендию (ПГАС) открыт до 25 ноября. Вы можете подать заявление онлайн в разделе "Справки и заявления" -> "Заявление на повышенную стипендию", прикрепив список ваших научных публикаций или дипломов олимпиад.';
+    }
+
+    if (q.includes('справк') || q.includes('заказ') || q.includes('военкомат') || q.includes('виз')) {
+      return 'Вы можете оформить любую справку за пару кликов в разделе "Справки и заявления". Готовая электронная справка с квалифицированной ЭЦП деканата формируется в среднем за 1-2 рабочих дня и будет доступна для скачивания в формате PDF прямо в вашем кабинете.';
+    }
+
+    if (q.includes('расписан') || q.includes('пара') || q.includes('пары') || q.includes('аудитор')) {
+      if (current?.profile.group === 'ДУ-101') {
+        return 'Для вашей группы ДУ-101 сегодня в расписании занятия: 08:30 Дипломатический протокол (А-204), 10:15 Международное публичное право (внимание: перенесено в Б-115!), 12:00 Английский язык для дипломатов (Лингво-2).';
+      }
+      return 'Ваше актуальное расписание с учетом всех замен и переносов аудиторий доступно во вкладке "Расписание".';
+    }
+
+    if (q.includes('деканат') || q.includes('часы') || q.includes('контакт') || q.includes('где')) {
+      return 'Деканат факультета международных отношений расположен в Главном корпусе, 3 этаж, кабинет 312. Часы приема студентов: Пн-Пт с 09:00 до 18:00 (обед 13:00-14:00). Электронная почта: dean.office@demo.edu.';
+    }
+
+    return `Здравствуйте! Я ваш цифровой ассистент деканата ДемоТех Университета. Я знаю расписание вашей группы (${current?.profile.group ?? 'студента'}), вашу успеваемость, статус поданных заявлений и правила учебного процесса. Чем я могу помочь?`;
+  },
+};

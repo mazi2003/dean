@@ -1,0 +1,28 @@
+{
+  "name": "database",
+  "version": "1.0.0",
+  "description": "Digital Dean's Office – Database layer (Prisma + PostgreSQL 16)",
+  "scripts": {
+    "db:generate": "prisma generate --schema=schema.prisma",
+    "db:migrate": "prisma migrate dev --schema=schema.prisma",
+    "db:migrate:deploy": "prisma migrate deploy --schema=schema.prisma",
+    "db:seed": "ts-node --esm seed.ts",
+    "db:reset": "prisma migrate reset --schema=schema.prisma --force",
+    "db:studio": "prisma studio --schema=schema.prisma",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^7.10.1",
+    "argon2": "^0.45.2",
+    "dotenv": "^18.0.10",
+    "prisma": "^8.0.0-rc.34"
+  },
+  "type": "module",
+  "allowScripts": {
+    "argon2@0.45.2": true,
+    "esbuild@0.28.2": true
+  }
+}

@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dean_office_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dean_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dean_pass_local}
+      POSTGRES_DB: ${POSTGRES_DB:-dean_office}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - dean_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dean_user} -d ${POSTGRES_DB:-dean_office}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  dean_pgdata:
+    driver: local

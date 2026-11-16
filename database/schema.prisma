@@ -1,0 +1,333 @@
+// Digital Dean's Office – PostgreSQL 16 schema
+// Competition concept, fictional data only.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums (must match contract/openapi.yaml exactly) ────────────────────────
+
+enum Role {
+  student
+  staff
+}
+
+enum ScheduleStatus {
+  normal
+  room_changed
+  moved
+  cancelled
+}
+
+enum ScheduleType {
+  lecture
+  seminar
+  lab
+  exam
+}
+
+enum AssessmentType {
+  exam
+  credit
+  coursework
+}
+
+enum CreditStatus {
+  earned
+  in_progress
+  failed
+}
+
+enum RequestTypeCode {
+  study_certificate
+  military_certificate
+  scholarship_application
+  academic_leave
+  transcript
+  dormitory_application
+}
+
+enum RequestStatus {
+  submitted
+  in_review
+  needs_info
+  ready
+  rejected
+  cancelled
+}
+
+enum NotificationKind {
+  announcement
+  deadline
+  request_update
+  schedule_change
+}
+
+// ─── Core user tables ─────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  fullName     String   @map("full_name")
+  role         Role
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  studentProfile    StudentProfile?
+  requests          Request[]
+  notifications     Notification[]
+  requestHistories  RequestStatusHistory[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model Faculty {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  programs  Program[]
+
+  @@map("faculties")
+}
+
+model Program {
+  id        String    @id @default(uuid())
+  name      String
+  facultyId String    @map("faculty_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  faculty         Faculty          @relation(fields: [facultyId], references: [id], onDelete: Restrict)
+  studentProfiles StudentProfile[]
+  groups          Group[]
+
+  @@unique([name, facultyId])
+  @@index([facultyId])
+  @@map("programs")
+}
+
+model Group {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  programId String   @map("program_id")
+  year      Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  program         Program          @relation(fields: [programId], references: [id], onDelete: Restrict)
+  studentProfiles StudentProfile[]
+  scheduleEntries ScheduleEntry[]
+
+  @@index([programId])
+  @@map("groups")
+}
+
+model StudentProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  facultyId     String   @map("faculty_id")
+  programId     String   @map("program_id")
+  groupId       String   @map("group_id")
+  year          Int
+  studentNumber String   @unique @map("student_number")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  faculty Faculty @relation(fields: [facultyId], references: [id], onDelete: Restrict)
+  program Program @relation(fields: [programId], references: [id], onDelete: Restrict)
+  group   Group   @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  grades  Grade[]
+
+  @@index([userId])
+  @@index([groupId])
+  @@index([facultyId])
+  @@map("student_profiles")
+}
+
+// Faculty relation from StudentProfile side — add missing back-relation
+// (Prisma requires explicit back-relations on Faculty)
+
+model Subject {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  credits   Int
+  semester  Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  grades          Grade[]
+  scheduleEntries ScheduleEntry[]
+
+  @@map("subjects")
+}
+
+model Teacher {
+  id        String   @id @default(uuid())
+  fullName  String   @map("full_name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  scheduleEntries ScheduleEntry[]
+
+  @@map("teachers")
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  building  String?
+  capacity  Int?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  scheduleEntries ScheduleEntry[]
+
+  @@map("rooms")
+}
+
+// ─── Schedule ─────────────────────────────────────────────────────────────────
+
+model ScheduleEntry {
+  id          String         @id @default(uuid())
+  groupId     String         @map("group_id")
+  subjectId   String         @map("subject_id")
+  teacherId   String?        @map("teacher_id")
+  roomId      String?        @map("room_id")
+  date        DateTime       @db.Date
+  startTime   String         @map("start_time")  // HH:MM
+  endTime     String         @map("end_time")    // HH:MM
+  type        ScheduleType   @default(lecture)
+  status      ScheduleStatus @default(normal)
+  changeNote  String?        @map("change_note")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  group   Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  subject Subject  @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  teacher Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  room    Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+
+  @@index([groupId])
+  @@index([date])
+  @@index([status])
+  @@index([groupId, date])
+  @@map("schedule_entries")
+}
+
+// ─── Grades ───────────────────────────────────────────────────────────────────
+
+model Grade {
+  id               String          @id @default(uuid())
+  studentProfileId String          @map("student_id")
+  subjectId        String          @map("subject_id")
+  semester         Int
+  points           Int?            // 0-100 enforced via check constraint in migration
+  grade            Int?            // 2, 3, 4, or 5 — enforced via check constraint
+  creditStatus     CreditStatus    @map("credit_status")
+  assessmentType   AssessmentType  @map("assessment_type")
+  examDate         DateTime?       @db.Date @map("exam_date")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  subject        Subject        @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([studentProfileId, subjectId, semester])
+  @@index([studentProfileId])
+  @@index([subjectId])
+  @@index([creditStatus])
+  @@map("grades")
+}
+
+// ─── Requests ─────────────────────────────────────────────────────────────────
+
+model RequestType {
+  code        RequestTypeCode @id
+  title       String
+  description String
+  fields      Json            // array of field definitions
+  slaDays     Int             @map("sla_days")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  requests Request[]
+
+  @@map("request_types")
+}
+
+model Request {
+  id         String          @id @default(uuid())
+  studentId  String          @map("student_id")
+  typeCode   RequestTypeCode @map("type_code")
+  data       Json
+  status     RequestStatus   @default(submitted)
+  createdAt  DateTime        @default(now()) @map("created_at")
+  updatedAt  DateTime        @updatedAt @map("updated_at")
+
+  student     User                   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  requestType RequestType            @relation(fields: [typeCode], references: [code], onDelete: Restrict)
+  history     RequestStatusHistory[]
+
+  @@index([studentId])
+  @@index([status])
+  @@index([typeCode])
+  @@map("requests")
+}
+
+model RequestStatusHistory {
+  id        String        @id @default(uuid())
+  requestId String        @map("request_id")
+  actorId   String?       @map("actor_id")
+  status    RequestStatus
+  comment   String?
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([requestId])
+  @@map("request_status_history")
+}
+
+// ─── Notifications & Announcements ───────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  kind      NotificationKind
+  title     String
+  body      String
+  read      Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, read])
+  @@index([kind])
+  @@map("notifications")
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  title       String
+  body        String
+  targetGroup String?  @map("target_group")  // null = all students
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([targetGroup])
+  @@map("announcements")
+}
