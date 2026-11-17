@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit",
     "dev": "ts-node src/server.ts",
     "start": "node dist/server.js",
+    "postinstall": "prisma generate --schema=prisma/schema.prisma",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"

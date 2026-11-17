@@ -29,9 +29,11 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
     await app.close();
   });
 
+  let testIpSeq = 1;
   async function loginAs(email: string, password = 'DemoStudent123!') {
     const agent = supertest.agent(app.server);
-    const res = await agent.post('/api/v1/auth/login').send({ email, password });
+    const ip = `10.10.0.${testIpSeq++}`;
+    const res = await agent.post('/api/v1/auth/login').set('X-Forwarded-For', ip).send({ email, password });
     expect(res.status).toBe(200);
     return agent;
   }
@@ -186,37 +188,56 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
     expect(afterAll.body.unreadCount).toBe(0);
   });
 
-  it('AI Assistant enforces validation, graceful fallback without API key, and caller-only context isolation', async () => {
+  it('GET /api/v1/exams returns only the caller student group exams', async () => {
+    const aigul = await loginAs('aigul.nurova@demo.edu');
+    const res = await aigul.get('/api/v1/exams');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.every((e: { groupId: string }) => e.groupId === 'DU-101')).toBe(true);
+  });
+
+  it('AI Assistant enforces validation, deterministic rules fallback without key, and caller-only context isolation with OpenAI-compatible LLM', async () => {
     const timur = await loginAs('timur.belov@demo.edu');
 
     // Empty / oversized rejected by Zod
     const tooLong = await timur.post('/api/v1/assistant/ask').send({ question: 'x'.repeat(501) });
     expect(tooLong.status).toBe(422);
 
-    // Graceful disabled response when AI_API_KEY is unset
+    // Deterministic rules response when AI_API_KEY is unset
     delete process.env.AI_API_KEY;
-    const disabled = await timur.post('/api/v1/assistant/ask').send({ question: 'Когда пересдача?' });
-    expect(disabled.status).toBe(200);
-    expect(disabled.body.answer).toContain('not configured');
+    delete process.env.AI_BASE_URL;
+    const rulesRes = await timur.post('/api/v1/assistant/ask').send({ question: 'Когда пересдача?', lang: 'ru' });
+    expect(rulesRes.status).toBe(200);
+    expect(rulesRes.body.source).toBe('rules');
+    expect(rulesRes.body.answer).toContain('Statistics');
 
-    // Scoped prompt verification with mocked fetch
+    // Scoped prompt & Bearer header verification with mocked OpenAI-compatible fetch
     process.env.AI_API_KEY = 'dummy-test-key';
+    process.env.AI_BASE_URL = 'https://llm.example.test/v1';
     let capturedPrompt = '';
+    let capturedHeaders: Record<string, string> = {};
+    let capturedUrl = '';
     const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn(async (_url, init) => {
+    globalThis.fetch = vi.fn(async (url, init) => {
+      capturedUrl = String(url);
+      capturedHeaders = (init?.headers ?? {}) as Record<string, string>;
       capturedPrompt = String(init?.body ?? '');
       return {
         ok: true,
         json: async () => ({
-          candidates: [{ content: { parts: [{ text: 'По данным вашей зачетки есть пересдача по Statistics.' }] } }],
+          choices: [{ message: { content: 'По данным вашей зачетки есть пересдача по Statistics.' } }],
         }),
       } as unknown as Response;
     }) as typeof fetch;
 
     try {
-      const res = await timur.post('/api/v1/assistant/ask').send({ question: 'Какие у меня долги?' });
+      const res = await timur.post('/api/v1/assistant/ask').send({ question: 'Какие у меня долги?', lang: 'ru' });
       expect(res.status).toBe(200);
+      expect(res.body.source).toBe('llm');
       expect(res.body.answer).toContain('Statistics');
+      expect(capturedUrl).toBe('https://llm.example.test/v1/chat/completions');
+      expect(capturedUrl).not.toContain('dummy-test-key');
+      expect(capturedHeaders.Authorization).toBe('Bearer dummy-test-key');
       expect(capturedPrompt).toContain('DU-205');
       expect(capturedPrompt).toContain('Statistics');
       // NEVER contains other students' data
@@ -226,6 +247,7 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
     } finally {
       globalThis.fetch = origFetch;
       delete process.env.AI_API_KEY;
+      delete process.env.AI_BASE_URL;
     }
   });
 });

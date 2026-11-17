@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Printer, Download, ShieldCheck } from 'lucide-react';
 import { StudentRequest } from '../types';
-import { UNIVERSITY_INFO } from '../services/mockData';
+import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from './UniversityEmblem';
 import { useAuth } from '../context/AuthContext';
 import { tr, localizeText } from '../utils/i18n';
@@ -32,8 +32,8 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
             <span className="font-semibold text-sm text-[#FFFFFF]">
               {tr(
                 lang,
-                'Электронный документ с усиленной квалифицированной ЭЦП',
-                'Electronic Document with Qualified Digital Signature (EDS)',
+                'Макет электронной справки (иллюстрация)',
+                'Electronic Certificate Preview (Illustrative)',
               )}
             </span>
           </div>
@@ -41,7 +41,7 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
             <button
               onClick={handlePrint}
               className="px-3 py-1.5 rounded-md bg-[#0E1F36] hover:bg-[#1C3B65] border border-[#60A5FA]/40 text-[#FFFFFF] text-xs font-sans font-medium flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
-              title={tr(lang, 'Распечатать документ', 'Print document')}
+              title={tr(lang, 'Распечатать макет', 'Print preview')}
             >
               <Printer className="w-3.5 h-3.5 text-[#93C5FD]" />
               <span className="hidden sm:inline">{tr(lang, 'Печать', 'Print')}</span>
@@ -49,7 +49,7 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
             <button
               onClick={handlePrint}
               className="px-3 py-1.5 rounded-md bg-[#245A91] hover:bg-[#1C3B65] text-[#FFFFFF] text-xs font-sans font-bold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer border border-[#60A5FA]/30"
-              title={tr(lang, 'Скачать официальный PDF', 'Download official PDF')}
+              title={tr(lang, 'Сохранить макет в PDF', 'Save preview as PDF')}
             >
               <Download className="w-3.5 h-3.5 text-[#FFFFFF]" />
               <span>PDF</span>
@@ -62,6 +62,15 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
               <X className="w-5 h-5" />
             </button>
           </div>
+        </div>
+
+        {/* Illustrative Prototype Disclaimer Banner */}
+        <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-900 text-[11px] font-sans text-center font-medium">
+          {tr(
+            lang,
+            'Иллюстрация прототипа: настоящая квалифицированная ЭЦП не используется, документ не имеет юридической силы.',
+            'Illustrative prototype only: no real qualified e-signature is used; this document is not legally valid.',
+          )}
         </div>
 
         {/* Printable Bond Paper Sheet (Simulated State University Certificate) */}
@@ -165,26 +174,26 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
               <p className="font-semibold text-[#142D4E] text-sm pt-1">{tr(lang, 'А.В. Смирнов', 'A.V. Smirnov')}</p>
             </div>
 
-            {/* Official Digital Signature Box (ГОСТ Р 34.10-2012) */}
+            {/* Illustrative Digital Stamp Box (Prototype Only) */}
             <div className="p-3 rounded-lg border-2 border-[#142D4E] bg-[#F8FAFC] text-[10px] space-y-1 relative">
               <div className="flex items-center space-x-1.5 font-bold text-[#142D4E]">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#142D4E]" />
                 <span className="uppercase tracking-wider">
-                  {tr(lang, 'ДОКУМЕНТ ПОДПИСАН ЭЦП', 'DOCUMENT SIGNED WITH EDS')}
+                  {tr(lang, 'ИЛЛЮСТРАТИВНЫЙ ШТАМП (ДЕМО)', 'ILLUSTRATIVE SEAL (DEMO ONLY)')}
                 </span>
               </div>
               <p className="font-mono text-[9px] text-[#0F1D30] truncate">
-                {tr(lang, 'Сертификат:', 'Certificate:')} 00E10350320A7B202611F30048E
+                {tr(lang, 'Макет ID:', 'Preview ID:')} DEMO-{request.id.slice(0, 12).toUpperCase()}
               </p>
               <p className="text-[9px] text-[#475467]">
-                {tr(lang, `Владелец: ФГАОУ ВО «${UNIVERSITY_INFO.name}»`, `Holder: ${UNIVERSITY_INFO.name}`)}
+                {tr(lang, `Организация (вымышл.): ${UNIVERSITY_INFO.name}`, `Fictional Org: ${UNIVERSITY_INFO.name}`)}
               </p>
               <p className="text-[9px] text-[#475467]">
-                {tr(lang, 'Действителен: с 01.01.2026 по 01.01.2027', 'Valid: 01.01.2026 to 01.01.2027')}
+                {tr(lang, 'Статус: без настоящей ЭЦП, не имеет юр. силы', 'Status: No real e-signature, not legally valid')}
               </p>
               <div className="pt-0.5 flex items-center justify-between text-[8px] font-mono text-[#667085]">
-                <span>{tr(lang, 'ГОСТ Р 34.10-2012', 'GOST R 34.10-2012')}</span>
-                <span className="font-semibold text-[#142D4E]">verify.demo.edu/{request.id}</span>
+                <span>{tr(lang, 'Учебный макет', 'Prototype Preview')}</span>
+                <span className="font-semibold text-[#142D4E]">demo-preview/{request.id.slice(0, 8)}</span>
               </div>
             </div>
           </div>

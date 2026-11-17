@@ -65,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'requests',
       label: lang === 'ru' ? 'Справки и документы' : 'Official Certificates',
-      sublabel: lang === 'ru' ? 'Заявления с ЭЦП' : 'Certified petitions',
+      sublabel: lang === 'ru' ? 'Заявления и макеты PDF' : 'Petitions & PDF previews',
       icon: FileText,
     },
     {
@@ -87,7 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'staff_requests',
       label: lang === 'ru' ? 'Заявления студентов' : 'Student Inquiries',
-      sublabel: lang === 'ru' ? 'Очередь на подпись ЭЦП' : 'Pending verification',
+      sublabel: lang === 'ru' ? 'Очередь рассмотрения' : 'Pending review queue',
       icon: Inbox,
     },
     {
@@ -111,7 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'profile',
       label: lang === 'ru' ? 'Служебный профиль' : 'Staff Dossier',
-      sublabel: lang === 'ru' ? 'Права доступа и ЭЦП' : 'Credentials & digital key',
+      sublabel: lang === 'ru' ? 'Права доступа (RBAC)' : 'Role permissions',
       icon: User,
     },
   ];

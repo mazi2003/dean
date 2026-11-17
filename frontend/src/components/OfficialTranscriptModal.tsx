@@ -44,8 +44,8 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
             <span>
               {tr(
                 lang,
-                'Официальная выписка из зачетно-экзаменационной ведомости',
-                'Official Academic Grade Sheet Extract',
+                'Макет выписки из ведомости (иллюстрация)',
+                'Academic Grade Sheet Preview (Illustrative)',
               )}
             </span>
           </div>
@@ -55,7 +55,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-medium cursor-pointer transition-colors shadow-xs"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>{tr(lang, 'Печать / PDF', 'Print / PDF')}</span>
+              <span>{tr(lang, 'Печать / PDF (макет)', 'Print / PDF (Preview)')}</span>
             </button>
             <button
               onClick={onClose}
@@ -64,6 +64,14 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               <X className="w-4 h-4" />
             </button>
           </div>
+        </div>
+
+        <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-900 text-[11px] font-sans text-center font-medium">
+          {tr(
+            lang,
+            'Иллюстрация прототипа: в прототипе нет настоящей ЭЦП, документ не имеет юридической силы.',
+            'Illustrative prototype only: no real e-signature, not legally valid.',
+          )}
         </div>
 
         {/* Printable Transcript Document Paper */}
@@ -247,20 +255,20 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               </div>
               <div className="text-[10px] font-sans leading-tight">
                 <span className="font-bold text-[#142D4E] dark:text-[#245A91] block uppercase">
-                  {tr(lang, 'ДОКУМЕНТ ПОДПИСАН КВАЛИФИЦИРОВАННОЙ ЭЦП', 'SIGNED WITH QUALIFIED DIGITAL SIGNATURE')}
+                  {tr(lang, 'ИЛЛЮСТРАТИВНЫЙ ШТАМП (БЕЗ НАСТОЯЩЕЙ ЭЦП)', 'ILLUSTRATIVE STAMP (NO REAL E-SIGNATURE)')}
                 </span>
                 <span className="text-[#667085] block font-mono">
-                  {tr(lang, 'Сертификат:', 'Certificate:')} 77AA-9402-E12F-2026
+                  {tr(lang, 'Демо-идентификатор:', 'Demo ID:')} PREVIEW-77AA-9402
                 </span>
                 <span className="text-[#667085] block">
                   {tr(
                     lang,
-                    'Владелец: Волкова Мария Сергеевна, Зам. декана',
-                    'Signer: Maria Volkova, Deputy Dean',
+                    'Учебный концепт: Волкова М.С. (вымышл.)',
+                    'Concept Signer: M. Volkova (fictional)',
                   )}
                 </span>
                 <span className="text-[#667085] block">
-                  {tr(lang, 'Действителен: с 01.09.2026 по 31.08.2027', 'Valid: 01.09.2026 to 31.08.2027')}
+                  {tr(lang, 'Документ носит исключительно ознакомительный характер', 'For demonstration purposes only; not legally binding')}
                 </span>
               </div>
             </div>

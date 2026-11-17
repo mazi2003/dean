@@ -272,9 +272,77 @@ export async function createStatefulMockPrisma() {
     title: string;
     body: string;
     targetGroup: string | null;
+    targetUserId: string | null;
+    priority: string;
+    kind: string;
+    recipientCount: number;
+    recipients: string[];
     createdAt: Date;
   }> = [
-    { id: '55555555-5555-4555-8555-555555555501', title: 'Начало сессии', body: 'Сессия с 10 декабря', targetGroup: null, createdAt: new Date() },
+    {
+      id: '55555555-5555-4555-8555-555555555501',
+      title: 'Начало сессии',
+      body: 'Сессия с 10 декабря',
+      targetGroup: null,
+      targetUserId: null,
+      priority: 'high',
+      kind: 'announcement',
+      recipientCount: 3,
+      recipients: ['Aigul Nurova', 'Timur Belov', 'Lina Okafor'],
+      createdAt: new Date(),
+    },
+  ];
+
+  const exams: Array<{
+    id: string;
+    code: string;
+    groupId: string;
+    subject: string;
+    format: string;
+    examiner: string;
+    commissionMembers: string | null;
+    date: string;
+    rawDate: string;
+    time: string;
+    room: string;
+    consultation: string;
+    credits: number;
+    status: string;
+    changeNote: string | null;
+    retakeDate: string | null;
+    isDebt: boolean;
+    originalSnapshot: Record<string, unknown> | null;
+  }> = [
+    {
+      id: 'ex-101-1',
+      code: 'LAW-201',
+      groupId: groups[0].id,
+      subject: 'Международное публичное право',
+      format: 'Устный экзамен',
+      examiner: 'Проф. Воронов А.Н.',
+      commissionMembers: null,
+      date: '12 декабря 2026',
+      rawDate: '2026-12-12',
+      time: '10:00 – 14:00',
+      room: 'Ауд. 312',
+      consultation: '10 декабря в 15:00',
+      credits: 5,
+      status: 'scheduled',
+      changeNote: null,
+      retakeDate: null,
+      isDebt: false,
+      originalSnapshot: {
+        date: '12 декабря 2026',
+        rawDate: '2026-12-12',
+        time: '10:00 – 14:00',
+        room: 'Ауд. 312',
+        consultation: '10 декабря в 15:00',
+        examiner: 'Проф. Воронов А.Н.',
+        commissionMembers: null,
+        status: 'scheduled',
+        changeNote: null,
+      },
+    },
   ];
 
   function hydrateStudentProfile(sp: (typeof studentProfiles)[number], include?: Record<string, unknown>) {
@@ -301,13 +369,20 @@ export async function createStatefulMockPrisma() {
 
   function hydrateRequest(r: (typeof requests)[number], include?: Record<string, unknown>) {
     const rt = requestTypes.find((t) => t.code === r.typeCode)!;
-    const hist = histories.filter((h) => h.requestId === r.id);
+    const hist = histories
+      .filter((h) => h.requestId === r.id)
+      .map((h) => ({
+        ...h,
+        actor: h.actorId ? users.find((u) => u.id === h.actorId) ?? null : null,
+      }));
     const stu = users.find((u) => u.id === r.studentId)!;
+    const sp = studentProfiles.find((p) => p.userId === stu.id);
+    const grp = sp ? groups.find((g) => g.id === sp.groupId) : null;
     return {
       ...r,
       ...(include?.requestType ? { requestType: rt } : {}),
       ...(include?.history ? { history: hist } : {}),
-      ...(include?.student ? { student: stu } : {}),
+      ...(include?.student ? { student: { ...stu, studentProfile: sp ? { ...sp, group: grp } : null } } : {}),
     };
   }
 
@@ -361,8 +436,8 @@ export async function createStatefulMockPrisma() {
             .map((sp) => hydrateStudentProfile(sp, { user: true, grades: true })),
         }));
       },
-      findFirst: async ({ where }: { where: { code: string } }) => {
-        const g = groups.find((x) => x.code === where.code);
+      findFirst: async ({ where }: { where?: { code?: string } } = {}) => {
+        const g = where?.code ? groups.find((x) => x.code === where.code) : groups[0];
         if (!g) return null;
         return {
           ...g,
@@ -375,6 +450,55 @@ export async function createStatefulMockPrisma() {
     room: {
       findFirst: async ({ where }: { where: { code: string } }) => {
         return rooms.find((r) => r.code === where.code) ?? null;
+      },
+      create: async ({ data }: { data: { code: string } }) => {
+        const created = { id: crypto.randomUUID(), code: data.code, building: 'A', capacity: 30 };
+        rooms.push(created);
+        return created;
+      },
+    },
+    exam: {
+      findMany: async ({ where }: { where?: { groupId?: string; group?: { code: string } } } = {}) => {
+        return exams
+          .filter((ex) => {
+            if (where?.groupId && ex.groupId !== where.groupId) return false;
+            if (where?.group?.code) {
+              const g = groups.find((gr) => gr.id === ex.groupId);
+              if (g?.code !== where.group.code) return false;
+            }
+            return true;
+          })
+          .map((ex) => ({ ...ex, group: groups.find((g) => g.id === ex.groupId) ?? null }));
+      },
+      findFirst: async ({ where }: { where: { id?: string; code?: string } }) => {
+        const ex = exams.find((x) => (where.id ? x.id === where.id : x.code === where.code));
+        if (!ex) return null;
+        const grp = groups.find((g) => g.id === ex.groupId)!;
+        return {
+          ...ex,
+          group: {
+            ...grp,
+            studentProfiles: studentProfiles.filter((sp) => sp.groupId === grp.id),
+          },
+        };
+      },
+      create: async ({ data }: { data: Record<string, unknown> }) => {
+        const created = {
+          id: crypto.randomUUID(),
+          commissionMembers: null,
+          changeNote: null,
+          retakeDate: null,
+          isDebt: false,
+          originalSnapshot: null,
+          ...(data as (typeof exams)[number]),
+        };
+        exams.push(created);
+        return { ...created, group: groups.find((g) => g.id === created.groupId) ?? null };
+      },
+      update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+        const idx = exams.findIndex((x) => x.id === where.id);
+        Object.assign(exams[idx], data);
+        return { ...exams[idx], group: groups.find((g) => g.id === exams[idx].groupId) ?? null };
       },
     },
     scheduleEntry: {
@@ -529,8 +653,17 @@ export async function createStatefulMockPrisma() {
     },
     announcement: {
       findMany: async () => [...announcements].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
-      create: async ({ data }: { data: { title: string; body: string; targetGroup: string | null } }) => {
-        const created = { id: crypto.randomUUID(), ...data, createdAt: new Date() };
+      create: async ({ data }: { data: { title: string; body: string; targetGroup: string | null; targetUserId?: string | null; priority?: string; kind?: string; recipientCount?: number; recipients?: string[] } }) => {
+        const created = {
+          id: crypto.randomUUID(),
+          targetUserId: null,
+          priority: 'high',
+          kind: 'announcement',
+          recipientCount: 0,
+          recipients: [],
+          ...data,
+          createdAt: new Date(),
+        };
         announcements.unshift(created);
         return created;
       },

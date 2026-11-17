@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, Info, Building, Mail, Phone, MapPin } from 'lucide-react';
-import { UNIVERSITY_INFO } from '../services/mockData';
+import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from './UniversityEmblem';
 
 export const Footer: React.FC = () => {
@@ -84,7 +84,7 @@ export const Footer: React.FC = () => {
             </h5>
             <ul className="text-xs space-y-2 font-sans">
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                {lang === 'ru' ? 'Выдача справок об обучении с ЭЦП' : 'Certified Enrollment Documents'}
+                {lang === 'ru' ? 'Электронные справки (демо-макет)' : 'Digital Certificates (Demo Preview)'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
                 {lang === 'ru' ? 'Академические ведомости и БРС' : 'Academic Records & Rating'}
@@ -118,7 +118,7 @@ export const Footer: React.FC = () => {
               </div>
               <div className="pt-2 flex items-center space-x-2 text-[11px] text-[#142D4E] dark:text-[#245A91] font-semibold">
                 <ShieldCheck className="w-4 h-4 text-[#245A91]" />
-                <span>{lang === 'ru' ? 'ЭЦП ГОСТ Р 34.10-2012' : 'Qualified Digital Seal (GOST)'}</span>
+                <span>{lang === 'ru' ? 'Иллюстративный макет ЭЦП (демо)' : 'Illustrative Digital Seal (Demo)'}</span>
               </div>
             </div>
           </div>

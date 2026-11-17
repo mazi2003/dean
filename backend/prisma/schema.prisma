@@ -2,7 +2,8 @@
 // Competition concept, fictional data only.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -41,6 +42,14 @@ enum CreditStatus {
   earned
   in_progress
   failed
+}
+
+enum ExamStatus {
+  scheduled
+  date_changed
+  room_changed
+  postponed
+  cancelled
 }
 
 enum RequestTypeCode {
@@ -117,16 +126,26 @@ model Program {
 }
 
 model Group {
-  id        String   @id @default(uuid())
-  code      String   @unique
-  programId String   @map("program_id")
-  year      Int
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  code           String   @unique
+  programId      String   @map("program_id")
+  year           Int
+  admissionYear  Int?     @map("admission_year")
+  studentsCount  Int?     @map("students_count")
+  budgetCount    Int?     @map("budget_count")
+  contractCount  Int?     @map("contract_count")
+  curatorName    String?  @map("curator_name")
+  curatorContact String?  @map("curator_contact")
+  starostaName   String?  @map("starosta_name")
+  starostaEmail  String?  @map("starosta_email")
+  starostaPhone  String?  @map("starosta_phone")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   program         Program          @relation(fields: [programId], references: [id], onDelete: Restrict)
   studentProfiles StudentProfile[]
   scheduleEntries ScheduleEntry[]
+  exams           Exam[]
 
   @@index([programId])
   @@map("groups")
@@ -140,6 +159,12 @@ model StudentProfile {
   groupId       String   @map("group_id")
   year          Int
   studentNumber String   @unique @map("student_number")
+  phone         String?
+  studyForm     String   @default("Бюджет") @map("study_form")
+  isStarosta    Boolean  @default(false) @map("is_starosta")
+  status        String   @default("active")
+  dormitoryInfo String?  @map("dormitory_info")
+  snils         String?
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -222,6 +247,36 @@ model ScheduleEntry {
   @@map("schedule_entries")
 }
 
+// ─── Exams ────────────────────────────────────────────────────────────────────
+
+model Exam {
+  id                String     @id @default(uuid())
+  code              String     @unique
+  groupId           String     @map("group_id")
+  subject           String
+  format            String
+  examiner          String
+  commissionMembers String?    @map("commission_members")
+  date              String
+  rawDate           String     @map("raw_date")
+  time              String
+  room              String
+  consultation      String
+  credits           Int
+  status            ExamStatus @default(scheduled)
+  changeNote        String?    @map("change_note")
+  retakeDate        String?    @map("retake_date")
+  isDebt            Boolean    @default(false) @map("is_debt")
+  originalSnapshot  Json?      @map("original_snapshot")
+  createdAt         DateTime   @default(now()) @map("created_at")
+  updatedAt         DateTime   @updatedAt @map("updated_at")
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@map("exams")
+}
+
 // ─── Grades ───────────────────────────────────────────────────────────────────
 
 model Grade {
@@ -234,6 +289,8 @@ model Grade {
   creditStatus     CreditStatus    @map("credit_status")
   assessmentType   AssessmentType  @map("assessment_type")
   examDate         DateTime?       @db.Date @map("exam_date")
+  retakeDate       DateTime?       @db.Date @map("retake_date")
+  teacher          String?
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
 
@@ -305,6 +362,7 @@ model Notification {
   kind      NotificationKind
   title     String
   body      String
+  priority  String           @default("normal")
   read      Boolean          @default(false)
   link      String?
   createdAt DateTime         @default(now()) @map("created_at")
@@ -319,12 +377,17 @@ model Notification {
 }
 
 model Announcement {
-  id          String   @id @default(uuid())
-  title       String
-  body        String
-  targetGroup String?  @map("target_group")  // null = all students
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id             String           @id @default(uuid())
+  title          String
+  body           String
+  targetGroup    String?          @map("target_group")  // null = all students
+  targetUserId   String?          @map("target_user_id")
+  priority       String           @default("high")
+  kind           NotificationKind @default(announcement)
+  recipientCount Int              @default(0) @map("recipient_count")
+  recipients     Json?
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
   @@index([targetGroup])
   @@map("announcements")

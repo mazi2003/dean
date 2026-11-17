@@ -50,9 +50,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm --prefix ../frontend run preview -- --port 4176 --host 127.0.0.1',
+    command: 'node ../scripts/local-stack.mjs',
     url: 'http://127.0.0.1:4176',
     reuseExistingServer: false,
-    timeout: 30_000,
+    timeout: 120_000,
   },
 });

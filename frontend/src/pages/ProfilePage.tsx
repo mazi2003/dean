@@ -6,7 +6,7 @@ import {
   ShieldCheck,
   GraduationCap,
 } from 'lucide-react';
-import { UNIVERSITY_INFO } from '../services/mockData';
+import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
@@ -169,29 +169,29 @@ export const ProfilePage: React.FC = () => {
           <div className="space-y-3 text-xs font-sans">
             <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
               <span className="text-[10px] uppercase font-mono text-[#667085] block">
-                {tr(lang, 'Стандарт криптографической подписи', 'Cryptographic Signature Standard')}
+                {tr(lang, 'Статус электронного документооборота', 'Digital Document Flow (Illustrative)')}
               </span>
               <span className="font-mono font-semibold text-[#142D4E] dark:text-[#245A91]">
-                ГОСТ Р 34.10-2012 / 34.11-2012
+                {tr(lang, 'Демонстрационный макет (без реальной ЭЦП)', 'Prototype Mockup (No Real E-Signature)')}
               </span>
               <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
                 {tr(
                   lang,
-                  'Усиленная квалифицированная ЭЦП деканата для справок и приказов.',
-                  "Qualified Dean's Office digital signature for certificates and decrees."
+                  'Иллюстративное представление будущей интеграции с ЭЦП деканата; документы в прототипе не имеют юридической силы.',
+                  "Illustrative preview of future Dean's Office digital signing; prototype documents are not legally binding."
                 )}
               </p>
             </div>
 
             <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
               <span className="text-[10px] uppercase font-mono text-[#667085] block">
-                {tr(lang, 'Удостоверяющий центр', 'Certification Authority')}
+                {tr(lang, 'Аутентификация и шифрование паролей', 'Authentication & Password Hashing')}
               </span>
               <span className="font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
-                {tr(lang, 'УЦ «DemoTech Root Certification Authority»', 'CA "DemoTech Root Certification Authority"')}
+                {tr(lang, 'Argon2id + httpOnly JWT Cookie', 'Argon2id + httpOnly JWT Cookie')}
               </span>
               <p className="text-[11px] text-[#667085] font-mono">
-                {tr(lang, 'Серийный номер:', 'Serial Number:')} 77AA-9402-E12F-2026-REG
+                {tr(lang, 'Ролевой контроль (RBAC):', 'RBAC Scope:')} {(user?.role ?? 'student').toUpperCase()}
               </p>
             </div>
 

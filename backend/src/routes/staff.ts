@@ -1,10 +1,12 @@
 import { FastifyInstance } from 'fastify';
-import { Prisma, RequestStatus, ScheduleStatus } from '@prisma/client';
+import { NotificationKind, Prisma, RequestStatus, ScheduleStatus, ExamStatus } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { authenticate, requireStaff } from '../middleware/auth';
+import { computePointsAndGpa } from './profile';
+import { formatRequest } from './requests';
+import { formatExam } from './schedule';
 
-// Valid status transitions per workflow spec
 const VALID_TRANSITIONS: Record<string, string[]> = {
   submitted: ['in_review', 'rejected'],
   in_review: ['needs_info', 'ready', 'rejected'],
@@ -31,84 +33,75 @@ const AnnouncementSchema = z.object({
   title: z.string().min(1).max(200),
   body: z.string().min(1).max(2000),
   group: z.string().nullable().optional(),
+  targetUserId: z.string().nullable().optional(),
+  priority: z.enum(['normal', 'high', 'urgent']).optional().default('high'),
+  kind: z.enum(['announcement', 'deadline', 'request_update', 'schedule_change']).optional().default('announcement'),
 });
 
 const ScheduleChangeSchema = z.object({
   scheduleEntryId: z.string().min(1),
-  status: z.enum(['room_changed', 'moved', 'cancelled']),
+  status: z.enum(['normal', 'room_changed', 'moved', 'cancelled']),
   room: z.string().optional(),
   start: z.string().optional(),
   end: z.string().optional(),
   note: z.string().max(500).optional(),
+  notifyGroup: z.boolean().optional().default(true),
+});
+
+const ExamCreateSchema = z.object({
+  code: z.string().min(1).max(40),
+  groupId: z.string().min(1), // group code like ДУ-101
+  subject: z.string().min(1).max(200),
+  format: z.string().min(1).max(200),
+  examiner: z.string().min(1).max(200),
+  commissionMembers: z.string().max(300).optional(),
+  date: z.string().min(1).max(100),
+  rawDate: z.string().optional(),
+  time: z.string().min(1).max(60),
+  room: z.string().min(1).max(100),
+  consultation: z.string().max(200).optional().default(''),
+  credits: z.coerce.number().int().min(1).max(12).default(4),
+  status: z.enum(['scheduled', 'date_changed', 'room_changed', 'postponed', 'cancelled']).optional().default('scheduled'),
+  changeNote: z.string().nullable().optional(),
+  isDebt: z.boolean().optional().default(false),
+  notifyGroup: z.boolean().optional().default(true),
 });
 
 const ExamChangeSchema = z.object({
   examId: z.string().min(1),
   date: z.string().optional(),
+  rawDate: z.string().optional(),
   time: z.string().optional(),
   room: z.string().optional(),
+  examiner: z.string().optional(),
+  commissionMembers: z.string().optional(),
+  consultation: z.string().optional(),
   status: z.enum(['scheduled', 'date_changed', 'room_changed', 'postponed', 'cancelled']).optional(),
   changeNote: z.string().nullable().optional(),
-  notifyGroup: z.boolean().optional(),
+  notifyGroup: z.boolean().optional().default(true),
   targetGroup: z.string().optional(),
   subject: z.string().optional(),
 });
 
-function formatRequest(r: {
-  id: string;
-  studentId: string;
-  typeCode: string;
-  requestType: { title: string; slaDays: number };
-  status: string;
-  createdAt: Date;
-  updatedAt: Date;
-  data: unknown;
-  history?: Array<{ id?: string; status: string; createdAt: Date; comment: string | null }>;
-  student?: { id: string; email: string; fullName: string; role: string };
-}) {
-  const expectedBy = new Date(r.createdAt);
-  expectedBy.setDate(expectedBy.getDate() + r.requestType.slaDays);
+const requestInclude = {
+  requestType: true,
+  history: {
+    orderBy: { createdAt: 'asc' as const },
+    include: { actor: { select: { fullName: true } } },
+  },
+  student: {
+    include: {
+      studentProfile: {
+        include: { group: { select: { code: true } } },
+      },
+    },
+  },
+};
 
-  return {
-    id: r.id,
-    studentId: r.studentId,
-    studentName: r.student?.fullName,
-    typeCode: r.typeCode,
-    typeTitle: r.requestType.title,
-    slaDays: r.requestType.slaDays,
-    status: r.status,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-    expectedBy: expectedBy.toISOString().split('T')[0],
-    expectedDate: expectedBy.toISOString().split('T')[0],
-    data: r.data,
-    history:
-      r.history?.map((h) => ({
-        id: h.id,
-        status: h.status,
-        at: h.createdAt.toISOString(),
-        createdAt: h.createdAt.toISOString(),
-        comment: h.comment,
-      })) ?? [],
-    student: r.student
-      ? { id: r.student.id, email: r.student.email, fullName: r.student.fullName, role: r.student.role }
-      : undefined,
-  };
-}
-
-function calculateStudentMetrics<T extends { creditStatus: string; points: number | null }>(grades: T[]) {
+function calculateStudentMetrics<T extends { creditStatus: string; points: number | null; grade: number | null }>(grades: T[]) {
   const debts = grades.filter((gr) => gr.creditStatus === 'failed');
-  let sumPoints = 0;
-  let pointsCount = 0;
-  for (const gr of grades) {
-    if (gr.points !== null) {
-      sumPoints += gr.points;
-      pointsCount++;
-    }
-  }
-  const avgScore = pointsCount > 0 ? Math.round((sumPoints / pointsCount) * 10) / 10 : 75.0;
-  const gpa = avgScore >= 85 ? 4.8 : avgScore >= 75 ? 4.2 : 3.4;
-  return { debts, avgScore, gpa };
+  const { averageScore, gpa } = computePointsAndGpa(grades);
+  return { debts, avgScore: averageScore, gpa };
 }
 
 export async function staffRoutes(app: FastifyInstance) {
@@ -129,11 +122,7 @@ export async function staffRoutes(app: FastifyInstance) {
         prisma.request.count({ where }),
         prisma.request.findMany({
           where,
-          include: {
-            requestType: true,
-            history: { orderBy: { createdAt: 'asc' } },
-            student: true,
-          },
+          include: requestInclude,
           orderBy: { createdAt: 'desc' },
           skip: (page - 1) * pageSize,
           take: pageSize,
@@ -175,6 +164,15 @@ export async function staffRoutes(app: FastifyInstance) {
       }
 
       const staffUserId = request.user!.sub;
+      const statusLabels: Record<string, string> = {
+        submitted: 'Подано',
+        in_review: 'В обработке',
+        needs_info: 'Требуется уточнение',
+        ready: 'Готово к выдаче',
+        rejected: 'Отклонено',
+        cancelled: 'Отменено',
+      };
+
       const [updated] = await prisma.$transaction([
         prisma.request.update({
           where: { id },
@@ -184,19 +182,16 @@ export async function staffRoutes(app: FastifyInstance) {
               create: [{ status: parsed.data.status as RequestStatus, actorId: staffUserId, comment: parsed.data.comment ?? null }],
             },
           },
-          include: {
-            requestType: true,
-            history: { orderBy: { createdAt: 'asc' } },
-            student: true,
-          },
+          include: requestInclude,
         }),
         prisma.notification.create({
           data: {
             userId: r.studentId,
             kind: 'request_update',
-            title: `Your request status changed to ${parsed.data.status}`,
-            body: parsed.data.comment ?? `Your ${r.requestType.title} request is now ${parsed.data.status}.`,
-            link: `/requests/${r.id}`,
+            title: `Статус заявления изменен: ${statusLabels[parsed.data.status] ?? parsed.data.status}`,
+            body: parsed.data.comment ?? `${r.requestType.title}: статус обновлен на "${statusLabels[parsed.data.status] ?? parsed.data.status}".`,
+            priority: parsed.data.status === 'needs_info' ? 'urgent' : parsed.data.status === 'ready' ? 'high' : 'normal',
+            link: '/requests',
           },
         }),
       ]);
@@ -218,9 +213,11 @@ export async function staffRoutes(app: FastifyInstance) {
           title: a.title,
           body: a.body,
           targetGroup: a.targetGroup ?? 'all',
-          priority: 'high',
-          kind: 'announcement',
+          priority: a.priority ?? 'high',
+          kind: a.kind ?? 'announcement',
           createdAt: a.createdAt.toISOString(),
+          recipientCount: a.recipientCount ?? 0,
+          recipients: Array.isArray(a.recipients) ? a.recipients : undefined,
         }))
       );
     },
@@ -235,40 +232,55 @@ export async function staffRoutes(app: FastifyInstance) {
         return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
       }
 
-      const { title, body, group: groupName } = parsed.data;
+      const { title, body, group: groupName, targetUserId, priority, kind } = parsed.data;
+      const normalizedGroup = groupName === 'all' ? null : groupName ?? null;
 
-      // Create announcement record
-      const created = await prisma.announcement.create({
-        data: { title, body, targetGroup: groupName ?? null },
-      });
-
-      // Find target users
-      let targetUserIds: string[];
-      if (groupName) {
+      let targets: Array<{ id: string; fullName: string }> = [];
+      if (targetUserId) {
+        const u = await prisma.user.findUnique({ where: { id: targetUserId }, select: { id: true, fullName: true } });
+        if (u) targets = [u];
+      } else if (normalizedGroup) {
         const groupRecord = await prisma.group.findFirst({
-          where: { code: groupName },
-          include: { studentProfiles: { select: { userId: true } } },
+          where: { code: normalizedGroup },
+          include: { studentProfiles: { include: { user: { select: { id: true, fullName: true } } } } },
         });
-        targetUserIds = groupRecord?.studentProfiles.map((sp) => sp.userId) ?? [];
+        targets = groupRecord?.studentProfiles.map((sp) => sp.user) ?? [];
       } else {
-        const students = await prisma.user.findMany({ where: { role: 'student' }, select: { id: true } });
-        targetUserIds = students.map((u) => u.id);
+        targets = await prisma.user.findMany({
+          where: { role: 'student' },
+          select: { id: true, fullName: true },
+        });
       }
 
-      // Create notifications
-      if (targetUserIds.length > 0) {
+      const created = await prisma.announcement.create({
+        data: {
+          title,
+          body,
+          targetGroup: normalizedGroup,
+          targetUserId: targetUserId ?? null,
+          priority,
+          kind: kind as NotificationKind,
+          recipientCount: targets.length,
+          recipients: targets.map((t) => t.fullName) as Prisma.InputJsonValue,
+        },
+      });
+
+      const link = kind === 'schedule_change' ? '/schedule' : kind === 'request_update' ? '/requests' : null;
+
+      if (targets.length > 0) {
         await prisma.notification.createMany({
-          data: targetUserIds.map((userId) => ({
-            userId,
-            kind: 'announcement' as const,
+          data: targets.map((u) => ({
+            userId: u.id,
+            kind: kind as NotificationKind,
             title,
             body,
-            link: null,
+            priority,
+            link,
           })),
         });
       }
 
-      return reply.code(201).send({ ok: true, id: created.id, count: targetUserIds.length });
+      return reply.code(201).send({ ok: true, id: created.id, count: targets.length });
     },
   });
 
@@ -297,7 +309,7 @@ export async function staffRoutes(app: FastifyInstance) {
         return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
       }
 
-      const { scheduleEntryId, status, room, start, end, note } = parsed.data;
+      const { scheduleEntryId, status, room, start, end, note, notifyGroup } = parsed.data;
 
       const entry = await prisma.scheduleEntry.findUnique({
         where: { id: scheduleEntryId },
@@ -308,48 +320,147 @@ export async function staffRoutes(app: FastifyInstance) {
       });
       if (!entry) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Schedule entry not found' });
 
-      // Build update data
       const updateData: {
         status: ScheduleStatus;
-        changeNote?: string;
+        changeNote?: string | null;
         roomId?: string | null;
         startTime?: string;
         endTime?: string;
       } = { status: status as ScheduleStatus };
-      if (note) updateData.changeNote = note;
+      if (note !== undefined) updateData.changeNote = note || null;
       if (start) updateData.startTime = start;
       if (end) updateData.endTime = end;
 
       if (room) {
-        const roomRecord = await prisma.room.findFirst({ where: { code: room } });
-        if (roomRecord) updateData.roomId = roomRecord.id;
+        let roomRecord = await prisma.room.findFirst({ where: { code: room } });
+        if (!roomRecord) {
+          roomRecord = await prisma.room.create({ data: { code: room } });
+        }
+        updateData.roomId = roomRecord.id;
       }
 
       await prisma.scheduleEntry.update({ where: { id: scheduleEntryId }, data: updateData });
 
-      // Notify affected group
-      const affectedUserIds = entry.group.studentProfiles.map((sp) => sp.userId);
-      const dateStr = entry.date.toISOString().split('T')[0];
-      const notifTitle =
-        status === 'cancelled'
-          ? `Class cancelled: ${entry.subject.name} on ${dateStr}`
-          : status === 'room_changed'
-            ? `Room changed: ${entry.subject.name} on ${dateStr}`
-            : `Schedule changed: ${entry.subject.name} on ${dateStr}`;
+      if (notifyGroup) {
+        const affectedUserIds = entry.group.studentProfiles.map((sp) => sp.userId);
+        const dateStr = entry.date.toISOString().split('T')[0];
+        const statusLabels: Record<string, string> = {
+          normal: 'Расписание подтверждено',
+          room_changed: `Замена аудитории на ${room || 'новую'}`,
+          moved: `Перенос времени на ${start || entry.startTime}-${end || entry.endTime}`,
+          cancelled: 'Занятие отменено',
+        };
+        const notifTitle = `Изменение в расписании: ${entry.subject.name}`;
+        const notifBody = note || `Внимание, группа ${entry.group.code} (${dateStr})! По дисциплине "${entry.subject.name}" статус: ${statusLabels[status]}.`;
 
-      if (affectedUserIds.length > 0) {
-        await prisma.notification.createMany({
-          data: affectedUserIds.map((userId) => ({
-            userId,
-            kind: 'schedule_change' as const,
-            title: notifTitle,
-            body: note ?? notifTitle,
-            link: null,
-          })),
-        });
+        if (affectedUserIds.length > 0) {
+          await prisma.notification.createMany({
+            data: affectedUserIds.map((userId) => ({
+              userId,
+              kind: 'schedule_change' as const,
+              title: notifTitle,
+              body: notifBody,
+              priority: 'urgent',
+              link: '/schedule',
+            })),
+          });
+        }
       }
 
       return reply.send({ ok: true });
+    },
+  });
+
+  // GET /api/v1/staff/exams?group=CODE
+  app.get('/staff/exams', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (request, reply) => {
+      const groupCode = (request.query as { group?: string })?.group;
+      const where: Prisma.ExamWhereInput = {};
+      if (groupCode && groupCode !== 'all') {
+        where.group = { code: groupCode };
+      }
+
+      const exams = await prisma.exam.findMany({
+        where,
+        include: { group: true },
+        orderBy: { rawDate: 'asc' },
+      });
+
+      return reply.send(exams.map(formatExam));
+    },
+  });
+
+  // POST /api/v1/staff/exams
+  app.post('/staff/exams', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (request, reply) => {
+      const parsed = ExamCreateSchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
+      }
+
+      const d = parsed.data;
+      const grp = await prisma.group.findFirst({
+        where: { code: d.groupId },
+        include: { studentProfiles: { select: { userId: true } } },
+      });
+      if (!grp) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Group not found' });
+      }
+
+      const rawDate = d.rawDate ?? new Date().toISOString().slice(0, 10);
+      const snapshot = {
+        date: d.date,
+        rawDate,
+        time: d.time,
+        room: d.room,
+        consultation: d.consultation,
+        examiner: d.examiner,
+        commissionMembers: d.commissionMembers ?? null,
+        status: d.status,
+        changeNote: d.changeNote ?? null,
+      };
+
+      const created = await prisma.exam.create({
+        data: {
+          code: d.code,
+          groupId: grp.id,
+          subject: d.subject,
+          format: d.format,
+          examiner: d.examiner,
+          commissionMembers: d.commissionMembers ?? null,
+          date: d.date,
+          rawDate,
+          time: d.time,
+          room: d.room,
+          consultation: d.consultation,
+          credits: d.credits,
+          status: d.status as ExamStatus,
+          changeNote: d.changeNote ?? null,
+          isDebt: d.isDebt,
+          originalSnapshot: snapshot as Prisma.InputJsonValue,
+        },
+        include: { group: true },
+      });
+
+      if (d.notifyGroup) {
+        const targetUserIds = grp.studentProfiles.map((sp) => sp.userId);
+        if (targetUserIds.length > 0) {
+          await prisma.notification.createMany({
+            data: targetUserIds.map((userId) => ({
+              userId,
+              kind: 'schedule_change' as const,
+              title: `Утвержден экзамен: ${d.subject}`,
+              body: `Внимание, группа ${grp.code}! В график сессии внесен экзамен по дисциплине «${d.subject}» на ${d.date} (${d.time}, ${d.room}). Экзаменатор: ${d.examiner}.`,
+              priority: 'high',
+              link: '/schedule',
+            })),
+          });
+        }
+      }
+
+      return reply.code(201).send(formatExam(created));
     },
   });
 
@@ -362,40 +473,120 @@ export async function staffRoutes(app: FastifyInstance) {
         return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
       }
 
-      const { examId, date, time, room, status, changeNote, notifyGroup, targetGroup, subject } = parsed.data;
+      const { examId, date, rawDate, time, room, examiner, commissionMembers, consultation, status, changeNote, notifyGroup, targetGroup, subject } = parsed.data;
 
-      if (notifyGroup && targetGroup) {
+      // Locate exam by UUID or code if available in DB
+      const existing = await prisma.exam.findFirst({
+        where: UUID_REGEX.test(examId) ? { id: examId } : { code: examId },
+        include: {
+          group: { include: { studentProfiles: { select: { userId: true } } } },
+        },
+      });
+
+      let updatedExam = null;
+      let resolvedGroupCode = targetGroup ?? existing?.group.code;
+      let resolvedSubject = subject ?? existing?.subject ?? 'Экзамен';
+      let targetUserIds: string[] = existing?.group.studentProfiles.map((sp) => sp.userId) ?? [];
+
+      if (existing) {
+        const updatePayload: Prisma.ExamUpdateInput = {};
+        if (date !== undefined) updatePayload.date = date;
+        if (rawDate !== undefined) updatePayload.rawDate = rawDate;
+        if (time !== undefined) updatePayload.time = time;
+        if (room !== undefined) updatePayload.room = room;
+        if (examiner !== undefined) updatePayload.examiner = examiner;
+        if (commissionMembers !== undefined) updatePayload.commissionMembers = commissionMembers;
+        if (consultation !== undefined) updatePayload.consultation = consultation;
+        if (changeNote !== undefined) updatePayload.changeNote = changeNote;
+        updatePayload.status = (status ?? 'date_changed') as ExamStatus;
+
+        updatedExam = await prisma.exam.update({
+          where: { id: existing.id },
+          data: updatePayload,
+          include: { group: true },
+        });
+      } else if (resolvedGroupCode) {
         const groupRecord = await prisma.group.findFirst({
-          where: { code: targetGroup },
+          where: { code: resolvedGroupCode },
           include: { studentProfiles: { select: { userId: true } } },
         });
-
-        const targetUserIds = groupRecord?.studentProfiles.map((sp) => sp.userId) ?? [];
-        if (targetUserIds.length > 0) {
-          const statusMap: Record<string, string> = {
-            date_changed: 'Перенос даты экзамена',
-            room_changed: 'Замена аудитории экзамена',
-            postponed: 'Перенос экзамена на резервный день',
-            cancelled: 'Отмена экзамена',
-            scheduled: 'График экзамена подтвержден',
-          };
-          const title = `Изменение даты экзамена: ${subject || 'Экзамен'}`;
-          const noteText = changeNote ? ` Примечание деканата: ${changeNote}.` : '';
-          const notifBody = `Внимание, группа ${targetGroup}! По дисциплине «${subject || 'Экзамен'}» статус: ${(status && statusMap[status]) || 'Изменение'}. Дата: ${date ?? '—'}, время: ${time ?? '—'}, ауд.: ${room ?? '—'}.${noteText}`;
-
-          await prisma.notification.createMany({
-            data: targetUserIds.map((userId) => ({
-              userId,
-              kind: 'schedule_change' as const,
-              title,
-              body: notifBody,
-              link: '/schedule',
-            })),
-          });
-        }
+        targetUserIds = groupRecord?.studentProfiles.map((sp) => sp.userId) ?? [];
       }
 
+      if (notifyGroup && targetUserIds.length > 0) {
+        const statusMap: Record<string, string> = {
+          date_changed: 'Перенос даты экзамена',
+          room_changed: 'Замена аудитории экзамена',
+          postponed: 'Перенос экзамена на резервный день',
+          cancelled: 'Отмена экзамена',
+          scheduled: 'График экзамена подтвержден',
+        };
+        const finalStatus = updatedExam?.status ?? status ?? 'date_changed';
+        const title = `Изменение даты экзамена: ${resolvedSubject}`;
+        const noteText = (updatedExam?.changeNote ?? changeNote) ? ` Примечание деканата: ${updatedExam?.changeNote ?? changeNote}.` : '';
+        const notifBody = `Внимание, группа ${resolvedGroupCode}! По дисциплине «${resolvedSubject}» статус: ${statusMap[finalStatus] || 'Изменение'}. Новая дата: ${updatedExam?.date ?? date ?? '—'}, время: ${updatedExam?.time ?? time ?? '—'}, ауд.: ${updatedExam?.room ?? room ?? '—'}.${noteText}`;
+
+        await prisma.notification.createMany({
+          data: targetUserIds.map((userId) => ({
+            userId,
+            kind: 'schedule_change' as const,
+            title,
+            body: notifBody,
+            priority: 'urgent',
+            link: '/schedule',
+          })),
+        });
+      }
+
+      if (updatedExam) {
+        return reply.send(formatExam(updatedExam));
+      }
       return reply.send({ ok: true, examId });
+    },
+  });
+
+  // POST /api/v1/staff/exams/:id/reset
+  app.post('/staff/exams/:id/reset', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const existing = await prisma.exam.findFirst({
+        where: UUID_REGEX.test(id) ? { id } : { code: id },
+        include: { group: true },
+      });
+      if (!existing) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Exam not found' });
+      }
+
+      const snap = (existing.originalSnapshot ?? {}) as Partial<{
+        date: string;
+        rawDate: string;
+        time: string;
+        room: string;
+        consultation: string;
+        examiner: string;
+        commissionMembers: string | null;
+        status: ExamStatus;
+        changeNote: string | null;
+      }>;
+
+      const restored = await prisma.exam.update({
+        where: { id: existing.id },
+        data: {
+          date: snap.date ?? existing.date,
+          rawDate: snap.rawDate ?? existing.rawDate,
+          time: snap.time ?? existing.time,
+          room: snap.room ?? existing.room,
+          consultation: snap.consultation ?? existing.consultation,
+          examiner: snap.examiner ?? existing.examiner,
+          commissionMembers: snap.commissionMembers !== undefined ? snap.commissionMembers : existing.commissionMembers,
+          status: snap.status ?? 'scheduled',
+          changeNote: snap.changeNote !== undefined ? snap.changeNote : null,
+        },
+        include: { group: true },
+      });
+
+      return reply.send(formatExam(restored));
     },
   });
 
@@ -419,38 +610,35 @@ export async function staffRoutes(app: FastifyInstance) {
       const formatted = groups.map((g) => {
         const studentProfiles = g.studentProfiles;
         let totalDebt = 0;
-        let sumPoints = 0;
-        let pointCount = 0;
+        let sumGpa = 0;
+        let gpaCount = 0;
 
         for (const sp of studentProfiles) {
-          const debts = sp.grades.filter((gr) => gr.creditStatus === 'failed');
+          const { debts, gpa } = calculateStudentMetrics(sp.grades);
           totalDebt += debts.length;
-          for (const gr of sp.grades) {
-            if (gr.points !== null) {
-              sumPoints += gr.points;
-              pointCount++;
-            }
+          if (gpa > 0) {
+            sumGpa += gpa;
+            gpaCount++;
           }
         }
 
-        const avgScore = pointCount > 0 ? sumPoints / pointCount : 80;
-        const avgGpa = avgScore >= 85 ? 4.6 : avgScore >= 70 ? 4.0 : 3.4;
+        const avgGpa = gpaCount > 0 ? Math.round((sumGpa / gpaCount) * 100) / 100 : 4.2;
 
         return {
           id: g.id,
           code: g.code,
           program: g.program.name,
           faculty: g.program.faculty.name,
-          year: 2023,
+          year: g.admissionYear ?? 2023,
           courseNumber: g.year,
-          studentsCount: studentProfiles.length > 0 ? studentProfiles.length : g.code === 'DU-101' ? 28 : 24,
-          budgetCount: Math.ceil(studentProfiles.length * 0.6) || (g.code === 'DU-101' ? 18 : 14),
-          contractCount: Math.floor(studentProfiles.length * 0.4) || (g.code === 'DU-101' ? 10 : 10),
-          curatorName: g.code === 'DU-101' ? 'проф. Лебедев Д.В.' : 'доц. Ковалев С.А.',
-          curatorContact: g.code === 'DU-101' ? 'd.lebedev@demo.edu • Ауд. 314' : 's.kovalev@demo.edu • Ауд. 208',
-          starostaName: g.code === 'DU-101' ? 'Айгуль Нурова' : 'Алина Захарова',
-          starostaEmail: g.code === 'DU-101' ? 'aigul.nurova@demo.edu' : 'a.zakharova@demo.edu',
-          starostaPhone: g.code === 'DU-101' ? '+7 (999) 123-45-67' : '+7 (999) 456-78-90',
+          studentsCount: g.studentsCount ?? studentProfiles.length,
+          budgetCount: g.budgetCount ?? Math.ceil(studentProfiles.length * 0.6),
+          contractCount: g.contractCount ?? Math.floor(studentProfiles.length * 0.4),
+          curatorName: g.curatorName ?? undefined,
+          curatorContact: g.curatorContact ?? undefined,
+          starostaName: g.starostaName ?? undefined,
+          starostaEmail: g.starostaEmail ?? undefined,
+          starostaPhone: g.starostaPhone ?? undefined,
           averageGpa: avgGpa,
           debtCount: totalDebt,
         };
@@ -468,7 +656,7 @@ export async function staffRoutes(app: FastifyInstance) {
         include: {
           user: true,
           group: true,
-          grades: true,
+          grades: { include: { subject: true } },
         },
         orderBy: { studentNumber: 'asc' },
       });
@@ -479,17 +667,17 @@ export async function staffRoutes(app: FastifyInstance) {
           id: sp.userId,
           fullName: sp.user.fullName,
           email: sp.user.email,
-          phone: sp.user.email === 'aigul.nurova@demo.edu' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+          phone: sp.phone ?? '+7 (999) 000-00-00',
           group: sp.group.code,
           year: sp.year,
           studentNumber: sp.studentNumber,
-          studyForm: sp.user.email === 'timur.belov@demo.edu' ? ('Контракт' as const) : ('Бюджет' as const),
+          studyForm: (sp.studyForm === 'Контракт' ? 'Контракт' : 'Бюджет') as 'Бюджет' | 'Контракт',
           gpa,
           averageScore: avgScore,
           debtCount: debts.length,
-          debtSubjects: debts.map((d) => d.subjectId),
-          isStarosta: sp.user.email === 'aigul.nurova@demo.edu',
-          status: 'active' as const,
+          debtSubjects: debts.map((d) => d.subject?.name ?? d.subjectId),
+          isStarosta: sp.isStarosta ?? false,
+          status: (sp.status as 'active' | 'academic_leave' | 'expelled') ?? 'active',
         };
       });
 
@@ -508,7 +696,7 @@ export async function staffRoutes(app: FastifyInstance) {
           studentProfiles: {
             include: {
               user: true,
-              grades: true,
+              grades: { include: { subject: true } },
             },
           },
         },
@@ -518,22 +706,21 @@ export async function staffRoutes(app: FastifyInstance) {
 
       const students = group.studentProfiles.map((sp) => {
         const { debts, avgScore, gpa } = calculateStudentMetrics(sp.grades);
-
         return {
           id: sp.userId,
           fullName: sp.user.fullName,
           email: sp.user.email,
-          phone: sp.user.email === 'aigul.nurova@demo.edu' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+          phone: sp.phone ?? '+7 (999) 000-00-00',
           group: group.code,
           year: sp.year,
           studentNumber: sp.studentNumber,
-          studyForm: sp.user.email === 'timur.belov@demo.edu' ? ('Контракт' as const) : ('Бюджет' as const),
+          studyForm: (sp.studyForm === 'Контракт' ? 'Контракт' : 'Бюджет') as 'Бюджет' | 'Контракт',
           gpa,
           averageScore: avgScore,
           debtCount: debts.length,
-          debtSubjects: debts.map((d) => d.subjectId),
-          isStarosta: sp.user.email === 'aigul.nurova@demo.edu',
-          status: 'active' as const,
+          debtSubjects: debts.map((d) => d.subject?.name ?? d.subjectId),
+          isStarosta: sp.isStarosta ?? false,
+          status: (sp.status as 'active' | 'academic_leave' | 'expelled') ?? 'active',
         };
       });
 
@@ -562,10 +749,7 @@ export async function staffRoutes(app: FastifyInstance) {
             },
           },
           requests: {
-            include: {
-              requestType: true,
-              history: { orderBy: { createdAt: 'desc' } },
-            },
+            include: requestInclude,
             orderBy: { createdAt: 'desc' },
           },
         },
@@ -576,33 +760,29 @@ export async function staffRoutes(app: FastifyInstance) {
       }
 
       const sp = user.studentProfile;
-      const debts = sp.grades.filter((gr) => gr.creditStatus === 'failed');
-      const { avgScore, gpa } = calculateStudentMetrics(sp.grades);
+      const { debts, avgScore, gpa } = calculateStudentMetrics(sp.grades);
 
       const profile = {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
-        phone: user.email === 'aigul.nurova@demo.edu' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+        phone: sp.phone ?? '+7 (999) 000-00-00',
         group: sp.group.code,
         year: sp.year,
         studentNumber: sp.studentNumber,
-        studyForm: user.email === 'timur.belov@demo.edu' ? ('Контракт' as const) : ('Бюджет' as const),
+        studyForm: (sp.studyForm === 'Контракт' ? 'Контракт' : 'Бюджет') as 'Бюджет' | 'Контракт',
         gpa,
         averageScore: avgScore,
         debtCount: debts.length,
         debtSubjects: debts.map((d) => d.subject.name),
-        isStarosta: user.email === 'aigul.nurova@demo.edu',
-        status: 'active' as const,
+        isStarosta: sp.isStarosta ?? false,
+        status: (sp.status as 'active' | 'academic_leave' | 'expelled') ?? 'active',
         faculty: sp.faculty.name,
         program: sp.program.name,
-        admissionYear: 2023,
+        admissionYear: sp.group.admissionYear ?? 2023,
         recordBookNumber: `ЗК-${sp.studentNumber.replace('СТ-', '')}`,
-        dormitoryInfo:
-          user.email === 'timur.belov@demo.edu'
-            ? 'Студгородок №1, корп. 2, комн. 415'
-            : 'Проживание по постоянной регистрации (г. Москва)',
-        snils: '184-293-841 02',
+        dormitoryInfo: sp.dormitoryInfo ?? 'Проживание по постоянной регистрации (г. Москва)',
+        snils: sp.snils ?? '184-293-841 02',
       };
 
       const gradesSummary = {
@@ -623,7 +803,8 @@ export async function staffRoutes(app: FastifyInstance) {
           grade: g.grade,
           creditStatus: g.creditStatus,
           examDate: g.examDate ? g.examDate.toISOString().split('T')[0] : null,
-          retakeDate: g.creditStatus === 'failed' && g.examDate ? g.examDate.toISOString().split('T')[0] : null,
+          retakeDate: g.retakeDate ? g.retakeDate.toISOString().split('T')[0] : null,
+          teacher: g.teacher ?? undefined,
           semester: g.semester,
         })),
       };

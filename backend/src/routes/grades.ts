@@ -2,19 +2,11 @@ import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
+import { computePointsAndGpa } from './profile';
 
 const GradesQuerySchema = z.object({
   semester: z.coerce.number().int().positive().optional(),
 });
-
-function gradeToGpa(grade: number | null): number {
-  // Russian grade system: 5→4.0, 4→3.0, 3→2.0, 2→1.0
-  if (grade === 5) return 4.0;
-  if (grade === 4) return 3.0;
-  if (grade === 3) return 2.0;
-  if (grade === 2) return 1.0;
-  return 0;
-}
 
 export async function gradesRoutes(app: FastifyInstance) {
   // GET /api/v1/grades?semester=
@@ -48,30 +40,25 @@ export async function gradesRoutes(app: FastifyInstance) {
         grade: g.grade,
         creditStatus: g.creditStatus,
         examDate: g.examDate ? g.examDate.toISOString().split('T')[0] : null,
+        retakeDate: g.retakeDate ? g.retakeDate.toISOString().split('T')[0] : null,
+        teacher: g.teacher ?? undefined,
         semester: g.semester,
       }));
 
       const earnedItems = items.filter((i) => i.creditStatus === 'earned');
       const creditsEarned = earnedItems.reduce((sum: number, i) => sum + i.credits, 0);
-      const creditsRequired = 240; // standard
+      const creditsRequired = 30;
 
-      const pointItems = items.filter((i) => i.points !== null);
-      const averagePoints = pointItems.length > 0
-        ? Math.round((pointItems.reduce((s: number, i) => s + (i.points ?? 0), 0) / pointItems.length) * 10) / 10
-        : 0;
-
-      const gradedItems = items.filter((i) => i.grade !== null);
-      const gpa = gradedItems.length > 0
-        ? Math.round((gradedItems.reduce((s: number, i) => s + gradeToGpa(i.grade), 0) / gradedItems.length) * 100) / 100
-        : 0;
+      const { averageScore: averagePoints, gpa } = computePointsAndGpa(items);
 
       const now = new Date();
-      const upcomingExams = items.filter((i) =>
-        i.examDate !== null && new Date(i.examDate) > now && i.creditStatus !== 'earned'
-      );
+      const upcomingExams = items.filter((i) => {
+        if (i.creditStatus === 'failed' && i.retakeDate) return true;
+        return i.examDate !== null && new Date(i.examDate) > now && i.creditStatus !== 'earned';
+      });
 
       return reply.send({
-        semester: parsed.data.semester ?? null,
+        semester: parsed.data.semester ?? 3,
         averagePoints,
         gpa,
         creditsEarned,

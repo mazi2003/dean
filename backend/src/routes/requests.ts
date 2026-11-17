@@ -24,7 +24,7 @@ const CreateRequestSchema = z.object({
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function formatRequest(r: {
+export function formatRequest(r: {
   id: string;
   studentId: string;
   typeCode: string;
@@ -33,37 +33,69 @@ function formatRequest(r: {
   createdAt: Date;
   updatedAt: Date;
   data: unknown;
-  history?: Array<{ id?: string; status: string; createdAt: Date; comment: string | null }>;
-  student?: { id: string; email: string; fullName: string; role: string };
+  history?: Array<{
+    id?: string;
+    status: string;
+    createdAt: Date;
+    comment: string | null;
+    actor?: { fullName: string } | null;
+  }>;
+  student?: {
+    id: string;
+    email: string;
+    fullName: string;
+    role: string;
+    studentProfile?: { group?: { code: string } | null } | null;
+  };
 }) {
   const expectedBy = new Date(r.createdAt);
   expectedBy.setDate(expectedBy.getDate() + r.requestType.slaDays);
+  const expectedIso = expectedBy.toISOString().split('T')[0];
 
   return {
     id: r.id,
     studentId: r.studentId,
+    studentName: r.student?.fullName,
+    studentGroup: r.student?.studentProfile?.group?.code ?? undefined,
     typeCode: r.typeCode,
     typeTitle: r.requestType.title,
     slaDays: r.requestType.slaDays,
     status: r.status,
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
-    expectedBy: expectedBy.toISOString().split('T')[0],
-    expectedDate: expectedBy.toISOString().split('T')[0],
+    expectedBy: expectedIso,
+    expectedDate: expectedIso,
     data: r.data,
+    digitalDocAvailable: r.typeCode === 'study_certificate' || r.typeCode === 'transcript',
     history:
       r.history?.map((h) => ({
         id: h.id,
         status: h.status,
         at: h.createdAt.toISOString(),
         createdAt: h.createdAt.toISOString(),
-        comment: h.comment,
+        comment: h.comment ?? undefined,
+        authorName: h.actor?.fullName ?? r.student?.fullName ?? 'Система',
       })) ?? [],
     student: r.student
       ? { id: r.student.id, email: r.student.email, fullName: r.student.fullName, role: r.student.role }
       : undefined,
   };
 }
+
+const requestInclude = {
+  requestType: true,
+  history: {
+    orderBy: { createdAt: 'asc' as const },
+    include: { actor: { select: { fullName: true } } },
+  },
+  student: {
+    include: {
+      studentProfile: {
+        include: { group: { select: { code: true } } },
+      },
+    },
+  },
+};
 
 export async function requestsRoutes(app: FastifyInstance) {
   // GET /api/v1/request-types
@@ -101,10 +133,7 @@ export async function requestsRoutes(app: FastifyInstance) {
         prisma.request.count({ where }),
         prisma.request.findMany({
           where,
-          include: {
-            requestType: true,
-            history: { orderBy: { createdAt: 'asc' } },
-          },
+          include: requestInclude,
           orderBy: { createdAt: 'desc' },
           skip: (page - 1) * pageSize,
           take: pageSize,
@@ -124,7 +153,6 @@ export async function requestsRoutes(app: FastifyInstance) {
   app.post('/requests', {
     preHandler: [authenticate],
     handler: async (request, reply) => {
-      // Students only
       if (request.user!.role !== 'student') {
         return reply.code(403).send({ code: 'FORBIDDEN', message: 'Students only' });
       }
@@ -152,12 +180,21 @@ export async function requestsRoutes(app: FastifyInstance) {
           data: parsed.data.data as Prisma.InputJsonValue,
           status: 'submitted',
           history: {
-            create: [{ status: 'submitted', actorId: userId, comment: null }],
+            create: [{ status: 'submitted', actorId: userId, comment: 'Заявление отправлено в деканат на рассмотрение.' }],
           },
         },
-        include: {
-          requestType: true,
-          history: { orderBy: { createdAt: 'asc' } },
+        include: requestInclude,
+      });
+
+      // Confirmation notification for student
+      await prisma.notification.create({
+        data: {
+          userId,
+          kind: 'request_update',
+          title: `Заявление принято: ${rt.title}`,
+          body: `Ваше заявление зарегистрировано и передано на рассмотрение в деканат.`,
+          priority: 'normal',
+          link: '/requests',
         },
       });
 
@@ -177,10 +214,7 @@ export async function requestsRoutes(app: FastifyInstance) {
       const userId = request.user!.sub;
       const r = await prisma.request.findFirst({
         where: { id, studentId: userId }, // IDOR protection: must be owner
-        include: {
-          requestType: true,
-          history: { orderBy: { createdAt: 'asc' } },
-        },
+        include: requestInclude,
       });
 
       if (!r) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
@@ -214,13 +248,10 @@ export async function requestsRoutes(app: FastifyInstance) {
         data: {
           status: 'cancelled',
           history: {
-            create: [{ status: 'cancelled', actorId: userId, comment: 'Cancelled by student' }],
+            create: [{ status: 'cancelled', actorId: userId, comment: 'Заявление отменено студентом.' }],
           },
         },
-        include: {
-          requestType: true,
-          history: { orderBy: { createdAt: 'asc' } },
-        },
+        include: requestInclude,
       });
 
       return reply.send(formatRequest(updated));

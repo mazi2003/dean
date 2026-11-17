@@ -13,7 +13,7 @@ import {
   RefreshCw,
   ArrowLeft,
 } from 'lucide-react';
-import { UNIVERSITY_INFO } from '../services/mockData';
+import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from './UniversityEmblem';
 import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
@@ -395,7 +395,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             {/* Security Chip Notice */}
             <div className="mt-3 text-center text-[10px] font-mono text-[#93C5FD] flex items-center justify-center space-x-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#93C5FD]" />
-              <span>NFC MIFARE DESFire EV3 • Secure Campus Pass</span>
+              <span>{tr(lang, 'Иллюстрация: симуляция NFC / QR-пропуска (демо)', 'Illustrative: NFC / QR pass simulation (demo)')}</span>
             </div>
           </div>
 
@@ -417,8 +417,8 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                 <Wifi className={`w-4 h-4 text-[#93C5FD] ${isNfcTapping ? 'animate-ping' : ''}`} />
                 <span>
                   {isNfcTapping
-                    ? tr(lang, 'Считывание бесконтактного чипа...', 'Reading contactless NFC chip...')
-                    : tr(lang, 'Приложить к турникету (NFC Test)', 'Tap at Turnstile (NFC Test)')}
+                    ? tr(lang, 'Симуляция считывания...', 'Simulating NFC read...')
+                    : tr(lang, 'Приложить к турникету (Симуляция NFC)', 'Tap at Turnstile (NFC Simulation)')}
                 </span>
               </button>
             )}

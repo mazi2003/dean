@@ -53,6 +53,7 @@ export async function notificationsRoutes(app: FastifyInstance) {
           title: n.title,
           body: n.body,
           message: n.body,
+          priority: (n as { priority?: string }).priority ?? 'normal',
           createdAt: n.createdAt.toISOString(),
           read: n.read,
           link: n.link,

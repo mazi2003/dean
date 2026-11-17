@@ -296,8 +296,14 @@ export const SchedulePage: React.FC = () => {
     changes: Partial<ExamEntry> & { notifyGroup?: boolean }
   ) => {
     try {
-      await api.updateExam(examId, changes);
-      const subjName = localizeText(editingExam?.subject, lang);
+      const existsInList = exams.some(e => e.id === examId);
+      if (existsInList) {
+        await api.updateExam(examId, changes);
+      } else if (editingExam) {
+        const { id: _ignoreId, ...rest } = editingExam;
+        await api.createExam({ ...rest, ...changes });
+      }
+      const subjName = localizeText(changes.subject ?? editingExam?.subject, lang);
       setFeedbackMsg(
         changes.notifyGroup !== false
           ? tr(

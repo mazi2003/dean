@@ -11,11 +11,11 @@
 | Уровень | Инструмент / Команда | Покрытие / Сценарии | Результат | Замечания по среде |
 |---|---|---|---|---|
 | **Backend TypeScript & Build** | `npm run typecheck && npm run build` (`tsc --noEmit`, `tsc`) | Строгая типизация Fastify v5, Prisma v6.19.3, Zod v4 | **PASS** (0 ошибок) | — |
-| **Backend Integration & Security** | `npm run test:coverage` (`Vitest` + `Supertest` v8) | 3 тест-сьюта: `auth-security`, `student-idor`, `staff-workflow` | **21 / 21 PASS** | Исполняется in-process с stateful Prisma test-double (`helpers/mockPrisma.ts`) без локального PostgreSQL |
+| **Backend Integration & Security** | `npm run test:coverage` (`Vitest` + `Supertest` v8) | 3 тест-сьюта: `auth-security`, `student-idor`, `staff-workflow` | **22 / 22 PASS** | Исполняется in-process с stateful Prisma test-double (`helpers/mockPrisma.ts`) + сквозной прогон с реальным PostgreSQL в E2E |
 | **Frontend Static Lint** | `npm run lint` (`oxlint v1.94.0`) | Правила корректности React, хуки, неиспользуемый код | **PASS** (0 ошибок, 0 предупреждений) | — |
-| **Frontend Component Tests** | `npm test` (`Vitest` + Testing Library + jsdom) | 10 тестов: LoginPage, Footer, BottomNav (>=48px), StudentCardModal, GradesPage, RequestsPage, i18n, RU/EN & SchedulePage | **10 / 10 PASS** (14.47s) | — |
-| **Frontend Production Build** | `npm run build` (`tsc -b && vite build`) | Сборка PWA с code-splitting (`vendor-react`, `vendor-icons`, `vendor-qr`) и self-hosted шрифтами (`OFL-1.1`) | **PASS** (4.67s, 0 предупреждений) | Главный JS 77.39 kB gzip, CSS 39.15 kB gzip, локальные `.woff2` чанки |
-| **E2E Desktop & Mobile (PWA + Axe)** | `npx playwright test` (`desktop-chromium` 1280×800, `mobile-chromium` 360×740) | 14 тестов: Auth/SSO, отсутствие Demo Switcher, WCAG Axe, RU/EN, тёмная тема, Студбилет NFC/QR, 360px overflow, ИИ-консультант, СКУД/ЭЦП, АРМ деканата, Security audit бандла и PWA SW | **14 / 14 PASS** (1.1m) | 0 ошибок консоли и сети, автофоллбэк на системный Chrome |
+| **Frontend Component Tests** | `npm test` (`Vitest` + Testing Library + jsdom) | 10 тестов: LoginPage, Footer, BottomNav (>=48px), StudentCardModal, GradesPage, RequestsPage, i18n, RU/EN & SchedulePage | **10 / 10 PASS** (7.39s) | С мокированным `fetch` (без `localStorage`-эмуляции API и без `TEST_USERS`) |
+| **Frontend Production Build** | `npm run build` (`tsc -b && vite build`) | Сборка PWA с code-splitting (`vendor-react`, `vendor-icons`, `vendor-qr`) и self-hosted шрифтами (`OFL-1.1`) | **PASS** (2.11s, 0 предупреждений) | Главный JS 65.20 kB gzip, CSS 39.19 kB gzip, локальные `.woff2` чанки |
+| **E2E Desktop & Mobile (Real Stack)** | `npx playwright test` (`scripts/local-stack.mjs`: `embedded-postgres` + Prisma + Fastify + Vite) | 14 тестов: Auth/SSO, отсутствие Demo Switcher, WCAG Axe, RU/EN, тёмная тема, Студбилет симуляция NFC/QR, 360px overflow, серверный консультант, АРМ деканата, httpOnly cookie, RBAC `403`, IDOR `404`, аудит бандла | **14 / 14 PASS** (1.0m) | 0 непредвиденных ошибок консоли и сети, реальная БД PostgreSQL |
 | **Load Smoke Benchmark (100 VU)** | `npm run test:load` (`e2e/load-smoke.mjs`) | 100 виртуальных пользователей, 10.06s нагрузки на Fastify API (`health`, `schedule`, `grades`) | **PASS** (10 600 req, 0% ошибок) | 1 053.4 RPS, **p50 79.73 ms**, **p95 149.28 ms**, **p99 495.29 ms** |
 | **Static Secret & Token Scan** | PowerShell `Select-String` + `security-audit.spec.ts` | Поиск ключей API (`sk-`, `ghp_`, `AIza`), fallback-секретов, JWT в `localStorage` | **PASS** (0 утечек) | Секреты `JWT_SECRET` / `COOKIE_SECRET` fail-closed в production |
 | **PostgreSQL Schema & Seed Suite** | `database/tests/schema.test.ts` | Проверка DDL-миграции, FK, constraints и idempotent seed в PostgreSQL 16 | **НЕ ЗАПУСКАЛАСЬ ЛОКАЛЬНО** | В локальной среде Windows отсутствует сервер PostgreSQL и Docker daemon; требуется `docker compose` / PG 16 |
@@ -24,11 +24,11 @@
 
 ## 2. Покрытие кода Backend (`backend/tests/`, v8 coverage)
 
-Итоговая статистика по `npm run test:coverage` (**21/21 тестов пройдено**):
-- **Statements:** `90.15%` (`412 / 457`)
-- **Branches:** `67.46%` (`224 / 332`)
-- **Functions:** `97.70%` (`85 / 87`)
-- **Lines:** `92.41%` (`390 / 422`)
+Итоговая статистика по `npm run test:coverage` (**22/22 тестов пройдено**):
+- **Statements:** `77.91%` (`455 / 584`)
+- **Branches:** `49.35%` (`306 / 620`)
+- **Functions:** `91.83%` (`90 / 98`)
+- **Lines:** `81.37%` (`437 / 537`)
 
 | Файл | % Stmts | % Branch | % Funcs | % Lines | Что проверено |
 |---|---|---|---|---|---|

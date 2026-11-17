@@ -29,9 +29,11 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     await app.close();
   });
 
+  let testIpSeq = 1;
   async function loginAs(email: string, password: string) {
     const agent = supertest.agent(app.server);
-    const res = await agent.post('/api/v1/auth/login').send({ email, password });
+    const ip = `10.20.0.${testIpSeq++}`;
+    const res = await agent.post('/api/v1/auth/login').set('X-Forwarded-For', ip).send({ email, password });
     expect(res.status).toBe(200);
     return agent;
   }
@@ -50,6 +52,9 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     expect((await aigul.get('/api/v1/staff/students')).status).toBe(403);
     expect((await aigul.get('/api/v1/staff/groups/DU-101/students')).status).toBe(403);
     expect((await aigul.get(`/api/v1/staff/students/${ids.timurUserId}/dossier`)).status).toBe(403);
+    expect((await aigul.get('/api/v1/staff/exams')).status).toBe(403);
+    expect((await aigul.post('/api/v1/staff/exams').send({ code: 'X-1', groupId: 'DU-101', subject: 'X', format: 'Y', examiner: 'Z', date: '2026-12-20', time: '10:00', room: '101' })).status).toBe(403);
+    expect((await aigul.post('/api/v1/staff/exams/ex-101-1/reset')).status).toBe(403);
   });
 
   it('Staff cannot submit student requests via POST /api/v1/requests (403)', async () => {

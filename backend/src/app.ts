@@ -14,8 +14,33 @@ import { notificationsRoutes } from './routes/notifications';
 import { staffRoutes } from './routes/staff';
 import { assistantRoutes } from './routes/assistant';
 
-export async function buildApp(): Promise<FastifyInstance> {
+export function resolveCorsOrigins(): string | string[] {
+  const configured = process.env.CORS_ORIGIN
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  const vercelOrigins = process.env.VERCEL === '1'
+    ? [
+        process.env.VERCEL_URL,
+        process.env.VERCEL_BRANCH_URL,
+        process.env.VERCEL_PROJECT_PRODUCTION_URL,
+      ]
+        .filter((host): host is string => Boolean(host && host.trim()))
+        .map((host) => (host.startsWith('http') ? host : `https://${host}`))
+    : [];
+
+  const combined = [...new Set([...(configured ?? []), ...vercelOrigins])];
+  if (combined.length === 0) {
+    return 'http://localhost:5173';
+  }
+  return combined.length === 1 ? combined[0] : combined;
+}
+
+export function createApp(): FastifyInstance {
+  const trustProxy = process.env.TRUST_PROXY !== 'false';
   const app = Fastify({
+    trustProxy,
     logger: {
       level: process.env.LOG_LEVEL ?? 'info',
       redact: ['req.headers.authorization', 'req.headers.cookie'],
@@ -23,7 +48,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
 
   // Security plugins
-  await app.register(helmet, {
+  app.register(helmet, {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -34,18 +59,18 @@ export async function buildApp(): Promise<FastifyInstance> {
     },
   });
 
-  await app.register(cors, {
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
+  app.register(cors, {
+    origin: resolveCorsOrigins(),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Accept'],
   });
 
-  await app.register(cookie, {
+  app.register(cookie, {
     secret: getCookieSigningKey(),
   });
 
-  await app.register(rateLimit, {
+  app.register(rateLimit, {
     global: false, // per-route opt-in
     max: 100,
     timeWindow: '1 minute',
@@ -86,7 +111,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
 
   // Routes under /api/v1 prefix
-  await app.register(async (v1) => {
+  app.register(async (v1) => {
     await v1.register(authRoutes);
     await v1.register(profileRoutes);
     await v1.register(scheduleRoutes);
@@ -99,3 +124,12 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   return app;
 }
+
+export async function buildApp(): Promise<FastifyInstance> {
+  const app = createApp();
+  await app.ready();
+  return app;
+}
+
+const app = createApp();
+export default app;

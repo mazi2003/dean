@@ -175,7 +175,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
             <span>•</span>
             <span>{tr(lang, 'Кабинет 312', 'Room 312')}</span>
             <span>•</span>
-            <span>{tr(lang, 'ЭЦП ГОСТ Р 34.10-2012', 'GOST Digital Seal')}</span>
+            <span>{tr(lang, 'Демо-макет PDF (без ЭЦП)', 'Demo PDF Preview (Illustrative)')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
             {lang === 'ru' ? 'Справки и официальные заявления' : 'Official Petitions & Certificates'}
@@ -183,8 +183,8 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
           <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
             {tr(
               lang,
-              'Заказ справок с усиленной квалифицированной электронной подписью деканата и подача заявлений',
-              "Order digitally signed certificates and submit official petitions to the Dean's Office"
+              'Заказ справок с электронными макетами документов и подача заявлений',
+              "Order digital certificate previews and submit official petitions to the Dean's Office"
             )}
           </p>
         </div>
@@ -302,7 +302,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                           className="px-3 py-1 rounded-lg bg-[#245A91] hover:bg-[#1C3B65] text-[#FFFFFF] text-xs font-sans font-bold flex items-center space-x-1 shadow-xs transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          <span>{tr(lang, 'PDF с ЭЦП', 'Signed PDF')}</span>
+                          <span>{tr(lang, 'Макет PDF', 'Preview PDF')}</span>
                         </button>
                       )}
 

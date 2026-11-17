@@ -1,8 +1,41 @@
-node_modules
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment variables
 .env
-dist
-coverage
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+!.env.example
+
+# Build & compiled outputs
+dist/
+build/
+*.tsbuildinfo
+.vercel/
+
+# Test & coverage results
+coverage/
 *.log
-test-results
-playwright-report
-blob-report
+test-results/
+playwright-report/
+blob-report/
+
+# Persistent database / reverse proxy data
+data/
+dbdata/
+caddydata/
+
+# Secrets & certificates
+*.pem
+*.key
+*.cert
+*.crt
+
+# OS metadata
+.DS_Store
+Thumbs.db

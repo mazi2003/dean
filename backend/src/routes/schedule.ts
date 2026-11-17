@@ -7,6 +7,7 @@ const ScheduleQuerySchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  group: z.string().min(1).max(50).optional(),
 });
 
 function formatEntry(entry: {
@@ -22,23 +23,68 @@ function formatEntry(entry: {
   status: string;
   changeNote: string | null;
 }) {
+  const jsDay = entry.date.getUTCDay();
+  const dayOfWeek = jsDay === 0 ? 7 : jsDay;
   return {
     id: entry.id,
     date: entry.date.toISOString().split('T')[0],
+    dayOfWeek,
     start: entry.startTime,
     end: entry.endTime,
+    startTime: entry.startTime,
+    endTime: entry.endTime,
     subject: entry.subject.name,
     type: entry.type,
-    room: entry.room?.code ?? null,
-    teacher: entry.teacher?.fullName ?? null,
-    groupId: entry.group?.code ?? undefined,
+    room: entry.room?.code ?? '',
+    teacher: entry.teacher?.fullName ?? '',
+    groupId: entry.group?.code ?? '',
     status: entry.status,
     changeNote: entry.changeNote,
   };
 }
 
+export function formatExam(ex: {
+  id: string;
+  code: string;
+  group?: { code: string } | null;
+  subject: string;
+  format: string;
+  examiner: string;
+  commissionMembers: string | null;
+  date: string;
+  rawDate: string;
+  time: string;
+  room: string;
+  consultation: string;
+  credits: number;
+  status: string;
+  changeNote: string | null;
+  retakeDate: string | null;
+  isDebt: boolean;
+}) {
+  return {
+    id: ex.id,
+    code: ex.code,
+    groupId: ex.group?.code ?? '',
+    subject: ex.subject,
+    format: ex.format,
+    examiner: ex.examiner,
+    commissionMembers: ex.commissionMembers ?? undefined,
+    date: ex.date,
+    rawDate: ex.rawDate,
+    time: ex.time,
+    room: ex.room,
+    consultation: ex.consultation,
+    credits: ex.credits,
+    status: ex.status,
+    changeNote: ex.changeNote,
+    retakeDate: ex.retakeDate,
+    isDebt: ex.isDebt,
+  };
+}
+
 export async function scheduleRoutes(app: FastifyInstance) {
-  // GET /api/v1/schedule?from=&to=&date=
+  // GET /api/v1/schedule?from=&to=&date=&group=
   app.get('/schedule', {
     preHandler: [authenticate],
     handler: async (request, reply) => {
@@ -48,28 +94,39 @@ export async function scheduleRoutes(app: FastifyInstance) {
       }
 
       const userId = request.user!.sub;
-      const sp = await prisma.studentProfile.findUnique({ where: { userId } });
-      if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
+      let targetGroupId: string | null = null;
 
-      // Default to current week Mon-Sun
+      if (request.user!.role === 'staff') {
+        if (parsed.data.group && parsed.data.group !== 'all') {
+          const grp = await prisma.group.findFirst({ where: { code: parsed.data.group } });
+          if (grp) targetGroupId = grp.id;
+        }
+        if (!targetGroupId) {
+          const firstGrp = await prisma.group.findFirst({ orderBy: { code: 'asc' } });
+          if (!firstGrp) return reply.send([]);
+          targetGroupId = firstGrp.id;
+        }
+      } else {
+        const sp = await prisma.studentProfile.findUnique({ where: { userId } });
+        if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
+        targetGroupId = sp.groupId;
+      }
+
+      // Default to current week Mon-Sun in UTC (matching PostgreSQL DATE storage)
       const now = new Date();
-      const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon...
+      const dayOfWeek = now.getUTCDay();
       const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      const monday = new Date(now);
-      monday.setDate(now.getDate() + diffToMon);
-      monday.setHours(0, 0, 0, 0);
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-      sunday.setHours(23, 59, 59, 999);
+      const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + diffToMon));
+      const sunday = new Date(Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate() + 6, 23, 59, 59, 999));
 
       const fromStr = parsed.data.date ?? parsed.data.from;
       const toStr = parsed.data.date ?? parsed.data.to;
-      const from = fromStr ? new Date(fromStr) : monday;
-      const to = toStr ? new Date(toStr + 'T23:59:59.999Z') : sunday;
+      const from = fromStr ? new Date(`${fromStr}T00:00:00.000Z`) : monday;
+      const to = toStr ? new Date(`${toStr}T23:59:59.999Z`) : sunday;
 
       const entries = await prisma.scheduleEntry.findMany({
         where: {
-          groupId: sp.groupId,
+          groupId: targetGroupId,
           date: { gte: from, lte: to },
         },
         include: {
@@ -94,10 +151,8 @@ export async function scheduleRoutes(app: FastifyInstance) {
       if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
 
       const now = new Date();
-      const todayStart = new Date(now);
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date(now);
-      todayEnd.setHours(23, 59, 59, 999);
+      const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+      const todayEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
 
       const todayEntries = await prisma.scheduleEntry.findMany({
         where: { groupId: sp.groupId, date: { gte: todayStart, lte: todayEnd } },
@@ -105,7 +160,6 @@ export async function scheduleRoutes(app: FastifyInstance) {
         orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
       });
 
-      // Next upcoming: first entry after today
       const nextEntry = await prisma.scheduleEntry.findFirst({
         where: {
           groupId: sp.groupId,
@@ -120,6 +174,37 @@ export async function scheduleRoutes(app: FastifyInstance) {
         today: todayEntries.map(formatEntry),
         next: nextEntry ? formatEntry(nextEntry) : null,
       });
+    },
+  });
+
+  // GET /api/v1/exams (student: own group only; staff: all or ?group=)
+  app.get('/exams', {
+    preHandler: [authenticate],
+    handler: async (request, reply) => {
+      const userId = request.user!.sub;
+      if (request.user!.role === 'staff') {
+        const groupQuery = (request.query as { group?: string })?.group;
+        const where: { group?: { code: string } } = {};
+        if (groupQuery && groupQuery !== 'all') {
+          where.group = { code: groupQuery };
+        }
+        const exams = await prisma.exam.findMany({
+          where,
+          include: { group: true },
+          orderBy: { rawDate: 'asc' },
+        });
+        return reply.send(exams.map(formatExam));
+      }
+
+      const sp = await prisma.studentProfile.findUnique({ where: { userId } });
+      if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
+
+      const exams = await prisma.exam.findMany({
+        where: { groupId: sp.groupId },
+        include: { group: true },
+        orderBy: { rawDate: 'asc' },
+      });
+      return reply.send(exams.map(formatExam));
     },
   });
 }

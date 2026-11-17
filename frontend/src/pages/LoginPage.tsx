@@ -14,7 +14,7 @@ import {
   BookOpen,
   Globe2,
 } from 'lucide-react';
-import { UNIVERSITY_INFO } from '../services/mockData';
+import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 
 export const LoginPage: React.FC = () => {
@@ -134,8 +134,8 @@ export const LoginPage: React.FC = () => {
                 </h3>
                 <p className="text-xs text-[#FFFFFF]/80 font-sans leading-relaxed">
                   {lang === 'ru'
-                    ? 'Единая защищенная платформа доступа к расписанию занятий, электронной зачетной книжке и сервисам деканата с усиленной ЭЦП.'
-                    : 'Unified secure single sign-on access to academic schedules, digital transcripts, and registrar certificate services.'}
+                    ? 'Единая защищенная платформа доступа к расписанию занятий, электронной зачетной книжке и сервисам деканата (демо-концепт).'
+                    : 'Unified secure single sign-on access to academic schedules, digital transcripts, and registrar certificate services (demo concept).'}
                 </p>
               </div>
 
@@ -154,7 +154,7 @@ export const LoginPage: React.FC = () => {
                     <ShieldCheck className="w-2.5 h-2.5 text-[#245A91]" />
                   </div>
                   <span className="text-[#FFFFFF]/90">
-                    {lang === 'ru' ? 'Квалифицированная ЭЦП деканата (ГОСТ)' : 'Certified digital signatures & seal'}
+                    {lang === 'ru' ? 'Электронные макеты справок (иллюстрация)' : 'Illustrative digital certificate previews'}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2.5">

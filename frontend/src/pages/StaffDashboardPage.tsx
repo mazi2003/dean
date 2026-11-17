@@ -14,7 +14,7 @@ import {
   Users,
   Trash2,
 } from 'lucide-react';
-import { StudentRequest, RequestStatus, StaffAnnouncement, NotificationKind, StudentDossier } from '../types';
+import { StudentRequest, RequestStatus, StaffAnnouncement, NotificationKind, StudentDossier, StudentListItem } from '../types';
 import { api } from '../services/api';
 import { StudentDossierModal } from '../components/StudentDossierModal';
 import { tr, getRequestStatusLabel, localizeText } from '../utils/i18n';
@@ -39,6 +39,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
   const [requests, setRequests] = useState<StudentRequest[]>([]);
   const [announcements, setAnnouncements] = useState<StaffAnnouncement[]>([]);
+  const [students, setStudents] = useState<StudentListItem[]>([]);
   const [filter, setFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
 
@@ -58,7 +59,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
     initialAnnounceStudentName ? `Уведомление деканата для: ${initialAnnounceStudentName}` : ''
   );
   const [announceMsg, setAnnounceMsg] = useState('');
-  const [announceTarget, setAnnounceTarget] = useState<string>(initialAnnounceStudentId || initialAnnounceTarget || 'all');
+  const [announceTarget, setAnnounceTarget] = useState<string>(
+    initialAnnounceStudentId ? `user:${initialAnnounceStudentId}` : initialAnnounceTarget || 'all'
+  );
   const [announceKind, setAnnounceKind] = useState<NotificationKind>('announcement');
   const [announcePriority, setAnnouncePriority] = useState<'normal' | 'high' | 'urgent'>('high');
   const [sendingAnnounce, setSendingAnnounce] = useState(false);
@@ -79,12 +82,14 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
   const loadData = async () => {
     try {
       setLoading(true);
-      const [reqData, annData] = await Promise.all([
+      const [reqData, annData, stuData] = await Promise.all([
         api.getStaffRequests(),
         api.getStaffAnnouncements(),
+        api.getGroupStudents('all').catch(() => []),
       ]);
       setRequests(reqData);
       setAnnouncements(annData);
+      setStudents(stuData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -96,13 +101,15 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
     let cancelled = false;
     (async () => {
       try {
-        const [reqData, annData] = await Promise.all([
+        const [reqData, annData, stuData] = await Promise.all([
           api.getStaffRequests(),
           api.getStaffAnnouncements(),
+          api.getGroupStudents('all').catch(() => []),
         ]);
         if (!cancelled) {
           setRequests(reqData);
           setAnnouncements(annData);
+          setStudents(stuData);
         }
       } catch (err) {
         console.error(err);
@@ -147,12 +154,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
     setSendingAnnounce(true);
     try {
-      const isUserTarget = announceTarget.startsWith('usr-');
+      const isUserTarget = announceTarget.startsWith('user:');
+      const targetUserId = isUserTarget ? announceTarget.slice(5) : null;
       const res = await api.sendStaffAnnouncement({
         title: announceTitle.trim(),
         message: announceMsg.trim(),
         targetGroup: isUserTarget || announceTarget === 'all' ? null : announceTarget,
-        targetUserId: isUserTarget ? announceTarget : null,
+        targetUserId,
         priority: announcePriority,
         kind: announceKind,
       });
@@ -293,8 +301,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             {currentSection === 'requests'
               ? tr(
                   lang,
-                  'Рассмотрение справок об обучении, ПГАС, общежития с выпуском квалифицированной ЭЦП',
-                  'Review enrollment certificates, PGAS scholarships, and dormitory requests with qualified EDS',
+                  'Рассмотрение заявлений на справки, ПГАС и общежитие с формированием электронных макетов',
+                  'Review enrollment certificates, PGAS scholarships, and dormitory requests with document previews',
                 )
               : tr(
                   lang,
@@ -414,13 +422,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     applyTemplate(
                       tr(
                         lang,
-                        'Электронные справки с ЭЦП готовы к скачиванию',
-                        'Digital Certificates with EDS Ready for Download',
+                        'Электронные макеты справок готовы к скачиванию',
+                        'Digital Certificate Previews Ready for Download',
                       ),
                       tr(
                         lang,
-                        'Все заказанные справки об обучении заверены квалифицированной электронной подписью деканата и доступны для скачивания в формате PDF в разделе "Справки".',
-                        "All requested enrollment certificates have been signed with the Dean's Office qualified digital signature and are available as PDFs in the Requests section.",
+                        'Заказанные справки об обучении обработаны деканатом и доступны для просмотра в формате PDF в разделе «Справки».',
+                        'Requested enrollment certificates have been processed and are available for preview in the Requests section.',
                       ),
                       'request_update',
                       'normal'
@@ -428,7 +436,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   }
                   className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors"
                 >
-                  {tr(lang, '🔏 Готовность справок с ЭЦП', '🔏 Digital EDS Certificates Ready')}
+                  {tr(lang, '📄 Готовность макетов справок', '📄 Certificate Previews Ready')}
                 </button>
               </div>
             </div>
@@ -448,9 +456,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     <option value="all">{tr(lang, 'Все студенты (Все группы)', 'All Students (All Groups)')}</option>
                     <option value="ДУ-101">{tr(lang, 'Группа ДУ-101 (2 курс, МО)', 'Group ДУ-101 (Year 2, IR)')}</option>
                     <option value="ДУ-205">{tr(lang, 'Группа ДУ-205 (3 курс, Эк.)', 'Group ДУ-205 (Year 3, Econ.)')}</option>
-                    <option value="usr-aigul-101">{tr(lang, 'Персонально: Айгуль Нурова', 'Direct: Aigul Nurova')}</option>
-                    <option value="usr-timur-205">{tr(lang, 'Персонально: Тимур Белов', 'Direct: Timur Belov')}</option>
-                    <option value="usr-lina-101">{tr(lang, 'Персонально: Лина Окафор', 'Direct: Lina Okafor')}</option>
+                    {students.map(stu => (
+                      <option key={stu.id} value={`user:${stu.id}`}>
+                        {tr(lang, `Персонально: ${stu.fullName}`, `Direct: ${stu.fullName}`)}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -657,8 +667,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 id: 'ready',
                 label: tr(
                   lang,
-                  `Подписано ЭЦП (${requests.filter(r => r.status === 'ready').length})`,
-                  `Signed EDS (${requests.filter(r => r.status === 'ready').length})`,
+                  `Готово к выдаче (${requests.filter(r => r.status === 'ready').length})`,
+                  `Ready (${requests.filter(r => r.status === 'ready').length})`,
                 ),
               },
             ].map(t => (
@@ -727,7 +737,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           className="px-3.5 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs flex items-center space-x-1.5 transition-colors"
                         >
                           <FileCheck className="w-3.5 h-3.5 text-[#245A91]" />
-                          <span>{tr(lang, 'Изменить статус / ЭЦП', 'Update Status / EDS')}</span>
+                          <span>{tr(lang, 'Изменить статус', 'Update Status')}</span>
                         </button>
                       </div>
                     </div>
@@ -805,7 +815,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 >
                   <option value="in_review">{tr(lang, 'В обработке (на рассмотрении деканата)', "In Review (under Dean's Office consideration)")}</option>
                   <option value="needs_info">{tr(lang, 'Требуется уточнение у студента', 'Clarification needed from student')}</option>
-                  <option value="ready">{tr(lang, 'Готово с ЭЦП (выпустить электронный документ)', 'Ready with EDS (issue signed digital document)')}</option>
+                  <option value="ready">{tr(lang, 'Готово к выдаче (открыть макет документа)', 'Ready (unlock document preview)')}</option>
                   <option value="rejected">{tr(lang, 'Отклонить заявление', 'Reject request')}</option>
                 </select>
               </div>
@@ -820,8 +830,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   onChange={e => setComment(e.target.value)}
                   placeholder={tr(
                     lang,
-                    'Например: Документ заверен усиленной квалифицированной ЭЦП деканата и доступен в личном кабинете.',
-                    "e.g., Document signed with the Dean's Office qualified digital signature and available in your portal.",
+                    'Например: Документ подготовлен и доступен для просмотра в личном кабинете (демо-макет).',
+                    'e.g., Document has been prepared and is available for preview in your portal.',
                   )}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                 />
@@ -885,9 +895,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     <option value="all">{tr(lang, 'Все студенты', 'All Students')}</option>
                     <option value="ДУ-101">{tr(lang, 'Группа ДУ-101', 'Group ДУ-101')}</option>
                     <option value="ДУ-205">{tr(lang, 'Группа ДУ-205', 'Group ДУ-205')}</option>
-                    <option value="usr-aigul-101">{tr(lang, 'Айгуль Нурова', 'Aigul Nurova')}</option>
-                    <option value="usr-timur-205">{tr(lang, 'Тимур Белов', 'Timur Belov')}</option>
-                    <option value="usr-lina-101">{tr(lang, 'Лина Окафор', 'Lina Okafor')}</option>
+                    {students.map(stu => (
+                      <option key={stu.id} value={`user:${stu.id}`}>
+                        {stu.fullName}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

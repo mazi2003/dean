@@ -160,13 +160,13 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               </div>
               <div>
                 <p className="text-[10px] font-sans uppercase tracking-wider text-[#667085] dark:text-[#94A3B8]">
-                  {tr(lang, 'ЭЦП деканата (ГОСТ)', "Dean's Digital Seal (GOST)")}
+                  {tr(lang, 'Макет ЭЦП деканата (демо)', 'Digital Seal Preview (Demo)')}
                 </p>
                 <span className="font-mono text-xs font-bold text-[#142D4E] dark:text-[#245A91] block">
-                  {tr(lang, 'Активна и проверена', 'Active & Verified')}
+                  {tr(lang, 'Иллюстративный режим', 'Illustrative Mode')}
                 </span>
                 <span className="text-[10px] text-[#667085] font-mono">
-                  № 77AA-9402-E12F-2026
+                  {tr(lang, 'Прототип документооборота', 'Prototype Workflow')}
                 </span>
               </div>
             </div>
@@ -263,7 +263,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
           >
             <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-              {tr(lang, 'Подписано ЭЦП', 'Digitally Signed')}
+              {tr(lang, 'Готово к выдаче', 'Ready to Issue')}
             </span>
             <div className="flex items-baseline space-x-2">
               <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#245A91]">
@@ -272,7 +272,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <span className="text-xs text-[#667085]">{tr(lang, 'готовых', 'ready')}</span>
             </div>
             <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
-              {tr(lang, 'Сформированы и заверены', 'Issued & certified')}
+              {tr(lang, 'Макеты сформированы', 'Previews generated')}
             </p>
           </div>
 
@@ -482,7 +482,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-medium transition-colors cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5 text-[#93C5FD]" />
-            <span>{lang === 'ru' ? 'Заказать справку с ЭЦП' : 'Request Certified Document'}</span>
+            <span>{lang === 'ru' ? 'Заказать справку' : 'Request Certificate'}</span>
           </button>
           <button
             onClick={() => setActiveTab('schedule')}
@@ -785,8 +785,8 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <p className="text-xs text-[#FFFFFF]/80 font-sans leading-relaxed">
                 {tr(
                   lang,
-                  'Документы подписаны усиленной квалифицированной ЭЦП деканата (ГОСТ Р 34.10-2012) и доступны для выгрузки.',
-                  "Documents are certified with the Dean's Office digital signature (GOST) and ready for download."
+                  'Демонстрационные макеты документов сформированы (без настоящей ЭЦП, не имеют юридической силы).',
+                  'Illustrative document previews are ready (no real digital signature, not legally valid).'
                 )}
               </p>
               <div className="space-y-2 pt-1">

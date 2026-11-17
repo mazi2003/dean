@@ -24,8 +24,8 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
   const { user, profile, lang } = useAuth();
   const defaultGreeting = tr(
     lang,
-    `Здравствуйте, ${user?.fullName ? user.fullName.split(' ')[0] : 'студент'}! Я цифровой консультант деканата DemoTech University. Могу проконсультировать вас по вашему расписанию, задолженностям, срокам подачи документов на ПГАС и регламенту выдачи справок с ЭЦП. Чем могу помочь?`,
-    `Hello, ${user?.fullName ? user.fullName.split(' ')[0] : 'Student'}! I am the Digital Dean's Office Assistant at DemoTech University. I can assist you with your class schedule, academic arrears, Merit Scholarship (PGAS) deadlines, and digital signature (EDS) certificates. How can I help you?`,
+    `Здравствуйте, ${user?.fullName ? user.fullName.split(' ')[0] : 'студент'}! Я цифровой консультант деканата DemoTech University. Отвечаю на сервере с учетом только вашего профиля: расписания, задолженностей, сроков ПГАС и статуса заявлений. Чем могу помочь?`,
+    `Hello, ${user?.fullName ? user.fullName.split(' ')[0] : 'Student'}! I am the Digital Dean's Office Assistant at DemoTech University. Answers are generated server-side using only your own profile: schedule, arrears, PGAS deadlines, and request statuses. How can I help you?`,
   );
   const [messages, setMessages] = useState<Message[]>(() => [
     {
@@ -37,18 +37,20 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [lastSource, setLastSource] = useState<'llm' | 'rules' | null>(null);
+
   if (!isOpen) return null;
 
   const quickPrompts = lang === 'ru'
     ? [
         'Когда у меня пересдача по статистике?',
-        'Как заказать справку об обучении с ЭЦП?',
+        'Как заказать электронную справку?',
         'Критерии повышенной стипендии (ПГАС)?',
         'Часы приема и контакты деканата?',
       ]
     : [
         'When is my Statistics retake exam?',
-        'How to request a signed EDS certificate?',
+        'How to request a certificate preview?',
         'Enhanced Merit Scholarship (PGAS) criteria?',
         "Dean's Office hours and contacts?",
       ];
@@ -68,7 +70,8 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
     setLoading(true);
 
     try {
-      const answer = await api.askAssistant(text, lang);
+      const { answer, source } = await api.askAssistant(text, lang);
+      setLastSource(source);
       setMessages(prev => [
         ...prev,
         {
@@ -200,7 +203,21 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 bg-white dark:bg-[#112238] border-t border-[#DCE2EA] dark:border-[#193150]">
+        <div className="p-3 bg-white dark:bg-[#112238] border-t border-[#DCE2EA] dark:border-[#193150] space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-[#667085] dark:text-[#94A3B8] px-1">
+            <span>
+              {tr(
+                lang,
+                'Обработка на сервере (только данные вашей сессии)',
+                'Processed server-side using only your session data',
+              )}
+            </span>
+            {lastSource && (
+              <span className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                {lastSource === 'llm' ? 'LLM' : tr(lang, 'Движок правил', 'Rules Engine')}
+              </span>
+            )}
+          </div>
           <form
             onSubmit={e => {
               e.preventDefault();

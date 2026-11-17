@@ -11,10 +11,16 @@ const LoginSchema = z.object({
   password: z.string().min(1),
 });
 
+function isCookieSecure(): boolean {
+  if (process.env.COOKIE_SECURE === 'false') return false;
+  if (process.env.COOKIE_SECURE === 'true') return true;
+  return process.env.NODE_ENV === 'production';
+}
+
 export async function authRoutes(app: FastifyInstance) {
   // POST /api/v1/auth/login
   app.post('/auth/login', {
-    config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },
+    config: { rateLimit: { max: Number(process.env.LOGIN_RATE_LIMIT_MAX || 10), timeWindow: '15 minutes' } },
     handler: async (request, reply) => {
       const parsed = LoginSchema.safeParse(request.body);
       if (!parsed.success) {
@@ -42,7 +48,7 @@ export async function authRoutes(app: FastifyInstance) {
       }
 
       if (!user || !valid) {
-        return reply.code(401).send({ code: 'UNAUTHORIZED', message: 'Invalid credentials' });
+        return reply.code(401).send({ code: 'UNAUTHORIZED', message: 'Неверный адрес электронной почты или пароль' });
       }
 
       const token = jwt.sign(
@@ -51,10 +57,9 @@ export async function authRoutes(app: FastifyInstance) {
         { expiresIn: '24h' }
       );
 
-      const isProduction = process.env.NODE_ENV === 'production' || process.env.COOKIE_SECURE === 'true';
       reply.setCookie('dean_session', token, {
         httpOnly: true,
-        secure: isProduction,
+        secure: isCookieSecure(),
         sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 * 24,
