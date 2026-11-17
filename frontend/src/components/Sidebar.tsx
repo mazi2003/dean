@@ -17,6 +17,7 @@ import {
   Clock,
   Users,
 } from 'lucide-react';
+import { resolveAvatarSrc } from '../utils/avatar';
 
 interface SidebarProps {
   activeTab: string;
@@ -129,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center space-x-3.5">
           <div className="relative flex-shrink-0">
             <img
-              src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+              src={resolveAvatarSrc(profile?.avatarUrl, user?.fullName)}
               alt={user?.fullName}
               className="w-12 h-12 rounded-lg object-cover border border-[#245A91]/70 shadow-xs"
             />

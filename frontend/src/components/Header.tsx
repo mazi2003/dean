@@ -12,6 +12,7 @@ import {
   Compass,
 } from 'lucide-react';
 import { UniversityEmblem } from './UniversityEmblem';
+import { resolveAvatarSrc } from '../utils/avatar';
 
 interface HeaderProps {
   activeTab: string;
@@ -188,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
                   title={`${user?.fullName} • ${isStaff ? (lang === 'ru' ? 'Деканат МО' : "Dean's Office") : profile?.group}`}
                 >
                   <img
-                    src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+                    src={resolveAvatarSrc(profile?.avatarUrl, user?.fullName)}
                     alt={user?.fullName}
                     className="w-8 h-8 rounded-lg object-cover border border-[#60A5FA]/60 shadow-xs"
                   />

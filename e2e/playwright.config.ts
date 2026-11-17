@@ -28,7 +28,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   reporter: [['list']],
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: 'http://127.0.0.1:4176',
     ...(browserChannel ? { channel: browserChannel } : {}),
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
@@ -50,9 +50,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm --prefix ../frontend run preview -- --port 4173 --host 127.0.0.1',
-    url: 'http://127.0.0.1:4173',
-    reuseExistingServer: !process.env.CI,
+    command: 'npm --prefix ../frontend run preview -- --port 4176 --host 127.0.0.1',
+    url: 'http://127.0.0.1:4176',
+    reuseExistingServer: false,
     timeout: 30_000,
   },
 });

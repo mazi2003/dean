@@ -9,6 +9,7 @@ import {
 import { UNIVERSITY_INFO } from '../services/mockData';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
+import { resolveAvatarSrc } from '../utils/avatar';
 
 export const ProfilePage: React.FC = () => {
   const { user, profile, logout, lang } = useAuth();
@@ -28,12 +29,12 @@ export const ProfilePage: React.FC = () => {
         <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
           <div className="relative">
             <img
-              src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160'}
+              src={resolveAvatarSrc(profile?.avatarUrl, user?.fullName)}
               alt={user?.fullName}
               className="w-24 h-24 rounded-xl object-cover border-2 border-[#245A91]/70 shadow-sm"
             />
             <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#142D4E] border border-[#245A91] flex items-center justify-center">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#245A91]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#93C5FD]" />
             </span>
           </div>
 

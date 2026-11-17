@@ -21,6 +21,7 @@ import {
   getRequestStatusLabel,
   localizeText,
 } from '../utils/i18n';
+import { resolveAvatarSrc } from '../utils/avatar';
 
 interface StudentDossierModalProps {
   dossier: StudentDossier | null;
@@ -49,7 +50,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs overflow-y-auto">
         <div className="bg-white dark:bg-[#112238] rounded-2xl max-w-4xl w-full border border-[#DCE2EA] dark:border-[#1E395B] shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
           {/* Header */}
-          <div className="p-5 sm:p-6 bg-[#F8FAFC] dark:bg-[#111714] border-b border-[#DCE2EA] dark:border-[#193150] relative">
+          <div className="p-5 sm:p-6 bg-[#F8FAFC] dark:bg-[#0E1F36] border-b border-[#DCE2EA] dark:border-[#193150] relative">
             <button
               onClick={onClose}
               className="absolute top-4 right-4 p-2 rounded-lg text-[#667085] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45] transition-colors cursor-pointer"
@@ -60,14 +61,11 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-5 pr-10">
               <div className="relative">
                 <img
-                  src={
-                    profile.avatarUrl ||
-                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'
-                  }
+                  src={resolveAvatarSrc(profile.avatarUrl, profile.fullName)}
                   alt={profile.fullName}
                   className="w-20 h-20 rounded-xl object-cover border-2 border-[#245A91] shadow-md"
                 />
-                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#142D4E] border-2 border-white dark:border-[#112238] flex items-center justify-center text-[10px] text-[#245A91]">
+                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#142D4E] border-2 border-white dark:border-[#112238] flex items-center justify-center text-[10px] text-[#93C5FD]">
                   ✓
                 </span>
               </div>

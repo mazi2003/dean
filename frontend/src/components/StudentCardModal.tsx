@@ -16,6 +16,7 @@ import {
 import { UNIVERSITY_INFO } from '../services/mockData';
 import { UniversityEmblem } from './UniversityEmblem';
 import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
+import { resolveAvatarSrc } from '../utils/avatar';
 
 interface StudentCardModalProps {
   isOpen: boolean;
@@ -178,7 +179,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           {/* Student Dossier Quick Strip */}
           <div className="flex items-center space-x-3 w-full bg-white dark:bg-[#112238] p-2.5 rounded-xl border border-[#245A91]/30 mb-3 shadow-xs">
             <img
-              src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120'}
+              src={resolveAvatarSrc(profile?.avatarUrl, user.fullName)}
               alt={user.fullName}
               className="w-10 h-10 rounded-lg object-cover border border-[#245A91]"
             />
@@ -322,7 +323,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             <div className="flex space-x-4 items-center mb-5 relative z-10">
               <div className="relative flex-shrink-0">
                 <img
-                  src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120'}
+                  src={resolveAvatarSrc(profile?.avatarUrl, user.fullName)}
                   alt={user.fullName}
                   className="w-20 h-24 rounded-lg object-cover border-2 border-[#245A91]/80 shadow-md"
                 />

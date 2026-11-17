@@ -6,11 +6,7 @@ async function attachErrorCollectors(page: Page) {
   page.on('pageerror', (err) => errors.push(`pageerror: ${err.message}`));
   page.on('console', (msg) => {
     if (msg.type() === 'error') {
-      const text = msg.text();
-      // Ignore expected network offline fallback messages if any API proxy isn't attached
-      if (!text.includes('Failed to load resource') && !text.includes('ERR_CONNECTION_REFUSED')) {
-        errors.push(`console.error: ${text}`);
-      }
+      errors.push(`console.error: ${msg.text()}`);
     }
   });
   return errors;
@@ -133,6 +129,20 @@ test.describe('Digital Dean Office E2E Journeys (Desktop & Mobile)', () => {
     // Open Digital Student ID modal & check NFC + Close button non-overlap + Big QR
     await page.getByRole('button', { name: /Электронный студенческий билет|Digital Student ID/i }).click();
     await expect(page.getByText(/MIFARE DESFire EV3/i)).toBeVisible();
+
+    const imgCheck = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('img')).map((img) => ({
+        src: img.src.slice(0, 60),
+        complete: img.complete,
+        naturalWidth: img.naturalWidth,
+      }))
+    );
+    expect(imgCheck.length).toBeGreaterThan(0);
+    for (const img of imgCheck) {
+      expect(img.src).not.toContain('unsplash.com');
+      expect(img.complete).toBe(true);
+      expect(img.naturalWidth).toBeGreaterThan(0);
+    }
 
     const closeBtnBox = await page.getByRole('button', { name: /Закрыть|Close/i }).first().boundingBox();
     const nfcBadge = page.getByText('NFC', { exact: true }).first();

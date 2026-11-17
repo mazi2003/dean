@@ -30,6 +30,32 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
+let offlineUntil = 0;
+
+async function apiFetch(path: string, init?: RequestInit): Promise<Response | null> {
+  if (Date.now() < offlineUntil) {
+    return null;
+  }
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      credentials: 'include',
+    });
+    const contentType = res.headers.get('content-type') || '';
+    if (
+      res.headers.get('X-DemoTech-Offline-Mock') === '1' ||
+      !contentType.includes('application/json')
+    ) {
+      offlineUntil = Date.now() + 15_000;
+      return null;
+    }
+    return res;
+  } catch {
+    offlineUntil = Date.now() + 15_000;
+    return null;
+  }
+}
+
 // Local storage keys for persistent demo state
 const STORAGE_KEYS = {
   CURRENT_USER: 'dean_current_user',
@@ -146,21 +172,16 @@ function saveStoredAnnouncements(items: StaffAnnouncement[]) {
 export const api = {
   // ─── Auth ───
   async login(email: string, password: string): Promise<{ user: User; profile: StudentProfile }> {
-    // Try real API first
-    let backendReachable = false;
-    try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include',
-      });
-      // Backend is alive if it returns 2xx or deterministic client errors (401/422/429)
+    const res = await apiFetch('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (res) {
       if (res.ok) {
-        backendReachable = true;
         const user = (await res.json()) as User;
-        const profRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
-        if (profRes.ok) {
+        const profRes = await apiFetch('/profile');
+        if (profRes?.ok) {
           const profile = (await profRes.json()) as StudentProfile;
           return { user, profile };
         }
@@ -177,15 +198,9 @@ export const api = {
         };
       }
       if (res.status === 401 || res.status === 422 || res.status === 429) {
-        backendReachable = true;
         const errBody = await res.json().catch(() => ({}));
         throw new Error(errBody.message || 'Неверный адрес электронной почты или пароль');
       }
-    } catch (err) {
-      if (backendReachable) {
-        throw err;
-      }
-      // Network/proxy unreachable -> fallback to offline mock engine
     }
 
     // Mock verification (offline / static deployment fallback)
@@ -199,20 +214,13 @@ export const api = {
   },
 
   async logout(): Promise<void> {
-    try {
-      await fetch(`${API_BASE}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch {
-      // ignore
-    }
+    await apiFetch('/auth/logout', { method: 'POST' });
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
   },
 
   async getCurrentUser(): Promise<{ user: User; profile: StudentProfile } | null> {
-    try {
-      const res = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+    const res = await apiFetch('/profile');
+    if (res) {
       if (res.ok) {
         const profile = (await res.json()) as StudentProfile;
         const user: User = {
@@ -224,12 +232,9 @@ export const api = {
         return { user, profile };
       }
       if (res.status === 401) {
-        // Check offline mock only if no backend cookie was expected cleanly
         const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
         if (!saved) return null;
       }
-    } catch {
-      // fallback
     }
 
     const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
@@ -248,12 +253,8 @@ export const api = {
 
   // ─── Profile ───
   async getProfile(): Promise<StudentProfile> {
-    try {
-      const res = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+    const res = await apiFetch('/profile');
+    if (res?.ok) return await res.json();
 
     const current = await this.getCurrentUser();
     if (!current) throw new Error('Пользователь не авторизован');
@@ -262,15 +263,11 @@ export const api = {
 
   // ─── Schedule ───
   async getSchedule(date?: string, groupOverride?: string): Promise<ScheduleEntry[]> {
-    try {
-      const url = date ? `${API_BASE}/schedule?date=${date}` : `${API_BASE}/schedule`;
-      const res = await fetch(url, { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data;
-      }
-    } catch {
-      // fallback
+    const path = date ? `/schedule?date=${date}` : '/schedule';
+    const res = await apiFetch(path);
+    if (res?.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data;
     }
 
     const current = await this.getCurrentUser();
@@ -295,12 +292,8 @@ export const api = {
 
   // ─── Grades ───
   async getGrades(): Promise<GradesSummary> {
-    try {
-      const res = await fetch(`${API_BASE}/grades`, { credentials: 'include' });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+    const res = await apiFetch('/grades');
+    if (res?.ok) return await res.json();
 
     const current = await this.getCurrentUser();
     if (!current) throw new Error('Пользователь не авторизован');
@@ -310,28 +303,20 @@ export const api = {
 
   // ─── Requests ───
   async getRequestTypes(): Promise<RequestType[]> {
-    try {
-      const res = await fetch(`${API_BASE}/request-types`, { credentials: 'include' });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+    const res = await apiFetch('/request-types');
+    if (res?.ok) return await res.json();
     return MOCK_REQUEST_TYPES;
   },
 
   async getRequests(): Promise<StudentRequest[]> {
-    try {
-      const res = await fetch(`${API_BASE}/requests`, { credentials: 'include' });
-      if (res.ok) {
-        const payload = await res.json();
-        const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
-        return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
-          ...r,
-          expectedDate: r.expectedDate ?? r.expectedBy ?? '',
-        }));
-      }
-    } catch {
-      // fallback
+    const res = await apiFetch('/requests');
+    if (res?.ok) {
+      const payload = await res.json();
+      const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+      return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
+        ...r,
+        expectedDate: r.expectedDate ?? r.expectedBy ?? '',
+      }));
     }
 
     const current = await this.getCurrentUser();
@@ -343,17 +328,12 @@ export const api = {
   },
 
   async createRequest(typeCode: string, data: Record<string, unknown>): Promise<StudentRequest> {
-    try {
-      const res = await fetch(`${API_BASE}/requests`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ typeCode, data }),
-        credentials: 'include',
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+    const res = await apiFetch('/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ typeCode, data }),
+    });
+    if (res?.ok) return await res.json();
 
     const current = await this.getCurrentUser();
     if (!current) throw new Error('Пользователь не авторизован');
@@ -412,15 +392,8 @@ export const api = {
   },
 
   async cancelRequest(requestId: string): Promise<void> {
-    try {
-      const res = await fetch(`${API_BASE}/requests/${requestId}/cancel`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      if (res.ok) return;
-    } catch {
-      // fallback
-    }
+    const res = await apiFetch(`/requests/${requestId}/cancel`, { method: 'POST' });
+    if (res?.ok) return;
 
     const current = await this.getCurrentUser();
     if (!current) throw new Error('Пользователь не авторизован');
@@ -447,18 +420,14 @@ export const api = {
 
   // ─── Notifications ───
   async getNotifications(): Promise<Notification[]> {
-    try {
-      const res = await fetch(`${API_BASE}/notifications`, { credentials: 'include' });
-      if (res.ok) {
-        const payload = await res.json();
-        const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
-        return rawItems.map((n: Notification & { body?: string }) => ({
-          ...n,
-          message: n.message ?? n.body ?? '',
-        }));
-      }
-    } catch {
-      // fallback
+    const res = await apiFetch('/notifications');
+    if (res?.ok) {
+      const payload = await res.json();
+      const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+      return rawItems.map((n: Notification & { body?: string }) => ({
+        ...n,
+        message: n.message ?? n.body ?? '',
+      }));
     }
 
     const current = await this.getCurrentUser();
@@ -469,14 +438,7 @@ export const api = {
   },
 
   async markNotificationRead(id: string): Promise<void> {
-    try {
-      await fetch(`${API_BASE}/notifications/${id}/read`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch {
-      // fallback
-    }
+    await apiFetch(`/notifications/${id}/read`, { method: 'POST' });
 
     const all = getStoredNotifications();
     const item = all.find(n => n.id === id);
@@ -487,14 +449,7 @@ export const api = {
   },
 
   async markAllNotificationsRead(): Promise<void> {
-    try {
-      await fetch(`${API_BASE}/notifications/read-all`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch {
-      // fallback
-    }
+    await apiFetch('/notifications/read-all', { method: 'POST' });
 
     const current = await this.getCurrentUser();
     if (!current) return;
@@ -508,18 +463,14 @@ export const api = {
 
   // ─── Staff Only APIs ───
   async getStaffRequests(): Promise<StudentRequest[]> {
-    try {
-      const res = await fetch(`${API_BASE}/staff/requests`, { credentials: 'include' });
-      if (res.ok) {
-        const payload = await res.json();
-        const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
-        return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
-          ...r,
-          expectedDate: r.expectedDate ?? r.expectedBy ?? '',
-        }));
-      }
-    } catch {
-      // fallback
+    const res = await apiFetch('/staff/requests');
+    if (res?.ok) {
+      const payload = await res.json();
+      const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+      return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
+        ...r,
+        expectedDate: r.expectedDate ?? r.expectedBy ?? '',
+      }));
     }
     // Staff sees all student requests
     return getStoredRequests();
@@ -530,17 +481,12 @@ export const api = {
     status: RequestStatus,
     comment?: string
   ): Promise<StudentRequest> {
-    try {
-      const res = await fetch(`${API_BASE}/staff/requests/${requestId}/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, comment }),
-        credentials: 'include',
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+    const res = await apiFetch(`/staff/requests/${requestId}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, comment }),
+    });
+    if (res?.ok) return await res.json();
 
     const all = getStoredRequests();
     const req = all.find(r => r.id === requestId);
@@ -590,14 +536,7 @@ export const api = {
   },
 
   async deleteStaffAnnouncement(announcementId: string): Promise<void> {
-    try {
-      await fetch(`${API_BASE}/staff/announcements/${announcementId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-    } catch {
-      // fallback
-    }
+    await apiFetch(`/staff/announcements/${announcementId}`, { method: 'DELETE' });
 
     const all = getStoredAnnouncements();
     const updated = all.filter(a => a.id !== announcementId);
@@ -613,20 +552,15 @@ export const api = {
     kind?: NotificationKind;
   }): Promise<{ success: boolean; count: number }> {
     // 1. Try real API
-    try {
-      await fetch(`${API_BASE}/staff/announcements`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: params.title,
-          body: params.message,
-          group: params.targetGroup === 'all' ? null : params.targetGroup || null,
-        }),
-        credentials: 'include',
-      });
-    } catch {
-      // fallback to mock
-    }
+    await apiFetch('/staff/announcements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: params.title,
+        body: params.message,
+        group: params.targetGroup === 'all' ? null : params.targetGroup || null,
+      }),
+    });
 
     // 2. Identify target user IDs
     let targetUsers: Array<{ id: string; fullName: string; group?: string }> = [];
@@ -696,23 +630,18 @@ export const api = {
     }
   ): Promise<void> {
     // 1. Try real API
-    try {
-      await fetch(`${API_BASE}/staff/schedule-changes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          scheduleEntryId,
-          status: changes.status,
-          room: changes.room,
-          start: changes.start,
-          end: changes.end,
-          note: changes.note,
-        }),
-        credentials: 'include',
-      });
-    } catch {
-      // fallback to mock
-    }
+    await apiFetch('/staff/schedule-changes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        scheduleEntryId,
+        status: changes.status,
+        room: changes.room,
+        start: changes.start,
+        end: changes.end,
+        note: changes.note,
+      }),
+    });
 
     // 2. Save in local storage overrides
     const overrides = getStoredScheduleOverrides();
@@ -752,30 +681,22 @@ export const api = {
 
   // ─── Dean's Office Academic Groups & Student Rosters ───
   async getStaffGroups(): Promise<AcademicGroup[]> {
-    try {
-      const res = await fetch(`${API_BASE}/staff/groups`, { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data;
-      }
-    } catch {
-      // fallback to mock
+    const res = await apiFetch('/staff/groups');
+    if (res?.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data;
     }
     return MOCK_GROUPS;
   },
 
   async getGroupStudents(groupCode?: string): Promise<StudentListItem[]> {
-    try {
-      const url = groupCode && groupCode !== 'all'
-        ? `${API_BASE}/staff/groups/${encodeURIComponent(groupCode)}/students`
-        : `${API_BASE}/staff/students`;
-      const res = await fetch(url, { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data;
-      }
-    } catch {
-      // fallback to mock
+    const path = groupCode && groupCode !== 'all'
+      ? `/staff/groups/${encodeURIComponent(groupCode)}/students`
+      : '/staff/students';
+    const res = await apiFetch(path);
+    if (res?.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data;
     }
 
     if (!groupCode || groupCode === 'all') {
@@ -785,14 +706,10 @@ export const api = {
   },
 
   async getStudentDossier(studentId: string): Promise<StudentDossier | null> {
-    try {
-      const res = await fetch(`${API_BASE}/staff/students/${encodeURIComponent(studentId)}/dossier`, { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.profile) return data;
-      }
-    } catch {
-      // fallback to mock
+    const res = await apiFetch(`/staff/students/${encodeURIComponent(studentId)}/dossier`);
+    if (res?.ok) {
+      const data = await res.json();
+      if (data && data.profile) return data;
     }
 
     // Client mock dossier with real stored requests
@@ -813,17 +730,13 @@ export const api = {
 
   // ─── Examination Session & Scheduling (Dean's Authority) ───
   async getExams(groupCode?: string): Promise<ExamEntry[]> {
-    try {
-      const url = groupCode && groupCode !== 'all'
-        ? `${API_BASE}/staff/exams?group=${encodeURIComponent(groupCode)}`
-        : `${API_BASE}/staff/exams`;
-      const res = await fetch(url, { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data;
-      }
-    } catch {
-      // fallback to mock
+    const path = groupCode && groupCode !== 'all'
+      ? `/staff/exams?group=${encodeURIComponent(groupCode)}`
+      : '/staff/exams';
+    const res = await apiFetch(path);
+    if (res?.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data;
     }
 
     const allExams = getStoredExams();
@@ -838,16 +751,11 @@ export const api = {
     changes: Partial<ExamEntry> & { notifyGroup?: boolean }
   ): Promise<void> {
     // 1. Try real API
-    try {
-      await fetch(`${API_BASE}/staff/exam-changes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ examId, ...changes }),
-        credentials: 'include',
-      });
-    } catch {
-      // fallback
-    }
+    await apiFetch('/staff/exam-changes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ examId, ...changes }),
+    });
 
     // 2. Persistent local storage update
     const exams = getStoredExams();
@@ -924,19 +832,14 @@ export const api = {
 
   // ─── AI Academic Copilot ───
   async askAssistant(question: string, lang: 'ru' | 'en' = 'ru'): Promise<string> {
-    try {
-      const res = await fetch(`${API_BASE}/assistant/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question }),
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return data.answer;
-      }
-    } catch {
-      // fallback to smart scoped client response
+    const res = await apiFetch('/assistant/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    });
+    if (res?.ok) {
+      const data = await res.json();
+      return data.answer;
     }
 
     const current = await this.getCurrentUser();

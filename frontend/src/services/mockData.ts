@@ -11,6 +11,7 @@ import {
   StudentDossier,
   ExamEntry,
 } from '../types';
+import { getAvatarDataUri } from '../utils/avatar';
 
 // Helper to get Monday of current week
 function getMonday(d: Date): Date {
@@ -52,7 +53,7 @@ export const TEST_USERS: Record<string, { user: User; profile: StudentProfile; p
       gpa: 4.8,
       averageScore: 88.5,
       studyForm: 'Бюджет',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      avatarUrl: getAvatarDataUri('Айгуль Нурова'),
     },
     password: 'DemoStudent123!',
   },
@@ -76,7 +77,7 @@ export const TEST_USERS: Record<string, { user: User; profile: StudentProfile; p
       gpa: 3.4,
       averageScore: 64.2,
       studyForm: 'Контракт',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      avatarUrl: getAvatarDataUri('Тимур Белов'),
     },
     password: 'DemoStudent123!',
   },
@@ -100,7 +101,7 @@ export const TEST_USERS: Record<string, { user: User; profile: StudentProfile; p
       gpa: 4.2,
       averageScore: 76.4,
       studyForm: 'Контракт',
-      avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+      avatarUrl: getAvatarDataUri('Лина Окафор'),
     },
     password: 'DemoStudent123!',
   },
@@ -121,7 +122,7 @@ export const TEST_USERS: Record<string, { user: User; profile: StudentProfile; p
       year: 0,
       group: 'ДЕКАНАТ-МО',
       studentNumber: 'ТАБ-0441',
-      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      avatarUrl: getAvatarDataUri('Мария Волкова'),
     },
     password: 'DemoStaff123!',
   },
@@ -1116,7 +1117,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 88.5,
     debtCount: 0,
     isStarosta: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Айгуль Нурова'),
     status: 'active',
   },
   {
@@ -1132,7 +1133,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 76.4,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Лина Окафор'),
     status: 'active',
   },
   {
@@ -1148,7 +1149,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 82.0,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Даниил Морозов'),
     status: 'active',
   },
   {
@@ -1164,7 +1165,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 91.2,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('София Ким'),
     status: 'active',
   },
   {
@@ -1180,7 +1181,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 71.0,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Максим Волков'),
     status: 'active',
   },
   {
@@ -1196,7 +1197,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 85.0,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Анна Васильева'),
     status: 'active',
   },
 
@@ -1215,7 +1216,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     debtCount: 1,
     debtSubjects: ['Статистика (пересдача до 28.11.2026)'],
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Тимур Белов'),
     status: 'active',
   },
   {
@@ -1231,7 +1232,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 86.8,
     debtCount: 0,
     isStarosta: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Алина Захарова'),
     status: 'active',
   },
   {
@@ -1247,7 +1248,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 75.3,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Артур Гаспарян'),
     status: 'active',
   },
   {
@@ -1263,7 +1264,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 84.5,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Екатерина Попова'),
     status: 'active',
   },
   {
@@ -1280,7 +1281,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     debtCount: 1,
     debtSubjects: ['Эконометрика и анализ данных'],
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Кирилл Лебедев'),
     status: 'active',
   },
 
@@ -1298,7 +1299,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 90.0,
     debtCount: 0,
     isStarosta: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Дмитрий Савельев'),
     status: 'active',
   },
   {
@@ -1314,7 +1315,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 85.5,
     debtCount: 0,
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Елена Орлова'),
     status: 'active',
   },
 
@@ -1332,7 +1333,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     averageScore: 80.2,
     debtCount: 0,
     isStarosta: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Полина Сергеева'),
     status: 'active',
   },
   {
@@ -1349,7 +1350,7 @@ export const MOCK_STUDENTS: StudentListItem[] = [
     debtCount: 1,
     debtSubjects: ['История государства и права зарубежных стран'],
     isStarosta: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    avatarUrl: getAvatarDataUri('Роман Кузнецов'),
     status: 'active',
   },
 ];

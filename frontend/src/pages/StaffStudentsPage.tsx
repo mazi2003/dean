@@ -18,6 +18,7 @@ import { StudentDossierModal } from '../components/StudentDossierModal';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 import { useAuth } from '../context/AuthContext';
 import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
+import { resolveAvatarSrc } from '../utils/avatar';
 
 interface StaffStudentsPageProps {
   onOpenAnnouncement?: (targetGroup?: string, targetStudentId?: string, targetStudentName?: string) => void;
@@ -606,15 +607,12 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                   <div className="flex items-center space-x-3.5">
                     <div className="relative flex-shrink-0">
                       <img
-                        src={
-                          student.avatarUrl ||
-                          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'
-                        }
+                        src={resolveAvatarSrc(student.avatarUrl, student.fullName)}
                         alt={student.fullName}
                         className="w-11 h-11 rounded-lg object-cover border border-[#DCE2EA] dark:border-[#1E395B] group-hover:border-[#142D4E] transition-colors"
                       />
                       {student.isStarosta && (
-                        <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-[#245A91] text-[#142D4E] flex items-center justify-center text-[9px] font-bold shadow-xs">
+                        <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-[#245A91] text-[#FFFFFF] flex items-center justify-center text-[9px] font-bold shadow-xs">
                           ★
                         </span>
                       )}
