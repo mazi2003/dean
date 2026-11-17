@@ -39,7 +39,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
   const tabs = isStaff ? staffTabs : studentTabs;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FFFFFF]/95 dark:bg-[#121715]/95 backdrop-blur-md border-t border-[#E3DDD1] dark:border-[#26362F] pb-safe transition-colors select-none">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FFFFFF]/95 dark:bg-[#0E1B2D]/95 backdrop-blur-md border-t border-[#DCE2EA] dark:border-[#193150] pb-safe transition-colors select-none">
       <div className="flex items-center justify-around h-16 px-1 max-w-lg mx-auto">
         {tabs.map(tab => {
           const Icon = tab.icon;
@@ -50,14 +50,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-col items-center justify-center flex-1 py-1 h-full min-w-[48px] min-h-[48px] rounded-lg transition-colors relative cursor-pointer ${
                 isActive
-                  ? 'text-[#183D35] dark:text-[#C4A46B] font-semibold'
-                  : 'text-[#7E877B] dark:text-[#8E9B93] hover:text-[#252923] dark:hover:text-[#F3EFE5]'
+                  ? 'text-[#142D4E] dark:text-[#245A91] font-semibold'
+                  : 'text-[#667085] dark:text-[#94A3B8] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
               }`}
             >
               <div className="relative">
                 <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.2]' : 'stroke-[1.7]'}`} />
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#183D35] dark:bg-[#C4A46B]" />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#142D4E] dark:bg-[#245A91]" />
                 )}
               </div>
               <span className="text-[10px] font-sans mt-1 tracking-tight">{tab.label}</span>

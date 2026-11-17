@@ -76,19 +76,19 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
-      <div className="relative w-full max-w-lg h-[620px] max-h-[92vh] bg-white dark:bg-[#18221D] rounded-xl shadow-2xl overflow-hidden border border-[#C4A46B]/40 flex flex-col">
+      <div className="relative w-full max-w-lg h-[620px] max-h-[92vh] bg-white dark:bg-[#112238] rounded-xl shadow-2xl overflow-hidden border border-[#245A91]/40 flex flex-col">
         {/* Academic Header */}
-        <div className="p-4 bg-[#183D35] text-[#F3EFE5] flex items-center justify-between border-b border-[#C4A46B]/30 shadow-xs">
+        <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between border-b border-[#245A91]/30 shadow-xs">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg bg-[#102923] border border-[#C4A46B]/60 flex items-center justify-center p-1 shadow-inner">
+            <div className="w-10 h-10 rounded-lg bg-[#0E1F36] border border-[#245A91]/60 flex items-center justify-center p-1 shadow-inner">
               <UniversityEmblem size={28} />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-sm flex items-center space-x-2 text-[#F3EFE5]">
+              <h3 className="font-serif font-bold text-sm flex items-center space-x-2 text-[#FFFFFF]">
                 <span>{lang === 'ru' ? 'Консультант деканата' : 'Dean\'s Office AI Advisor'}</span>
-                <span className="w-2 h-2 rounded-full bg-[#C4A46B] inline-block animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[#245A91] inline-block animate-pulse" />
               </h3>
-              <p className="text-[10px] text-[#C4A46B] font-mono">
+              <p className="text-[10px] text-[#245A91] font-mono">
                 {profile?.group ? `Контекст: гр. ${profile.group} • Факультет МО` : 'DemoTech University'}
               </p>
             </div>
@@ -96,7 +96,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-[#F3EFE5]/75 hover:text-white hover:bg-[#102923] transition-colors"
+            className="p-1.5 rounded-md text-[#FFFFFF]/75 hover:text-white hover:bg-[#0E1F36] transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -104,13 +104,13 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Quick Question Chips */}
-        <div className="p-3 bg-[#FAF8F3] dark:bg-[#121714] border-b border-[#E3DDD1] dark:border-[#26362F] flex items-center space-x-1.5 overflow-x-auto text-[11px] font-sans">
-          <span className="text-[#7E877B] font-medium whitespace-nowrap pl-1">Частые вопросы:</span>
+        <div className="p-3 bg-[#F8FAFC] dark:bg-[#0E1B2D] border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-1.5 overflow-x-auto text-[11px] font-sans">
+          <span className="text-[#667085] font-medium whitespace-nowrap pl-1">Частые вопросы:</span>
           {quickPrompts.map((q, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(q)}
-              className="px-2.5 py-1 rounded-md bg-white dark:bg-[#1A2520] hover:bg-[#F2EEE4] text-[#183D35] dark:text-[#C4A46B] border border-[#E3DDD1] dark:border-[#2D3E35] whitespace-nowrap transition-colors flex-shrink-0"
+              className="px-2.5 py-1 rounded-md bg-white dark:bg-[#162A45] hover:bg-[#F2EEE4] text-[#142D4E] dark:text-[#245A91] border border-[#DCE2EA] dark:border-[#1E395B] whitespace-nowrap transition-colors flex-shrink-0"
             >
               {q}
             </button>
@@ -127,11 +127,11 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                 className={`flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}
               >
                 {!isUser ? (
-                  <div className="w-7 h-7 rounded-md bg-[#183D35] text-[#C4A46B] flex items-center justify-center flex-shrink-0 border border-[#C4A46B]/40">
+                  <div className="w-7 h-7 rounded-md bg-[#142D4E] text-[#245A91] flex items-center justify-center flex-shrink-0 border border-[#245A91]/40">
                     <UniversityEmblem size={18} />
                   </div>
                 ) : (
-                  <div className="w-7 h-7 rounded-md bg-[#FAF8F3] dark:bg-[#1A2520] border border-[#E3DDD1] dark:border-[#2D3E35] flex items-center justify-center flex-shrink-0 text-[#252923] dark:text-[#F3EFE5]">
+                  <div className="w-7 h-7 rounded-md bg-[#F8FAFC] dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B] flex items-center justify-center flex-shrink-0 text-[#0F1D30] dark:text-[#FFFFFF]">
                     <User className="w-4 h-4" />
                   </div>
                 )}
@@ -139,14 +139,14 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                 <div
                   className={`max-w-[82%] p-3.5 rounded-xl leading-relaxed ${
                     isUser
-                      ? 'bg-[#183D35] text-[#F3EFE5]'
-                      : 'bg-[#FAF8F3] dark:bg-[#121714] text-[#252923] dark:text-[#F3EFE5] border border-[#E3DDD1] dark:border-[#2D3E35]'
+                      ? 'bg-[#142D4E] text-[#FFFFFF]'
+                      : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B]'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{m.text}</p>
                   <span
                     className={`block text-[10px] mt-1 font-mono text-right ${
-                      isUser ? 'text-[#C4A46B]' : 'text-[#7E877B]'
+                      isUser ? 'text-[#245A91]' : 'text-[#667085]'
                     }`}
                   >
                     {m.time}
@@ -157,15 +157,15 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
           })}
 
           {loading && (
-            <div className="flex items-center space-x-2 text-xs text-[#7E877B] p-2">
-              <Sparkles className="w-4 h-4 text-[#C4A46B] animate-spin" />
+            <div className="flex items-center space-x-2 text-xs text-[#667085] p-2">
+              <Sparkles className="w-4 h-4 text-[#245A91] animate-spin" />
               <span>Консультант обращается к регламентам деканата...</span>
             </div>
           )}
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 bg-white dark:bg-[#18221D] border-t border-[#E3DDD1] dark:border-[#26362F]">
+        <div className="p-3 bg-white dark:bg-[#112238] border-t border-[#DCE2EA] dark:border-[#193150]">
           <form
             onSubmit={e => {
               e.preventDefault();
@@ -178,14 +178,14 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Задайте вопрос по учебе, справкам или сессии..."
-              className="flex-1 bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3.5 py-2.5 text-xs text-[#252923] dark:text-[#F3EFE5] placeholder-[#7E877B]/60 focus:outline-none focus:ring-2 focus:ring-[#183D35] dark:focus:ring-[#C4A46B]"
+              className="flex-1 bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3.5 py-2.5 text-xs text-[#0F1D30] dark:text-[#FFFFFF] placeholder-[#667085]/60 focus:outline-none focus:ring-2 focus:ring-[#142D4E] dark:focus:ring-[#245A91]"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="px-4 py-2.5 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] font-sans font-semibold text-xs border border-[#C4A46B]/40 flex items-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs"
+              className="px-4 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-sans font-semibold text-xs border border-[#245A91]/40 flex items-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs"
             >
-              <Send className="w-3.5 h-3.5 text-[#C4A46B]" />
+              <Send className="w-3.5 h-3.5 text-[#245A91]" />
               <span className="hidden sm:inline">Отправить</span>
             </button>
           </form>

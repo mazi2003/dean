@@ -79,16 +79,16 @@ const MainLayout: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F6F3EB] dark:bg-[#111614] transition-colors">
+      <div className="min-h-screen flex items-center justify-center bg-[#F2F4F7] dark:bg-[#0B1524] transition-colors">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 rounded-xl bg-[#183D35] border border-[#C4A46B]/60 flex items-center justify-center p-2 shadow-md">
+          <div className="w-16 h-16 rounded-xl bg-[#142D4E] border border-[#245A91]/60 flex items-center justify-center p-2 shadow-md">
             <UniversityEmblem size={44} />
           </div>
           <div className="text-center space-y-1">
-            <p className="font-serif font-bold text-sm text-[#183D35] dark:text-[#C4A46B] tracking-tight">
+            <p className="font-serif font-bold text-sm text-[#142D4E] dark:text-[#245A91] tracking-tight">
               DemoTech University
             </p>
-            <p className="text-xs text-[#7E877B] dark:text-[#8E9B93] font-sans">
+            <p className="text-xs text-[#667085] dark:text-[#94A3B8] font-sans">
               Загрузка цифрового деканата...
             </p>
           </div>
@@ -102,7 +102,7 @@ const MainLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F3EB] dark:bg-[#111614] text-[#252923] dark:text-[#F3EFE5] transition-colors">
+    <div className="min-h-screen flex flex-col bg-[#F2F4F7] dark:bg-[#0B1524] text-[#0F1D30] dark:text-[#FFFFFF] transition-colors">
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}

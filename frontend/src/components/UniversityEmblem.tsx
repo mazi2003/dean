@@ -14,26 +14,26 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
   const isMono = variant === 'monochrome';
   const isGold = variant === 'gold';
 
-  const strokeRim = isMono ? 'currentColor' : isGold ? '#D8BD8A' : '#C4A46B';
-  const fillShield = isMono ? 'currentColor' : isGold ? '#C4A46B' : '#183D35';
-  const fillShieldDark = isMono ? 'currentColor' : isGold ? '#B39155' : '#102923';
-  const fillGold = isMono ? 'currentColor' : '#C4A46B';
-  const fillGoldBright = isMono ? 'currentColor' : '#DFBF82';
-  const fillParchment = isMono ? 'currentColor' : '#F3EFE5';
-  const fillCrimson = isMono ? 'currentColor' : '#A33D35';
+  const strokeRim = isMono ? 'currentColor' : isGold ? '#3879BC' : '#245A91';
+  const fillShield = isMono ? 'currentColor' : isGold ? '#245A91' : '#142D4E';
+  const fillShieldDark = isMono ? 'currentColor' : isGold ? '#1A436D' : '#0E1F36';
+  const fillGold = isMono ? 'currentColor' : '#245A91';
+  const fillGoldBright = isMono ? 'currentColor' : '#4B8CD1';
+  const fillParchment = isMono ? 'currentColor' : '#FFFFFF';
+  const fillCrimson = isMono ? 'currentColor' : '#C63740';
 
   if (variant === 'wordmark') {
     return (
       <div className={`inline-flex items-center space-x-3.5 select-none ${className}`}>
         <UniversityEmblem size={size} variant="full" />
         <div className="flex flex-col">
-          <span className="font-serif font-extrabold tracking-wider uppercase text-base sm:text-lg leading-none text-[#F3EFE5] drop-shadow-xs" style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}>
+          <span className="font-serif font-extrabold tracking-wider uppercase text-base sm:text-lg leading-none text-[#FFFFFF] drop-shadow-xs" style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}>
             DemoTech
           </span>
-          <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-[0.22em] text-[#C4A46B] font-semibold mt-1">
+          <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-[0.22em] text-[#245A91] font-semibold mt-1">
             University
           </span>
-          <span className="text-[8px] sm:text-[9px] font-sans tracking-widest text-[#F3EFE5]/65 uppercase mt-0.5">
+          <span className="text-[8px] sm:text-[9px] font-sans tracking-widest text-[#FFFFFF]/65 uppercase mt-0.5">
             Veritas • Scientia • Innovatio
           </span>
         </div>
@@ -54,14 +54,14 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
       <defs>
         {/* Subtle radial gradient for shield */}
         <radialGradient id="shieldGrad" cx="50%" cy="30%" r="70%">
-          <stop offset="0%" stopColor="#23554A" />
+          <stop offset="0%" stopColor="#1C3B65" />
           <stop offset="100%" stopColor={fillShieldDark} />
         </radialGradient>
         {/* Gold linear gradient */}
         <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#E2C997" />
-          <stop offset="50%" stopColor="#C4A46B" />
-          <stop offset="100%" stopColor="#967941" />
+          <stop offset="0%" stopColor="#4B8CD1" />
+          <stop offset="50%" stopColor="#245A91" />
+          <stop offset="100%" stopColor="#143557" />
         </linearGradient>
         {/* Text path for circular inscription */}
         <path

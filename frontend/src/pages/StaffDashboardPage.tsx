@@ -200,12 +200,12 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
   });
 
   const statusBadges: Record<RequestStatus, { label: string; color: string }> = {
-    submitted: { label: 'Новое', color: 'bg-[#183D35]/10 text-[#183D35] dark:text-[#C4A46B] border-[#183D35]/25' },
-    in_review: { label: 'В работе', color: 'bg-[#183D35]/20 text-[#183D35] dark:text-[#C4A46B] border-[#183D35]/35' },
-    needs_info: { label: 'Уточнение', color: 'bg-[#A33D35]/15 text-[#A33D35] dark:text-[#E2766E] border-[#A33D35]/30' },
-    ready: { label: 'Подписано ЭЦП', color: 'bg-[#183D35] text-[#F3EFE5] border-[#C4A46B]/40' },
-    rejected: { label: 'Отклонено', color: 'bg-[#A33D35]/15 text-[#A33D35] border-[#A33D35]/30' },
-    cancelled: { label: 'Отозвано', color: 'bg-[#FAF8F3] text-[#7E877B] border-[#E3DDD1]' },
+    submitted: { label: 'Новое', color: 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#245A91] border-[#142D4E]/25' },
+    in_review: { label: 'В работе', color: 'bg-[#142D4E]/20 text-[#142D4E] dark:text-[#245A91] border-[#142D4E]/35' },
+    needs_info: { label: 'Уточнение', color: 'bg-[#C63740]/15 text-[#C63740] dark:text-[#F06A73] border-[#C63740]/30' },
+    ready: { label: 'Подписано ЭЦП', color: 'bg-[#142D4E] text-[#FFFFFF] border-[#245A91]/40' },
+    rejected: { label: 'Отклонено', color: 'bg-[#C63740]/15 text-[#C63740] border-[#C63740]/30' },
+    cancelled: { label: 'Отозвано', color: 'bg-[#F8FAFC] text-[#667085] border-[#DCE2EA]' },
   };
 
   const pendingCount = requests.filter(r => r.status === 'submitted' || r.status === 'in_review').length;
@@ -213,8 +213,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
   if (loading && requests.length === 0) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-4 animate-pulse">
-        <div className="h-28 bg-[#E3DDD1]/40 dark:bg-[#1A2520] rounded-xl" />
-        <div className="h-80 bg-[#E3DDD1]/40 dark:bg-[#1A2520] rounded-xl" />
+        <div className="h-28 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
+        <div className="h-80 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
       </div>
     );
   }
@@ -223,14 +223,14 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* Toast Feedback */}
       {feedback && (
-        <div className="p-4 rounded-xl bg-[#183D35] text-[#F3EFE5] border border-[#C4A46B]/50 flex items-center justify-between shadow-md animate-fade-in text-xs font-sans">
+        <div className="p-4 rounded-xl bg-[#142D4E] text-[#FFFFFF] border border-[#245A91]/50 flex items-center justify-between shadow-md animate-fade-in text-xs font-sans">
           <div className="flex items-center space-x-2">
-            <CheckCircle className="w-5 h-5 text-[#C4A46B] flex-shrink-0" />
+            <CheckCircle className="w-5 h-5 text-[#245A91] flex-shrink-0" />
             <span>{feedback}</span>
           </div>
           <button
             onClick={() => setFeedback(null)}
-            className="text-[#F3EFE5]/70 hover:text-white p-1"
+            className="text-[#FFFFFF]/70 hover:text-white p-1"
           >
             <X className="w-4 h-4" />
           </button>
@@ -238,18 +238,18 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       )}
 
       {/* 1. Header & Section Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#E3DDD1] dark:border-[#26362F]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#183D35] dark:text-[#C4A46B] font-semibold mb-1">
-            <ShieldCheck className="w-4 h-4 text-[#C4A46B]" />
+          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#245A91] font-semibold mb-1">
+            <ShieldCheck className="w-4 h-4 text-[#245A91]" />
             <span>Служебная панель сотрудника деканата МО</span>
             <span>•</span>
             <span>Мария Волкова</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#252923] dark:text-[#F3EFE5]">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
             {currentSection === 'requests' ? 'Заявления и документы студентов' : 'Рассылки и объявления деканата'}
           </h1>
-          <p className="text-xs text-[#575F53] dark:text-[#C8D1CA] font-sans mt-0.5">
+          <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
             {currentSection === 'requests'
               ? 'Рассмотрение справок об обучении, ПГАС, общежития с выпуском квалифицированной ЭЦП'
               : 'Централизованная отправка распоряжений, дедлайнов и push-уведомлений в личные кабинеты'}
@@ -258,13 +258,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
         {/* Section Tabs */}
         <div className="flex items-center space-x-2">
-          <div className="flex items-center bg-[#FAF8F3] dark:bg-[#121714] p-1 rounded-lg border border-[#E3DDD1] dark:border-[#2D3E35] text-xs font-sans font-medium">
+          <div className="flex items-center bg-[#F8FAFC] dark:bg-[#0E1B2D] p-1 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium">
             <button
               onClick={() => setCurrentSection('requests')}
               className={`px-3 py-1.5 rounded-md transition-all flex items-center space-x-1.5 ${
                 currentSection === 'requests'
-                  ? 'bg-[#183D35] text-[#F3EFE5] font-semibold shadow-xs'
-                  : 'text-[#575F53] dark:text-[#C8D1CA] hover:text-[#252923] dark:hover:text-[#F3EFE5]'
+                  ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
+                  : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
               }`}
             >
               <Inbox className="w-3.5 h-3.5" />
@@ -274,20 +274,20 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               onClick={() => setCurrentSection('announcements')}
               className={`px-3 py-1.5 rounded-md transition-all flex items-center space-x-1.5 ${
                 currentSection === 'announcements'
-                  ? 'bg-[#183D35] text-[#F3EFE5] font-semibold shadow-xs'
-                  : 'text-[#575F53] dark:text-[#C8D1CA] hover:text-[#252923] dark:hover:text-[#F3EFE5]'
+                  ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
+                  : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
               }`}
             >
-              <Megaphone className="w-3.5 h-3.5 text-[#C4A46B]" />
+              <Megaphone className="w-3.5 h-3.5 text-[#245A91]" />
               <span>Объявления ({announcements.length})</span>
             </button>
           </div>
 
           <button
             onClick={() => setIsAnnounceModalOpen(true)}
-            className="px-3.5 py-2 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] text-xs font-sans font-semibold border border-[#C4A46B]/40 transition-colors flex items-center space-x-1.5 shadow-xs"
+            className="px-3.5 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 transition-colors flex items-center space-x-1.5 shadow-xs"
           >
-            <Send className="w-3.5 h-3.5 text-[#C4A46B]" />
+            <Send className="w-3.5 h-3.5 text-[#245A91]" />
             <span className="hidden sm:inline">Создать объявление</span>
           </button>
         </div>
@@ -297,22 +297,22 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       {currentSection === 'announcements' && (
         <div className="space-y-6">
           {/* Create Announcement Direct Card */}
-          <div className="rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E3DDD1] dark:border-[#26362F]">
+          <div className="rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
               <div className="flex items-center space-x-2">
-                <Megaphone className="w-5 h-5 text-[#C4A46B]" />
-                <h3 className="font-serif font-bold text-base text-[#252923] dark:text-[#F3EFE5]">
+                <Megaphone className="w-5 h-5 text-[#245A91]" />
+                <h3 className="font-serif font-bold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
                   Опубликовать новое распоряжение или уведомление
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-[#7E877B]">
+              <span className="text-[11px] font-mono text-[#667085]">
                 Доставка в личный кабинет студента и push
               </span>
             </div>
 
             {/* Quick Templates */}
             <div>
-              <span className="text-[11px] font-sans font-semibold uppercase tracking-wider text-[#7E877B] block mb-2">
+              <span className="text-[11px] font-sans font-semibold uppercase tracking-wider text-[#667085] block mb-2">
                 Быстрые шаблоны деканата:
               </span>
               <div className="flex flex-wrap gap-2 text-xs font-sans">
@@ -326,7 +326,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       'urgent'
                     )
                   }
-                  className="px-2.5 py-1.5 rounded-md bg-[#FAF8F3] dark:bg-[#121714] hover:bg-[#EAE4D7] dark:hover:bg-[#1E2923] text-[#252923] dark:text-[#F3EFE5] border border-[#E3DDD1] dark:border-[#2D3E35] transition-colors"
+                  className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors"
                 >
                   ⚡ Сроки пересдач задолженностей
                 </button>
@@ -340,7 +340,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       'high'
                     )
                   }
-                  className="px-2.5 py-1.5 rounded-md bg-[#FAF8F3] dark:bg-[#121714] hover:bg-[#EAE4D7] dark:hover:bg-[#1E2923] text-[#252923] dark:text-[#F3EFE5] border border-[#E3DDD1] dark:border-[#2D3E35] transition-colors"
+                  className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors"
                 >
                   📑 Прием заявлений на ПГАС
                 </button>
@@ -354,7 +354,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       'normal'
                     )
                   }
-                  className="px-2.5 py-1.5 rounded-md bg-[#FAF8F3] dark:bg-[#121714] hover:bg-[#EAE4D7] dark:hover:bg-[#1E2923] text-[#252923] dark:text-[#F3EFE5] border border-[#E3DDD1] dark:border-[#2D3E35] transition-colors"
+                  className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors"
                 >
                   🔏 Готовность справок с ЭЦП
                 </button>
@@ -365,13 +365,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Target Audience */}
                 <div>
-                  <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                  <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                     Получатели (Аудитория)
                   </label>
                   <select
                     value={announceTarget}
                     onChange={e => setAnnounceTarget(e.target.value)}
-                    className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5] focus:outline-none focus:ring-2 focus:ring-[#183D35]"
+                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                   >
                     <option value="all">Все студенты (Все группы)</option>
                     <option value="ДУ-101">Группа ДУ-101 (2 курс, МО)</option>
@@ -384,13 +384,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
                 {/* Notification Kind */}
                 <div>
-                  <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                  <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                     Категория сообщения
                   </label>
                   <select
                     value={announceKind}
                     onChange={e => setAnnounceKind(e.target.value as NotificationKind)}
-                    className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5] focus:outline-none focus:ring-2 focus:ring-[#183D35]"
+                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                   >
                     <option value="announcement">📢 Официальное объявление</option>
                     <option value="deadline">⏰ Академический дедлайн / Сессия</option>
@@ -401,13 +401,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
                 {/* Priority */}
                 <div>
-                  <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                  <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                     Приоритет
                   </label>
                   <select
                     value={announcePriority}
                     onChange={e => setAnnouncePriority(e.target.value as any)}
-                    className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5] focus:outline-none focus:ring-2 focus:ring-[#183D35]"
+                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                   >
                     <option value="normal">Обычное (В список уведомлений)</option>
                     <option value="high">Важное (Выделенный бейдж)</option>
@@ -417,7 +417,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                   Заголовок объявления
                 </label>
                 <input
@@ -426,12 +426,12 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   value={announceTitle}
                   onChange={e => setAnnounceTitle(e.target.value)}
                   placeholder="Например: О графике проведения пересдач осенней сессии"
-                  className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5] focus:outline-none focus:ring-2 focus:ring-[#183D35]"
+                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                 />
               </div>
 
               <div>
-                <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                   Текст сообщения
                 </label>
                 <textarea
@@ -440,7 +440,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   value={announceMsg}
                   onChange={e => setAnnounceMsg(e.target.value)}
                   placeholder="Полный текст распоряжения с указанием дат, мест проведения и порядка действий для студентов..."
-                  className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5] focus:outline-none focus:ring-2 focus:ring-[#183D35]"
+                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                 />
               </div>
 
@@ -448,9 +448,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 <button
                   type="submit"
                   disabled={sendingAnnounce}
-                  className="px-5 py-2.5 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] text-xs font-sans font-semibold border border-[#C4A46B]/40 shadow-xs flex items-center space-x-2 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs flex items-center space-x-2 disabled:opacity-50"
                 >
-                  <Send className="w-4 h-4 text-[#C4A46B]" />
+                  <Send className="w-4 h-4 text-[#245A91]" />
                   <span>{sendingAnnounce ? 'Отправка...' : 'Опубликовать и разослать студентам'}</span>
                 </button>
               </div>
@@ -458,22 +458,22 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
           </div>
 
           {/* History of published announcements */}
-          <div className="rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E3DDD1] dark:border-[#26362F]">
+          <div className="rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
               <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-[#183D35] dark:text-[#C4A46B]" />
-                <h3 className="font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#252923] dark:text-[#F3EFE5]">
+                <Clock className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
+                <h3 className="font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#0F1D30] dark:text-[#FFFFFF]">
                   Журнал опубликованных распоряжений деканата ({announcements.length})
                 </h3>
               </div>
             </div>
 
             {announcements.length === 0 ? (
-              <p className="text-xs text-[#7E877B] text-center py-6">
+              <p className="text-xs text-[#667085] text-center py-6">
                 Ранее опубликованных объявлений не найдено.
               </p>
             ) : (
-              <div className="divide-y divide-[#E3DDD1] dark:divide-[#26362F]">
+              <div className="divide-y divide-[#DCE2EA] dark:divide-[#193150]">
                 {announcements.map(ann => {
                   const dateStr = new Date(ann.createdAt).toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US', {
                     day: 'numeric',
@@ -489,42 +489,42 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           <span
                             className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
                               ann.priority === 'urgent'
-                                ? 'bg-[#A33D35] text-[#F3EFE5]'
+                                ? 'bg-[#C63740] text-[#FFFFFF]'
                                 : ann.priority === 'high'
-                                ? 'bg-[#C4A46B] text-[#183D35]'
-                                : 'bg-[#183D35]/15 text-[#183D35] dark:text-[#C4A46B]'
+                                ? 'bg-[#245A91] text-[#142D4E]'
+                                : 'bg-[#142D4E]/15 text-[#142D4E] dark:text-[#245A91]'
                             }`}
                           >
                             {ann.priority === 'urgent' ? 'Срочно' : ann.priority === 'high' ? 'Важно' : 'Обычное'}
                           </span>
-                          <span className="text-xs font-mono font-semibold text-[#183D35] dark:text-[#C4A46B]">
+                          <span className="text-xs font-mono font-semibold text-[#142D4E] dark:text-[#245A91]">
                             Целевая группа: {ann.targetGroup === 'all' ? 'Все студенты' : ann.targetGroup}
                           </span>
                         </div>
-                        <span className="text-[11px] font-mono text-[#7E877B]">{dateStr}</span>
+                        <span className="text-[11px] font-mono text-[#667085]">{dateStr}</span>
                       </div>
 
-                      <h4 className="font-serif font-bold text-sm text-[#252923] dark:text-[#F3EFE5]">
+                      <h4 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
                         {ann.title}
                       </h4>
 
-                      <p className="text-xs text-[#575F53] dark:text-[#C8D1CA] font-sans leading-relaxed">
+                      <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans leading-relaxed">
                         {ann.body}
                       </p>
 
                       <div className="flex items-center justify-between pt-1">
-                        <div className="flex items-center space-x-2 text-[11px] text-[#7E877B]">
-                          <Users className="w-3.5 h-3.5 text-[#183D35] dark:text-[#C4A46B]" />
+                        <div className="flex items-center space-x-2 text-[11px] text-[#667085]">
+                          <Users className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
                           <span>Доставлено получателям ({ann.recipientCount || 'Все студенты'})</span>
                         </div>
 
                         <button
                           type="button"
                           onClick={() => handleDeleteAnnouncement(ann.id, ann.title)}
-                          className="inline-flex items-center space-x-1 px-2.5 py-1 rounded text-[11px] font-sans font-medium text-[#A33D35] hover:bg-[#A33D35]/10 border border-[#A33D35]/30 hover:border-[#A33D35] transition-colors cursor-pointer"
+                          className="inline-flex items-center space-x-1 px-2.5 py-1 rounded text-[11px] font-sans font-medium text-[#C63740] hover:bg-[#C63740]/10 border border-[#C63740]/30 hover:border-[#C63740] transition-colors cursor-pointer"
                           title="Отозвать распоряжение и удалить из журнала"
                         >
-                          <Trash2 className="w-3 h-3 text-[#A33D35]" />
+                          <Trash2 className="w-3 h-3 text-[#C63740]" />
                           <span>Отозвать / Удалить</span>
                         </button>
                       </div>
@@ -542,7 +542,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
         <div className="space-y-6">
           {/* Filter Bar */}
           <div className="flex items-center space-x-2 overflow-x-auto text-xs pb-1 font-sans">
-            <Filter className="w-3.5 h-3.5 text-[#7E877B] mr-1 flex-shrink-0" />
+            <Filter className="w-3.5 h-3.5 text-[#667085] mr-1 flex-shrink-0" />
             {[
               { id: 'all', label: `Все заявления (${requests.length})` },
               { id: 'submitted', label: `Новые (${requests.filter(r => r.status === 'submitted').length})` },
@@ -555,8 +555,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 onClick={() => setFilter(t.id)}
                 className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all font-medium ${
                   filter === t.id
-                    ? 'bg-[#183D35] text-[#F3EFE5] font-semibold'
-                    : 'bg-white dark:bg-[#18221D] text-[#575F53] dark:text-[#C8D1CA] border border-[#E3DDD1] dark:border-[#2D3E35] hover:bg-[#FAF8F3]'
+                    ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold'
+                    : 'bg-white dark:bg-[#112238] text-[#475467] dark:text-[#CBD5E1] border border-[#DCE2EA] dark:border-[#1E395B] hover:bg-[#F8FAFC]'
                 }`}
               >
                 {t.label}
@@ -566,12 +566,12 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
           {/* Requests Queue List */}
           {filtered.length === 0 ? (
-            <div className="p-12 text-center rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35]">
-              <FileCheck className="w-10 h-10 text-[#C4A46B] mx-auto mb-2 opacity-60" />
-              <p className="text-sm font-serif font-bold text-[#252923] dark:text-[#F3EFE5]">
+            <div className="p-12 text-center rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B]">
+              <FileCheck className="w-10 h-10 text-[#245A91] mx-auto mb-2 opacity-60" />
+              <p className="text-sm font-serif font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
                 Нет заявлений в выбранной очереди
               </p>
-              <p className="text-xs text-[#7E877B] dark:text-[#8E9B93] mt-1 font-sans">
+              <p className="text-xs text-[#667085] dark:text-[#94A3B8] mt-1 font-sans">
                 Все поступившие обращения студентов обработаны.
               </p>
             </div>
@@ -588,7 +588,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 return (
                   <div
                     key={req.id}
-                    className="p-5 rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] shadow-xs space-y-3 hover:border-[#183D35]/40 transition-all"
+                    className="p-5 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs space-y-3 hover:border-[#142D4E]/40 transition-all"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
@@ -596,11 +596,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           <span className={`px-2 py-0.5 rounded text-[11px] font-sans font-semibold border ${badge.color}`}>
                             {badge.label}
                           </span>
-                          <span className="font-mono text-xs text-[#7E877B]">
+                          <span className="font-mono text-xs text-[#667085]">
                             № {req.id}
                           </span>
                         </div>
-                        <h3 className="font-serif font-bold text-base text-[#252923] dark:text-[#F3EFE5]">
+                        <h3 className="font-serif font-bold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
                           {req.typeTitle}
                         </h3>
                       </div>
@@ -612,31 +612,31 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                             setNewStatus(req.status);
                             setComment('');
                           }}
-                          className="px-3.5 py-2 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] text-xs font-sans font-semibold border border-[#C4A46B]/40 shadow-xs flex items-center space-x-1.5 transition-colors"
+                          className="px-3.5 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs flex items-center space-x-1.5 transition-colors"
                         >
-                          <FileCheck className="w-3.5 h-3.5 text-[#C4A46B]" />
+                          <FileCheck className="w-3.5 h-3.5 text-[#245A91]" />
                           <span>Изменить статус / ЭЦП</span>
                         </button>
                       </div>
                     </div>
 
                     {/* Student Info Box */}
-                    <div className="p-3 rounded-lg bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] flex flex-wrap items-center justify-between text-xs font-sans gap-2">
+                    <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] flex flex-wrap items-center justify-between text-xs font-sans gap-2">
                       <div className="flex items-center space-x-2">
-                        <User className="w-3.5 h-3.5 text-[#183D35] dark:text-[#C4A46B]" />
-                        <span className="font-semibold text-[#252923] dark:text-[#F3EFE5]">
+                        <User className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
+                        <span className="font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
                           {req.studentName || 'Студент факультета'}
                         </span>
-                        <span className="text-[#7E877B]">({req.studentGroup || 'ДУ-101'})</span>
+                        <span className="text-[#667085]">({req.studentGroup || 'ДУ-101'})</span>
                         <button
                           type="button"
                           onClick={() => handleOpenStudentDossier(req.studentId)}
-                          className="ml-2 px-2 py-0.5 rounded text-[10px] font-sans font-medium text-[#183D35] dark:text-[#C4A46B] hover:bg-[#EAE4D7] dark:hover:bg-[#1E2923] border border-[#E3DDD1] dark:border-[#2D3E35] transition-colors cursor-pointer"
+                          className="ml-2 px-2 py-0.5 rounded text-[10px] font-sans font-medium text-[#142D4E] dark:text-[#245A91] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors cursor-pointer"
                         >
                           Личное дело
                         </button>
                       </div>
-                      <div className="text-[11px] font-mono text-[#7E877B]">
+                      <div className="text-[11px] font-mono text-[#667085]">
                         Подано: {dateStr} • Срок ответа: до {req.expectedDate}
                       </div>
                     </div>
@@ -645,9 +645,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     {req.data && Object.keys(req.data).length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-sans pt-1">
                         {Object.entries(req.data).map(([key, val]) => (
-                          <div key={key} className="text-[#575F53] dark:text-[#C8D1CA]">
-                            <span className="text-[#7E877B] capitalize">{key}: </span>
-                            <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">{String(val)}</span>
+                          <div key={key} className="text-[#475467] dark:text-[#CBD5E1]">
+                            <span className="text-[#667085] capitalize">{key}: </span>
+                            <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{String(val)}</span>
                           </div>
                         ))}
                       </div>
@@ -663,19 +663,19 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       {/* 4. Status Change & Digital Signing Modal */}
       {selectedReq && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
-          <div className="w-full max-w-lg bg-white dark:bg-[#18221D] rounded-xl border border-[#E3DDD1] dark:border-[#2D3E35] shadow-2xl overflow-hidden">
-            <div className="p-4 bg-[#183D35] text-[#F3EFE5] flex items-center justify-between">
+          <div className="w-full max-w-lg bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] shadow-2xl overflow-hidden">
+            <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-bold text-sm text-[#F3EFE5]">
+                <h3 className="font-serif font-bold text-sm text-[#FFFFFF]">
                   Решение по заявлению № {selectedReq.id}
                 </h3>
-                <p className="text-xs text-[#C4A46B] font-sans">
+                <p className="text-xs text-[#245A91] font-sans">
                   {selectedReq.typeTitle} • {selectedReq.studentName} ({selectedReq.studentGroup})
                 </p>
               </div>
               <button
                 onClick={() => setSelectedReq(null)}
-                className="p-1 rounded-md text-[#F3EFE5]/75 hover:text-white"
+                className="p-1 rounded-md text-[#FFFFFF]/75 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -683,13 +683,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
             <form onSubmit={handleUpdateStatus} className="p-6 space-y-4 text-xs sm:text-sm font-sans">
               <div>
-                <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                   Установить новый статус:
                 </label>
                 <select
                   value={newStatus}
                   onChange={e => setNewStatus(e.target.value as RequestStatus)}
-                  className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5] focus:outline-none focus:ring-2 focus:ring-[#183D35]"
+                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                 >
                   <option value="in_review">В обработке (на рассмотрении деканата)</option>
                   <option value="needs_info">Требуется уточнение у студента</option>
@@ -699,7 +699,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                   Официальный комментарий деканата для студента:
                 </label>
                 <textarea
@@ -707,22 +707,22 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   value={comment}
                   onChange={e => setComment(e.target.value)}
                   placeholder="Например: Документ заверен усиленной квалифицированной ЭЦП деканата и доступен в личном кабинете."
-                  className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5] focus:outline-none focus:ring-2 focus:ring-[#183D35]"
+                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                 />
               </div>
 
-              <div className="pt-3 border-t border-[#E3DDD1] dark:border-[#26362F] flex items-center justify-end space-x-2">
+              <div className="pt-3 border-t border-[#DCE2EA] dark:border-[#193150] flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setSelectedReq(null)}
-                  className="px-4 py-2 text-xs font-sans text-[#7E877B] hover:bg-[#FAF8F3] rounded-lg"
+                  className="px-4 py-2 text-xs font-sans text-[#667085] hover:bg-[#F8FAFC] rounded-lg"
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
                   disabled={updating}
-                  className="px-4 py-2 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] text-xs font-sans font-semibold border border-[#C4A46B]/40 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 disabled:opacity-50"
                 >
                   {updating ? 'Сохранение...' : 'Утвердить и уведомить студента'}
                 </button>
@@ -735,19 +735,19 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       {/* 5. Separate Broadcast Announcement Modal */}
       {isAnnounceModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
-          <div className="w-full max-w-lg bg-white dark:bg-[#18221D] rounded-xl border border-[#E3DDD1] dark:border-[#2D3E35] shadow-2xl overflow-hidden">
-            <div className="p-4 bg-[#183D35] text-[#F3EFE5] flex items-center justify-between">
+          <div className="w-full max-w-lg bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] shadow-2xl overflow-hidden">
+            <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between">
               <div>
-                <h3 className="font-serif font-bold text-sm text-[#F3EFE5]">
+                <h3 className="font-serif font-bold text-sm text-[#FFFFFF]">
                   Публикация официального распоряжения
                 </h3>
-                <p className="text-xs text-[#C4A46B] font-sans">
+                <p className="text-xs text-[#245A91] font-sans">
                   Рассылка уведомления в личные кабинеты студентов
                 </p>
               </div>
               <button
                 onClick={() => setIsAnnounceModalOpen(false)}
-                className="p-1 rounded-md text-[#F3EFE5]/75 hover:text-white"
+                className="p-1 rounded-md text-[#FFFFFF]/75 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -756,13 +756,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             <form onSubmit={handlePublishAnnounce} className="p-6 space-y-4 text-xs sm:text-sm font-sans">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                  <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                     Получатели
                   </label>
                   <select
                     value={announceTarget}
                     onChange={e => setAnnounceTarget(e.target.value)}
-                    className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5]"
+                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                   >
                     <option value="all">Все студенты</option>
                     <option value="ДУ-101">Группа ДУ-101</option>
@@ -773,13 +773,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                  <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                     Приоритет
                   </label>
                   <select
                     value={announcePriority}
                     onChange={e => setAnnouncePriority(e.target.value as any)}
-                    className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5]"
+                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                   >
                     <option value="normal">Обычное</option>
                     <option value="high">Важное</option>
@@ -789,7 +789,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                   Заголовок объявления
                 </label>
                 <input
@@ -798,12 +798,12 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   value={announceTitle}
                   onChange={e => setAnnounceTitle(e.target.value)}
                   placeholder="Например: О графике проведения пересдач осенней сессии"
-                  className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5]"
+                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                 />
               </div>
 
               <div>
-                <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1.5">
+                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
                   Текст сообщения
                 </label>
                 <textarea
@@ -812,22 +812,22 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   value={announceMsg}
                   onChange={e => setAnnounceMsg(e.target.value)}
                   placeholder="Полный текст приказа с указанием дат, аудиторий и порядка действий..."
-                  className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg px-3 py-2 text-[#252923] dark:text-[#F3EFE5]"
+                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                 />
               </div>
 
-              <div className="pt-3 border-t border-[#E3DDD1] dark:border-[#26362F] flex items-center justify-end space-x-2">
+              <div className="pt-3 border-t border-[#DCE2EA] dark:border-[#193150] flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsAnnounceModalOpen(false)}
-                  className="px-4 py-2 text-xs font-sans text-[#7E877B] hover:bg-[#FAF8F3] rounded-lg"
+                  className="px-4 py-2 text-xs font-sans text-[#667085] hover:bg-[#F8FAFC] rounded-lg"
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
                   disabled={sendingAnnounce}
-                  className="px-4 py-2 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] text-xs font-sans font-semibold border border-[#C4A46B]/40 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 disabled:opacity-50"
                 >
                   {sendingAnnounce ? 'Отправка...' : 'Опубликовать'}
                 </button>
