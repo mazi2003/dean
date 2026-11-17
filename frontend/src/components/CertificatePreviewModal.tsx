@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, Printer, Download, CheckCircle2, QrCode } from 'lucide-react';
+import { X, Printer, Download, CheckCircle2, QrCode, ShieldCheck } from 'lucide-react';
 import { StudentRequest } from '../types';
 import { UNIVERSITY_INFO } from '../services/mockData';
+import { UniversityEmblem } from './UniversityEmblem';
 
 interface CertificatePreviewModalProps {
   request: StudentRequest | null;
@@ -16,127 +17,125 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col my-auto">
-        {/* Modal Top Bar */}
-        <div className="px-5 py-3.5 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs animate-fade-in overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-[#18221D] rounded-xl shadow-2xl overflow-hidden border border-[#E3DDD1] dark:border-[#2D3E35] flex flex-col my-auto">
+        {/* Top Control Bar */}
+        <div className="px-5 py-3.5 bg-[#183D35] text-[#F3EFE5] border-b border-[#C4A46B]/30 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-sm text-slate-800 dark:text-slate-100">
-              Электронный документ с ЭЦП
-            </span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700">
-              ЮРИДИЧЕСКИ ЗНАЧИМ
+            <ShieldCheck className="w-4 h-4 text-[#C4A46B]" />
+            <span className="font-serif font-bold text-sm text-[#F3EFE5]">
+              Электронный документ с усиленной квалифицированной ЭЦП
             </span>
           </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={handlePrint}
-              className="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-medium flex items-center space-x-1 shadow-sm"
-              title="Печать"
+              className="px-3 py-1.5 rounded-md bg-[#102923] hover:bg-[#15342D] border border-[#C4A46B]/40 text-[#F3EFE5] text-xs font-sans font-medium flex items-center space-x-1.5 shadow-xs transition-colors"
+              title="Распечатать документ"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-3.5 h-3.5 text-[#C4A46B]" />
               <span className="hidden sm:inline">Печать</span>
             </button>
             <button
               onClick={handlePrint}
-              className="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium flex items-center space-x-1 shadow-sm"
-              title="Скачать PDF"
+              className="px-3 py-1.5 rounded-md bg-[#C4A46B] hover:bg-[#D9BD8A] text-[#183D35] text-xs font-sans font-bold flex items-center space-x-1.5 shadow-xs transition-colors"
+              title="Скачать официальный PDF"
             >
-              <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">PDF</span>
+              <Download className="w-3.5 h-3.5 text-[#183D35]" />
+              <span>PDF</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="p-1.5 rounded-md text-[#F3EFE5]/75 hover:text-white hover:bg-[#102923] transition-colors"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Printable Document Sheet (Simulated A4 paper) */}
-        <div className="p-6 sm:p-10 bg-white text-slate-900 font-serif leading-relaxed text-xs sm:text-sm shadow-sm space-y-6">
-          {/* Letterhead */}
-          <div className="text-center border-b-2 border-slate-900 pb-4 space-y-1">
-            <p className="font-sans text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
+        {/* Printable Bond Paper Sheet (Simulated State University Certificate) */}
+        <div className="p-6 sm:p-10 bg-[#FFFFFF] text-[#252923] font-serif leading-relaxed text-xs sm:text-sm space-y-6 shadow-inner select-text">
+          {/* Official Letterhead */}
+          <div className="text-center border-b-2 border-[#183D35] pb-4 space-y-1.5">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <UniversityEmblem size={44} />
+            </div>
+            <p className="font-sans text-[10px] uppercase tracking-widest text-[#7E877B] font-semibold">
               Министерство науки и высшего образования Российской Федерации
             </p>
-            <h2 className="text-base sm:text-lg font-bold font-sans tracking-wide uppercase text-slate-900">
-              ФГАОУ ВО «{UNIVERSITY_INFO.name.toUpperCase()}»
+            <h2 className="text-base sm:text-lg font-bold font-serif tracking-wide uppercase text-[#183D35]">
+              ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ АВТОНОМНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ<br />
+              «{UNIVERSITY_INFO.name.toUpperCase()}»
             </h2>
-            <p className="text-[11px] font-sans text-slate-600">
+            <p className="text-[11px] font-sans text-[#575F53]">
               {UNIVERSITY_INFO.faculty}
             </p>
-            <p className="text-[10px] font-sans text-slate-400">
+            <p className="text-[10px] font-sans text-[#7E877B]">
               г. Москва, ул. Академика Сахарова, д. 12 • Тел: {UNIVERSITY_INFO.deanOfficePhone} • E-mail: {UNIVERSITY_INFO.deanOfficeEmail}
             </p>
           </div>
 
           {/* Reference Number & Date */}
-          <div className="flex justify-between text-xs text-slate-600 font-sans">
+          <div className="flex justify-between text-xs text-[#575F53] font-sans">
             <div>
-              <p>Рег. № <strong>ЭД-{request.id.toUpperCase()}</strong></p>
-              <p>Дата выдачи: <strong>{new Date().toLocaleDateString('ru-RU')}</strong></p>
+              <p>Рег. № <strong className="font-mono text-[#252923]">ЭД-{request.id.toUpperCase()}</strong></p>
+              <p>Дата выдачи: <strong className="font-mono">{new Date().toLocaleDateString('ru-RU')}</strong></p>
             </div>
             <div className="text-right">
-              <p>Код проверки: <strong>{request.id.slice(-6).toUpperCase()}</strong></p>
+              <p>Код валидации: <strong className="font-mono text-[#183D35]">{request.id.slice(-6).toUpperCase()}</strong></p>
               <p>Срок действия: <strong>30 календарных дней</strong></p>
             </div>
           </div>
 
           {/* Certificate Title */}
-          <div className="text-center py-4">
-            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wider">
+          <div className="text-center py-3">
+            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-[#183D35]">
               {request.typeTitle}
             </h1>
           </div>
 
           {/* Main Body Text */}
-          <div className="space-y-4 text-justify font-sans text-sm">
+          <div className="space-y-4 text-justify font-sans text-xs sm:text-sm leading-relaxed text-[#252923]">
             <p>
               Дана настоящая <strong>{request.studentName || 'Студенту'}</strong> в том, что он(а) действительно является студентом <strong>2 курса очной формы обучения</strong> факультета «{UNIVERSITY_INFO.faculty}» федерального государственного автономного образовательного учреждения высшего образования «{UNIVERSITY_INFO.name}», обучающимся по направлению подготовки бакалавриата «Международные отношения».
             </p>
             <p>
-              Обучение осуществляется на основании лицензии на право осуществления образовательной деятельности № 2841 и свидетельства о государственной аккредитации № 3105.
+              Обучение осуществляется на основании лицензии на право осуществления образовательной деятельности № 2841 от 14.04.2021 г. и свидетельства о государственной аккредитации образовательной деятельности № 3105 от 19.05.2021 г., выданных Федеральной службой по надзору в сфере образования и науки.
             </p>
-            {request.data.purpose && (
-              <p>
-                Справка выдана для предъявления по месту требования: <em>{request.data.purpose}</em>.
-              </p>
-            )}
             <p>
-              Ориентировочный срок окончания полного курса обучения — <strong>июнь 2027 года</strong>.
+              Справка выдана для предъявления: <strong>{request.data?.purpose || 'по месту требования'}</strong>.
             </p>
           </div>
 
-          {/* Electronic Stamp & QR Seal */}
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-slate-200">
-            {/* Verification QR */}
-            <div className="flex items-center space-x-3">
-              <div className="w-16 h-16 border-2 border-slate-800 p-1 rounded-lg">
-                <QrCode className="w-full h-full text-slate-900" />
-              </div>
-              <div className="text-[10px] font-sans text-slate-500">
-                <p className="font-bold text-slate-800">Проверка подлинности</p>
-                <p>Отсканируйте камерой смартфона</p>
-                <p className="font-mono text-blue-600">verify.demo.edu/{request.id}</p>
-              </div>
+          {/* Signatures & Official Electronic Cryptographic Seal */}
+          <div className="pt-6 border-t border-[#E3DDD1] grid grid-cols-1 sm:grid-cols-2 gap-4 items-end font-sans">
+            <div className="space-y-1 text-xs">
+              <p className="font-bold text-[#252923]">И.о. Декана факультета</p>
+              <p className="text-[#575F53]">д.полит.н., профессор</p>
+              <p className="font-serif font-bold text-[#183D35] text-sm pt-1">А.В. Смирнов</p>
             </div>
 
-            {/* Blue Digital Signature Stamp Box */}
-            <div className="border-2 border-blue-600 rounded-xl p-3 bg-blue-50/50 text-blue-900 font-sans text-[11px] max-w-xs shadow-sm">
-              <div className="flex items-center space-x-1.5 font-bold text-blue-700 uppercase tracking-tight text-[10px] mb-1">
-                <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                <span>Документ подписан электронной подписью</span>
+            {/* Official Digital Signature Box (ГОСТ Р 34.10-2012) */}
+            <div className="p-3 rounded-lg border-2 border-[#183D35] bg-[#FAF8F3] text-[10px] space-y-1 relative">
+              <div className="flex items-center space-x-1.5 font-bold text-[#183D35]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#183D35]" />
+                <span className="uppercase tracking-wider">ДОКУМЕНТ ПОДПИСАН ЭЦП</span>
               </div>
-              <p><strong>Сертификат:</strong> 00E1035678AB9012CF34900</p>
-              <p><strong>Владелец:</strong> Волкова Мария Викторовна, Деканат</p>
-              <p><strong>Действителен:</strong> с 01.01.2026 по 01.01.2027</p>
+              <p className="font-mono text-[9px] text-[#252923] truncate">
+                Сертификат: 00E10350320A7B202611F30048E
+              </p>
+              <p className="text-[9px] text-[#575F53]">
+                Владелец: ФГАОУ ВО «{UNIVERSITY_INFO.name}»
+              </p>
+              <p className="text-[9px] text-[#575F53]">
+                Действителен: с 01.01.2026 по 01.01.2027
+              </p>
+              <div className="pt-0.5 flex items-center justify-between text-[8px] font-mono text-[#7E877B]">
+                <span>ГОСТ Р 34.10-2012</span>
+                <span className="font-semibold text-[#183D35]">verify.demo.edu/{request.id}</span>
+              </div>
             </div>
-          </div>
-
-          <div className="text-center pt-2 text-[10px] text-slate-400 font-sans">
-            {UNIVERSITY_INFO.disclaimer}
           </div>
         </div>
       </div>

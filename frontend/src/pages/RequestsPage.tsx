@@ -13,6 +13,12 @@ import {
   Send,
   X,
   FileCheck,
+  Building,
+  ShieldCheck,
+  ArrowRight,
+  Eye,
+  FileBadge,
+  Sparkles,
 } from 'lucide-react';
 import { StudentRequest, RequestType } from '../types';
 import { api } from '../services/api';
@@ -92,226 +98,226 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
   };
 
   const statusConfig = {
-    submitted: { label: 'Подано в деканат', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300', icon: Clock },
-    in_review: { label: 'В обработке', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300', icon: Clock },
-    needs_info: { label: 'Требуется уточнение', color: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300', icon: AlertCircle },
-    ready: { label: 'Готово к выдаче / ЭЦП', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300', icon: CheckCircle2 },
-    rejected: { label: 'Отклонено', color: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300', icon: XCircle },
-    cancelled: { label: 'Отозвано студентом', color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400', icon: XCircle },
+    submitted: {
+      label: 'Подано в деканат',
+      color: 'bg-[#FAF8F3] dark:bg-[#121714] text-[#183D35] dark:text-[#C4A46B] border-[#E3DDD1] dark:border-[#2D3E35]',
+      icon: Clock,
+    },
+    in_review: {
+      label: 'На рассмотрении инспектором',
+      color: 'bg-[#C4A46B]/15 text-[#183D35] dark:text-[#C4A46B] border-[#C4A46B]/30',
+      icon: Clock,
+    },
+    needs_info: {
+      label: 'Требуется уточнение данных',
+      color: 'bg-[#A33D35]/10 text-[#A33D35] dark:text-[#E2766E] border-[#A33D35]/30',
+      icon: AlertCircle,
+    },
+    ready: {
+      label: 'Подписано ЭЦП (Готово)',
+      color: 'bg-[#183D35] text-[#F3EFE5] border-[#C4A46B]/40',
+      icon: CheckCircle2,
+    },
+    rejected: {
+      label: 'Отклонено деканатом',
+      color: 'bg-[#A33D35]/15 text-[#A33D35] dark:text-[#E2766E] border-[#A33D35]/30',
+      icon: XCircle,
+    },
+    cancelled: {
+      label: 'Отозвано студентом',
+      color: 'bg-[#7E877B]/10 text-[#7E877B] border-[#7E877B]/30',
+      icon: XCircle,
+    },
   };
 
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-4 animate-pulse">
+        <div className="h-32 bg-[#E3DDD1]/40 dark:bg-[#1A2520] rounded-xl" />
+        <div className="h-96 bg-[#E3DDD1]/40 dark:bg-[#1A2520] rounded-xl" />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
+      {/* ─────────────────────────────────────────────────────────────
+          1. HEADER & ORDER ACTION
+          ───────────────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#E3DDD1] dark:border-[#26362F]">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-            <FileText className="w-6 h-6 text-blue-600" />
-            <span>{lang === 'ru' ? 'Справки и электронные заявления' : 'Applications & Certificates'}</span>
+          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#183D35] dark:text-[#C4A46B] font-semibold mb-1">
+            <span>Канцелярия деканата</span>
+            <span>•</span>
+            <span>Кабинет 312</span>
+            <span>•</span>
+            <span>ЭЦП ГОСТ Р 34.10-2012</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#252923] dark:text-[#F3EFE5]">
+            {lang === 'ru' ? 'Справки и официальные заявления' : 'Official Petitions & Certificates'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Заказ официальных документов онлайн без очередей в деканате
+          <p className="text-xs text-[#575F53] dark:text-[#C8D1CA] font-sans mt-0.5">
+            Заказ справок с усиленной квалифицированной электронной подписью деканата и подача заявлений
           </p>
         </div>
 
         <button
           onClick={() => handleOpenWizard()}
-          className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-500/25 transition-all flex items-center justify-center space-x-2 active:scale-95"
+          className="px-4 py-2 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] font-sans font-semibold text-xs sm:text-sm border border-[#C4A46B]/40 hover:border-[#C4A46B] transition-all flex items-center space-x-2 self-start sm:self-center shadow-xs cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
-          <span>{lang === 'ru' ? 'Подать заявление' : 'New Application'}</span>
+          <Plus className="w-4 h-4 text-[#C4A46B]" />
+          <span>{lang === 'ru' ? 'Подать новое заявление' : 'Order Document'}</span>
         </button>
       </div>
 
-      {/* Available Certificate Types Fast Catalog */}
-      <div className="space-y-3">
-        <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">
-          Популярные документы
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {requestTypes.slice(0, 3).map(type => (
-            <div
-              key={type.code}
-              onClick={() => handleOpenWizard(type)}
-              className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm cursor-pointer transition-all flex flex-col justify-between group"
-            >
-              <div>
-                <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors block mb-1">
-                  {type.title}
-                </span>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
-                  {type.description}
-                </p>
-              </div>
-              <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
-                <span>Срок: {type.slaDays} раб. дня</span>
-                <span className="text-blue-600 font-bold group-hover:translate-x-1 transition-transform">
-                  Оформить →
+      {/* ─────────────────────────────────────────────────────────────
+          2. CERTIFICATE CATALOG (Prestige Registry Grid)
+          ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {requestTypes.map(t => (
+          <div
+            key={t.code}
+            className="p-4 rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] shadow-xs flex flex-col justify-between hover:border-[#183D35] dark:hover:border-[#C4A46B]/60 transition-all space-y-3"
+          >
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-lg bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] flex items-center justify-center">
+                  <FileBadge className="w-4 h-4 text-[#183D35] dark:text-[#C4A46B]" />
+                </div>
+                <span className="text-[10px] font-mono text-[#7E877B]">
+                  Срок: {t.slaDays} дн.
                 </span>
               </div>
+              <h3 className="font-serif font-bold text-sm text-[#252923] dark:text-[#F3EFE5] leading-snug">
+                {t.title}
+              </h3>
+              <p className="text-[11px] text-[#575F53] dark:text-[#C8D1CA] font-sans leading-relaxed">
+                {t.description}
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Student's Requests List */}
-      <div className="space-y-3 pt-2">
-        <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center space-x-2">
-          <FileCheck className="w-4 h-4 text-blue-600" />
-          <span>{lang === 'ru' ? 'Мои поданные заявления' : 'My Requests'}</span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
-            {requests.length}
-          </span>
-        </h3>
-
-        {loading ? (
-          <div className="space-y-3 animate-pulse">
-            <div className="h-28 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-            <div className="h-28 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-          </div>
-        ) : requests.length === 0 ? (
-          /* Empty state - particularly shown for Lina Okafor to demonstrate empty states! */
-          <div className="p-10 text-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-500 flex items-center justify-center mx-auto">
-              <FileText className="w-7 h-7" />
-            </div>
-            <h4 className="font-bold text-base text-slate-800 dark:text-slate-100">
-              У вас пока нет поданных заявлений
-            </h4>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Здесь будут отображаться заказанные справки об обучении, заявления на стипендию и общежитие со статусом рассмотрения деканатом.
-            </p>
             <button
-              onClick={() => handleOpenWizard()}
-              className="mt-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm inline-flex items-center space-x-1.5"
+              onClick={() => handleOpenWizard(t)}
+              className="w-full py-1.5 px-3 rounded-lg bg-[#FAF8F3] dark:bg-[#121714] hover:bg-[#183D35] hover:text-[#F3EFE5] border border-[#E3DDD1] dark:border-[#2D3E35] text-xs font-sans font-medium text-[#183D35] dark:text-[#C4A46B] transition-colors flex items-center justify-center space-x-1 cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
-              <span>Заказать первую справку</span>
+              <span>Заказать</span>
+              <ArrowRight className="w-3 h-3" />
             </button>
           </div>
+        ))}
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          3. MY PETITIONS REGISTRY (Historical Journal)
+          ───────────────────────────────────────────────────────────── */}
+      <section className="bg-white dark:bg-[#18221D] rounded-xl border border-[#E3DDD1] dark:border-[#2D3E35] overflow-hidden shadow-xs">
+        <div className="p-4 sm:p-5 bg-[#FAF8F3] dark:bg-[#121714] border-b border-[#E3DDD1] dark:border-[#26362F] flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <FileText className="w-4 h-4 text-[#183D35] dark:text-[#C4A46B]" />
+            <h3 className="font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#252923] dark:text-[#F3EFE5]">
+              Журнал поданных заявлений ({requests.length})
+            </h3>
+          </div>
+          <span className="text-[11px] font-mono text-[#7E877B]">
+            Архив с 2026 г.
+          </span>
+        </div>
+
+        {requests.length === 0 ? (
+          <div className="p-10 text-center text-xs text-[#7E877B] space-y-2">
+            <FileText className="w-8 h-8 text-[#7E877B] mx-auto opacity-50" />
+            <p className="font-serif font-bold text-sm text-[#252923] dark:text-[#F3EFE5]">
+              У вас пока нет активных заявлений
+            </p>
+            <p>Выберите нужный документ из каталога выше, чтобы оформить заявку.</p>
+          </div>
         ) : (
-          <div className="space-y-3">
+          <div className="divide-y divide-[#E3DDD1] dark:divide-[#26362F]">
             {requests.map(req => {
               const cfg = statusConfig[req.status] || statusConfig.submitted;
               const StatusIcon = cfg.icon;
               const isExpanded = expandedId === req.id;
-              const canCancel = req.status === 'submitted' || req.status === 'in_review';
+              const isReady = req.status === 'ready';
 
               return (
-                <div
-                  key={req.id}
-                  className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all"
-                >
-                  <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div key={req.id} className="p-4 sm:p-5 hover:bg-[#FAF8F3]/50 dark:hover:bg-[#1A2520]/50 transition-colors">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="space-y-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center space-x-1 ${cfg.color}`}>
-                          <StatusIcon className="w-3.5 h-3.5" />
-                          <span>{cfg.label}</span>
-                        </span>
-                        <span className="text-[11px] font-mono text-slate-400">
-                          № {req.id}
-                        </span>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono text-xs text-[#7E877B]">№ {req.id}</span>
+                        <h4 className="font-serif font-bold text-sm sm:text-base text-[#252923] dark:text-[#F3EFE5]">
+                          {req.typeTitle}
+                        </h4>
                       </div>
-
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                        {req.typeTitle}
-                      </h3>
-
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Подано: {new Date(req.createdAt).toLocaleDateString('ru-RU')} • Срок готовности: <strong>{req.expectedDate}</strong>
+                      <p className="text-xs text-[#575F53] dark:text-[#C8D1CA] font-sans">
+                        Подано: <span className="font-mono">{req.createdAt}</span> • Срок исполнения: до <span className="font-mono font-medium">{req.expectedDate}</span>
                       </p>
                     </div>
 
-                    <div className="flex items-center space-x-2 self-end sm:self-center">
-                      {req.status === 'ready' && (
+                    <div className="flex items-center space-x-2.5">
+                      <span className={`px-2.5 py-1 rounded-lg text-xs font-sans font-semibold border flex items-center space-x-1.5 ${cfg.color}`}>
+                        <StatusIcon className="w-3.5 h-3.5" />
+                        <span>{cfg.label}</span>
+                      </span>
+
+                      {isReady && (
                         <button
                           onClick={() => onPreviewCert(req)}
-                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm flex items-center space-x-1.5"
+                          className="px-3 py-1 rounded-lg bg-[#C4A46B] hover:bg-[#D9BD8A] text-[#183D35] text-xs font-sans font-bold flex items-center space-x-1 shadow-xs transition-colors cursor-pointer"
                         >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>Скачать PDF</span>
-                        </button>
-                      )}
-
-                      {canCancel && (
-                        <button
-                          onClick={() => handleCancelRequest(req.id)}
-                          className="px-3 py-1.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-medium transition-colors"
-                        >
-                          Отозвать
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>PDF с ЭЦП</span>
                         </button>
                       )}
 
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : req.id)}
-                        className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                        title="История и детали"
+                        className="p-1.5 rounded-lg text-[#7E877B] hover:text-[#252923] hover:bg-[#FAF8F3] dark:hover:bg-[#121714] transition-colors cursor-pointer"
+                        aria-label="Подробнее"
                       >
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
 
-                  {/* Inspector Comment Highlight (if needs_info) */}
-                  {req.status === 'needs_info' && (
-                    <div className="px-5 py-3 bg-amber-50 dark:bg-amber-950/40 border-t border-amber-200 dark:border-amber-900/60 text-xs text-amber-900 dark:text-amber-200 flex items-start space-x-2">
-                      <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-bold">Комментарий деканата к заявлению:</p>
-                        <p className="mt-0.5">
-                          {req.history[req.history.length - 1]?.comment || 'Требуется предоставить дополнительные сведения.'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Expanded Timeline & Data View */}
+                  {/* Expanded Request Details */}
                   {isExpanded && (
-                    <div className="p-5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800 space-y-4 text-xs">
-                      {/* Submitted Fields */}
-                      <div>
-                        <h4 className="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-1.5">
+                    <div className="mt-4 pt-4 border-t border-[#E3DDD1] dark:border-[#26362F] grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans animate-fade-in">
+                      <div className="space-y-2 bg-[#FAF8F3] dark:bg-[#121714] p-3.5 rounded-lg border border-[#E3DDD1] dark:border-[#2D3E35]">
+                        <span className="font-semibold text-[#183D35] dark:text-[#C4A46B] block">
                           Параметры заявления:
-                        </h4>
-                        <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
-                          {Object.entries(req.data).map(([k, v]) => (
-                            <div key={k} className="flex justify-between py-0.5">
-                              <span className="text-slate-500 capitalize">{k}:</span>
-                              <span className="font-semibold text-slate-800 dark:text-slate-200">{String(v)}</span>
-                            </div>
-                          ))}
-                        </div>
+                        </span>
+                        {req.data && Object.keys(req.data).length > 0 ? (
+                          <div className="space-y-1">
+                            {Object.entries(req.data).map(([k, v]) => (
+                              <p key={k} className="text-[#575F53] dark:text-[#C8D1CA]">
+                                <span className="font-medium text-[#7E877B]">{k}:</span> {String(v)}
+                              </p>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-[#7E877B] italic">Стандартная форма запроса</p>
+                        )}
                       </div>
 
-                      {/* Status History Timeline */}
-                      <div>
-                        <h4 className="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[10px] mb-2">
-                          История обработки деканатом:
-                        </h4>
-                        <div className="space-y-2 border-l-2 border-blue-500 pl-3 ml-1.5">
-                          {req.history.map(h => (
-                            <div key={h.id} className="relative">
-                              <div className="absolute -left-[19px] top-1.5 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white dark:ring-slate-900" />
-                              <div className="flex items-center space-x-2">
-                                <span className="font-bold text-slate-800 dark:text-slate-200">
-                                  {h.status.toUpperCase()}
-                                </span>
-                                <span className="text-[10px] text-slate-400">
-                                  {new Date(h.createdAt).toLocaleString('ru-RU')}
-                                </span>
-                                <span className="text-[10px] font-medium text-blue-600">
-                                  ({h.authorName})
-                                </span>
-                              </div>
-                              {h.comment && (
-                                <p className="text-slate-600 dark:text-slate-400 mt-0.5">
-                                  {h.comment}
-                                </p>
-                              )}
-                            </div>
-                          ))}
+                      <div className="space-y-2 bg-[#FAF8F3] dark:bg-[#121714] p-3.5 rounded-lg border border-[#E3DDD1] dark:border-[#2D3E35] flex flex-col justify-between">
+                        <div>
+                          <span className="font-semibold text-[#183D35] dark:text-[#C4A46B] block">
+                            Служебные отметки инспектора:
+                          </span>
+                          <p className="text-[#575F53] dark:text-[#C8D1CA] mt-1">
+                            {req.history?.[req.history.length - 1]?.comment || 'Заявление принято в работу канцелярией. Проводится верификация данных.'}
+                          </p>
                         </div>
+
+                        {req.status === 'submitted' && (
+                          <button
+                            onClick={() => handleCancelRequest(req.id)}
+                            className="text-xs text-[#A33D35] hover:underline self-start pt-2 cursor-pointer"
+                          >
+                            Отозвать заявление
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -320,111 +326,89 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
             })}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Dynamic New Request Wizard Modal */}
+      {/* ─────────────────────────────────────────────────────────────
+          4. ORDER WIZARD MODAL
+          ───────────────────────────────────────────────────────────── */}
       {isWizardOpen && selectedType && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col my-auto">
-            {/* Modal Header */}
-            <div className="p-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-base">Оформление заявления</h3>
-                <p className="text-xs text-blue-100">{selectedType.title}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="relative w-full max-w-lg bg-white dark:bg-[#18221D] rounded-xl border border-[#E3DDD1] dark:border-[#2D3E35] shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E3DDD1] dark:border-[#26362F]">
+              <div className="flex items-center space-x-2">
+                <FileBadge className="w-5 h-5 text-[#183D35] dark:text-[#C4A46B]" />
+                <h3 className="font-serif font-bold text-base text-[#252923] dark:text-[#F3EFE5]">
+                  {selectedType.title}
+                </h3>
               </div>
               <button
                 onClick={() => setIsWizardOpen(false)}
-                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                className="text-[#7E877B] hover:text-[#252923] p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmitRequest} className="p-5 sm:p-6 space-y-4 text-xs sm:text-sm">
-              {/* Type Switcher */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Тип документа
-                </label>
-                <select
-                  value={selectedType.code}
-                  onChange={e => {
-                    const found = requestTypes.find(t => t.code === e.target.value);
-                    if (found) setSelectedType(found);
-                  }}
-                  className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                >
-                  {requestTypes.map(t => (
-                    <option key={t.code} value={t.code}>
-                      {t.title} (Срок: {t.slaDays} дн.)
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <p className="text-xs text-[#575F53] dark:text-[#C8D1CA] font-sans">
+              {selectedType.description} Срок оформления: <strong>до {selectedType.slaDays} рабочих дней</strong>.
+            </p>
 
-              {/* Dynamic Fields */}
-              {selectedType.fields.map(f => (
-                <div key={f.name}>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    {f.label} {f.required && <span className="text-red-500">*</span>}
+            <form onSubmit={handleSubmitRequest} className="space-y-4 text-xs font-sans">
+              {selectedType.fields?.map(field => (
+                <div key={field.name}>
+                  <label className="block font-medium text-[#252923] dark:text-[#F3EFE5] mb-1">
+                    {field.label} {field.required && <span className="text-[#A33D35]">*</span>}
                   </label>
-
-                  {f.type === 'select' ? (
+                  {field.type === 'select' ? (
                     <select
-                      required={f.required}
-                      value={formData[f.name] || ''}
-                      onChange={e => handleFieldChange(f.name, e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      required={field.required}
+                      value={formData[field.name] || ''}
+                      onChange={e => handleFieldChange(field.name, e.target.value)}
+                      className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg p-2.5 text-xs text-[#252923] dark:text-[#F3EFE5]"
                     >
                       <option value="">Выберите вариант...</option>
-                      {f.options?.map(opt => (
+                      {field.options?.map(opt => (
                         <option key={opt} value={opt}>
                           {opt}
                         </option>
                       ))}
                     </select>
-                  ) : f.type === 'textarea' ? (
+                  ) : field.type === 'textarea' ? (
                     <textarea
-                      required={f.required}
                       rows={3}
-                      placeholder={f.placeholder}
-                      value={formData[f.name] || ''}
-                      onChange={e => handleFieldChange(f.name, e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      required={field.required}
+                      placeholder={field.placeholder}
+                      value={formData[field.name] || ''}
+                      onChange={e => handleFieldChange(field.name, e.target.value)}
+                      className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg p-2.5 text-xs text-[#252923] dark:text-[#F3EFE5]"
                     />
                   ) : (
                     <input
-                      type={f.type}
-                      required={f.required}
-                      placeholder={f.placeholder}
-                      value={formData[f.name] || ''}
-                      onChange={e => handleFieldChange(f.name, e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      type={field.type}
+                      required={field.required}
+                      placeholder={field.placeholder}
+                      value={formData[field.name] || ''}
+                      onChange={e => handleFieldChange(field.name, e.target.value)}
+                      className="w-full bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] rounded-lg p-2.5 text-xs text-[#252923] dark:text-[#F3EFE5]"
                     />
                   )}
                 </div>
               ))}
 
-              <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 text-xs">
-                Заявление будет зарегистрировано в автоматизированной системе деканата. Уведомление о готовности поступит в ваш личный кабинет.
-              </div>
-
-              {/* Submit Buttons */}
-              <div className="flex items-center justify-end space-x-2 pt-2">
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-[#E3DDD1] dark:border-[#26362F]">
                 <button
                   type="button"
                   onClick={() => setIsWizardOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="px-3.5 py-2 rounded-lg border border-[#E3DDD1] text-xs font-sans text-[#7E877B] cursor-pointer"
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-500/20 flex items-center space-x-2 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#183D35] text-[#F3EFE5] text-xs font-sans font-semibold hover:bg-[#102923] flex items-center space-x-1.5 cursor-pointer"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-3.5 h-3.5 text-[#C4A46B]" />
                   <span>{submitting ? 'Отправка...' : 'Отправить в деканат'}</span>
                 </button>
               </div>

@@ -1,0 +1,17 @@
+{
+  "name": "DemoTech University • Цифровой деканат",
+  "short_name": "DemoTech",
+  "description": "Цифровой деканат DemoTech University: личный кабинет студента, расписание, зачетная книжка, справки с ЭЦП и консультант деканата.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#102923",
+  "theme_color": "#183D35",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

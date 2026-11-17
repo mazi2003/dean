@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
@@ -7,6 +7,7 @@ import { Footer } from './components/Footer';
 import { StudentCardModal } from './components/StudentCardModal';
 import { AssistantModal } from './components/AssistantModal';
 import { CertificatePreviewModal } from './components/CertificatePreviewModal';
+import { UniversityEmblem } from './components/UniversityEmblem';
 
 import { LoginPage } from './pages/LoginPage';
 import { TodayPage } from './pages/TodayPage';
@@ -16,26 +17,81 @@ import { RequestsPage } from './pages/RequestsPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { StaffDashboardPage } from './pages/StaffDashboardPage';
+import { StaffStudentsPage } from './pages/StaffStudentsPage';
 import { StudentRequest } from './types';
 
 const MainLayout: React.FC = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, lang } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('today');
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [certToPreview, setCertToPreview] = useState<StudentRequest | null>(null);
+  const [announcePrefill, setAnnouncePrefill] = useState<{ group?: string; studentId?: string; studentName?: string }>({});
+
+  // Dynamic browser tab title
+  useEffect(() => {
+    if (!user) {
+      document.title = lang === 'ru' ? 'Вход • DemoTech University' : 'Sign In • DemoTech University';
+      return;
+    }
+
+    const titlesRu: Record<string, string> = {
+      today: 'Главная',
+      schedule: 'Расписание',
+      grades: 'Оценки',
+      requests: 'Справки',
+      notifications: 'Уведомления',
+      profile: 'Профиль',
+      staff_requests: 'АРМ Деканата',
+      staff_students: 'Группы и студенты',
+      staff_actions: 'Приказы',
+    };
+
+    const titlesEn: Record<string, string> = {
+      today: 'Dashboard',
+      schedule: 'Schedule',
+      grades: 'Grades',
+      requests: 'Requests',
+      notifications: 'Alerts',
+      profile: 'Profile',
+      staff_requests: 'Registry',
+      staff_students: 'Groups & Students',
+      staff_actions: 'Orders',
+    };
+
+    const map = lang === 'ru' ? titlesRu : titlesEn;
+    const pageLabel = map[activeTab] || 'Деканат';
+    document.title = `${pageLabel} • DemoTech`;
+  }, [activeTab, user, lang]);
+
+  // Sync role-based initial tabs
+  useEffect(() => {
+    if (user?.role === 'staff') {
+      if (activeTab === 'today' || activeTab === 'grades' || activeTab === 'requests') {
+        setActiveTab('staff_requests');
+      }
+    } else if (user?.role === 'student') {
+      if (activeTab === 'staff_requests' || activeTab === 'staff_actions') {
+        setActiveTab('today');
+      }
+    }
+  }, [user?.role]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <div className="flex flex-col items-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white animate-spin">
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-            </svg>
+      <div className="min-h-screen flex items-center justify-center bg-[#F6F3EB] dark:bg-[#111614] transition-colors">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-16 h-16 rounded-xl bg-[#183D35] border border-[#C4A46B]/60 flex items-center justify-center p-2 shadow-md">
+            <UniversityEmblem size={44} />
           </div>
-          <p className="text-xs text-slate-500 font-medium">Загрузка цифрового деканата...</p>
+          <div className="text-center space-y-1">
+            <p className="font-serif font-bold text-sm text-[#183D35] dark:text-[#C4A46B] tracking-tight">
+              DemoTech University
+            </p>
+            <p className="text-xs text-[#7E877B] dark:text-[#8E9B93] font-sans">
+              Загрузка цифрового деканата...
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -46,7 +102,7 @@ const MainLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-[#F6F3EB] dark:bg-[#111614] text-[#252923] dark:text-[#F3EFE5] transition-colors">
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -80,8 +136,22 @@ const MainLayout: React.FC = () => {
             <NotificationsPage setActiveTab={setActiveTab} />
           )}
           {activeTab === 'profile' && <ProfilePage />}
+          {activeTab === 'staff_students' && (
+            <StaffStudentsPage
+              onOpenAnnouncement={(group, studentId, studentName) => {
+                setAnnouncePrefill({ group, studentId, studentName });
+                setActiveTab('staff_actions');
+              }}
+            />
+          )}
           {(activeTab === 'staff_requests' || activeTab === 'staff_actions') && (
-            <StaffDashboardPage />
+            <StaffDashboardPage
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              initialAnnounceTarget={announcePrefill.group}
+              initialAnnounceStudentId={announcePrefill.studentId}
+              initialAnnounceStudentName={announcePrefill.studentName}
+            />
           )}
         </main>
       </div>

@@ -28,6 +28,8 @@ export interface ScheduleEntry {
   dayOfWeek?: number; // 1-6 (Mon-Sat)
   start: string; // '08:30'
   end: string; // '10:05'
+  startTime?: string;
+  endTime?: string;
   subject: string;
   type: ScheduleType;
   room: string;
@@ -135,3 +137,66 @@ export interface Notification {
   link?: string;
   priority?: 'normal' | 'high' | 'urgent';
 }
+
+export interface StaffAnnouncement {
+  id: string;
+  title: string;
+  body: string;
+  targetGroup: string;
+  priority: 'normal' | 'high' | 'urgent';
+  kind: NotificationKind;
+  createdAt: string;
+  recipientCount: number;
+  recipients?: string[];
+}
+
+export interface AcademicGroup {
+  id: string;
+  code: string;
+  program: string;
+  faculty: string;
+  year: number;
+  courseNumber: number;
+  studentsCount: number;
+  budgetCount: number;
+  contractCount: number;
+  curatorName?: string;
+  curatorContact?: string;
+  starostaName?: string;
+  starostaEmail?: string;
+  starostaPhone?: string;
+  averageGpa: number;
+  debtCount: number;
+}
+
+export interface StudentListItem {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  group: string;
+  year: number;
+  studentNumber: string;
+  studyForm: 'Бюджет' | 'Контракт';
+  gpa: number;
+  averageScore: number;
+  debtCount: number;
+  debtSubjects?: string[];
+  isStarosta?: boolean;
+  avatarUrl?: string;
+  status: 'active' | 'academic_leave' | 'expelled';
+}
+
+export interface StudentDossier {
+  profile: StudentListItem & {
+    faculty: string;
+    program: string;
+    admissionYear: number;
+    recordBookNumber: string;
+    dormitoryInfo?: string;
+    snils?: string;
+  };
+  gradesSummary: GradesSummary;
+  requests: StudentRequest[];
+}
+

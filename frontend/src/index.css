@@ -1,24 +1,54 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+  --font-display: 'Cinzel', 'Crimson Pro', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-academic-green: #183D35;
+  --color-academic-green-dark: #102923;
+  --color-academic-green-light: #23554A;
+  --color-warm-ivory: #F3EFE5;
+  --color-warm-ivory-light: #FAF8F3;
+  --color-burgundy: #A33D35;
+  --color-burgundy-light: #BD483F;
+  --color-charcoal: #252923;
+  --color-charcoal-muted: #596155;
+  --color-antique-gold: #C4A46B;
+  --color-antique-gold-light: #D8BD8A;
+  --color-pure-white: #FFFFFF;
+}
+
 @layer base {
   :root {
-    --bg-primary: #f8fafc;
-    --bg-card: #ffffff;
-    --text-primary: #0f172a;
-    --text-muted: #64748b;
-    --border-subtle: #e2e8f0;
-    --brand-primary: #3b82f6;
-    --brand-dark: #1d4ed8;
+    --bg-primary: #F6F3EB;
+    --bg-surface: #FFFFFF;
+    --bg-surface-subtle: #FAF7F0;
+    --text-primary: #252923;
+    --text-secondary: #575F53;
+    --text-muted: #838C7E;
+    --border-subtle: #E3DDD1;
+    --border-strong: #CDC4B3;
+    --accent-green: #183D35;
+    --accent-gold: #C4A46B;
+    --accent-burgundy: #A33D35;
   }
 
   .dark {
-    --bg-primary: #0b0f19;
-    --bg-card: #151c2c;
-    --text-primary: #f1f5f9;
-    --text-muted: #94a3b8;
-    --border-subtle: #242f44;
-    --brand-primary: #60a5fa;
-    --brand-dark: #3b82f6;
+    --bg-primary: #111614;
+    --bg-surface: #18221D;
+    --bg-surface-subtle: #1F2C26;
+    --text-primary: #F3EFE5;
+    --text-secondary: #C8D1CA;
+    --text-muted: #8E9B93;
+    --border-subtle: #273830;
+    --border-strong: #384F44;
+    --accent-green: #2B695C;
+    --accent-gold: #D4B87C;
+    --accent-burgundy: #C95A50;
   }
 
   * {
@@ -28,15 +58,19 @@
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-sans);
     min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
   }
+
+  h1, h2, h3, .font-academic-serif {
+    font-family: var(--font-serif);
+  }
 }
 
-/* Custom scrollbar for modern feel */
+/* Custom scrollbar for modern architectural feel */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -45,9 +79,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: rgba(196, 164, 107, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
+  background: rgba(196, 164, 107, 0.6);
 }

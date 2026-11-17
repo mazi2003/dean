@@ -11,159 +11,199 @@ import {
   Lock,
   LogOut,
   Award,
+  ShieldCheck,
+  GraduationCap,
+  Calendar,
+  FileCheck2,
+  Megaphone,
+  QrCode,
+  KeyRound,
+  CheckCircle2,
+  FileBadge,
 } from 'lucide-react';
 import { UNIVERSITY_INFO } from '../services/mockData';
+import { UniversityEmblem } from '../components/UniversityEmblem';
 
 export const ProfilePage: React.FC = () => {
   const { user, profile, logout, lang } = useAuth();
+  const isStaff = user?.role === 'staff';
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
-      {/* Profile Card Header */}
-      <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
-          <img
-            src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160'}
-            alt=""
-            className="w-24 h-24 rounded-2xl object-cover ring-4 ring-blue-500/30 shadow-md"
-          />
+    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+      {/* ─────────────────────────────────────────────────────────────
+          1. ACADEMIC DOSSIER HEADER
+          ───────────────────────────────────────────────────────────── */}
+      <div className="rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] p-6 sm:p-8 shadow-xs relative overflow-hidden">
+        {/* Subtle decorative watermark */}
+        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-5 dark:opacity-10 pointer-events-none">
+          <UniversityEmblem size={180} variant="full" />
+        </div>
+
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
+          <div className="relative">
+            <img
+              src={profile?.avatarUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160'}
+              alt={user?.fullName}
+              className="w-24 h-24 rounded-xl object-cover border-2 border-[#C4A46B]/70 shadow-sm"
+            />
+            <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#183D35] border border-[#C4A46B] flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#C4A46B]" />
+            </span>
+          </div>
 
           <div className="flex-1 space-y-2">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">
-                {user?.role === 'staff' ? 'Сотрудник деканата' : `Группа ${profile?.group}`}
+              <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#183D35]/15 text-[#183D35] dark:text-[#C4A46B] border border-[#183D35]/30">
+                {isStaff ? '🏛️ Сотрудник деканата' : `Группа ${profile?.group}`}
               </span>
-              {user?.role === 'student' && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300">
-                  {profile?.studyForm || 'Бюджет'}
+              {isStaff ? (
+                <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#C4A46B]/20 text-[#183D35] dark:text-[#C4A46B] border border-[#C4A46B]/40">
+                  Статус: Аккредитованный администратор
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#C4A46B]/20 text-[#183D35] dark:text-[#C4A46B] border border-[#C4A46B]/40">
+                  {profile?.year} курс • {profile?.studyForm || 'Бюджет'}
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#252923] dark:text-[#F3EFE5]">
               {user?.fullName}
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              {profile?.program}
+            <p className="text-xs sm:text-sm text-[#575F53] dark:text-[#C8D1CA] font-sans">
+              {profile?.program} • {profile?.faculty}
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-slate-500">
-              <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
-                Студбилет: {profile?.studentNumber}
-              </span>
+            <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-xs font-mono text-[#7E877B] dark:text-[#8E9B93]">
+              <span>ID: {user?.id}</span>
+              <span>•</span>
               <span>Email: {user?.email}</span>
+              {!isStaff && (
+                <>
+                  <span>•</span>
+                  <span>Студбилет: {profile?.studentNumber}</span>
+                </>
+              )}
             </div>
           </div>
 
           <button
             onClick={logout}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-800 transition-colors flex items-center space-x-1.5"
+            className="px-4 py-2 rounded-lg bg-[#FAF8F3] dark:bg-[#121714] hover:bg-[#A33D35]/10 hover:text-[#A33D35] border border-[#E3DDD1] dark:border-[#2D3E35] text-xs font-sans font-medium transition-colors flex items-center space-x-1.5 self-center sm:self-start cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
-            <span>Выйти</span>
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Выйти из кабинета</span>
           </button>
         </div>
       </div>
 
-      {/* Academic Details (if student) */}
-      {user?.role === 'student' && (
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-          <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center space-x-2">
-            <Award className="w-4 h-4 text-blue-600" />
-            <span>Учебная карточка студента</span>
+      {/* ─────────────────────────────────────────────────────────────
+          2. DOSSIER DETAILS GRID
+          ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Academic Enrollment Info */}
+        <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] shadow-xs space-y-4">
+          <h3 className="font-serif font-bold text-sm text-[#252923] dark:text-[#F3EFE5] pb-2 border-b border-[#E3DDD1] dark:border-[#26362F] flex items-center space-x-2">
+            <GraduationCap className="w-4 h-4 text-[#183D35] dark:text-[#C4A46B]" />
+            <span>
+              {isStaff ? 'Служебные реквизиты сотрудника' : 'Учебные реквизиты студента'}
+            </span>
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 space-y-1">
-              <span className="text-slate-400">Факультет:</span>
-              <p className="font-semibold text-slate-900 dark:text-white">{profile?.faculty}</p>
+          <div className="space-y-2.5 text-xs font-sans">
+            <div className="flex justify-between py-1 border-b border-[#E3DDD1]/50 dark:border-[#26362F]">
+              <span className="text-[#7E877B]">Учебное заведение:</span>
+              <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">{UNIVERSITY_INFO.nameEn}</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 space-y-1">
-              <span className="text-slate-400">Направление подготовки:</span>
-              <p className="font-semibold text-slate-900 dark:text-white">{profile?.program}</p>
+            <div className="flex justify-between py-1 border-b border-[#E3DDD1]/50 dark:border-[#26362F]">
+              <span className="text-[#7E877B]">Факультет:</span>
+              <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">{profile?.faculty}</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 space-y-1">
-              <span className="text-slate-400">Курс и группа:</span>
-              <p className="font-semibold text-slate-900 dark:text-white">{profile?.year} курс, группа {profile?.group}</p>
+            <div className="flex justify-between py-1 border-b border-[#E3DDD1]/50 dark:border-[#26362F]">
+              <span className="text-[#7E877B]">Направление:</span>
+              <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">{profile?.program}</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 space-y-1">
-              <span className="text-slate-400">Форма финансирования:</span>
-              <p className="font-semibold text-slate-900 dark:text-white">{profile?.studyForm || 'Бюджетная основа'}</p>
-            </div>
+            {!isStaff ? (
+              <>
+                <div className="flex justify-between py-1 border-b border-[#E3DDD1]/50 dark:border-[#26362F]">
+                  <span className="text-[#7E877B]">Академическая группа:</span>
+                  <span className="font-mono font-bold text-[#183D35] dark:text-[#C4A46B]">{profile?.group}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-[#E3DDD1]/50 dark:border-[#26362F]">
+                  <span className="text-[#7E877B]">Форма обучения:</span>
+                  <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">{profile?.studyForm || 'Очная'}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-[#7E877B]">Номер студенческого билета:</span>
+                  <span className="font-mono font-bold text-[#183D35] dark:text-[#C4A46B]">{profile?.studentNumber}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between py-1 border-b border-[#E3DDD1]/50 dark:border-[#26362F]">
+                  <span className="text-[#7E877B]">Табельный номер:</span>
+                  <span className="font-mono font-bold text-[#183D35] dark:text-[#C4A46B]">ТАБ-0441</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-[#E3DDD1]/50 dark:border-[#26362F]">
+                  <span className="text-[#7E877B]">Должность:</span>
+                  <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">Зам. декана по УМР</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-[#7E877B]">Кабинет и часы приема:</span>
+                  <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">Каб. 312 • Пн-Пт 9-18</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
-      )}
 
-      {/* Security & Data Protection Guarantee */}
-      <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-        <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center space-x-2">
-          <Shield className="w-4 h-4 text-emerald-500" />
-          <span>Безопасность и защита персональных данных</span>
-        </h3>
+        {/* Digital Identity & Security Certificate (GOST R 34.10) */}
+        <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] shadow-xs space-y-4">
+          <h3 className="font-serif font-bold text-sm text-[#252923] dark:text-[#F3EFE5] pb-2 border-b border-[#E3DDD1] dark:border-[#26362F] flex items-center space-x-2">
+            <ShieldCheck className="w-4 h-4 text-[#183D35] dark:text-[#C4A46B]" />
+            <span>Цифровой сертификат и безопасность</span>
+          </h3>
 
-        <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
-          <div className="flex items-start space-x-2.5">
-            <Lock className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-            <p>
-              <strong>Строгая изоляция сессий:</strong> Каждый студент имеет доступ исключительно к своим оценкам, расписанию и заказанным справкам. Прямые обращения к чужим идентификаторам блокируются на уровне сервера.
-            </p>
-          </div>
-          <div className="flex items-start space-x-2.5">
-            <Lock className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-            <p>
-              <strong>Криптографическая защита:</strong> Пароли хешируются с использованием алгоритма Argon2id. Аутентификация осуществляется через безопасные httpOnly-куки с флагами SameSite=Lax.
-            </p>
-          </div>
-          <div className="flex items-start space-x-2.5">
-            <Shield className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-            <p>
-              <strong>Вымышленные данные:</strong> Прототип использует исключительно демонстрационные данные. Никакие реальные персональные данные не хранятся и не обрабатываются.
-            </p>
+          <div className="space-y-3 text-xs font-sans">
+            <div className="p-3 rounded-lg bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] space-y-1">
+              <span className="text-[10px] uppercase font-mono text-[#7E877B] block">Стандарт криптографической подписи</span>
+              <span className="font-mono font-semibold text-[#183D35] dark:text-[#C4A46B]">
+                ГОСТ Р 34.10-2012 / 34.11-2012
+              </span>
+              <p className="text-[11px] text-[#575F53] dark:text-[#C8D1CA]">
+                Усиленная квалифицированная ЭЦП деканата для справок и приказов.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-lg bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] space-y-1">
+              <span className="text-[10px] uppercase font-mono text-[#7E877B] block">Удостоверяющий центр</span>
+              <span className="font-semibold text-[#252923] dark:text-[#F3EFE5]">
+                УЦ «DemoTech Root Certification Authority»
+              </span>
+              <p className="text-[11px] text-[#7E877B] font-mono">
+                Серийный номер: 77AA-9402-E12F-2026-REG
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2 text-[11px] text-[#183D35] dark:text-[#C4A46B]">
+              <Lock className="w-3.5 h-3.5" />
+              <span>Сессионная изоляция персональных данных активна</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Dean's Office Contact Directory */}
-      <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-        <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center space-x-2">
-          <Building className="w-4 h-4 text-blue-600" />
-          <span>Контакты и график работы деканата</span>
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="flex items-center space-x-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
-            <Clock className="w-4 h-4 text-blue-500 flex-shrink-0" />
-            <div>
-              <p className="font-semibold text-slate-900 dark:text-white">Часы приема:</p>
-              <p className="text-slate-500">{UNIVERSITY_INFO.deanOfficeHours}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
-            <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
-            <div>
-              <p className="font-semibold text-slate-900 dark:text-white">Кабинет деканата:</p>
-              <p className="text-slate-500">{UNIVERSITY_INFO.deanOfficeLocation}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
-            <Mail className="w-4 h-4 text-blue-500 flex-shrink-0" />
-            <div>
-              <p className="font-semibold text-slate-900 dark:text-white">Электронная почта:</p>
-              <p className="text-slate-500">{UNIVERSITY_INFO.deanOfficeEmail}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
-            <Phone className="w-4 h-4 text-blue-500 flex-shrink-0" />
-            <div>
-              <p className="font-semibold text-slate-900 dark:text-white">Телефон деканата:</p>
-              <p className="text-slate-500">{UNIVERSITY_INFO.deanOfficePhone}</p>
-            </div>
-          </div>
-        </div>
+      {/* ─────────────────────────────────────────────────────────────
+          3. REGULATORY COMPLIANCE MEMORANDUM
+          ───────────────────────────────────────────────────────────── */}
+      <div className="p-5 rounded-xl bg-[#FAF8F3] dark:bg-[#15201A] border border-[#E3DDD1] dark:border-[#2D3E35] text-xs font-sans text-[#7E877B] dark:text-[#8E9B93] space-y-2">
+        <h4 className="font-serif font-bold text-sm text-[#252923] dark:text-[#F3EFE5]">
+          Регламент обработки персональных данных и статус концепта
+        </h4>
+        <p className="leading-relaxed">
+          Настоящий веб-сервис «Цифровой деканат DemoTech University» является конкурсным концептом студенческого портала. Все представленные персональные данные, номера приказов, зачетные книжки и оценки являются учебными и вымышленными. Система не хранит конфиденциальные данные реальных физических лиц.
+        </p>
       </div>
     </div>
   );

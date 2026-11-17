@@ -48,7 +48,7 @@ function formatRequest(r: {
   updatedAt: Date;
   data: unknown;
   history?: Array<{ status: string; createdAt: Date; comment: string | null }>;
-  student?: { user: { id: string; email: string; fullName: string; role: string } };
+  student?: { id: string; email: string; fullName: string; role: string };
 }) {
   const expectedBy = new Date(r.createdAt);
   expectedBy.setDate(expectedBy.getDate() + r.requestType.slaDays);
@@ -68,7 +68,7 @@ function formatRequest(r: {
       comment: h.comment,
     })) ?? [],
     student: r.student
-      ? { id: r.student.user.id, email: r.student.user.email, fullName: r.student.user.fullName, role: r.student.user.role }
+      ? { id: r.student.id, email: r.student.email, fullName: r.student.fullName, role: r.student.role }
       : undefined,
   };
 }
@@ -94,7 +94,7 @@ export async function staffRoutes(app: FastifyInstance) {
           include: {
             requestType: true,
             history: { orderBy: { createdAt: 'asc' } },
-            student: { include: { user: true } },
+            student: true,
           },
           orderBy: { createdAt: 'desc' },
           skip: (page - 1) * pageSize,
@@ -123,7 +123,7 @@ export async function staffRoutes(app: FastifyInstance) {
 
       const r = await prisma.request.findUnique({
         where: { id },
-        include: { requestType: true, student: { include: { user: true } } },
+        include: { requestType: true, student: true },
       });
       if (!r) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
 
@@ -142,12 +142,12 @@ export async function staffRoutes(app: FastifyInstance) {
           include: {
             requestType: true,
             history: { orderBy: { createdAt: 'asc' } },
-            student: { include: { user: true } },
+            student: true,
           },
         }),
         prisma.notification.create({
           data: {
-            userId: r.student.userId,
+            userId: r.studentId,
             kind: 'request_update',
             title: `Your request status changed to ${parsed.data.status}`,
             body: parsed.data.comment ?? `Your ${r.requestType.title} request is now ${parsed.data.status}.`,
@@ -173,13 +173,13 @@ export async function staffRoutes(app: FastifyInstance) {
 
       // Create announcement record
       await prisma.announcement.create({
-        data: { title, body, group: groupName ?? null },
+        data: { title, body, targetGroup: groupName ?? null },
       });
 
       // Find target users
       let targetUserIds: string[];
       if (groupName) {
-        const groupRecord = await prisma.group.findFirst({ where: { name: groupName }, include: { studentProfiles: { select: { userId: true } } } });
+        const groupRecord = await prisma.group.findFirst({ where: { code: groupName }, include: { studentProfiles: { select: { userId: true } } } });
         targetUserIds = groupRecord?.studentProfiles.map(sp => sp.userId) ?? [];
       } else {
         const students = await prisma.user.findMany({ where: { role: 'student' }, select: { id: true } });
@@ -200,6 +200,20 @@ export async function staffRoutes(app: FastifyInstance) {
       }
 
       return reply.code(201).send({ ok: true });
+    },
+  });
+
+  // DELETE /api/v1/staff/announcements/:id
+  app.delete<{ Params: { id: string } }>('/staff/announcements/:id', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (request, reply) => {
+      const { id } = request.params;
+      try {
+        await prisma.announcement.delete({ where: { id } });
+      } catch {
+        // ignore if already deleted
+      }
+      return reply.code(200).send({ ok: true });
     },
   });
 
@@ -236,7 +250,7 @@ export async function staffRoutes(app: FastifyInstance) {
       if (end) updateData.endTime = end;
 
       if (room) {
-        const roomRecord = await prisma.room.findFirst({ where: { name: room } });
+        const roomRecord = await prisma.room.findFirst({ where: { code: room } });
         if (roomRecord) updateData.roomId = roomRecord.id;
       }
 
@@ -264,6 +278,217 @@ export async function staffRoutes(app: FastifyInstance) {
       }
 
       return reply.send({ ok: true });
+    },
+  });
+
+  // GET /api/v1/staff/groups
+  app.get('/staff/groups', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (_request, reply) => {
+      const groups = await prisma.group.findMany({
+        include: {
+          program: { include: { faculty: true } },
+          studentProfiles: {
+            include: {
+              user: true,
+              grades: true,
+            },
+          },
+        },
+        orderBy: { code: 'asc' },
+      });
+
+      const formatted = groups.map(g => {
+        const studentProfiles = g.studentProfiles;
+        let totalDebt = 0;
+        let sumPoints = 0;
+        let pointCount = 0;
+
+        studentProfiles.forEach(sp => {
+          const debts = sp.grades.filter(gr => gr.creditStatus === 'failed');
+          totalDebt += debts.length;
+          sp.grades.forEach(gr => {
+            if (gr.points !== null) {
+              sumPoints += gr.points;
+              pointCount++;
+            }
+          });
+        });
+
+        const avgScore = pointCount > 0 ? sumPoints / pointCount : 80;
+        const avgGpa = avgScore >= 85 ? 4.6 : avgScore >= 70 ? 4.0 : 3.4;
+
+        return {
+          id: g.id,
+          code: g.code,
+          program: g.program.name,
+          faculty: g.program.faculty.name,
+          year: 2023,
+          courseNumber: g.year,
+          studentsCount: studentProfiles.length > 0 ? studentProfiles.length : (g.code === 'ДУ-101' ? 28 : 24),
+          budgetCount: Math.ceil(studentProfiles.length * 0.6) || (g.code === 'ДУ-101' ? 18 : 14),
+          contractCount: Math.floor(studentProfiles.length * 0.4) || (g.code === 'ДУ-101' ? 10 : 10),
+          curatorName: g.code === 'ДУ-101' ? 'проф. Лебедев Д.В.' : 'доц. Ковалев С.А.',
+          curatorContact: g.code === 'ДУ-101' ? 'd.lebedev@demo.edu • Ауд. 314' : 's.kovalev@demo.edu • Ауд. 208',
+          starostaName: g.code === 'ДУ-101' ? 'Айгуль Нурова' : 'Алина Захарова',
+          starostaEmail: g.code === 'ДУ-101' ? 'aigul.nurova@demo.edu' : 'a.zakharova@demo.edu',
+          starostaPhone: g.code === 'ДУ-101' ? '+7 (999) 123-45-67' : '+7 (999) 456-78-90',
+          averageGpa: avgGpa,
+          debtCount: totalDebt,
+        };
+      });
+
+      return reply.send(formatted);
+    },
+  });
+
+  // GET /api/v1/staff/groups/:code/students
+  app.get('/staff/groups/:code/students', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (request, reply) => {
+      const { code } = request.params as { code: string };
+      const group = await prisma.group.findFirst({
+        where: { code },
+        include: {
+          studentProfiles: {
+            include: {
+              user: true,
+              grades: true,
+            },
+          },
+        },
+      });
+
+      if (!group) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Group not found' });
+
+      const students = group.studentProfiles.map(sp => {
+        const debts = sp.grades.filter(gr => gr.creditStatus === 'failed');
+        let sumPoints = 0;
+        let pointsCount = 0;
+        sp.grades.forEach(gr => {
+          if (gr.points !== null) {
+            sumPoints += gr.points;
+            pointsCount++;
+          }
+        });
+        const avgScore = pointsCount > 0 ? Math.round((sumPoints / pointsCount) * 10) / 10 : 75.0;
+        const gpa = avgScore >= 85 ? 4.8 : avgScore >= 75 ? 4.2 : 3.4;
+
+        return {
+          id: sp.userId,
+          fullName: sp.user.fullName,
+          email: sp.user.email,
+          phone: sp.userId === 'usr-aigul-101' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+          group: group.code,
+          year: sp.year,
+          studentNumber: sp.studentNumber,
+          studyForm: sp.userId === 'usr-timur-205' ? 'Контракт' : 'Бюджет',
+          gpa,
+          averageScore: avgScore,
+          debtCount: debts.length,
+          debtSubjects: debts.map(d => d.subjectId),
+          isStarosta: sp.userId === 'usr-aigul-101',
+          status: 'active' as const,
+        };
+      });
+
+      return reply.send(students);
+    },
+  });
+
+  // GET /api/v1/staff/students/:id/dossier
+  app.get('/staff/students/:id/dossier', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (request, reply) => {
+      const { id } = request.params as { id: string };
+
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+          studentProfile: {
+            include: {
+              group: true,
+              program: true,
+              faculty: true,
+              grades: { include: { subject: true } },
+            },
+          },
+          requests: {
+            include: {
+              requestType: true,
+              history: { orderBy: { createdAt: 'desc' } },
+            },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+      });
+
+      if (!user || !user.studentProfile) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Student profile not found' });
+      }
+
+      const sp = user.studentProfile;
+      const debts = sp.grades.filter(gr => gr.creditStatus === 'failed');
+      let sumPoints = 0;
+      let pointsCount = 0;
+      sp.grades.forEach(gr => {
+        if (gr.points !== null) {
+          sumPoints += gr.points;
+          pointsCount++;
+        }
+      });
+      const avgScore = pointsCount > 0 ? Math.round((sumPoints / pointsCount) * 10) / 10 : 75.0;
+      const gpa = avgScore >= 85 ? 4.8 : avgScore >= 75 ? 4.2 : 3.4;
+
+      const profile = {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.id === 'usr-aigul-101' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+        group: sp.group.code,
+        year: sp.year,
+        studentNumber: sp.studentNumber,
+        studyForm: user.id === 'usr-timur-205' ? 'Контракт' as const : 'Бюджет' as const,
+        gpa,
+        averageScore: avgScore,
+        debtCount: debts.length,
+        debtSubjects: debts.map(d => d.subject.name),
+        isStarosta: user.id === 'usr-aigul-101',
+        status: 'active' as const,
+        faculty: sp.faculty.name,
+        program: sp.program.name,
+        admissionYear: 2023,
+        recordBookNumber: `ЗК-${sp.studentNumber.replace('СТ-', '')}`,
+        dormitoryInfo: user.id === 'usr-timur-205' ? 'Студгородок №1, корп. 2, комн. 415' : 'Проживание по постоянной регистрации (г. Москва)',
+        snils: '184-293-841 02',
+      };
+
+      const gradesSummary = {
+        semester: 3,
+        averagePoints: avgScore,
+        gpa,
+        creditsEarned: 24,
+        creditsRequired: 30,
+        upcomingExams: [],
+        items: sp.grades.map(g => ({
+          id: g.id,
+          subject: g.subject.name,
+          credits: g.subject.credits,
+          assessmentType: g.assessmentType,
+          points: g.points,
+          grade: g.grade,
+          creditStatus: g.creditStatus,
+          examDate: g.examDate ? g.examDate.toISOString().split('T')[0] : null,
+          retakeDate: g.retakeDate ? g.retakeDate.toISOString().split('T')[0] : null,
+          semester: g.semester,
+        })),
+      };
+
+      return reply.send({
+        profile,
+        gradesSummary,
+        requests: user.requests.map(r => formatRequest(r)),
+      });
     },
   });
 }

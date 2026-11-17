@@ -2,11 +2,17 @@ import {
   User,
   StudentProfile,
   ScheduleEntry,
+  ScheduleStatus,
   GradesSummary,
   RequestType,
   StudentRequest,
   Notification,
+  NotificationKind,
   RequestStatus,
+  StaffAnnouncement,
+  AcademicGroup,
+  StudentListItem,
+  StudentDossier,
 } from '../types';
 import {
   TEST_USERS,
@@ -15,6 +21,9 @@ import {
   getMockGrades,
   INITIAL_REQUESTS,
   INITIAL_NOTIFICATIONS,
+  MOCK_GROUPS,
+  MOCK_STUDENTS,
+  getMockStudentDossier,
 } from './mockData';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -25,6 +34,7 @@ const STORAGE_KEYS = {
   REQUESTS: 'dean_mock_requests',
   NOTIFICATIONS: 'dean_mock_notifications',
   SCHEDULE_OVERRIDES: 'dean_mock_schedule_overrides',
+  ANNOUNCEMENTS: 'dean_mock_announcements',
 };
 
 function getStoredRequests(): StudentRequest[] {
@@ -57,6 +67,61 @@ function getStoredNotifications(): Notification[] {
 
 function saveStoredNotifications(notifs: Notification[]) {
   localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifs));
+}
+
+function getStoredScheduleOverrides(): Record<string, Partial<ScheduleEntry>> {
+  const data = localStorage.getItem(STORAGE_KEYS.SCHEDULE_OVERRIDES);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      // ignore
+    }
+  }
+  return {};
+}
+
+function saveStoredScheduleOverrides(overrides: Record<string, Partial<ScheduleEntry>>) {
+  localStorage.setItem(STORAGE_KEYS.SCHEDULE_OVERRIDES, JSON.stringify(overrides));
+}
+
+function getStoredAnnouncements(): StaffAnnouncement[] {
+  const data = localStorage.getItem(STORAGE_KEYS.ANNOUNCEMENTS);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      // ignore
+    }
+  }
+  return [
+    {
+      id: 'ann-init-1',
+      title: 'Сроки ликвидации академических задолженностей',
+      body: 'Внимание студентам! График комиссионных пересдач осеннего семестра утвержден. Пересдачи пройдут с 24 по 30 ноября. Пожалуйста, согласуйте допуск в деканате.',
+      targetGroup: 'all',
+      priority: 'high',
+      kind: 'announcement',
+      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+      recipientCount: 3,
+      recipients: ['Айгуль Нурова', 'Тимур Белов', 'Лина Окафор'],
+    },
+    {
+      id: 'ann-init-2',
+      title: 'Прием заявлений на повышенную стипендию (ПГАС)',
+      body: 'Прием заявлений и подтверждающих документов на ПГАС открыт до 25 ноября. Подать заявление можно через раздел "Справки и заявления".',
+      targetGroup: 'ДУ-101',
+      priority: 'normal',
+      kind: 'announcement',
+      createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
+      recipientCount: 2,
+      recipients: ['Айгуль Нурова', 'Лина Окафор'],
+    },
+  ];
+}
+
+function saveStoredAnnouncements(items: StaffAnnouncement[]) {
+  localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(items));
 }
 
 export const api = {
@@ -141,20 +206,36 @@ export const api = {
   },
 
   // ─── Schedule ───
-  async getSchedule(date?: string): Promise<ScheduleEntry[]> {
+  async getSchedule(date?: string, groupOverride?: string): Promise<ScheduleEntry[]> {
     try {
       const url = date ? `${API_BASE}/schedule?date=${date}` : `${API_BASE}/schedule`;
       const res = await fetch(url, { credentials: 'include' });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data;
+      }
     } catch {
       // fallback
     }
 
     const current = await this.getCurrentUser();
-    if (!current) throw new Error('Пользователь не авторизован');
+    let group = groupOverride;
+    if (!group) {
+      if (current?.user.role === 'staff') {
+        group = 'ДУ-101';
+      } else {
+        group = current?.profile.group || 'ДУ-101';
+      }
+    }
 
-    const group = current.profile.group || 'ДУ-101';
-    return getMockSchedule(group);
+    const baseSchedule = getMockSchedule(group);
+    const overrides = getStoredScheduleOverrides();
+    return baseSchedule.map(entry => {
+      if (overrides[entry.id]) {
+        return { ...entry, ...overrides[entry.id] };
+      }
+      return entry;
+    });
   },
 
   // ─── Grades ───
@@ -426,6 +507,232 @@ export const api = {
     saveStoredNotifications(notifs);
 
     return req;
+  },
+
+  async getStaffAnnouncements(): Promise<StaffAnnouncement[]> {
+    return getStoredAnnouncements();
+  },
+
+  async deleteStaffAnnouncement(announcementId: string): Promise<void> {
+    try {
+      await fetch(`${API_BASE}/staff/announcements/${announcementId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+    } catch {
+      // fallback
+    }
+
+    const all = getStoredAnnouncements();
+    const updated = all.filter(a => a.id !== announcementId);
+    saveStoredAnnouncements(updated);
+  },
+
+  async sendStaffAnnouncement(params: {
+    title: string;
+    message: string;
+    targetGroup?: string | null;
+    targetUserId?: string | null;
+    priority?: 'normal' | 'high' | 'urgent';
+    kind?: NotificationKind;
+  }): Promise<{ success: boolean; count: number }> {
+    // 1. Try real API
+    try {
+      await fetch(`${API_BASE}/staff/announcements`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: params.title,
+          body: params.message,
+          group: params.targetGroup === 'all' ? null : params.targetGroup || null,
+        }),
+        credentials: 'include',
+      });
+    } catch {
+      // fallback to mock
+    }
+
+    // 2. Identify target user IDs
+    let targetUsers: Array<{ id: string; fullName: string; group?: string }> = [];
+
+    if (params.targetUserId) {
+      const found = Object.values(TEST_USERS).find(u => u.user.id === params.targetUserId);
+      if (found) {
+        targetUsers.push({ id: found.user.id, fullName: found.user.fullName, group: found.profile.group });
+      }
+    } else if (params.targetGroup && params.targetGroup !== 'all') {
+      targetUsers = Object.values(TEST_USERS)
+        .filter(u => u.user.role === 'student' && u.profile.group === params.targetGroup)
+        .map(u => ({ id: u.user.id, fullName: u.user.fullName, group: u.profile.group }));
+    } else {
+      // All students
+      targetUsers = Object.values(TEST_USERS)
+        .filter(u => u.user.role === 'student')
+        .map(u => ({ id: u.user.id, fullName: u.user.fullName, group: u.profile.group }));
+    }
+
+    const nowIso = new Date().toISOString();
+    const notifs = getStoredNotifications();
+
+    targetUsers.forEach((stu, index) => {
+      notifs.unshift({
+        id: `notif-${Date.now()}-${index}`,
+        userId: stu.id,
+        kind: params.kind || 'announcement',
+        title: params.title,
+        message: params.message,
+        read: false,
+        createdAt: nowIso,
+        priority: params.priority || 'high',
+        link: params.kind === 'schedule_change' ? '/schedule' : params.kind === 'request_update' ? '/requests' : undefined,
+      });
+    });
+
+    saveStoredNotifications(notifs);
+
+    // Save in published announcements list
+    const announcements = getStoredAnnouncements();
+    announcements.unshift({
+      id: `ann-${Date.now()}`,
+      title: params.title,
+      body: params.message,
+      targetGroup: params.targetGroup || 'all',
+      priority: params.priority || 'high',
+      kind: params.kind || 'announcement',
+      createdAt: nowIso,
+      recipientCount: targetUsers.length,
+      recipients: targetUsers.map(u => u.fullName),
+    });
+    saveStoredAnnouncements(announcements);
+
+    return { success: true, count: targetUsers.length };
+  },
+
+  async updateScheduleEntry(
+    scheduleEntryId: string,
+    changes: {
+      status: ScheduleStatus;
+      room?: string;
+      start?: string;
+      end?: string;
+      note?: string;
+      notifyGroup?: boolean;
+    }
+  ): Promise<void> {
+    // 1. Try real API
+    try {
+      await fetch(`${API_BASE}/staff/schedule-changes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scheduleEntryId,
+          status: changes.status,
+          room: changes.room,
+          start: changes.start,
+          end: changes.end,
+          note: changes.note,
+        }),
+        credentials: 'include',
+      });
+    } catch {
+      // fallback to mock
+    }
+
+    // 2. Save in local storage overrides
+    const overrides = getStoredScheduleOverrides();
+    overrides[scheduleEntryId] = {
+      ...(overrides[scheduleEntryId] || {}),
+      status: changes.status,
+      room: changes.room,
+      start: changes.start,
+      end: changes.end,
+      changeNote: changes.note,
+    };
+    saveStoredScheduleOverrides(overrides);
+
+    // 3. Notify group students if requested
+    if (changes.notifyGroup !== false) {
+      const allEntries = [...getMockSchedule('ДУ-101'), ...getMockSchedule('ДУ-205')];
+      const target = allEntries.find(e => e.id === scheduleEntryId);
+      const targetGroup = target?.groupId || 'ДУ-101';
+      const subjectName = target?.subject || 'Занятие';
+
+      const statusLabels: Record<ScheduleStatus, string> = {
+        normal: 'Расписание подтверждено',
+        room_changed: `Замена аудитории на ${changes.room || 'новую'}`,
+        moved: `Перенос времени на ${changes.start || ''}-${changes.end || ''}`,
+        cancelled: 'Занятие отменено',
+      };
+
+      await this.sendStaffAnnouncement({
+        title: `Изменение в расписании: ${subjectName}`,
+        message: changes.note || `Внимание, группа ${targetGroup}! По дисциплине "${subjectName}" статус: ${statusLabels[changes.status]}.`,
+        targetGroup,
+        kind: 'schedule_change',
+        priority: 'urgent',
+      });
+    }
+  },
+
+  // ─── Dean's Office Academic Groups & Student Rosters ───
+  async getStaffGroups(): Promise<AcademicGroup[]> {
+    try {
+      const res = await fetch(`${API_BASE}/staff/groups`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data;
+      }
+    } catch {
+      // fallback to mock
+    }
+    return MOCK_GROUPS;
+  },
+
+  async getGroupStudents(groupCode?: string): Promise<StudentListItem[]> {
+    try {
+      const url = groupCode && groupCode !== 'all'
+        ? `${API_BASE}/staff/groups/${encodeURIComponent(groupCode)}/students`
+        : `${API_BASE}/staff/students`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data;
+      }
+    } catch {
+      // fallback to mock
+    }
+
+    if (!groupCode || groupCode === 'all') {
+      return MOCK_STUDENTS;
+    }
+    return MOCK_STUDENTS.filter(s => s.group === groupCode);
+  },
+
+  async getStudentDossier(studentId: string): Promise<StudentDossier | null> {
+    try {
+      const res = await fetch(`${API_BASE}/staff/students/${encodeURIComponent(studentId)}/dossier`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.profile) return data;
+      }
+    } catch {
+      // fallback to mock
+    }
+
+    // Client mock dossier with real stored requests
+    const dossier = getMockStudentDossier(studentId);
+    if (!dossier) return null;
+
+    // Merge live stored requests
+    const storedRequests = getStoredRequests();
+    const matched = storedRequests.filter(
+      r => r.studentId === studentId || r.studentName?.toLowerCase().includes(dossier.profile.fullName.toLowerCase())
+    );
+    if (matched.length > 0) {
+      dossier.requests = matched;
+    }
+
+    return dossier;
   },
 
   // ─── AI Academic Copilot ───
