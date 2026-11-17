@@ -19,9 +19,11 @@ import {
   FileBadge,
   GraduationCap,
   Award,
+  Plus,
 } from 'lucide-react';
-import { ScheduleEntry, ScheduleStatus } from '../types';
+import { ScheduleEntry, ScheduleStatus, ExamEntry } from '../types';
 import { api } from '../services/api';
+import { ExamEditModal } from '../components/ExamEditModal';
 
 export const SchedulePage: React.FC = () => {
   const { user, profile, lang } = useAuth();
@@ -34,6 +36,7 @@ export const SchedulePage: React.FC = () => {
 
   const [activeSubTab, setActiveSubTab] = useState<'classes' | 'exams'>('classes');
   const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
+  const [exams, setExams] = useState<ExamEntry[]>([]);
   const [selectedDay, setSelectedDay] = useState<number>(1); // 1=Mon ... 6=Sat
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
   const [filterType, setFilterType] = useState<string>('all');
@@ -50,11 +53,19 @@ export const SchedulePage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
+  // Staff Exam Modification Modal State
+  const [editingExam, setEditingExam] = useState<ExamEntry | null>(null);
+  const [isExamModalOpen, setIsExamModalOpen] = useState(false);
+
   const loadScheduleData = async (groupToLoad: string) => {
     try {
       setLoading(true);
-      const data = await api.getSchedule(undefined, groupToLoad);
+      const [data, examData] = await Promise.all([
+        api.getSchedule(undefined, groupToLoad),
+        api.getExams(groupToLoad),
+      ]);
       setSchedule(data);
+      setExams(examData);
     } catch (err) {
       console.error('Error loading schedule:', err);
     } finally {
@@ -172,54 +183,59 @@ export const SchedulePage: React.FC = () => {
     }
   };
 
-  // Examination schedule data
-  const examProgram = [
-    {
-      code: 'LAW-201',
-      subject: 'Международное публичное право',
+  // Staff Exam Management Handlers
+  const handleOpenEditExam = (exam: ExamEntry) => {
+    setEditingExam(exam);
+    setIsExamModalOpen(true);
+  };
+
+  const handleAddNewExam = () => {
+    const dummyNew: ExamEntry = {
+      id: `ex-${Date.now()}`,
+      code: `DISP-${Math.floor(100 + Math.random() * 900)}`,
+      groupId: selectedGroup,
+      subject: 'Новая дисциплина',
       format: 'Устный экзамен по билетам',
-      examiner: 'Проф. Воронов А.Н.',
-      date: '12 декабря 2026',
-      time: '10:00 - 14:00',
+      examiner: 'Преподаватель кафедры',
+      date: '28 декабря 2026',
+      time: '10:00 – 14:00',
       room: 'Главный корпус, ауд. 312',
-      consultation: '10 декабря в 15:00',
-      credits: 5,
-    },
-    {
-      code: 'DIP-104',
-      subject: 'История дипломатических отношений',
-      format: 'Письменный экзамен и эссе',
-      examiner: 'Доц. Романова Е.В.',
-      date: '18 декабря 2026',
-      time: '12:30 - 15:30',
-      room: 'Конференц-зал Б',
-      consultation: '16 декабря в 14:00',
+      consultation: '26 декабря в 15:00',
       credits: 4,
-    },
-    {
-      code: 'ECON-203',
-      subject: 'Мировая экономика и международная торговля',
-      format: 'Компьютерное тестирование и кейсы',
-      examiner: 'Проф. Григорьев С.П.',
-      date: '23 декабря 2026',
-      time: '09:00 - 12:00',
-      room: 'Компьютерный класс 208',
-      consultation: '21 декабря в 16:00',
-      credits: 5,
-    },
-    {
-      code: 'STAT-102',
-      subject: 'Математическая статистика и анализ данных',
-      format: 'Комиссионная пересдача (Комиссия факультета)',
-      examiner: 'Проф. Соколов Д.М., доц. Иванова К.А.',
-      date: '28 ноября 2026',
-      time: '14:00 - 17:00',
-      room: 'Ауд. А-314',
-      consultation: '26 ноября в 17:00',
-      credits: 3,
-      isDebt: profile?.studentNumber === 'СТ-2022-0082',
-    },
-  ];
+      status: 'scheduled',
+    };
+    setEditingExam(dummyNew);
+    setIsExamModalOpen(true);
+  };
+
+  const handleSaveExamChange = async (
+    examId: string,
+    changes: Partial<ExamEntry> & { notifyGroup?: boolean }
+  ) => {
+    try {
+      await api.updateExam(examId, changes);
+      setFeedbackMsg(
+        changes.notifyGroup !== false
+          ? `График экзамена по дисциплине «${editingExam?.subject}» обновлен. Студенты группы ${selectedGroup} оповещены!`
+          : `График экзамена по дисциплине «${editingExam?.subject}» успешно сохранен!`
+      );
+      await loadScheduleData(selectedGroup);
+      setTimeout(() => setFeedbackMsg(null), 6000);
+    } catch (err: any) {
+      alert(err.message || 'Ошибка сохранения экзамена');
+    }
+  };
+
+  const handleResetExam = async (examId: string) => {
+    try {
+      await api.resetExam(examId);
+      setFeedbackMsg('Экзамен возвращен в штатный график сессии.');
+      await loadScheduleData(selectedGroup);
+      setTimeout(() => setFeedbackMsg(null), 5000);
+    } catch (err: any) {
+      alert(err.message || 'Ошибка сброса экзамена');
+    }
+  };
 
   if (loading && schedule.length === 0) {
     return (
@@ -532,70 +548,196 @@ export const SchedulePage: React.FC = () => {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          EXAMINATION PROGRAM VIEW
+          EXAMINATION PROGRAM VIEW (Dynamic Dean's Dispatcher & Student Registry)
           ───────────────────────────────────────────────────────────── */}
       {activeSubTab === 'exams' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] shadow-xs">
-            <h3 className="font-serif font-bold text-sm text-[#252923] dark:text-[#F3EFE5] mb-1">
-              Регламент проведения зимней промежуточной аттестации (2026/2027)
-            </h3>
-            <p className="text-xs text-[#575F53] dark:text-[#C8D1CA] font-sans leading-relaxed">
-              Студенты допускаются к экзаменам при условии отсутствия академических задолженностей по предшествующему семестру и выполнения программы текущего контроля (минимум 50 баллов БРС). На экзамен обязательно предъявление студенческого билета.
-            </p>
+          {/* Dean's Session Control Bar */}
+          <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#18221D] border border-[#E3DDD1] dark:border-[#2D3E35] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2">
+                <span className="font-mono text-xs font-bold text-[#183D35] dark:text-[#C4A46B]">
+                  Зимняя промежуточная аттестация 2026/2027
+                </span>
+                <span>•</span>
+                <span className="text-xs text-[#7E877B]">Группа {selectedGroup}</span>
+              </div>
+              <h3 className="font-serif font-bold text-base text-[#252923] dark:text-[#F3EFE5]">
+                {isStaff
+                  ? 'Диспетчер экзаменационной сессии факультета'
+                  : 'График экзаменов и консультаций'}
+              </h3>
+              <p className="text-xs text-[#575F53] dark:text-[#C8D1CA] font-sans max-w-2xl">
+                {isStaff
+                  ? 'Управление датами экзаменов, комиссиями и аудиториями. Любые изменения автоматически направляются студентам группы.'
+                  : 'Студенты допускаются к экзаменам при выполнении программы текущего контроля (от 50 баллов БРС). Обязательно наличие студенческого билета.'}
+              </p>
+            </div>
+
+            {isStaff && (
+              <button
+                onClick={handleAddNewExam}
+                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] text-xs font-sans font-semibold border border-[#C4A46B]/40 shadow-xs transition-colors cursor-pointer self-start sm:self-auto flex-shrink-0"
+              >
+                <Plus className="w-4 h-4 text-[#C4A46B]" />
+                <span>Назначить экзамен / пересдачу</span>
+              </button>
+            )}
           </div>
 
+          {/* Exam Cards List */}
           <div className="space-y-3">
-            {examProgram.map((ex, idx) => (
-              <div
-                key={idx}
-                className={`p-5 rounded-xl border shadow-xs space-y-3 ${
-                  ex.isDebt
-                    ? 'bg-[#A33D35]/5 dark:bg-[#A33D35]/15 border-[#A33D35]/40'
-                    : 'bg-white dark:bg-[#18221D] border-[#E3DDD1] dark:border-[#2D3E35]'
-                }`}
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#E3DDD1] dark:border-[#26362F] pb-2.5">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#183D35] text-[#F3EFE5]">
-                      {ex.code}
-                    </span>
-                    <h4 className="font-serif font-bold text-base text-[#252923] dark:text-[#F3EFE5]">
-                      {ex.subject}
-                    </h4>
-                    {ex.isDebt && (
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#A33D35] text-white">
-                        КОМИССИОННАЯ ПЕРЕСДАЧА
-                      </span>
+            {exams.length === 0 ? (
+              <div className="p-12 text-center text-xs font-sans text-[#7E877B] bg-white dark:bg-[#18221D] rounded-xl border border-[#E3DDD1] dark:border-[#2D3E35]">
+                Для группы {selectedGroup} экзамены пока не назначены.
+              </div>
+            ) : (
+              exams.map((ex) => {
+                const isDateChanged = ex.status === 'date_changed';
+                const isRoomChanged = ex.status === 'room_changed';
+                const isPostponed = ex.status === 'postponed';
+                const isCancelled = ex.status === 'cancelled';
+                const isChanged = isDateChanged || isRoomChanged || isPostponed || isCancelled;
+
+                return (
+                  <div
+                    key={ex.id}
+                    className={`p-5 rounded-xl border shadow-xs space-y-3.5 transition-all ${
+                      isCancelled
+                        ? 'bg-[#A33D35]/5 dark:bg-[#A33D35]/15 border-[#A33D35]/40'
+                        : isDateChanged || isPostponed
+                        ? 'bg-[#C4A46B]/10 dark:bg-[#C4A46B]/15 border-[#C4A46B]/60'
+                        : isRoomChanged
+                        ? 'bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900/60'
+                        : ex.isDebt
+                        ? 'bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60'
+                        : 'bg-white dark:bg-[#18221D] border-[#E3DDD1] dark:border-[#2D3E35]'
+                    }`}
+                  >
+                    {/* Header Row */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#E3DDD1] dark:border-[#26362F] pb-2.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#183D35] text-[#F3EFE5]">
+                          {ex.code}
+                        </span>
+                        <h4 className={`font-serif font-bold text-base ${isCancelled ? 'line-through text-[#7E877B]' : 'text-[#252923] dark:text-[#F3EFE5]'}`}>
+                          {ex.subject}
+                        </h4>
+
+                        {/* Status Badges */}
+                        {isDateChanged && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C4A46B] text-[#183D35]">
+                            ДАТА ПЕРЕНЕСЕНА ДЕКАНАТОМ
+                          </span>
+                        )}
+                        {isRoomChanged && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-600 text-white">
+                            ЗАМЕНА АУДИТОРИИ
+                          </span>
+                        )}
+                        {isPostponed && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-700 text-white">
+                            ПЕРЕНЕСЕНО НА РЕЗЕРВНЫЙ ДЕНЬ
+                          </span>
+                        )}
+                        {isCancelled && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#A33D35] text-white">
+                            ЭКЗАМЕН ОТМЕНЕН
+                          </span>
+                        )}
+                        {ex.isDebt && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#A33D35] text-white">
+                            КОМИССИОННАЯ ПЕРЕСДАЧА
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center space-x-3 self-end sm:self-auto">
+                        <span className="text-xs font-mono font-bold text-[#183D35] dark:text-[#C4A46B]">
+                          {ex.credits} ECTS
+                        </span>
+                        {isStaff && (
+                          <button
+                            onClick={() => handleOpenEditExam(ex)}
+                            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#183D35] hover:bg-[#102923] text-[#F3EFE5] text-xs font-sans font-semibold transition-colors cursor-pointer shadow-xs"
+                          >
+                            <Edit3 className="w-3.5 h-3.5 text-[#C4A46B]" />
+                            <span>Изменить дату / комиссию</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Information Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-sans">
+                      <div>
+                        <span className="text-[10px] uppercase font-mono text-[#7E877B] block">
+                          Формат аттестации
+                        </span>
+                        <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">
+                          {ex.format}
+                        </span>
+                        <p className="text-[11px] text-[#7E877B] mt-0.5">
+                          Экзаменатор: <strong className="text-[#252923] dark:text-[#F3EFE5]">{ex.examiner}</strong>
+                        </p>
+                        {ex.commissionMembers && (
+                          <p className="text-[10px] text-[#7E877B] mt-0.5">
+                            Комиссия: {ex.commissionMembers}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] uppercase font-mono text-[#7E877B] block">
+                          Дата и время экзамена
+                        </span>
+                        <span className={`font-bold text-sm block ${isDateChanged ? 'text-[#C4A46B]' : 'text-[#183D35] dark:text-[#F3EFE5]'}`}>
+                          {ex.date}
+                        </span>
+                        <p className="text-[11px] text-[#575F53] dark:text-[#C8D1CA] font-mono mt-0.5">
+                          Время: {ex.time}
+                        </p>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] uppercase font-mono text-[#7E877B] block">
+                          Место и консультация
+                        </span>
+                        <div className="flex items-center space-x-1 font-medium text-[#252923] dark:text-[#F3EFE5]">
+                          <MapPin className="w-3.5 h-3.5 text-[#A33D35]" />
+                          <span>{ex.room}</span>
+                        </div>
+                        <p className="text-[11px] text-[#7E877B] mt-0.5">
+                          Консультация: {ex.consultation}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Dean's Official Change Note if present */}
+                    {ex.changeNote && (
+                      <div className="p-2.5 rounded-lg bg-[#FAF8F3] dark:bg-[#121714] border border-[#E3DDD1] dark:border-[#2D3E35] text-xs font-mono text-[#183D35] dark:text-[#C4A46B] flex items-center space-x-2">
+                        <Shield className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>Основание деканата: {ex.changeNote}</span>
+                      </div>
                     )}
                   </div>
-                  <span className="text-xs font-mono font-bold text-[#183D35] dark:text-[#C4A46B]">
-                    {ex.credits} ECTS
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-sans">
-                  <div>
-                    <span className="text-[10px] uppercase font-mono text-[#7E877B] block">Формат экзамена</span>
-                    <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">{ex.format}</span>
-                    <p className="text-[11px] text-[#7E877B] mt-0.5">Экзаменатор: {ex.examiner}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-mono text-[#7E877B] block">Дата и время экзамена</span>
-                    <span className="font-bold text-[#183D35] dark:text-[#C4A46B]">{ex.date}</span>
-                    <p className="text-[11px] text-[#575F53] dark:text-[#C8D1CA] mt-0.5">Время: {ex.time}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-mono text-[#7E877B] block">Место и консультация</span>
-                    <span className="font-medium text-[#252923] dark:text-[#F3EFE5]">{ex.room}</span>
-                    <p className="text-[11px] text-[#7E877B] mt-0.5">Консультация: {ex.consultation}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
         </div>
       )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          EXAM EDIT MODAL (Dean's Authority to reschedule exams)
+          ───────────────────────────────────────────────────────────── */}
+      <ExamEditModal
+        exam={editingExam}
+        isOpen={isExamModalOpen}
+        onClose={() => setIsExamModalOpen(false)}
+        onSave={handleSaveExamChange}
+        onReset={handleResetExam}
+      />
 
       {/* ─────────────────────────────────────────────────────────────
           STAFF SCHEDULE EDIT MODAL (Full functionality preserved)

@@ -13,6 +13,7 @@ import {
   AcademicGroup,
   StudentListItem,
   StudentDossier,
+  ExamEntry,
 } from '../types';
 import {
   TEST_USERS,
@@ -24,6 +25,7 @@ import {
   MOCK_GROUPS,
   MOCK_STUDENTS,
   getMockStudentDossier,
+  INITIAL_EXAMS,
 } from './mockData';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -35,7 +37,24 @@ const STORAGE_KEYS = {
   NOTIFICATIONS: 'dean_mock_notifications',
   SCHEDULE_OVERRIDES: 'dean_mock_schedule_overrides',
   ANNOUNCEMENTS: 'dean_mock_announcements',
+  EXAMS: 'dean_mock_exams',
 };
+
+function getStoredExams(): ExamEntry[] {
+  const data = localStorage.getItem(STORAGE_KEYS.EXAMS);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {
+      // ignore
+    }
+  }
+  return [...INITIAL_EXAMS];
+}
+
+function saveStoredExams(exams: ExamEntry[]) {
+  localStorage.setItem(STORAGE_KEYS.EXAMS, JSON.stringify(exams));
+}
 
 function getStoredRequests(): StudentRequest[] {
   const data = localStorage.getItem(STORAGE_KEYS.REQUESTS);
@@ -733,6 +752,117 @@ export const api = {
     }
 
     return dossier;
+  },
+
+  // ─── Examination Session & Scheduling (Dean's Authority) ───
+  async getExams(groupCode?: string): Promise<ExamEntry[]> {
+    try {
+      const url = groupCode && groupCode !== 'all'
+        ? `${API_BASE}/staff/exams?group=${encodeURIComponent(groupCode)}`
+        : `${API_BASE}/staff/exams`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data;
+      }
+    } catch {
+      // fallback to mock
+    }
+
+    const allExams = getStoredExams();
+    if (!groupCode || groupCode === 'all') {
+      return allExams;
+    }
+    return allExams.filter(e => e.groupId === groupCode);
+  },
+
+  async updateExam(
+    examId: string,
+    changes: Partial<ExamEntry> & { notifyGroup?: boolean }
+  ): Promise<void> {
+    // 1. Try real API
+    try {
+      await fetch(`${API_BASE}/staff/exam-changes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ examId, ...changes }),
+        credentials: 'include',
+      });
+    } catch {
+      // fallback
+    }
+
+    // 2. Persistent local storage update
+    const exams = getStoredExams();
+    const index = exams.findIndex(e => e.id === examId);
+    if (index !== -1) {
+      const original = exams[index];
+      const updated: ExamEntry = {
+        ...original,
+        ...changes,
+        status: changes.status || 'date_changed',
+      };
+      exams[index] = updated;
+      saveStoredExams(exams);
+
+      // 3. Notify group students if requested
+      if (changes.notifyGroup !== false) {
+        const statusMap: Record<string, string> = {
+          date_changed: 'Перенос даты экзамена',
+          room_changed: 'Замена аудитории экзамена',
+          postponed: 'Перенос экзамена на резервный день',
+          cancelled: 'Отмена экзамена',
+          scheduled: 'График экзамена подтвержден',
+        };
+
+        const noteText = changes.changeNote ? ` Примечание деканата: ${changes.changeNote}.` : '';
+        const msg = `Внимание, группа ${original.groupId}! По дисциплине «${original.subject}» (${original.code}) статус: ${statusMap[updated.status] || 'Изменение в графике'}. Новая дата: ${updated.date}, время: ${updated.time}, ауд.: ${updated.room}. Консультация: ${updated.consultation}.${noteText}`;
+
+        await this.sendStaffAnnouncement({
+          title: `Изменение даты экзамена: ${original.subject}`,
+          message: msg,
+          targetGroup: original.groupId,
+          kind: 'schedule_change',
+          priority: 'urgent',
+        });
+      }
+    }
+  },
+
+  async createExam(
+    examData: Omit<ExamEntry, 'id'> & { notifyGroup?: boolean }
+  ): Promise<ExamEntry> {
+    const exams = getStoredExams();
+    const newExam: ExamEntry = {
+      ...examData,
+      id: `ex-${Date.now()}`,
+      status: examData.status || 'scheduled',
+    };
+    exams.push(newExam);
+    saveStoredExams(exams);
+
+    if (examData.notifyGroup !== false) {
+      await this.sendStaffAnnouncement({
+        title: `Утвержден экзамен: ${newExam.subject}`,
+        message: `Внимание, группа ${newExam.groupId}! В график зимней сессии внесен экзамен по дисциплине «${newExam.subject}» на ${newExam.date} (${newExam.time}, ${newExam.room}). Экзаменатор: ${newExam.examiner}.`,
+        targetGroup: newExam.groupId,
+        kind: 'schedule_change',
+        priority: 'high',
+      });
+    }
+
+    return newExam;
+  },
+
+  async resetExam(examId: string): Promise<void> {
+    const initial = INITIAL_EXAMS.find(e => e.id === examId);
+    if (!initial) return;
+    const exams = getStoredExams();
+    const idx = exams.findIndex(e => e.id === examId);
+    if (idx !== -1) {
+      exams[idx] = { ...initial };
+      saveStoredExams(exams);
+    }
   },
 
   // ─── AI Academic Copilot ───

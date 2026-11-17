@@ -42,6 +42,28 @@ export interface ScheduleEntry {
 export type AssessmentType = 'exam' | 'credit' | 'coursework';
 export type CreditStatus = 'earned' | 'in_progress' | 'failed';
 
+export type ExamStatus = 'scheduled' | 'date_changed' | 'room_changed' | 'postponed' | 'cancelled';
+
+export interface ExamEntry {
+  id: string;
+  code: string;
+  groupId: string;
+  subject: string;
+  format: string;
+  examiner: string;
+  commissionMembers?: string;
+  date: string;
+  rawDate?: string;
+  time: string;
+  room: string;
+  consultation: string;
+  credits: number;
+  status: ExamStatus;
+  changeNote?: string | null;
+  retakeDate?: string | null;
+  isDebt?: boolean;
+}
+
 export interface Grade {
   id: string;
   subject: string;

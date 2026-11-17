@@ -29,7 +29,7 @@ import {
   FileBadge,
   Users,
 } from 'lucide-react';
-import { ScheduleEntry, StudentRequest, Notification } from '../types';
+import { ScheduleEntry, StudentRequest, Notification, ExamEntry } from '../types';
 import { api } from '../services/api';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 
@@ -52,29 +52,34 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
   const [requests, setRequests] = useState<StudentRequest[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [exams, setExams] = useState<ExamEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         if (isStaff) {
-          const [sch, reqs, notifs] = await Promise.all([
+          const [sch, reqs, notifs, exList] = await Promise.all([
             api.getSchedule(undefined, 'ДУ-101'),
             api.getStaffRequests(),
             api.getNotifications(),
+            api.getExams('ДУ-101'),
           ]);
           setSchedule(sch);
           setRequests(reqs);
           setNotifications(notifs);
+          setExams(exList);
         } else {
-          const [sch, reqs, notifs] = await Promise.all([
+          const [sch, reqs, notifs, exList] = await Promise.all([
             api.getSchedule(),
             api.getRequests(),
             api.getNotifications(),
+            api.getExams(profile?.group || 'ДУ-101'),
           ]);
           setSchedule(sch);
           setRequests(reqs);
           setNotifications(notifs);
+          setExams(exList);
         }
       } catch (err) {
         console.error(err);
@@ -329,40 +334,62 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   const readyRequests = requests.filter(r => r.status === 'ready');
   const urgentNotif = notifications.find(n => !n.read && (n.priority === 'urgent' || n.priority === 'high'));
 
-  // Exam session items
-  const upcomingExams = [
-    {
-      code: 'LAW-201',
-      subject: 'Международное публичное право',
-      type: 'Экзамен',
-      date: '12 декабря 2026',
-      time: '10:00',
-      room: 'Ауд. 312',
-      teacher: 'Проф. Воронов А.Н.',
-      credits: 5,
-    },
-    {
-      code: 'DIP-104',
-      subject: 'История дипломатических отношений',
-      type: 'Дифференцированный зачет',
-      date: '18 декабря 2026',
-      time: '12:30',
-      room: 'Конференц-зал Б',
-      teacher: 'Доц. Романова Е.В.',
-      credits: 4,
-    },
-    {
-      code: 'STAT-102',
-      subject: 'Математическая статистика и анализ данных',
-      type: 'Комиссионная пересдача',
-      date: '28 ноября 2026',
-      time: '14:00',
-      room: 'Ауд. А-314',
-      teacher: 'Проф. Соколов Д.М.',
-      credits: 3,
-      isDebt: profile?.studentNumber === 'СТ-2022-0082',
-    },
-  ];
+  // Exam session items (dynamic from state)
+  const upcomingExams = exams.length > 0
+    ? exams.map(e => ({
+        code: e.code,
+        subject: e.subject,
+        type: e.format,
+        date: e.date,
+        time: e.time,
+        room: e.room,
+        teacher: e.examiner,
+        credits: e.credits,
+        status: e.status,
+        changeNote: e.changeNote,
+        isDebt: e.isDebt,
+      }))
+    : [
+        {
+          code: 'LAW-201',
+          subject: 'Международное публичное право',
+          type: 'Экзамен',
+          date: '12 декабря 2026',
+          time: '10:00',
+          room: 'Ауд. 312',
+          teacher: 'Проф. Воронов А.Н.',
+          credits: 5,
+          status: 'scheduled',
+          changeNote: null,
+          isDebt: false,
+        },
+        {
+          code: 'DIP-104',
+          subject: 'История дипломатических отношений',
+          type: 'Дифференцированный зачет',
+          date: '18 декабря 2026',
+          time: '12:30',
+          room: 'Конференц-зал Б',
+          teacher: 'Доц. Романова Е.В.',
+          credits: 4,
+          status: 'scheduled',
+          changeNote: null,
+          isDebt: false,
+        },
+        {
+          code: 'STAT-102',
+          subject: 'Математическая статистика и анализ данных',
+          type: 'Комиссионная пересдача',
+          date: '28 ноября 2026',
+          time: '14:00',
+          room: 'Ауд. А-314',
+          teacher: 'Проф. Соколов Д.М.',
+          credits: 3,
+          status: 'scheduled',
+          changeNote: null,
+          isDebt: profile?.studentNumber === 'СТ-2022-0082',
+        },
+      ];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
@@ -667,6 +694,16 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       <h4 className="font-serif font-bold text-xs sm:text-sm text-[#252923] dark:text-[#F3EFE5]">
                         {ex.subject}
                       </h4>
+                      {ex.status === 'date_changed' && (
+                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#C4A46B] text-[#183D35]">
+                          ДАТА ПЕРЕНЕСЕНА
+                        </span>
+                      )}
+                      {ex.status === 'room_changed' && (
+                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white">
+                          АУДИТОРИЯ ИЗМЕНЕНА
+                        </span>
+                      )}
                       {ex.isDebt && (
                         <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#A33D35] text-white">
                           ПЕРЕСДАЧА

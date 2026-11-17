@@ -281,6 +281,48 @@ export async function staffRoutes(app: FastifyInstance) {
     },
   });
 
+  // POST /api/v1/staff/exam-changes
+  app.post('/staff/exam-changes', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (request, reply) => {
+      const body = request.body as Record<string, any>;
+      const { examId, date, time, room, status, changeNote, notifyGroup, targetGroup, subject } = body;
+
+      if (notifyGroup && targetGroup) {
+        const groupRecord = await prisma.group.findFirst({
+          where: { code: targetGroup },
+          include: { studentProfiles: { select: { userId: true } } },
+        });
+
+        const targetUserIds = groupRecord?.studentProfiles.map(sp => sp.userId) ?? [];
+        if (targetUserIds.length > 0) {
+          const statusMap: Record<string, string> = {
+            date_changed: 'Перенос даты экзамена',
+            room_changed: 'Замена аудитории экзамена',
+            postponed: 'Перенос экзамена на резервный день',
+            cancelled: 'Отмена экзамена',
+            scheduled: 'График экзамена подтвержден',
+          };
+          const title = `Изменение даты экзамена: ${subject || 'Экзамен'}`;
+          const noteText = changeNote ? ` Примечание деканата: ${changeNote}.` : '';
+          const notifBody = `Внимание, группа ${targetGroup}! По дисциплине «${subject || 'Экзамен'}» статус: ${statusMap[status] || 'Изменение'}. Дата: ${date}, время: ${time}, ауд.: ${room}.${noteText}`;
+
+          await prisma.notification.createMany({
+            data: targetUserIds.map(userId => ({
+              userId,
+              kind: 'schedule_change' as const,
+              title,
+              body: notifBody,
+              link: '/schedule',
+            })),
+          });
+        }
+      }
+
+      return reply.send({ ok: true, examId });
+    },
+  });
+
   // GET /api/v1/staff/groups
   app.get('/staff/groups', {
     preHandler: [authenticate, requireStaff],
