@@ -10,7 +10,7 @@ vi.mock('../src/lib/prisma', async () => {
   return { prisma: state.mockPrisma };
 });
 
-import { buildApp } from '../src/app';
+import { buildApp } from '../src/createApp';
 
 describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
   let app: FastifyInstance;

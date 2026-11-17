@@ -10,7 +10,7 @@ vi.mock('../src/lib/prisma', async () => {
   return { prisma: state.mockPrisma };
 });
 
-import { buildApp } from '../src/app';
+import { buildApp } from '../src/createApp';
 
 describe('Student API Flows, Data Isolation & IDOR Protection', () => {
   let app: FastifyInstance;

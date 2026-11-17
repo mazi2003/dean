@@ -7,7 +7,8 @@ vi.mock('../src/lib/prisma', async () => {
   return { prisma: state.mockPrisma };
 });
 
-import defaultApp, { resolveCorsOrigins } from '../src/app';
+import defaultApp from '../src/app';
+import { resolveCorsOrigins } from '../src/createApp';
 
 describe('Vercel Fastify entrypoint & CORS configuration', () => {
   const originalEnv = { ...process.env };
