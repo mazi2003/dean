@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
 import { getJwtSigningKey } from '../lib/config';
+import { getDummyPasswordHash, verifyPassword } from '../lib/password';
 import { authenticate } from '../middleware/auth';
 
 const LoginSchema = z.object({
@@ -35,17 +35,10 @@ export async function authRoutes(app: FastifyInstance) {
 
       // Always do the hash comparison (constant-time, no early exit on "user not found")
       const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-
-      // Validly formatted dummy argon2id digest so verification exercises full KDF work factor
-      const dummyHash = '$argon2id$v=19$m=65536,t=3,p=4$dummysaltdummysalt$dummyhashresultdummyhashresultdummyhashresult';
+      const dummyHash = await getDummyPasswordHash();
       const hashToVerify = user?.passwordHash ?? dummyHash;
 
-      let valid = false;
-      try {
-        valid = await argon2.verify(hashToVerify, password);
-      } catch {
-        valid = false;
-      }
+      const valid = await verifyPassword(hashToVerify, password);
 
       if (!user || !valid) {
         return reply.code(401).send({ code: 'UNAUTHORIZED', message: 'Неверный адрес электронной почты или пароль' });
