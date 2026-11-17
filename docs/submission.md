@@ -165,12 +165,12 @@ sequenceDiagram
 
 ## 8. Результаты тестирования и доступность прототипа
 
-- **Сборка и производительность:** `npm run build` (`tsc -b && vite build`) выполняется за **993 мс** без предупреждений. Бандл разбит на чанки (`index.css` — 11.43 КБ gzip, `vendor-react` — 68.27 КБ gzip, `index.js` — 76.90 КБ gzip, `vendor-icons`/`vendor-qr` — 16.03 КБ gzip), обеспечен офлайн-кэш через Service Worker (`/sw.js`).
+- **Сборка и производительность:** `npm run build` (`tsc -b && vite build`) выполняется за **4.67 с** без предупреждений. Бандл разбит на чанки (`index.css` — 39.15 КБ gzip, `vendor-react` — 68.27 КБ gzip, `index.js` — 77.39 КБ gzip, `vendor-icons`/`vendor-qr` — 16.03 КБ gzip) со встроенными локальными шрифтами `Inter` и `JetBrains Mono` (OFL-1.1), обеспечен офлайн-кэш через Service Worker (`/sw.js`).
 - **Автотесты и покрытие (`docs/test-report.md`):**
   - **Backend (`Vitest` + `Supertest`):** **21 / 21** тестов пройдено (auth/Argon2id/timing-attack защита, IDOR `404`, RBAC, рабочий процесс деканата); покрытие **90.15% Statements / 92.41% Lines** (тесты маршрутов выполнены на stateful in-memory Prisma test-double; `database/tests/schema.test.ts` предназначен для запуска в среде с PostgreSQL 16 / Docker Compose).
   - **Frontend (`oxlint` + `Vitest` + Testing Library):** **0 ошибок / 0 предупреждений** линтера, **10 / 10** компонентных и `i18n`-тестов пройдено.
-  - **E2E (`Playwright` Desktop 1280×800 и Mobile 360×740 + Axe WCAG + Security Audit):** **14 / 14** сквозных сценариев пройдено (48.3 с), подтверждено отсутствие Demo Switcher, горизонтального переполнения, утечек JWT в `localStorage` и секретов в production-бандле.
-  - **Нагрузочный бенчмарк (100 VU, `e2e/load-smoke.mjs`):** **27 725 запросов** за 10.02 с (**2 767.1 RPS**, **0% ошибок**, **p50 32.02 мс**, **p95 54.96 мс**).
+  - **E2E (`Playwright` Desktop 1280×800 и Mobile 360×740 + Axe WCAG + Security Audit):** **14 / 14** сквозных сценариев пройдено (1.1 мин, 0 ошибок консоли и сети), подтверждено отсутствие Demo Switcher, горизонтального переполнения, утечек JWT в `localStorage` и секретов в production-бандле.
+  - **Нагрузочный бенчмарк (100 VU, `e2e/load-smoke.mjs`):** **10 600 запросов** за 10.06 с (**1 053.4 RPS**, **0% ошибок**, **p50 79.73 мс**, **p95 149.28 мс**).
 - **Мобильная верстка:** Верифицирована скриншотами (`docs/screens/e2e_verified_mobile_360px.png`, `docs/screens/e2e_verified_staff_groups.png`) на ширине **360px** (сенсорные зоны `BottomNav` ≥ 48px, отсутствие `user-scalable=no`).
 - **Тестовые учетные записи (для жюри):**
   - `aigul.nurova@demo.edu` / `DemoStudent123!` (Отличница, активная заявка на справку).
