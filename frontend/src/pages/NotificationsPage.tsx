@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Bell,
@@ -6,29 +6,24 @@ import {
   Calendar,
   FileText,
   Clock,
-  Sparkles,
-  ChevronRight,
   Filter,
-  ShieldAlert,
   Megaphone,
-  BookOpen,
-  Building,
-  CheckCircle2,
 } from 'lucide-react';
 import { Notification, NotificationKind } from '../types';
 import { api } from '../services/api';
+import { tr, getNotificationKindLabel } from '../utils/i18n';
 
 interface NotificationsPageProps {
-  setActiveTab: (tab: string) => void;
+  setActiveTab?: (tab: string) => void;
 }
 
-export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveTab }) => {
+export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
   const { user, lang, refreshUnreadCount } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [selectedKind, setSelectedKind] = useState<string>('all');
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const data = await api.getNotifications();
       setNotifications(data);
@@ -37,10 +32,23 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadData();
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await api.getNotifications();
+        if (!cancelled) setNotifications(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const handleMarkRead = async (id: string) => {
@@ -57,22 +65,22 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
 
   const kindConfig: Record<NotificationKind, { label: string; icon: any; color: string }> = {
     announcement: {
-      label: 'Приказ / Распоряжение',
+      label: getNotificationKindLabel('announcement', lang),
       icon: Megaphone,
       color: 'bg-[#142D4E]/15 text-[#142D4E] dark:text-[#245A91] border-[#142D4E]/30',
     },
     deadline: {
-      label: 'Академический дедлайн',
+      label: getNotificationKindLabel('deadline', lang),
       icon: Clock,
       color: 'bg-[#C63740]/15 text-[#C63740] dark:text-[#F06A73] border-[#C63740]/30',
     },
     schedule_change: {
-      label: 'Изменение расписания',
+      label: getNotificationKindLabel('schedule_change', lang),
       icon: Calendar,
       color: 'bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border-[#245A91]/40',
     },
     request_update: {
-      label: 'Статус заявления',
+      label: getNotificationKindLabel('request_update', lang),
       icon: FileText,
       color: 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#245A91] border-[#142D4E]/25',
     },
@@ -102,15 +110,19 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
         <div>
           <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#245A91] font-semibold mb-1">
-            <span>Официальный вестник университета</span>
+            <span>{tr(lang, 'Официальный вестник университета', 'Official University Gazette')}</span>
             <span>•</span>
-            <span>Канцелярия ректората</span>
+            <span>{tr(lang, 'Канцелярия ректората', 'Rectorate Chancellery')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
             {lang === 'ru' ? 'Вестник и распоряжения ректората' : 'University Gazettes & Decrees'}
           </h1>
           <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
-            Приказы по личному составу, изменения учебного плана, расписание сессии и стипендии
+            {tr(
+              lang,
+              'Приказы по личному составу, изменения учебного плана, расписание сессии и стипендии',
+              'Academic decrees, curriculum notices, exam schedules, and scholarship announcements'
+            )}
           </p>
         </div>
 
@@ -120,7 +132,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
             className="px-3.5 py-1.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#142D4E] dark:text-[#245A91] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium flex items-center space-x-1.5 self-start sm:self-center transition-colors cursor-pointer"
           >
             <CheckCheck className="w-4 h-4 text-[#245A91]" />
-            <span>Прочитать все ({unreadCount})</span>
+            <span>{tr(lang, `Прочитать все (${unreadCount})`, `Mark all read (${unreadCount})`)}</span>
           </button>
         )}
       </div>
@@ -131,11 +143,11 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
       <div className="flex items-center space-x-2 overflow-x-auto text-xs pb-1 font-sans">
         <Filter className="w-3.5 h-3.5 text-[#667085] mr-1 flex-shrink-0" />
         {[
-          { id: 'all', label: 'Все публикации' },
-          { id: 'announcement', label: 'Приказы и распоряжения' },
-          { id: 'deadline', label: 'Академические дедлайны' },
-          { id: 'schedule_change', label: 'Изменения расписания' },
-          { id: 'request_update', label: 'Статусы заявлений' },
+          { id: 'all', label: tr(lang, 'Все публикации', 'All Notices') },
+          { id: 'announcement', label: tr(lang, 'Приказы и распоряжения', 'Decrees & Bulletins') },
+          { id: 'deadline', label: tr(lang, 'Академические дедлайны', 'Academic Deadlines') },
+          { id: 'schedule_change', label: tr(lang, 'Изменения расписания', 'Schedule Changes') },
+          { id: 'request_update', label: tr(lang, 'Статусы заявлений', 'Petition Updates') },
         ].map(cat => (
           <button
             key={cat.id}
@@ -158,10 +170,16 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
         {filteredNotifs.length === 0 ? (
           <div className="p-10 text-center bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] text-xs text-[#667085] space-y-2">
             <Bell className="w-8 h-8 text-[#667085] mx-auto opacity-50" />
-            <p className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
-              В этой категории нет уведомлений
+            <p className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+              {tr(lang, 'В этой категории нет уведомлений', 'No notifications in this category')}
             </p>
-            <p>Все официальные распоряжения и приказы публикуются здесь.</p>
+            <p>
+              {tr(
+                lang,
+                'Все официальные распоряжения и приказы публикуются здесь.',
+                'All official university decrees and announcements are published here.'
+              )}
+            </p>
           </div>
         ) : (
           filteredNotifs.map(n => {
@@ -177,7 +195,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
                   !n.read
                     ? isUrgent
                       ? 'bg-[#C63740]/10 dark:bg-[#C63740]/20 border-[#C63740]/40 shadow-xs'
-                      : 'bg-[#F8FAFC] dark:bg-[#15201A] border-[#245A91]/40 shadow-xs'
+                      : 'bg-[#F8FAFC] dark:bg-[#162A45] border-[#245A91]/40 shadow-xs'
                     : 'bg-white dark:bg-[#112238] border-[#DCE2EA] dark:border-[#1E395B]'
                 }`}
               >
@@ -199,7 +217,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
                       </span>
                       {isUrgent && (
                         <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
-                          ВАЖНОЕ РАСПОРЯЖЕНИЕ
+                          {tr(lang, 'ВАЖНОЕ РАСПОРЯЖЕНИЕ', 'URGENT NOTICE')}
                         </span>
                       )}
                       {!n.read && (
@@ -210,7 +228,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
                       </span>
                     </div>
 
-                    <h3 className="font-serif font-bold text-sm sm:text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+                    <h3 className="font-semibold text-sm sm:text-base text-[#0F1D30] dark:text-[#FFFFFF]">
                       {n.title}
                     </h3>
 
@@ -229,7 +247,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ setActiveT
                       }}
                       className="px-2.5 py-1 rounded bg-[#142D4E] text-[#FFFFFF] text-[11px] font-sans hover:bg-[#0E1F36] cursor-pointer"
                     >
-                      Отметить прочитанным
+                      {tr(lang, 'Отметить прочитанным', 'Mark as read')}
                     </button>
                   )}
                 </div>

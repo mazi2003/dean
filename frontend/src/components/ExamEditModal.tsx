@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   X,
   Calendar,
@@ -9,12 +9,13 @@ import {
   BellRing,
   AlertTriangle,
   RotateCcw,
-  Sparkles,
   CheckCircle2,
   BookOpen,
   Users,
 } from 'lucide-react';
 import { ExamEntry, ExamStatus } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { tr, localizeText } from '../utils/i18n';
 
 interface ExamEditModalProps {
   exam: ExamEntry | null;
@@ -34,34 +35,46 @@ export const ExamEditModal: React.FC<ExamEditModalProps> = ({
   onSave,
   onReset,
 }) => {
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [room, setRoom] = useState('');
-  const [examiner, setExaminer] = useState('');
-  const [commission, setCommission] = useState('');
-  const [consultation, setConsultation] = useState('');
-  const [format, setFormat] = useState('');
-  const [status, setStatus] = useState<ExamStatus>('scheduled');
-  const [changeNote, setChangeNote] = useState('');
+  if (!isOpen || !exam) return null;
+
+  return (
+    <ExamEditModalContent
+      key={`${exam.id}-${exam.date}-${exam.time}-${exam.room}-${exam.status}`}
+      exam={exam}
+      onClose={onClose}
+      onSave={onSave}
+      onReset={onReset}
+    />
+  );
+};
+
+interface ExamEditModalContentProps {
+  exam: ExamEntry;
+  onClose: () => void;
+  onSave: (
+    examId: string,
+    changes: Partial<ExamEntry> & { notifyGroup?: boolean }
+  ) => Promise<void>;
+  onReset?: (examId: string) => Promise<void>;
+}
+
+const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
+  exam,
+  onClose,
+  onSave,
+  onReset,
+}) => {
+  const [date, setDate] = useState(exam.date || '');
+  const [time, setTime] = useState(exam.time || '10:00 – 14:00');
+  const [room, setRoom] = useState(exam.room || '');
+  const [examiner, setExaminer] = useState(exam.examiner || '');
+  const [commission, setCommission] = useState(exam.commissionMembers || '');
+  const [consultation, setConsultation] = useState(exam.consultation || '');
+  const [format, setFormat] = useState(exam.format || 'Устный экзамен по билетам');
+  const [status, setStatus] = useState<ExamStatus>(exam.status || 'scheduled');
+  const [changeNote, setChangeNote] = useState(exam.changeNote || '');
   const [notifyGroup, setNotifyGroup] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (exam) {
-      setDate(exam.date || '');
-      setTime(exam.time || '10:00 – 14:00');
-      setRoom(exam.room || '');
-      setExaminer(exam.examiner || '');
-      setCommission(exam.commissionMembers || '');
-      setConsultation(exam.consultation || '');
-      setFormat(exam.format || 'Устный экзамен по билетам');
-      setStatus(exam.status || 'scheduled');
-      setChangeNote(exam.changeNote || '');
-      setNotifyGroup(true);
-    }
-  }, [exam]);
-
-  if (!isOpen || !exam) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,7 +125,7 @@ export const ExamEditModal: React.FC<ExamEditModalProps> = ({
                 </span>
                 <span className="text-[11px] font-mono text-[#667085]">{exam.code}</span>
               </div>
-              <h2 className="font-serif font-bold text-base sm:text-lg text-[#142D4E] dark:text-[#FFFFFF] mt-0.5">
+              <h2 className="font-semibold text-base sm:text-lg text-[#142D4E] dark:text-[#FFFFFF] mt-0.5">
                 Распоряжение деканата: график экзамена
               </h2>
               <p className="text-xs text-[#667085] font-sans truncate max-w-md">

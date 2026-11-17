@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import {
   Clock,
   MapPin,
-  AlertTriangle,
   FileText,
   Calendar,
   Sparkles,
@@ -11,7 +10,6 @@ import {
   CheckCircle2,
   ChevronRight,
   GraduationCap,
-  Bell,
   BookOpen,
   ArrowUpRight,
   ShieldAlert,
@@ -19,19 +17,20 @@ import {
   Megaphone,
   ShieldCheck,
   Building,
-  Award,
   CalendarDays,
-  FileCheck2,
-  ExternalLink,
-  BookMarked,
-  Library,
-  HelpCircle,
   FileBadge,
   Users,
 } from 'lucide-react';
 import { ScheduleEntry, StudentRequest, Notification, ExamEntry } from '../types';
 import { api } from '../services/api';
 import { UniversityEmblem } from '../components/UniversityEmblem';
+import {
+  tr,
+  getScheduleTypeLabel,
+  getRequestStatusLabel,
+  getStudyFormLabel,
+  localizeText,
+} from '../utils/i18n';
 
 interface TodayPageProps {
   setActiveTab: (tab: string) => void;
@@ -55,6 +54,8 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   const [exams, setExams] = useState<ExamEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const userGroup = profile?.group || 'ДУ-101';
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -74,7 +75,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             api.getSchedule(),
             api.getRequests(),
             api.getNotifications(),
-            api.getExams(profile?.group || 'ДУ-101'),
+            api.getExams(userGroup),
           ]);
           setSchedule(sch);
           setRequests(reqs);
@@ -88,15 +89,16 @@ export const TodayPage: React.FC<TodayPageProps> = ({
       }
     };
     loadData();
-  }, [user, isStaff]);
+  }, [user, isStaff, userGroup]);
 
-  // Today date formatted
+  // Today date formatted without impure render-time call warning
+  const [todayDateObj] = useState(() => new Date());
   const todayStr = new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(new Date());
+  }).format(todayDateObj);
 
   if (loading) {
     return (
@@ -130,20 +132,24 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <div className="space-y-2">
               <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#667085] dark:text-[#94A3B8]">
                 <span className="font-mono text-[#142D4E] dark:text-[#245A91] font-semibold">
-                  Деканат Факультета МО
+                  {tr(lang, 'Деканат Факультета МО', "Dean's Office, School of IR")}
                 </span>
                 <span>•</span>
-                <span>Главный корпус, ауд. 312</span>
+                <span>{tr(lang, 'Главный корпус, ауд. 312', 'Main Bldg, Room 312')}</span>
                 <span>•</span>
                 <span className="capitalize">{todayStr}</span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
                 {lang === 'ru' ? 'Добрый день, Мария Волкова!' : 'Welcome, Maria Volkova!'}
               </h1>
 
               <p className="text-xs sm:text-sm text-[#475467] dark:text-[#CBD5E1] font-sans max-w-2xl">
-                Заместитель декана по учебно-методической работе • Факультет международных отношений
+                {tr(
+                  lang,
+                  'Заместитель декана по учебно-методической работе • Факультет международных отношений',
+                  'Vice Dean for Academic Affairs • School of International Relations'
+                )}
               </p>
             </div>
 
@@ -154,10 +160,10 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               </div>
               <div>
                 <p className="text-[10px] font-sans uppercase tracking-wider text-[#667085] dark:text-[#94A3B8]">
-                  ЭЦП деканата (ГОСТ)
+                  {tr(lang, 'ЭЦП деканата (ГОСТ)', "Dean's Digital Seal (GOST)")}
                 </p>
                 <span className="font-mono text-xs font-bold text-[#142D4E] dark:text-[#245A91] block">
-                  Активна и проверена
+                  {tr(lang, 'Активна и проверена', 'Active & Verified')}
                 </span>
                 <span className="text-[10px] text-[#667085] font-mono">
                   № 77AA-9402-E12F-2026
@@ -173,35 +179,41 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-medium transition-colors cursor-pointer"
             >
               <Inbox className="w-3.5 h-3.5 text-[#245A91]" />
-              <span>Заявления студентов ({newRequestsCount} новых)</span>
+              <span>
+                {tr(
+                  lang,
+                  `Заявления студентов (${newRequestsCount} новых)`,
+                  `Student Requests (${newRequestsCount} new)`
+                )}
+              </span>
             </button>
             <button
               onClick={() => setActiveTab('staff_students')}
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
             >
               <Users className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
-              <span>Группы и студенты</span>
+              <span>{tr(lang, 'Группы и студенты', 'Groups & Students')}</span>
             </button>
             <button
               onClick={() => setActiveTab('schedule')}
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
             >
               <Calendar className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
-              <span>Диспетчер расписания и замен</span>
+              <span>{tr(lang, 'Диспетчер расписания и замен', 'Timetable & Changes Dispatcher')}</span>
             </button>
             <button
               onClick={() => setActiveTab('staff_actions')}
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
             >
               <Megaphone className="w-3.5 h-3.5 text-[#245A91]" />
-              <span>Опубликовать приказ</span>
+              <span>{tr(lang, 'Опубликовать приказ', 'Publish Decree')}</span>
             </button>
             <button
               onClick={() => setActiveTab('profile')}
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-[#245A91]" />
-              <span>Служебный профиль и права</span>
+              <span>{tr(lang, 'Служебный профиль и права', 'Staff Dossier & Permissions')}</span>
             </button>
           </div>
         </section>
@@ -213,15 +225,19 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
           >
             <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-              Новые заявления
+              {tr(lang, 'Новые заявления', 'New Petitions')}
             </span>
             <div className="flex items-baseline space-x-2">
               <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#245A91]">
                 {newRequestsCount}
               </span>
-              <span className="text-xs text-[#667085]">из {requests.length}</span>
+              <span className="text-xs text-[#667085]">
+                {tr(lang, `из ${requests.length}`, `of ${requests.length}`)}
+              </span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">Ожидают первого рассмотрения</p>
+            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
+              {tr(lang, 'Ожидают первого рассмотрения', 'Awaiting initial review')}
+            </p>
           </div>
 
           <div
@@ -229,15 +245,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
           >
             <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-              В обработке
+              {tr(lang, 'В обработке', 'In Review')}
             </span>
             <div className="flex items-baseline space-x-2">
               <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#245A91]">
                 {inReviewCount}
               </span>
-              <span className="text-xs text-[#667085]">заявлений</span>
+              <span className="text-xs text-[#667085]">{tr(lang, 'заявлений', 'requests')}</span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">Проверка данных инспектором</p>
+            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
+              {tr(lang, 'Проверка данных инспектором', 'Inspector verification')}
+            </p>
           </div>
 
           <div
@@ -245,15 +263,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
           >
             <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-              Подписано ЭЦП
+              {tr(lang, 'Подписано ЭЦП', 'Digitally Signed')}
             </span>
             <div className="flex items-baseline space-x-2">
               <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#245A91]">
                 {readyCount}
               </span>
-              <span className="text-xs text-[#667085]">готовых</span>
+              <span className="text-xs text-[#667085]">{tr(lang, 'готовых', 'ready')}</span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">Сформированы и заверены</p>
+            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
+              {tr(lang, 'Сформированы и заверены', 'Issued & certified')}
+            </p>
           </div>
 
           <div
@@ -261,15 +281,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
           >
             <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-              Потоки в расписании
+              {tr(lang, 'Потоки в расписании', 'Active Streams')}
             </span>
             <div className="flex items-baseline space-x-2">
               <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#245A91]">
                 2
               </span>
-              <span className="text-xs text-[#667085]">группы</span>
+              <span className="text-xs text-[#667085]">{tr(lang, 'группы', 'groups')}</span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">ДУ-101 и ДУ-205 под контролем</p>
+            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
+              {tr(lang, 'ДУ-101 и ДУ-205 под контролем', 'ДУ-101 & ДУ-205 monitored')}
+            </p>
           </div>
         </div>
 
@@ -278,15 +300,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
             <div className="flex items-center space-x-2">
               <Inbox className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
-              <h3 className="font-serif font-bold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
-                Очередь последних входящих заявлений студентов
+              <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+                {tr(lang, 'Очередь последних входящих заявлений студентов', 'Recent Student Petition Queue')}
               </h3>
             </div>
             <button
               onClick={() => setActiveTab('staff_requests')}
               className="text-xs font-sans font-semibold text-[#142D4E] dark:text-[#245A91] hover:underline flex items-center space-x-1 cursor-pointer"
             >
-              <span>Все заявления ({requests.length})</span>
+              <span>{tr(lang, `Все заявления (${requests.length})`, `All Requests (${requests.length})`)}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -296,25 +318,27 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <div key={req.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
-                      {req.typeTitle}
+                    <span className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                      {localizeText(req.typeTitle, lang)}
                     </span>
                     <span className="font-mono text-[11px] text-[#667085]">№ {req.id}</span>
                   </div>
                   <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans">
-                    Студент: <strong>{req.studentName || 'Студент'}</strong> ({req.studentGroup || 'ДУ-101'}) • Срок готовности: до {req.expectedDate}
+                    {tr(lang, 'Студент:', 'Student:')}{' '}
+                    <strong>{req.studentName || tr(lang, 'Студент', 'Student')}</strong> ({req.studentGroup || 'ДУ-101'}) •{' '}
+                    {tr(lang, `Срок готовности: до ${req.expectedDate}`, `Due by: ${req.expectedDate}`)}
                   </p>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#142D4E] dark:text-[#245A91] border border-[#DCE2EA] dark:border-[#1E395B]">
-                    {req.status}
+                    {getRequestStatusLabel(req.status, lang, 'staff')}
                   </span>
                   <button
                     onClick={() => setActiveTab('staff_requests')}
                     className="px-2.5 py-1 rounded bg-[#142D4E] text-[#FFFFFF] text-xs font-sans font-medium hover:bg-[#0E1F36] cursor-pointer"
                   >
-                    Открыть
+                    {tr(lang, 'Открыть', 'Open')}
                   </button>
                 </div>
               </div>
@@ -410,19 +434,20 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 {profile?.group}
               </span>
               <span>•</span>
-              <span>{profile?.year} курс</span>
+              <span>{tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}</span>
               <span>•</span>
               <span className="capitalize">{todayStr}</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
               {lang === 'ru'
                 ? `С возвращением, ${user?.fullName.split(' ')[0]}!`
                 : `Welcome back, ${user?.fullName.split(' ')[0]}!`}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#475467] dark:text-[#CBD5E1] font-sans max-w-2xl">
-              {profile?.program} • {profile?.faculty} • Форма: {profile?.studyForm || 'Бюджет'}
+              {localizeText(profile?.program, lang)} • {localizeText(profile?.faculty, lang)} •{' '}
+              {tr(lang, 'Форма:', 'Study mode:')} {getStudyFormLabel(profile?.studyForm, lang)}
             </p>
           </div>
 
@@ -490,7 +515,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
           <div className="flex items-center space-x-2">
             <CalendarDays className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
-            <h3 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+            <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
               {lang === 'ru' ? 'Академический календарь: Весенний семестр 2026' : 'Academic Calendar & Semester Milestones'}
             </h3>
           </div>
@@ -502,39 +527,53 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         {/* Milestone Progress Steps */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-sans">
           <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-            <span className="text-[10px] font-mono text-[#667085] uppercase block">1 февраля 2026</span>
+            <span className="text-[10px] font-mono text-[#667085] uppercase block">
+              {tr(lang, '1 февраля 2026', 'Feb 1, 2026')}
+            </span>
             <div className="flex items-center space-x-1.5 font-semibold text-[#142D4E] dark:text-[#245A91]">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
-              <span>Старт семестра</span>
+              <span>{tr(lang, 'Старт семестра', 'Term Start')}</span>
             </div>
-            <p className="text-[10px] text-[#667085]">Учебный поток запущен</p>
+            <p className="text-[10px] text-[#667085]">
+              {tr(lang, 'Учебный поток запущен', 'Academic term launched')}
+            </p>
           </div>
 
           <div className="p-3 rounded-lg bg-[#142D4E]/10 dark:bg-[#142D4E]/30 border border-[#142D4E]/30 dark:border-[#245A91]/40 space-y-1">
             <span className="text-[10px] font-mono text-[#142D4E] dark:text-[#245A91] font-bold uppercase block">
-              10 – 24 ноября
+              {tr(lang, '10 – 24 ноября', 'Nov 10 – 24')}
             </span>
             <div className="flex items-center space-x-1.5 font-bold text-[#142D4E] dark:text-[#245A91]">
               <span className="w-2 h-2 rounded-full bg-[#142D4E] dark:bg-[#245A91] animate-pulse" />
-              <span>Промежуточный срез</span>
+              <span>{tr(lang, 'Промежуточный срез', 'Midterm Checkpoint')}</span>
             </div>
-            <p className="text-[10px] text-[#475467] dark:text-[#CBD5E1]">Контрольные точки БРС</p>
+            <p className="text-[10px] text-[#475467] dark:text-[#CBD5E1]">
+              {tr(lang, 'Контрольные точки БРС', 'Rating control points')}
+            </p>
           </div>
 
           <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-            <span className="text-[10px] font-mono text-[#667085] uppercase block">1 декабря 2026</span>
+            <span className="text-[10px] font-mono text-[#667085] uppercase block">
+              {tr(lang, '1 декабря 2026', 'Dec 1, 2026')}
+            </span>
             <div className="flex items-center space-x-1.5 font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
-              <span>Зачетная неделя</span>
+              <span>{tr(lang, 'Зачетная неделя', 'Credit Week')}</span>
             </div>
-            <p className="text-[10px] text-[#667085]">Допуск к экзаменам</p>
+            <p className="text-[10px] text-[#667085]">
+              {tr(lang, 'Допуск к экзаменам', 'Exam admission')}
+            </p>
           </div>
 
           <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-            <span className="text-[10px] font-mono text-[#667085] uppercase block">10 – 28 декабря</span>
+            <span className="text-[10px] font-mono text-[#667085] uppercase block">
+              {tr(lang, '10 – 28 декабря', 'Dec 10 – 28')}
+            </span>
             <div className="flex items-center space-x-1.5 font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
-              <span>Зимняя сессия</span>
+              <span>{tr(lang, 'Зимняя сессия', 'Winter Exam Session')}</span>
             </div>
-            <p className="text-[10px] text-[#667085]">Экзамены и защита</p>
+            <p className="text-[10px] text-[#667085]">
+              {tr(lang, 'Экзамены и защита', 'Finals & thesis defense')}
+            </p>
           </div>
         </div>
       </section>
@@ -547,7 +586,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           <div className="flex items-start space-x-3">
             <ShieldAlert className="w-5 h-5 text-[#C63740] flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-serif font-bold text-sm text-[#C63740] dark:text-[#F06A73]">
+              <h3 className="font-semibold text-sm text-[#C63740] dark:text-[#F06A73]">
                 {urgentNotif.title}
               </h3>
               <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5 leading-relaxed">
@@ -582,17 +621,18 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   </span>
                 </div>
                 <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#142D4E] dark:text-[#245A91] border border-[#DCE2EA] dark:border-[#1E395B]">
-                  {nextClass.type}
+                  {getScheduleTypeLabel(nextClass.type, lang)}
                 </span>
               </div>
 
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                 <div className="sm:col-span-2 space-y-1.5">
-                  <h3 className="text-lg sm:text-xl font-serif font-bold text-[#0F1D30] dark:text-[#FFFFFF] leading-snug">
-                    {nextClass.subject}
+                  <h3 className="text-lg sm:text-xl font-semibold text-[#0F1D30] dark:text-[#FFFFFF] leading-snug">
+                    {localizeText(nextClass.subject, lang)}
                   </h3>
                   <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans">
-                    Преподаватель: <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">{nextClass.teacher}</strong>
+                    {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
+                    <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">{nextClass.teacher}</strong>
                   </p>
                 </div>
 
@@ -603,7 +643,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   </div>
                   <div className="flex items-center space-x-2 text-xs font-sans text-[#475467] dark:text-[#CBD5E1]">
                     <MapPin className="w-4 h-4 text-[#C63740]" />
-                    <span>Аудитория <strong>{nextClass.room}</strong></span>
+                    <span>{tr(lang, 'Аудитория', 'Room')} <strong>{nextClass.room}</strong></span>
                   </div>
                 </div>
               </div>
@@ -617,9 +657,9 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           {/* Today's Full Schedule Table (ETH Zurich Modernist Grid) */}
           <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 sm:p-6 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150] mb-4">
-              <h3 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] flex items-center space-x-2">
+              <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
-                <span>{lang === 'ru' ? 'Расписание на сегодня' : 'Today\'s Classes'}</span>
+                <span>{lang === 'ru' ? 'Расписание на сегодня' : "Today's Classes"}</span>
               </h3>
               <button
                 onClick={() => setActiveTab('schedule')}
@@ -643,11 +683,11 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       {item.start}–{item.end}
                     </span>
                     <div>
-                      <h4 className="font-serif font-bold text-xs text-[#0F1D30] dark:text-[#FFFFFF]">
-                        {item.subject}
+                      <h4 className="font-semibold text-xs text-[#0F1D30] dark:text-[#FFFFFF]">
+                        {localizeText(item.subject, lang)}
                       </h4>
                       <p className="text-[11px] text-[#667085] font-sans">
-                        {item.teacher} • <span className="uppercase font-mono">{item.type}</span>
+                        {item.teacher} • <span className="uppercase font-mono">{getScheduleTypeLabel(item.type, lang)}</span>
                       </p>
                     </div>
                   </div>
@@ -667,7 +707,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
               <div className="flex items-center space-x-2">
                 <FileBadge className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
-                <h3 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
                   {lang === 'ru' ? 'Программа промежуточной аттестации и сессии' : 'Upcoming Examination Program'}
                 </h3>
               </div>
@@ -691,27 +731,27 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#142D4E] text-[#FFFFFF]">
                         {ex.code}
                       </span>
-                      <h4 className="font-serif font-bold text-xs sm:text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
-                        {ex.subject}
+                      <h4 className="font-semibold text-xs sm:text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                        {localizeText(ex.subject, lang)}
                       </h4>
                       {ex.status === 'date_changed' && (
-                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#245A91] text-[#142D4E]">
-                          ДАТА ПЕРЕНЕСЕНА
+                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                          {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
                         </span>
                       )}
                       {ex.status === 'room_changed' && (
                         <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white">
-                          АУДИТОРИЯ ИЗМЕНЕНА
+                          {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
                         </span>
                       )}
                       {ex.isDebt && (
                         <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
-                          ПЕРЕСДАЧА
+                          {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
                         </span>
                       )}
                     </div>
                     <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1] font-sans">
-                      {ex.teacher} • Формат: <strong>{ex.type}</strong> ({ex.credits} ECTS)
+                      {ex.teacher} • {tr(lang, 'Формат:', 'Format:')} <strong>{localizeText(ex.type, lang)}</strong> ({ex.credits} ECTS)
                     </p>
                   </div>
 
@@ -721,7 +761,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                         {ex.date}
                       </span>
                       <span className="text-[#667085] text-[11px]">
-                        в {ex.time} • {ex.room}
+                        {tr(lang, 'в', 'at')} {ex.time} • {ex.room}
                       </span>
                     </div>
                   </div>
@@ -738,12 +778,16 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <section className="bg-[#142D4E] text-[#FFFFFF] rounded-xl p-5 shadow-xs border border-[#245A91]/40 space-y-3">
               <div className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#245A91]" />
-                <h3 className="font-serif font-bold text-sm text-[#FFFFFF]">
+                <h3 className="font-semibold text-sm text-[#FFFFFF]">
                   {lang === 'ru' ? 'Готовые официальные справки' : 'Issued Certified Documents'}
                 </h3>
               </div>
               <p className="text-xs text-[#FFFFFF]/80 font-sans leading-relaxed">
-                Документы подписаны усиленной квалифицированной ЭЦП деканата (ГОСТ Р 34.10-2012) и доступны для выгрузки.
+                {tr(
+                  lang,
+                  'Документы подписаны усиленной квалифицированной ЭЦП деканата (ГОСТ Р 34.10-2012) и доступны для выгрузки.',
+                  "Documents are certified with the Dean's Office digital signature (GOST) and ready for download."
+                )}
               </p>
               <div className="space-y-2 pt-1">
                 {readyRequests.map(r => (
@@ -753,13 +797,13 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     className="p-3 rounded-lg bg-[#0E1F36] border border-[#245A91]/30 hover:border-[#245A91] cursor-pointer transition-all flex items-center justify-between"
                   >
                     <div>
-                      <span className="font-serif font-bold text-xs text-[#F8FAFC] block">
-                        {r.typeTitle}
+                      <span className="font-semibold text-xs text-[#F8FAFC] block">
+                        {localizeText(r.typeTitle, lang)}
                       </span>
                       <span className="text-[10px] font-mono text-[#245A91]">№ {r.id}</span>
                     </div>
                     <span className="text-[11px] font-sans font-semibold text-[#245A91] flex items-center space-x-1">
-                      <span>Открыть PDF</span>
+                      <span>{tr(lang, 'Открыть PDF', 'Open PDF')}</span>
                       <ArrowUpRight className="w-3 h-3" />
                     </span>
                   </div>
@@ -771,7 +815,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           {/* Active Applications in Progress */}
           <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
-              <h3 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] flex items-center space-x-2">
+              <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
                 <span>{lang === 'ru' ? 'Заявления на рассмотрении' : 'Active Petitions'}</span>
               </h3>
@@ -779,13 +823,13 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 onClick={() => setActiveTab('requests')}
                 className="text-xs font-sans text-[#142D4E] dark:text-[#245A91] hover:underline font-semibold cursor-pointer"
               >
-                Все ({requests.length}) →
+                {tr(lang, `Все (${requests.length}) →`, `All (${requests.length}) →`)}
               </button>
             </div>
 
             {activeRequests.length === 0 ? (
               <p className="text-xs text-[#667085] py-3 text-center">
-                Нет активных заявлений в обработке.
+                {tr(lang, 'Нет активных заявлений в обработке.', 'No active petitions in progress.')}
               </p>
             ) : (
               <div className="space-y-2.5">
@@ -796,15 +840,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] hover:border-[#142D4E]/40 cursor-pointer transition-all space-y-1.5"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-serif font-bold text-xs text-[#0F1D30] dark:text-[#FFFFFF]">
-                        {r.typeTitle}
+                      <span className="font-semibold text-xs text-[#0F1D30] dark:text-[#FFFFFF]">
+                        {localizeText(r.typeTitle, lang)}
                       </span>
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border border-[#245A91]/30 font-semibold">
-                        {r.status === 'needs_info' ? 'Уточнение' : 'В работе'}
+                        {getRequestStatusLabel(r.status, lang, 'staff')}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-[11px] text-[#667085] font-mono">
-                      <span>Срок: до {r.expectedDate}</span>
+                      <span>{tr(lang, `Срок: до ${r.expectedDate}`, `Due: ${r.expectedDate}`)}</span>
                       <span>№ {r.id}</span>
                     </div>
                   </div>
@@ -817,7 +861,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               ADMINISTRATIVE SERVICES DIRECTORY (Required)
               ───────────────────────────────────────────────────────────── */}
           <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 shadow-xs space-y-3">
-            <h3 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
+            <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
               <Building className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
               <span>{lang === 'ru' ? 'Службы и сервисы университета' : 'University Services Directory'}</span>
             </h3>
@@ -830,8 +874,12 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 <div className="flex items-center space-x-2.5">
                   <FileText className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
                   <div>
-                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">Канцелярия деканата</span>
-                    <span className="text-[10px] text-[#667085]">Каб. 312 • Справки, выписки, приказы</span>
+                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">
+                      {tr(lang, 'Канцелярия деканата', "Dean's Registry")}
+                    </span>
+                    <span className="text-[10px] text-[#667085]">
+                      {tr(lang, 'Каб. 312 • Справки, выписки, приказы', 'Rm 312 • Certificates, transcripts, decrees')}
+                    </span>
                   </div>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[#667085]" />
@@ -844,8 +892,12 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 <div className="flex items-center space-x-2.5">
                   <Sparkles className="w-4 h-4 text-[#245A91]" />
                   <div>
-                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">Цифровой консультант</span>
-                    <span className="text-[10px] text-[#667085]">ИИ-помощник по регламентам вуза</span>
+                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">
+                      {tr(lang, 'Цифровой консультант', 'Academic Copilot')}
+                    </span>
+                    <span className="text-[10px] text-[#667085]">
+                      {tr(lang, 'ИИ-помощник по регламентам вуза', 'AI assistant for university procedures')}
+                    </span>
                   </div>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[#667085]" />
@@ -858,8 +910,12 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 <div className="flex items-center space-x-2.5">
                   <IdCard className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
                   <div>
-                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">Студенческий пропуск</span>
-                    <span className="text-[10px] text-[#667085]">Турникеты, кампус, библиотека</span>
+                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">
+                      {tr(lang, 'Студенческий пропуск', 'Digital Student Pass')}
+                    </span>
+                    <span className="text-[10px] text-[#667085]">
+                      {tr(lang, 'Турникеты, кампус, библиотека', 'Turnstiles, campus access, library')}
+                    </span>
                   </div>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-[#667085]" />

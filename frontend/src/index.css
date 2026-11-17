@@ -3,10 +3,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
-  --font-display: 'Cinzel', 'Crimson Pro', Georgia, serif;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
   --color-academic-green: #142D4E;
   --color-academic-green-dark: #0E1F36;
@@ -46,31 +44,52 @@
     --text-muted: #94A3B8;
     --border-subtle: #1E395B;
     --border-strong: #274C78;
-    --accent-green: #245A91;
-    --accent-gold: #3879BC;
-    --accent-burgundy: #E04852;
+    --accent-green: #60A5FA;
+    --accent-gold: #93C5FD;
+    --accent-burgundy: #F06A73;
   }
 
   * {
     -webkit-tap-highlight-color: transparent;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
   }
 
-  h1, h2, h3, .font-academic-serif {
-    font-family: var(--font-serif);
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+  }
+
+  /* Secondary font: JetBrains Mono exclusively for numerical & tabular data */
+  .font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Custom scrollbar for modern architectural feel */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -79,9 +98,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(196, 164, 107, 0.3);
+  background: rgba(36, 90, 145, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(196, 164, 107, 0.6);
+  background: rgba(36, 90, 145, 0.6);
 }

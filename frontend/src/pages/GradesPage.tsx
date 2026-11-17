@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
-  GraduationCap,
-  Award,
   AlertOctagon,
-  Calendar,
-  CheckCircle,
-  Clock,
-  BookOpen,
   FileCheck2,
-  ShieldCheck,
-  FileText,
-  Printer,
-  Download,
 } from 'lucide-react';
-import { GradesSummary, Grade } from '../types';
+import { GradesSummary } from '../types';
 import { api } from '../services/api';
-import { UniversityEmblem } from '../components/UniversityEmblem';
+import {
+  tr,
+  getAssessmentTypeLabel,
+  getGradeDescription,
+  localizeText,
+} from '../utils/i18n';
 
 export const GradesPage: React.FC = () => {
   const { user, profile, lang } = useAuth();
@@ -58,17 +53,18 @@ export const GradesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
         <div>
           <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#245A91] font-semibold mb-1">
-            <span>{profile?.faculty}</span>
+            <span>{localizeText(profile?.faculty, lang)}</span>
             <span>•</span>
             <span>№ {profile?.studentNumber}</span>
             <span>•</span>
-            <span>ECTS Европейская система</span>
+            <span>{tr(lang, 'ECTS Европейская система', 'ECTS Credit System')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
             {lang === 'ru' ? 'Электронная зачетная книжка' : 'Academic Transcript & Records'}
           </h1>
           <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
-            Студент: <strong>{user?.fullName}</strong> • Академическая группа <strong>{profile?.group}</strong>
+            {tr(lang, 'Студент:', 'Student:')} <strong>{user?.fullName}</strong> •{' '}
+            {tr(lang, 'Академическая группа', 'Academic Group')} <strong>{profile?.group}</strong>
           </p>
         </div>
 
@@ -82,7 +78,7 @@ export const GradesPage: React.FC = () => {
                 : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
             }`}
           >
-            3 семестр (текущий)
+            {tr(lang, '3 семестр (текущий)', 'Semester 3 (Current)')}
           </button>
           <button
             onClick={() => setSelectedSemester(2)}
@@ -92,7 +88,7 @@ export const GradesPage: React.FC = () => {
                 : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
             }`}
           >
-            2 семестр
+            {tr(lang, '2 семестр', 'Semester 2')}
           </button>
         </div>
       </div>
@@ -113,7 +109,9 @@ export const GradesPage: React.FC = () => {
             <span className="font-mono text-xs text-[#667085]">/ 5.00</span>
           </div>
           <p className="text-[11px] font-sans text-[#475467] dark:text-[#CBD5E1]">
-            {grades.gpa >= 4.5 ? 'Отличная академическая успеваемость' : 'Академический прогресс в норме'}
+            {grades.gpa >= 4.5
+              ? tr(lang, 'Отличная академическая успеваемость', 'Honors academic standing')
+              : tr(lang, 'Академический прогресс в норме', 'Good academic standing')}
           </p>
         </div>
 
@@ -129,7 +127,7 @@ export const GradesPage: React.FC = () => {
             <span className="font-mono text-xs text-[#667085]">/ 100</span>
           </div>
           <p className="text-[11px] font-sans text-[#475467] dark:text-[#CBD5E1]">
-            Балльно-рейтинговая система университета
+            {tr(lang, 'Балльно-рейтинговая система университета', 'University continuous rating system')}
           </p>
         </div>
 
@@ -145,7 +143,7 @@ export const GradesPage: React.FC = () => {
             <span className="font-mono text-xs text-[#667085]">/ {grades.creditsRequired || 240} ECTS</span>
           </div>
           <p className="text-[11px] font-sans text-[#475467] dark:text-[#CBD5E1]">
-            Бакалавриат • 4 академических года
+            {tr(lang, 'Бакалавриат • 4 академических года', 'Bachelor Program • 4 Academic Years')}
           </p>
         </div>
       </section>
@@ -159,22 +157,27 @@ export const GradesPage: React.FC = () => {
             <AlertOctagon className="w-5 h-5 text-[#C63740] flex-shrink-0 mt-0.5" />
             <div className="flex-1 space-y-1">
               <div className="flex items-center space-x-2">
-                <h3 className="font-serif font-bold text-base text-[#C63740] dark:text-[#F06A73]">
-                  Академическая задолженность: {failedSubject.subject}
+                <h3 className="font-semibold text-base text-[#C63740] dark:text-[#F06A73]">
+                  {tr(lang, 'Академическая задолженность:', 'Academic Debt:')}{' '}
+                  {localizeText(failedSubject.subject, lang)}
                 </h3>
                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
-                  НЕЗАЧЕТ
+                  {tr(lang, 'НЕЗАЧЕТ', 'FAILED')}
                 </span>
               </div>
               <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans leading-relaxed">
-                Назначена первая повторная промежуточная аттестация комиссии факультета. Для допуска необходимо погасить задолженность по лабораторным работам.
+                {tr(
+                  lang,
+                  'Назначена первая повторная промежуточная аттестация комиссии факультета. Для допуска необходимо погасить задолженность по лабораторным работам.',
+                  'Faculty board retake assessment has been scheduled. All pending lab coursework must be submitted for admission.'
+                )}
               </p>
               <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-[#C63740] dark:text-[#F06A73] font-semibold">
-                <span>Дата пересдачи: 28 ноября 2026 г.</span>
+                <span>{tr(lang, 'Дата пересдачи: 28 ноября 2026 г.', 'Retake Date: Nov 28, 2026')}</span>
                 <span>•</span>
-                <span>Время: 14:00</span>
+                <span>{tr(lang, 'Время: 14:00', 'Time: 14:00')}</span>
                 <span>•</span>
-                <span>Аудитория: А-314</span>
+                <span>{tr(lang, 'Аудитория: А-314', 'Room: А-314')}</span>
               </div>
             </div>
           </div>
@@ -189,11 +192,15 @@ export const GradesPage: React.FC = () => {
           <div className="flex items-center space-x-2">
             <FileCheck2 className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
             <h3 className="font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#0F1D30] dark:text-[#FFFFFF]">
-              {selectedSemester} семестр • Дисциплины учебного плана
+              {tr(
+                lang,
+                `${selectedSemester} семестр • Дисциплины учебного плана`,
+                `Semester ${selectedSemester} • Curriculum Courses`
+              )}
             </h3>
           </div>
           <span className="text-xs font-mono text-[#667085]">
-            {grades.items.length} дисциплин
+            {tr(lang, `${grades.items.length} дисциплин`, `${grades.items.length} courses`)}
           </span>
         </div>
 
@@ -202,11 +209,11 @@ export const GradesPage: React.FC = () => {
             <thead className="bg-[#F8FAFC]/50 dark:bg-[#0E1B2D]/50 border-b border-[#DCE2EA] dark:border-[#193150] text-[10px] uppercase tracking-wider text-[#667085] font-mono">
               <tr>
                 <th className="py-3 px-4 w-12">№</th>
-                <th className="py-3 px-4">Дисциплина и кафедра</th>
+                <th className="py-3 px-4">{tr(lang, 'Дисциплина и кафедра', 'Course & Department')}</th>
                 <th className="py-3 px-4 w-24">ECTS</th>
-                <th className="py-3 px-4 w-28">Баллы (БРС)</th>
-                <th className="py-3 px-4 w-32">Оценка</th>
-                <th className="py-3 px-4 w-28">Статус</th>
+                <th className="py-3 px-4 w-28">{tr(lang, 'Баллы (БРС)', 'Score')}</th>
+                <th className="py-3 px-4 w-32">{tr(lang, 'Оценка', 'Grade')}</th>
+                <th className="py-3 px-4 w-28">{tr(lang, 'Статус', 'Status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#DCE2EA] dark:divide-[#193150]">
@@ -223,16 +230,12 @@ export const GradesPage: React.FC = () => {
                       {String(idx + 1).padStart(2, '0')}
                     </td>
                     <td className="py-3.5 px-4">
-                      <p className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
-                        {item.subject}
+                      <p className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                        {localizeText(item.subject, lang)}
                       </p>
                       <p className="text-[11px] text-[#667085] dark:text-[#94A3B8] mt-0.5">
-                        {item.assessmentType === 'exam'
-                          ? 'Экзамен'
-                          : item.assessmentType === 'coursework'
-                          ? 'Курсовая работа'
-                          : 'Зачет'}{' '}
-                        • Кафедра международных отношений
+                        {getAssessmentTypeLabel(item.assessmentType, lang)} •{' '}
+                        {tr(lang, 'Кафедра международных отношений', 'Dept. of International Relations')}
                       </p>
                     </td>
                     <td className="py-3.5 px-4 font-mono font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
@@ -250,19 +253,17 @@ export const GradesPage: React.FC = () => {
                     </td>
                     <td className="py-3.5 px-4">
                       <span
-                        className={`font-serif font-bold text-sm ${
+                        className={`font-semibold text-sm ${
                           isFail
                             ? 'text-[#C63740] dark:text-[#F06A73]'
                             : 'text-[#142D4E] dark:text-[#245A91]'
                         }`}
                       >
                         {item.grade
-                          ? `${item.grade} (${
-                              item.grade === 5 ? 'Отлично' : item.grade === 4 ? 'Хорошо' : 'Удовл.'
-                            })`
+                          ? `${item.grade} (${getGradeDescription(item.grade, lang)})`
                           : isFail
-                          ? 'Незачет'
-                          : 'Зачтено'}
+                          ? tr(lang, 'Незачет', 'Failed')
+                          : tr(lang, 'Зачтено', 'Passed')}
                       </span>
                     </td>
                     <td className="py-3.5 px-4">
@@ -273,7 +274,7 @@ export const GradesPage: React.FC = () => {
                             : 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#245A91] border border-[#142D4E]/25'
                         }`}
                       >
-                        {isFail ? 'Долг' : 'Зачтено'}
+                        {isFail ? tr(lang, 'Долг', 'Debt') : tr(lang, 'Зачтено', 'Passed')}
                       </span>
                     </td>
                   </tr>

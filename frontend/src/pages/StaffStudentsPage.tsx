@@ -17,6 +17,7 @@ import { api } from '../services/api';
 import { StudentDossierModal } from '../components/StudentDossierModal';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 import { useAuth } from '../context/AuthContext';
+import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
 
 interface StaffStudentsPageProps {
   onOpenAnnouncement?: (targetGroup?: string, targetStudentId?: string, targetStudentName?: string) => void;
@@ -145,20 +146,24 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#667085] dark:text-[#94A3B8]">
               <span className="font-mono text-[#142D4E] dark:text-[#245A91] font-semibold">
-                Деканат Факультета МО
+                {tr(lang, 'Деканат Факультета МО', "Dean's Office — Faculty of IR")}
               </span>
               <span>•</span>
-              <span>Контингент обучающихся</span>
+              <span>{tr(lang, 'Контингент обучающихся', 'Student Registry')}</span>
               <span>•</span>
-              <span>2026/2027 учебный год</span>
+              <span>{tr(lang, '2026/2027 учебный год', '2026/2027 Academic Year')}</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
               {lang === 'ru' ? 'Студенты и академические группы' : 'Academic Groups & Student Rosters'}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#475467] dark:text-[#CBD5E1] font-sans max-w-2xl">
-              Служебный реестр контингента факультета: академические группы, старосты, списки студентов, ведомости успеваемости, контроль задолженностей и личные дела обучающихся.
+              {tr(
+                lang,
+                'Служебный реестр контингента факультета: академические группы, старосты, списки студентов, ведомости успеваемости, контроль задолженностей и личные дела обучающихся.',
+                'Faculty administrative registry: academic groups, class presidents, student rosters, grade sheets, arrears monitoring, and student dossiers.',
+              )}
             </p>
           </div>
 
@@ -172,8 +177,8 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                 <Megaphone className="w-4 h-4 text-[#245A91]" />
                 <span>
                   {selectedGroup !== 'all'
-                    ? `Написать группе ${selectedGroup}`
-                    : 'Опубликовать приказ'}
+                    ? tr(lang, `Написать группе ${selectedGroup}`, `Message Group ${selectedGroup}`)
+                    : tr(lang, 'Опубликовать приказ', 'Publish Directive')}
                 </span>
               </button>
             )}
@@ -195,16 +200,16 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           }`}
         >
           <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-            Академические группы
+            {tr(lang, 'Академические группы', 'Academic Groups')}
           </span>
           <div className="flex items-baseline space-x-2">
             <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#245A91]">
               {groups.length}
             </span>
-            <span className="text-xs text-[#667085]">группы</span>
+            <span className="text-xs text-[#667085]">{tr(lang, 'группы', 'groups')}</span>
           </div>
           <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
-            Бакалавриат & Магистратура
+            {tr(lang, 'Бакалавриат & Магистратура', "Bachelor's & Master's")}
           </p>
         </div>
 
@@ -217,16 +222,20 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
         >
           <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-            Контингент студентов
+            {tr(lang, 'Контингент студентов', 'Enrolled Students')}
           </span>
           <div className="flex items-baseline space-x-2">
             <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#245A91]">
               {totalStudents}
             </span>
-            <span className="text-xs text-[#667085]">в реестре</span>
+            <span className="text-xs text-[#667085]">{tr(lang, 'в реестре', 'registered')}</span>
           </div>
           <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
-            {budgetCount} бюджет • {contractCount} договор
+            {tr(
+              lang,
+              `${budgetCount} бюджет • ${contractCount} договор`,
+              `${budgetCount} state-funded • ${contractCount} tuition`,
+            )}
           </p>
         </div>
 
@@ -240,16 +249,18 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           }`}
         >
           <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-            С задолженностями
+            {tr(lang, 'С задолженностями', 'With Arrears')}
           </span>
           <div className="flex items-baseline space-x-2">
             <span className="font-mono text-2xl font-bold text-rose-600 dark:text-rose-400">
               {withDebtsCount}
             </span>
-            <span className="text-xs text-[#667085]">обучающихся</span>
+            <span className="text-xs text-[#667085]">{tr(lang, 'обучающихся', 'students')}</span>
           </div>
           <p className="text-[11px] text-rose-700 dark:text-rose-300 font-medium">
-            {statusFilter === 'debts' ? '✓ Фильтр применен' : 'Требуют ликвидации долгов'}
+            {statusFilter === 'debts'
+              ? tr(lang, '✓ Фильтр применен', '✓ Filter active')
+              : tr(lang, 'Требуют ликвидации долгов', 'Require retake clearance')}
           </p>
         </div>
 
@@ -263,16 +274,18 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           }`}
         >
           <span className="text-[11px] font-sans text-[#667085] uppercase tracking-wider block">
-            Средний балл факультета
+            {tr(lang, 'Средний балл факультета', 'Faculty Mean GPA')}
           </span>
           <div className="flex items-baseline space-x-2">
             <span className="font-mono text-2xl font-bold text-emerald-600 dark:text-emerald-400">
               {avgGpa}
             </span>
-            <span className="text-xs text-[#667085]">из 5.0</span>
+            <span className="text-xs text-[#667085]">{tr(lang, 'из 5.0', 'out of 5.0')}</span>
           </div>
           <p className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">
-            {statusFilter === 'honors' ? '✓ Только отличники' : 'Показатель успеваемости'}
+            {statusFilter === 'honors'
+              ? tr(lang, '✓ Только отличники', '✓ Honors only')
+              : tr(lang, 'Показатель успеваемости', 'Academic performance index')}
           </p>
         </div>
       </div>
@@ -283,11 +296,15 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-serif font-bold text-lg text-[#142D4E] dark:text-[#245A91]">
-              Академические группы факультета
+            <h2 className="font-semibold text-lg text-[#142D4E] dark:text-[#245A91]">
+              {tr(lang, 'Академические группы факультета', 'Faculty Academic Groups')}
             </h2>
             <p className="text-xs text-[#667085] font-sans">
-              Выберите группу для фильтрации списка студентов или отправки группового оповещения
+              {tr(
+                lang,
+                'Выберите группу для фильтрации списка студентов или отправки группового оповещения',
+                'Select a group to filter the student roster or send a group announcement',
+              )}
             </p>
           </div>
 
@@ -296,7 +313,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
               onClick={() => setSelectedGroup('all')}
               className="text-xs font-sans text-[#142D4E] dark:text-[#245A91] hover:underline flex items-center space-x-1 cursor-pointer"
             >
-              <span>Показать все группы</span>
+              <span>{tr(lang, 'Показать все группы', 'Show All Groups')}</span>
               <X className="w-3.5 h-3.5" />
             </button>
           )}
@@ -322,44 +339,54 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       {group.code}
                     </span>
                     <span className="text-[11px] font-sans font-medium px-2 py-0.5 rounded-md bg-[#F8FAFC] dark:bg-[#111714] border border-[#DCE2EA] dark:border-[#1E395B] text-[#667085]">
-                      {group.courseNumber} курс
+                      {tr(lang, `${group.courseNumber} курс`, `Year ${group.courseNumber}`)}
                     </span>
                   </div>
 
                   {/* Program */}
                   <div>
-                    <h3 className="font-serif font-bold text-xs text-[#0F1D30] dark:text-[#FFFFFF] leading-snug">
-                      {group.program}
+                    <h3 className="font-semibold text-xs text-[#0F1D30] dark:text-[#FFFFFF] leading-snug">
+                      {localizeText(group.program, lang)}
                     </h3>
                     <p className="text-[11px] text-[#667085] font-sans mt-0.5">
-                      Куратор: {group.curatorName}
+                      {tr(lang, 'Куратор', 'Advisor')}: {group.curatorName}
                     </p>
                   </div>
 
                   {/* Metrics */}
                   <div className="pt-2 border-t border-[#DCE2EA] dark:border-[#193150] grid grid-cols-2 gap-2 text-xs font-sans">
                     <div>
-                      <span className="text-[10px] text-[#667085] block">Студентов:</span>
+                      <span className="text-[10px] text-[#667085] block">
+                        {tr(lang, 'Студентов:', 'Students:')}
+                      </span>
                       <span className="font-mono font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
-                        {group.studentsCount} чел.
+                        {tr(lang, `${group.studentsCount} чел.`, `${group.studentsCount} students`)}
                       </span>
                       <span className="text-[10px] text-[#667085] block">
-                        ({group.budgetCount} бюдж. / {group.contractCount} дог.)
+                        (
+                        {tr(
+                          lang,
+                          `${group.budgetCount} бюдж. / ${group.contractCount} дог.`,
+                          `${group.budgetCount} state / ${group.contractCount} tuition`,
+                        )}
+                        )
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-[#667085] block">Средний GPA:</span>
+                      <span className="text-[10px] text-[#667085] block">
+                        {tr(lang, 'Средний GPA:', 'Mean GPA:')}
+                      </span>
                       <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
                         {group.averageGpa.toFixed(2)}
                       </span>
                       {group.debtCount > 0 ? (
                         <span className="text-[10px] text-rose-600 dark:text-rose-400 font-bold block">
-                          {group.debtCount} с долгами
+                          {tr(lang, `${group.debtCount} с долгами`, `${group.debtCount} with arrears`)}
                         </span>
                       ) : (
                         <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block">
-                          0 долгов
+                          {tr(lang, '0 долгов', '0 arrears')}
                         </span>
                       )}
                     </div>
@@ -370,7 +397,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                     <div className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[11px] font-sans">
                       <div className="flex items-center space-x-1.5 text-[#142D4E] dark:text-[#245A91] font-semibold">
                         <UserCheck className="w-3.5 h-3.5" />
-                        <span>Староста: {group.starostaName}</span>
+                        <span>
+                          {tr(lang, 'Староста', 'Group Rep')}: {group.starostaName}
+                        </span>
                       </div>
                       <div className="text-[10px] text-[#667085] font-mono mt-0.5">
                         {group.starostaPhone}
@@ -382,7 +411,11 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                 {/* Card Action footer */}
                 <div className="mt-4 pt-3 border-t border-[#DCE2EA] dark:border-[#193150] flex items-center justify-between text-xs font-sans">
                   <span className="text-[11px] font-medium text-[#142D4E] dark:text-[#245A91] flex items-center space-x-1">
-                    <span>{isSelected ? '✓ Выбрана' : 'Открыть список'}</span>
+                    <span>
+                      {isSelected
+                        ? tr(lang, '✓ Выбрана', '✓ Selected')
+                        : tr(lang, 'Открыть список', 'Open Roster')}
+                    </span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </span>
 
@@ -392,7 +425,11 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         e.stopPropagation();
                         onOpenAnnouncement(group.code);
                       }}
-                      title={`Написать объявление группе ${group.code}`}
+                      title={tr(
+                        lang,
+                        `Написать объявление группе ${group.code}`,
+                        `Send announcement to group ${group.code}`,
+                      )}
                       className="p-1.5 rounded-md text-[#667085] hover:text-[#142D4E] dark:hover:text-[#245A91] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45] transition-colors cursor-pointer"
                     >
                       <Megaphone className="w-4 h-4" />
@@ -413,19 +450,23 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
         <div className="p-4 sm:p-5 border-b border-[#DCE2EA] dark:border-[#193150] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h3 className="font-serif font-bold text-base text-[#142D4E] dark:text-[#245A91] flex items-center space-x-2">
+              <h3 className="font-semibold text-base text-[#142D4E] dark:text-[#245A91] flex items-center space-x-2">
                 <Users className="w-4 h-4" />
                 <span>
                   {selectedGroup === 'all'
-                    ? 'Сводный список студентов факультета'
-                    : `Студенты группы ${selectedGroup}`}
+                    ? tr(lang, 'Сводный список студентов факультета', 'Consolidated Faculty Student Roster')
+                    : tr(lang, `Студенты группы ${selectedGroup}`, `Group ${selectedGroup} Students`)}
                 </span>
                 <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-[#F8FAFC] dark:bg-[#111714] border border-[#DCE2EA] dark:border-[#1E395B] text-[#667085]">
-                  {filteredStudents.length} чел.
+                  {tr(lang, `${filteredStudents.length} чел.`, `${filteredStudents.length} total`)}
                 </span>
               </h3>
               <p className="text-xs text-[#667085] font-sans">
-                Нажмите на студента для просмотра полного личного дела, зачетки и поданных заявлений
+                {tr(
+                  lang,
+                  'Нажмите на студента для просмотра полного личного дела, зачетки и поданных заявлений',
+                  'Click a student to view their full dossier, grade book, and submitted requests',
+                )}
               </p>
             </div>
 
@@ -436,7 +477,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Поиск по ФИО, студбилету..."
+                placeholder={tr(lang, 'Поиск по ФИО, студбилету...', 'Search by name, student ID...')}
                 className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans text-[#0F1D30] dark:text-[#FFFFFF] placeholder-[#667085] focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               />
               {searchQuery && (
@@ -454,7 +495,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-sans">
             <span className="text-[#667085] text-[11px] mr-1 flex items-center space-x-1">
               <Filter className="w-3 h-3" />
-              <span>Фильтр:</span>
+              <span>{tr(lang, 'Фильтр:', 'Filter:')}</span>
             </span>
 
             <button
@@ -465,7 +506,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                   : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] hover:text-[#0F1D30] border border-[#DCE2EA] dark:border-[#1E395B]'
               }`}
             >
-              Все ({students.length})
+              {tr(lang, `Все (${students.length})`, `All (${students.length})`)}
             </button>
 
             <button
@@ -477,7 +518,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
               }`}
             >
               <AlertTriangle className="w-3 h-3" />
-              <span>С задолженностями ({withDebtsCount})</span>
+              <span>
+                {tr(lang, `С задолженностями (${withDebtsCount})`, `With Arrears (${withDebtsCount})`)}
+              </span>
             </button>
 
             <button
@@ -489,7 +532,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
               }`}
             >
               <Award className="w-3 h-3" />
-              <span>Отличники (GPA ≥ 4.7)</span>
+              <span>{tr(lang, 'Отличники (GPA ≥ 4.7)', 'Honors (GPA ≥ 4.7)')}</span>
             </button>
 
             <button
@@ -500,7 +543,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                   : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] hover:text-[#0F1D30] border border-[#DCE2EA] dark:border-[#1E395B]'
               }`}
             >
-              Бюджет ({budgetCount})
+              {tr(lang, `Бюджет (${budgetCount})`, `State-funded (${budgetCount})`)}
             </button>
 
             <button
@@ -511,7 +554,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                   : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] hover:text-[#0F1D30] border border-[#DCE2EA] dark:border-[#1E395B]'
               }`}
             >
-              Договор ({contractCount})
+              {tr(lang, `Договор (${contractCount})`, `Tuition (${contractCount})`)}
             </button>
 
             <button
@@ -522,7 +565,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                   : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] hover:text-[#0F1D30] border border-[#DCE2EA] dark:border-[#1E395B]'
               }`}
             >
-              ★ Старосты
+              {tr(lang, '★ Старосты', '★ Group Reps')}
             </button>
           </div>
         </div>
@@ -531,7 +574,13 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
         {filteredStudents.length === 0 ? (
           <div className="p-12 text-center text-xs font-sans text-[#667085] space-y-2">
             <Users className="w-8 h-8 mx-auto opacity-30" />
-            <p>Студенты не найдены по заданным критериям фильтрации.</p>
+            <p>
+              {tr(
+                lang,
+                'Студенты не найдены по заданным критериям фильтрации.',
+                'No students found matching the selected filters.',
+              )}
+            </p>
             <button
               onClick={() => {
                 setSelectedGroup('all');
@@ -540,7 +589,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
               }}
               className="text-[#142D4E] dark:text-[#245A91] font-semibold hover:underline"
             >
-              Сбросить фильтры
+              {tr(lang, 'Сбросить фильтры', 'Reset Filters')}
             </button>
           </div>
         ) : (
@@ -586,11 +635,11 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                               : 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300'
                           }`}
                         >
-                          {student.studyForm}
+                          {getStudyFormLabel(student.studyForm, lang)}
                         </span>
                         {student.isStarosta && (
                           <span className="text-[10px] font-bold text-[#1D4876] dark:text-[#245A91]">
-                            (Староста)
+                            {tr(lang, '(Староста)', '(Group Rep)')}
                           </span>
                         )}
                       </div>
@@ -634,11 +683,17 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       {hasDebt ? (
                         <div className="flex items-center space-x-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
                           <AlertTriangle className="w-3 h-3" />
-                          <span>{student.debtCount} долг ({student.debtSubjects?.[0] || 'Статистика'})</span>
+                          <span>
+                            {tr(
+                              lang,
+                              `${student.debtCount} долг (${student.debtSubjects?.[0] || 'Статистика'})`,
+                              `${student.debtCount} arrear (${localizeText(student.debtSubjects?.[0] || 'Статистика', 'en')})`,
+                            )}
+                          </span>
                         </div>
                       ) : (
                         <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-sans block">
-                          ✓ Нет задолженностей
+                          {tr(lang, '✓ Нет задолженностей', '✓ No arrears')}
                         </span>
                       )}
                     </div>
@@ -653,7 +708,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#162A45] hover:bg-[#EDF2F7] dark:hover:bg-[#233029] text-[#142D4E] dark:text-[#245A91] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-semibold transition-colors cursor-pointer shadow-xs flex items-center space-x-1"
                       >
                         <FileText className="w-3.5 h-3.5 text-[#245A91]" />
-                        <span>Личное дело</span>
+                        <span>{tr(lang, 'Личное дело', 'Student Dossier')}</span>
                       </button>
 
                       {onOpenAnnouncement && (
@@ -662,7 +717,11 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                             e.stopPropagation();
                             onOpenAnnouncement(undefined, student.id, student.fullName);
                           }}
-                          title={`Отправить уведомление ${student.fullName}`}
+                          title={tr(
+                            lang,
+                            `Отправить уведомление ${student.fullName}`,
+                            `Send notification to ${student.fullName}`,
+                          )}
                           className="p-1.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] hover:text-[#142D4E] dark:hover:text-[#245A91] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors cursor-pointer"
                         >
                           <Send className="w-3.5 h-3.5" />

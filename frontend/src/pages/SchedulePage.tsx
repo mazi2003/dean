@@ -2,28 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Calendar as CalendarIcon,
-  Clock,
   MapPin,
-  AlertTriangle,
   Download,
   Filter,
   CheckCircle,
-  Building,
-  User,
   Edit3,
   Shield,
   X,
-  BellRing,
-  RotateCcw,
-  Sparkles,
-  FileBadge,
-  GraduationCap,
-  Award,
   Plus,
 } from 'lucide-react';
 import { ScheduleEntry, ScheduleStatus, ExamEntry } from '../types';
 import { api } from '../services/api';
 import { ExamEditModal } from '../components/ExamEditModal';
+import {
+  tr,
+  getScheduleTypeLabel,
+  getScheduleStatusLabel,
+  getExamStatusLabel,
+  normalizeScheduleType,
+  localizeText,
+} from '../utils/i18n';
+
+function getEntryDayOfWeek(item: ScheduleEntry): number {
+  if (typeof item.dayOfWeek === 'number') return item.dayOfWeek;
+  if (!item.date) return 1;
+  const [y, m, d] = item.date.split('-').map(Number);
+  const dt = new Date(y, (m || 1) - 1, d || 1);
+  const dow = dt.getDay();
+  return dow === 0 ? 7 : dow;
+}
 
 export const SchedulePage: React.FC = () => {
   const { user, profile, lang } = useAuth();
@@ -33,6 +40,9 @@ export const SchedulePage: React.FC = () => {
     if (isStaff) return 'ДУ-101';
     return profile?.group || 'ДУ-101';
   });
+
+  const studentGroup = profile?.group || 'ДУ-101';
+  const activeGroup = isStaff ? selectedGroup : studentGroup;
 
   const [activeSubTab, setActiveSubTab] = useState<'classes' | 'exams'>('classes');
   const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
@@ -74,9 +84,28 @@ export const SchedulePage: React.FC = () => {
   };
 
   useEffect(() => {
-    const activeGrp = isStaff ? selectedGroup : profile?.group || 'ДУ-101';
-    loadScheduleData(activeGrp);
-  }, [user, selectedGroup]);
+    let cancelled = false;
+    const activeGrp = isStaff ? selectedGroup : studentGroup;
+    (async () => {
+      try {
+        const [data, examData] = await Promise.all([
+          api.getSchedule(undefined, activeGrp),
+          api.getExams(activeGrp),
+        ]);
+        if (!cancelled) {
+          setSchedule(data);
+          setExams(examData);
+        }
+      } catch (err) {
+        console.error('Error loading schedule:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, isStaff, selectedGroup, studentGroup]);
 
   const daysRu = [
     { num: 1, short: 'ПН', label: 'Понедельник' },
@@ -98,24 +127,62 @@ export const SchedulePage: React.FC = () => {
 
   const daysList = lang === 'ru' ? daysRu : daysEn;
 
-  const filteredSchedule = schedule.filter(item => {
-    const dayMatch = viewMode === 'week' ? true : item.dayOfWeek === selectedDay;
-    const typeMatch = filterType === 'all' ? true : item.type === filterType;
-    return dayMatch && typeMatch;
-  });
+  const filteredSchedule = schedule
+    .filter(item => {
+      const itemDay = getEntryDayOfWeek(item);
+      const dayMatch = viewMode === 'week' ? true : itemDay === selectedDay;
+      const normalizedType = normalizeScheduleType(item.type);
+      const typeMatch = filterType === 'all' ? true : normalizedType === filterType;
+      return dayMatch && typeMatch;
+    })
+    .sort((a, b) => {
+      const dayDiff = getEntryDayOfWeek(a) - getEntryDayOfWeek(b);
+      if (dayDiff !== 0) return dayDiff;
+      return a.start.localeCompare(b.start);
+    });
 
   const handleExportIcs = () => {
-    const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//DemoTech University//Schedule//RU\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n${schedule
-      .map(
-        s =>
-          `BEGIN:VEVENT\nSUMMARY:${s.subject}\nLOCATION:${s.room}\nDESCRIPTION:${s.teacher} (${s.type})\nSTATUS:CONFIRMED\nEND:VEVENT`
-      )
-      .join('\n')}\nEND:VCALENDAR`;
+    const dtStamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+    const formatIcsDateTime = (dateStr: string, timeStr: string) => {
+      const compactDate = dateStr.replace(/-/g, '');
+      const compactTime = timeStr.replace(/:/g, '') + '00';
+      return `${compactDate}T${compactTime}`;
+    };
+
+    const events = schedule
+      .filter(s => s.status !== 'cancelled')
+      .map(s => {
+        const dtStart = formatIcsDateTime(s.date, s.start);
+        const dtEnd = formatIcsDateTime(s.date, s.end);
+        return [
+          'BEGIN:VEVENT',
+          `UID:${s.id}@demotech.edu`,
+          `DTSTAMP:${dtStamp}`,
+          `DTSTART:${dtStart}`,
+          `DTEND:${dtEnd}`,
+          `SUMMARY:${s.subject}`,
+          `LOCATION:${s.room}`,
+          `DESCRIPTION:${s.teacher} (${s.type})`,
+          'STATUS:CONFIRMED',
+          'END:VEVENT',
+        ].join('\r\n');
+      })
+      .join('\r\n');
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//DemoTech University//Schedule//RU',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      events,
+      'END:VCALENDAR',
+    ].join('\r\n');
 
     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
-    link.setAttribute('download', `demotech-schedule-${selectedGroup}.ics`);
+    link.setAttribute('download', `demotech-schedule-${activeGroup}.ics`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -146,17 +213,26 @@ export const SchedulePage: React.FC = () => {
         notifyGroup,
       });
 
+      const subjName = localizeText(editingEntry.subject, lang);
       setFeedbackMsg(
         notifyGroup
-          ? `Изменения по занятию «${editingEntry.subject}» сохранены. Студенты группы ${selectedGroup} оповещены!`
-          : `Изменения по занятию «${editingEntry.subject}» успешно сохранены!`
+          ? tr(
+              lang,
+              `Изменения по занятию «${subjName}» сохранены. Студенты группы ${selectedGroup} оповещены!`,
+              `Schedule changes for "${subjName}" saved. Group ${selectedGroup} has been notified!`
+            )
+          : tr(
+              lang,
+              `Изменения по занятию «${subjName}» успешно сохранены!`,
+              `Schedule changes for "${subjName}" saved successfully!`
+            )
       );
 
       setEditingEntry(null);
       await loadScheduleData(selectedGroup);
       setTimeout(() => setFeedbackMsg(null), 6000);
     } catch (err: any) {
-      alert(err.message || 'Ошибка сохранения изменений в расписании');
+      alert(err.message || tr(lang, 'Ошибка сохранения изменений в расписании', 'Failed to save schedule changes'));
     } finally {
       setSaving(false);
     }
@@ -174,7 +250,14 @@ export const SchedulePage: React.FC = () => {
         note: '',
         notifyGroup: false,
       });
-      setFeedbackMsg(`Занятие «${editingEntry.subject}» возвращено в штатное расписание.`);
+      const subjName = localizeText(editingEntry.subject, lang);
+      setFeedbackMsg(
+        tr(
+          lang,
+          `Занятие «${subjName}» возвращено в штатное расписание.`,
+          `Class "${subjName}" restored to regular schedule.`
+        )
+      );
       setEditingEntry(null);
       await loadScheduleData(selectedGroup);
       setTimeout(() => setFeedbackMsg(null), 5000);
@@ -194,13 +277,13 @@ export const SchedulePage: React.FC = () => {
       id: `ex-${Date.now()}`,
       code: `DISP-${Math.floor(100 + Math.random() * 900)}`,
       groupId: selectedGroup,
-      subject: 'Новая дисциплина',
-      format: 'Устный экзамен по билетам',
-      examiner: 'Преподаватель кафедры',
-      date: '28 декабря 2026',
+      subject: tr(lang, 'Новая дисциплина', 'New Discipline'),
+      format: tr(lang, 'Устный экзамен по билетам', 'Oral Examination'),
+      examiner: tr(lang, 'Преподаватель кафедры', 'Department Examiner'),
+      date: tr(lang, '28 декабря 2026', 'Dec 28, 2026'),
       time: '10:00 – 14:00',
-      room: 'Главный корпус, ауд. 312',
-      consultation: '26 декабря в 15:00',
+      room: tr(lang, 'Главный корпус, ауд. 312', 'Main Bldg, Room 312'),
+      consultation: tr(lang, '26 декабря в 15:00', 'Dec 26 at 15:00'),
       credits: 4,
       status: 'scheduled',
     };
@@ -214,26 +297,35 @@ export const SchedulePage: React.FC = () => {
   ) => {
     try {
       await api.updateExam(examId, changes);
+      const subjName = localizeText(editingExam?.subject, lang);
       setFeedbackMsg(
         changes.notifyGroup !== false
-          ? `График экзамена по дисциплине «${editingExam?.subject}» обновлен. Студенты группы ${selectedGroup} оповещены!`
-          : `График экзамена по дисциплине «${editingExam?.subject}» успешно сохранен!`
+          ? tr(
+              lang,
+              `График экзамена по дисциплине «${subjName}» обновлен. Студенты группы ${selectedGroup} оповещены!`,
+              `Exam schedule for "${subjName}" updated. Group ${selectedGroup} has been notified!`
+            )
+          : tr(
+              lang,
+              `График экзамена по дисциплине «${subjName}» успешно сохранен!`,
+              `Exam schedule for "${subjName}" saved successfully!`
+            )
       );
       await loadScheduleData(selectedGroup);
       setTimeout(() => setFeedbackMsg(null), 6000);
     } catch (err: any) {
-      alert(err.message || 'Ошибка сохранения экзамена');
+      alert(err.message || tr(lang, 'Ошибка сохранения экзамена', 'Failed to save exam'));
     }
   };
 
   const handleResetExam = async (examId: string) => {
     try {
       await api.resetExam(examId);
-      setFeedbackMsg('Экзамен возвращен в штатный график сессии.');
+      setFeedbackMsg(tr(lang, 'Экзамен возвращен в штатный график сессии.', 'Exam restored to regular session schedule.'));
       await loadScheduleData(selectedGroup);
       setTimeout(() => setFeedbackMsg(null), 5000);
     } catch (err: any) {
-      alert(err.message || 'Ошибка сброса экзамена');
+      alert(err.message || tr(lang, 'Ошибка сброса экзамена', 'Failed to reset exam'));
     }
   };
 
@@ -273,15 +365,23 @@ export const SchedulePage: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-serif font-bold text-sm text-[#142D4E] dark:text-[#245A91]">
-                  Служебный режим диспетчера деканата: Управление расписанием
+                <h3 className="font-semibold text-sm text-[#142D4E] dark:text-[#245A91]">
+                  {tr(
+                    lang,
+                    'Служебный режим диспетчера деканата: Управление расписанием',
+                    "Dean's Office Dispatcher Mode: Timetable Management"
+                  )}
                 </h3>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border border-[#245A91]/40">
-                  ПРАВА ДЕКАНАТА
+                  {tr(lang, 'ПРАВА ДЕКАНАТА', 'DEAN AUTHORITY')}
                 </span>
               </div>
               <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5 leading-relaxed">
-                Вы можете переносить время занятий, заменять аудитории и отменять пары. При сохранении система автоматически отправит push-уведомление группе.
+                {tr(
+                  lang,
+                  'Вы можете переносить время занятий, заменять аудитории и отменять пары. При сохранении система автоматически отправит push-уведомление группе.',
+                  'You can reschedule classes, reassign rooms, and cancel sessions. Saving automatically notifies the selected student group.'
+                )}
               </p>
             </div>
           </div>
@@ -289,15 +389,19 @@ export const SchedulePage: React.FC = () => {
           {/* Group Selector for Staff */}
           <div className="flex items-center space-x-2 bg-white dark:bg-[#0E1B2D] p-1.5 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] self-start sm:self-center">
             <span className="text-xs font-sans font-semibold text-[#667085] pl-1.5">
-              Группа:
+              {tr(lang, 'Группа:', 'Group:')}
             </span>
             <select
               value={selectedGroup}
               onChange={e => setSelectedGroup(e.target.value)}
               className="bg-transparent text-xs font-mono font-bold text-[#142D4E] dark:text-[#245A91] focus:outline-none cursor-pointer pr-2"
             >
-              <option value="ДУ-101">ДУ-101 (2 курс, МО)</option>
-              <option value="ДУ-205">ДУ-205 (3 курс, Мировая эк.)</option>
+              <option value="ДУ-101">
+                {tr(lang, 'ДУ-101 (2 курс, МО)', 'ДУ-101 (Year 2, IR)')}
+              </option>
+              <option value="ДУ-205">
+                {tr(lang, 'ДУ-205 (3 курс, Мировая эк.)', 'ДУ-205 (Year 3, World Econ)')}
+              </option>
             </select>
           </div>
         </div>
@@ -309,17 +413,21 @@ export const SchedulePage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
         <div>
           <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#245A91] font-semibold mb-1">
-            <span>Академическая группа: {selectedGroup}</span>
+            <span>{tr(lang, `Академическая группа: ${activeGroup}`, `Academic Group: ${activeGroup}`)}</span>
             <span>•</span>
-            <span>Осенний семестр 2026/2027</span>
+            <span>{tr(lang, 'Осенний семестр 2026/2027', 'Fall Term 2026/2027')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
             {activeSubTab === 'classes'
               ? (lang === 'ru' ? 'Академическое расписание' : 'Lecture Timetable')
               : (lang === 'ru' ? 'Программа экзаменационной сессии' : 'Examination Session')}
           </h1>
           <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
-            Учебные занятия, поточные лекции, семинары и экзаменационные комиссии
+            {tr(
+              lang,
+              'Учебные занятия, поточные лекции, семинары и экзаменационные комиссии',
+              'Lectures, seminars, lab sessions, and official examination boards'
+            )}
           </p>
         </div>
 
@@ -378,11 +486,11 @@ export const SchedulePage: React.FC = () => {
               {/* ICS Export */}
               <button
                 onClick={handleExportIcs}
-                title="Экспорт в персональный календарь (.ics)"
+                title={tr(lang, 'Экспорт в персональный календарь (.ics)', 'Export to personal calendar (.ics)')}
                 className="p-2 sm:px-3 sm:py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors flex items-center space-x-1.5 text-xs font-sans font-medium cursor-pointer"
               >
                 <Download className="w-4 h-4 text-[#245A91]" />
-                <span className="hidden sm:inline">Экспорт .ICS</span>
+                <span className="hidden sm:inline">{tr(lang, 'Экспорт .ICS', 'Export .ICS')}</span>
               </button>
             </>
           )}
@@ -412,7 +520,7 @@ export const SchedulePage: React.FC = () => {
                     <span className="block text-[10px] font-mono tracking-wider opacity-80 uppercase">
                       {day.short}
                     </span>
-                    <span className="hidden sm:block text-xs font-serif font-bold mt-0.5">
+                    <span className="hidden sm:block text-xs font-semibold mt-0.5">
                       {day.label}
                     </span>
                   </button>
@@ -425,10 +533,10 @@ export const SchedulePage: React.FC = () => {
           <div className="flex items-center space-x-1.5 overflow-x-auto text-xs pb-1 font-sans">
             <Filter className="w-3.5 h-3.5 text-[#667085] mr-1 flex-shrink-0" />
             {[
-              { id: 'all', label: 'Все форматы' },
-              { id: 'лекция', label: 'Лекции' },
-              { id: 'семинар', label: 'Семинары' },
-              { id: 'лабораторная', label: 'Лабораторные' },
+              { id: 'all', label: tr(lang, 'Все форматы', 'All Formats') },
+              { id: 'lecture', label: tr(lang, 'Лекции', 'Lectures') },
+              { id: 'seminar', label: tr(lang, 'Семинары', 'Seminars') },
+              { id: 'lab', label: tr(lang, 'Лабораторные', 'Labs') },
             ].map(f => (
               <button
                 key={f.id}
@@ -449,18 +557,39 @@ export const SchedulePage: React.FC = () => {
             {filteredSchedule.length === 0 ? (
               <div className="p-8 text-center bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] space-y-2">
                 <CalendarIcon className="w-8 h-8 text-[#667085] mx-auto opacity-50" />
-                <p className="text-sm font-serif font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
-                  В этот день занятий нет
+                <p className="text-sm font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
+                  {filterType !== 'all'
+                    ? tr(lang, 'Занятий выбранного формата нет', 'No classes match the selected format')
+                    : tr(lang, 'В этот день занятий нет', 'No classes scheduled for this day')}
                 </p>
                 <p className="text-xs text-[#667085]">
-                  Свободный день для самостоятельной научно-исследовательской работы и библиотеки
+                  {filterType !== 'all'
+                    ? tr(
+                        lang,
+                        'Попробуйте переключить фильтр или выбрать режим «Вся неделя».',
+                        'Try changing the class type filter or switching to Week view.'
+                      )
+                    : tr(
+                        lang,
+                        'Свободный день для самостоятельной научно-исследовательской работы и библиотеки',
+                        'Free day for independent research and library study'
+                      )}
                 </p>
+                {filterType !== 'all' && (
+                  <button
+                    onClick={() => setFilterType('all')}
+                    className="mt-1 px-3 py-1 rounded-lg bg-[#142D4E] text-[#FFFFFF] text-xs font-medium hover:bg-[#0E1F36] cursor-pointer"
+                  >
+                    {tr(lang, 'Показать все форматы', 'Show All Formats')}
+                  </button>
+                )}
               </div>
             ) : (
               filteredSchedule.map((item, idx) => {
                 const isCanceled = item.status === 'cancelled';
                 const isMoved = item.status === 'moved';
                 const isRoomChanged = item.status === 'room_changed';
+                const dayInfo = daysList.find(d => d.num === getEntryDayOfWeek(item));
 
                 return (
                   <div
@@ -479,45 +608,53 @@ export const SchedulePage: React.FC = () => {
                         <span className="font-mono text-xs font-bold text-[#142D4E] dark:text-[#245A91]">
                           {idx + 1}
                         </span>
-                        <span className="text-[8px] font-sans uppercase text-[#667085]">пара</span>
+                        <span className="text-[8px] font-sans uppercase text-[#667085]">
+                          {tr(lang, 'пара', 'slot')}
+                        </span>
                       </div>
 
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
+                          {viewMode === 'week' && dayInfo && (
+                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#142D4E] text-[#FFFFFF]">
+                              {dayInfo.short}
+                            </span>
+                          )}
                           <span className="text-xs font-mono font-bold text-[#142D4E] dark:text-[#245A91]">
                             {item.start} – {item.end}
                           </span>
                           <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] border border-[#DCE2EA] dark:border-[#1E395B]">
-                            {item.type}
+                            {getScheduleTypeLabel(item.type, lang)}
                           </span>
                           {isCanceled && (
                             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
-                              ОТМЕНЕНО ДЕКАНАТОМ
+                              {getScheduleStatusLabel('cancelled', lang)}
                             </span>
                           )}
                           {isMoved && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#142D4E]">
-                              ПЕРЕНОС ВРЕМЕНИ
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                              {getScheduleStatusLabel('moved', lang)}
                             </span>
                           )}
                           {isRoomChanged && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#142D4E]">
-                              ЗАМЕНА АУДИТОРИИ
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                              {getScheduleStatusLabel('room_changed', lang)}
                             </span>
                           )}
                         </div>
 
-                        <h3 className={`font-serif font-bold text-base ${isCanceled ? 'line-through text-[#667085]' : 'text-[#0F1D30] dark:text-[#FFFFFF]'}`}>
-                          {item.subject}
+                        <h3 className={`font-semibold text-base ${isCanceled ? 'line-through text-[#667085]' : 'text-[#0F1D30] dark:text-[#FFFFFF]'}`}>
+                          {localizeText(item.subject, lang)}
                         </h3>
 
                         <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans">
-                          Преподаватель: <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">{item.teacher}</strong>
+                          {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
+                          <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">{item.teacher}</strong>
                         </p>
 
                         {item.changeNote && (
                           <p className="text-xs font-mono text-[#C63740] dark:text-[#F06A73] font-medium pt-0.5">
-                            Примечание деканата: {item.changeNote}
+                            {tr(lang, 'Примечание деканата:', "Dean's note:")} {item.changeNote}
                           </p>
                         )}
                       </div>
@@ -535,7 +672,7 @@ export const SchedulePage: React.FC = () => {
                           className="px-2.5 py-1 rounded-md bg-[#142D4E] text-[#FFFFFF] text-xs font-sans font-medium hover:bg-[#0E1F36] flex items-center space-x-1 cursor-pointer"
                         >
                           <Edit3 className="w-3.5 h-3.5 text-[#245A91]" />
-                          <span>Изменить</span>
+                          <span>{tr(lang, 'Изменить', 'Edit')}</span>
                         </button>
                       )}
                     </div>
@@ -557,20 +694,30 @@ export const SchedulePage: React.FC = () => {
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <span className="font-mono text-xs font-bold text-[#142D4E] dark:text-[#245A91]">
-                  Зимняя промежуточная аттестация 2026/2027
+                  {tr(lang, 'Зимняя промежуточная аттестация 2026/2027', 'Winter Examination Session 2026/2027')}
                 </span>
                 <span>•</span>
-                <span className="text-xs text-[#667085]">Группа {selectedGroup}</span>
+                <span className="text-xs text-[#667085]">
+                  {tr(lang, `Группа ${activeGroup}`, `Group ${activeGroup}`)}
+                </span>
               </div>
-              <h3 className="font-serif font-bold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+              <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
                 {isStaff
-                  ? 'Диспетчер экзаменационной сессии факультета'
-                  : 'График экзаменов и консультаций'}
+                  ? tr(lang, 'Диспетчер экзаменационной сессии факультета', 'Faculty Examination Session Dispatcher')
+                  : tr(lang, 'График экзаменов и консультаций', 'Exam & Consultation Timetable')}
               </h3>
               <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans max-w-2xl">
                 {isStaff
-                  ? 'Управление датами экзаменов, комиссиями и аудиториями. Любые изменения автоматически направляются студентам группы.'
-                  : 'Студенты допускаются к экзаменам при выполнении программы текущего контроля (от 50 баллов БРС). Обязательно наличие студенческого билета.'}
+                  ? tr(
+                      lang,
+                      'Управление датами экзаменов, комиссиями и аудиториями. Любые изменения автоматически направляются студентам группы.',
+                      'Manage exam dates, examination boards, and rooms. Any changes automatically notify the student group.'
+                    )
+                  : tr(
+                      lang,
+                      'Студенты допускаются к экзаменам при выполнении программы текущего контроля (от 50 баллов БРС). Обязательно наличие студенческого билета.',
+                      'Students are admitted to exams upon completing continuous assessment (50+ rating points). Student ID is mandatory.'
+                    )}
               </p>
             </div>
 
@@ -580,7 +727,7 @@ export const SchedulePage: React.FC = () => {
                 className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs transition-colors cursor-pointer self-start sm:self-auto flex-shrink-0"
               >
                 <Plus className="w-4 h-4 text-[#245A91]" />
-                <span>Назначить экзамен / пересдачу</span>
+                <span>{tr(lang, 'Назначить экзамен / пересдачу', 'Schedule Exam / Retake')}</span>
               </button>
             )}
           </div>
@@ -589,7 +736,11 @@ export const SchedulePage: React.FC = () => {
           <div className="space-y-3">
             {exams.length === 0 ? (
               <div className="p-12 text-center text-xs font-sans text-[#667085] bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B]">
-                Для группы {selectedGroup} экзамены пока не назначены.
+                {tr(
+                  lang,
+                  `Для группы ${activeGroup} экзамены пока не назначены.`,
+                  `No exams scheduled yet for group ${activeGroup}.`
+                )}
               </div>
             ) : (
               exams.map((ex) => {
@@ -597,7 +748,6 @@ export const SchedulePage: React.FC = () => {
                 const isRoomChanged = ex.status === 'room_changed';
                 const isPostponed = ex.status === 'postponed';
                 const isCancelled = ex.status === 'cancelled';
-                const isChanged = isDateChanged || isRoomChanged || isPostponed || isCancelled;
 
                 return (
                   <div
@@ -620,34 +770,34 @@ export const SchedulePage: React.FC = () => {
                         <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#142D4E] text-[#FFFFFF]">
                           {ex.code}
                         </span>
-                        <h4 className={`font-serif font-bold text-base ${isCancelled ? 'line-through text-[#667085]' : 'text-[#0F1D30] dark:text-[#FFFFFF]'}`}>
-                          {ex.subject}
+                        <h4 className={`font-semibold text-base ${isCancelled ? 'line-through text-[#667085]' : 'text-[#0F1D30] dark:text-[#FFFFFF]'}`}>
+                          {localizeText(ex.subject, lang)}
                         </h4>
 
                         {/* Status Badges */}
                         {isDateChanged && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#142D4E]">
-                            ДАТА ПЕРЕНЕСЕНА ДЕКАНАТОМ
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                            {getExamStatusLabel('date_changed', lang)}
                           </span>
                         )}
                         {isRoomChanged && (
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-600 text-white">
-                            ЗАМЕНА АУДИТОРИИ
+                            {getExamStatusLabel('room_changed', lang)}
                           </span>
                         )}
                         {isPostponed && (
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-700 text-white">
-                            ПЕРЕНЕСЕНО НА РЕЗЕРВНЫЙ ДЕНЬ
+                            {getExamStatusLabel('postponed', lang)}
                           </span>
                         )}
                         {isCancelled && (
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
-                            ЭКЗАМЕН ОТМЕНЕН
+                            {getExamStatusLabel('cancelled', lang)}
                           </span>
                         )}
                         {ex.isDebt && (
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
-                            КОМИССИОННАЯ ПЕРЕСДАЧА
+                            {tr(lang, 'КОМИССИОННАЯ ПЕРЕСДАЧА', 'COMMITTEE RETAKE')}
                           </span>
                         )}
                       </div>
@@ -662,7 +812,7 @@ export const SchedulePage: React.FC = () => {
                             className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold transition-colors cursor-pointer shadow-xs"
                           >
                             <Edit3 className="w-3.5 h-3.5 text-[#245A91]" />
-                            <span>Изменить дату / комиссию</span>
+                            <span>{tr(lang, 'Изменить дату / комиссию', 'Edit Date / Board')}</span>
                           </button>
                         )}
                       </div>
@@ -672,43 +822,44 @@ export const SchedulePage: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-sans">
                       <div>
                         <span className="text-[10px] uppercase font-mono text-[#667085] block">
-                          Формат аттестации
+                          {tr(lang, 'Формат аттестации', 'Assessment Format')}
                         </span>
                         <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
-                          {ex.format}
+                          {localizeText(ex.format, lang)}
                         </span>
                         <p className="text-[11px] text-[#667085] mt-0.5">
-                          Экзаменатор: <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">{ex.examiner}</strong>
+                          {tr(lang, 'Экзаменатор:', 'Examiner:')}{' '}
+                          <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">{ex.examiner}</strong>
                         </p>
                         {ex.commissionMembers && (
                           <p className="text-[10px] text-[#667085] mt-0.5">
-                            Комиссия: {ex.commissionMembers}
+                            {tr(lang, 'Комиссия:', 'Board:')} {ex.commissionMembers}
                           </p>
                         )}
                       </div>
 
                       <div>
                         <span className="text-[10px] uppercase font-mono text-[#667085] block">
-                          Дата и время экзамена
+                          {tr(lang, 'Дата и время экзамена', 'Exam Date & Time')}
                         </span>
                         <span className={`font-bold text-sm block ${isDateChanged ? 'text-[#245A91]' : 'text-[#142D4E] dark:text-[#FFFFFF]'}`}>
                           {ex.date}
                         </span>
                         <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1] font-mono mt-0.5">
-                          Время: {ex.time}
+                          {tr(lang, 'Время:', 'Time:')} {ex.time}
                         </p>
                       </div>
 
                       <div>
                         <span className="text-[10px] uppercase font-mono text-[#667085] block">
-                          Место и консультация
+                          {tr(lang, 'Место и консультация', 'Location & Consultation')}
                         </span>
                         <div className="flex items-center space-x-1 font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
                           <MapPin className="w-3.5 h-3.5 text-[#C63740]" />
                           <span>{ex.room}</span>
                         </div>
                         <p className="text-[11px] text-[#667085] mt-0.5">
-                          Консультация: {ex.consultation}
+                          {tr(lang, 'Консультация:', 'Consultation:')} {ex.consultation}
                         </p>
                       </div>
                     </div>
@@ -717,7 +868,7 @@ export const SchedulePage: React.FC = () => {
                     {ex.changeNote && (
                       <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-mono text-[#142D4E] dark:text-[#245A91] flex items-center space-x-2">
                         <Shield className="w-3.5 h-3.5 flex-shrink-0" />
-                        <span>Основание деканата: {ex.changeNote}</span>
+                        <span>{tr(lang, 'Основание деканата:', "Dean's notice:")} {ex.changeNote}</span>
                       </div>
                     )}
                   </div>
@@ -748,8 +899,9 @@ export const SchedulePage: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
               <div className="flex items-center space-x-2">
                 <Edit3 className="w-5 h-5 text-[#142D4E] dark:text-[#245A91]" />
-                <h3 className="font-serif font-bold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
-                  Управление занятием: {editingEntry.subject}
+                <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+                  {tr(lang, 'Управление занятием:', 'Manage Class:')}{' '}
+                  {localizeText(editingEntry.subject, lang)}
                 </h3>
               </div>
               <button
@@ -763,24 +915,24 @@ export const SchedulePage: React.FC = () => {
             <form onSubmit={handleSaveScheduleChange} className="space-y-4 text-xs font-sans">
               <div>
                 <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
-                  Статус проведения занятия:
+                  {tr(lang, 'Статус проведения занятия:', 'Class Status:')}
                 </label>
                 <select
                   value={editStatus}
                   onChange={e => setEditStatus(e.target.value as ScheduleStatus)}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2.5 text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
                 >
-                  <option value="normal">Штатное проведение (по расписанию)</option>
-                  <option value="room_changed">Замена аудитории</option>
-                  <option value="moved">Перенос времени проведения</option>
-                  <option value="cancelled">Отмена занятия</option>
+                  <option value="normal">{tr(lang, 'Штатное проведение (по расписанию)', 'Regular schedule')}</option>
+                  <option value="room_changed">{tr(lang, 'Замена аудитории', 'Room changed')}</option>
+                  <option value="moved">{tr(lang, 'Перенос времени проведения', 'Time rescheduled')}</option>
+                  <option value="cancelled">{tr(lang, 'Отмена занятия', 'Class cancelled')}</option>
                 </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
-                    Время начала:
+                    {tr(lang, 'Время начала:', 'Start time:')}
                   </label>
                   <input
                     type="time"
@@ -791,7 +943,7 @@ export const SchedulePage: React.FC = () => {
                 </div>
                 <div>
                   <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
-                    Время окончания:
+                    {tr(lang, 'Время окончания:', 'End time:')}
                   </label>
                   <input
                     type="time"
@@ -804,26 +956,30 @@ export const SchedulePage: React.FC = () => {
 
               <div>
                 <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
-                  Аудитория:
+                  {tr(lang, 'Аудитория:', 'Room:')}
                 </label>
                 <input
                   type="text"
                   value={editRoom}
                   onChange={e => setEditRoom(e.target.value)}
-                  placeholder="Например: Ауд. 312, Дистанционно (Zoom)"
+                  placeholder={tr(lang, 'Например: Ауд. 312, Дистанционно (Zoom)', 'e.g. Room 312, Online (Zoom)')}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2 text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
                 />
               </div>
 
               <div>
                 <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
-                  Официальное примечание деканата:
+                  {tr(lang, 'Официальное примечание деканата:', "Official Dean's Office Note:")}
                 </label>
                 <textarea
                   rows={2}
                   value={editNote}
                   onChange={e => setEditNote(e.target.value)}
-                  placeholder="Причина замены, ссылка на онлайн-конференцию или указания старосте..."
+                  placeholder={tr(
+                    lang,
+                    'Причина замены, ссылка на онлайн-конференцию или указания старосте...',
+                    'Reason for change, online meeting link, or instructions...'
+                  )}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2 text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
                 />
               </div>
@@ -837,7 +993,11 @@ export const SchedulePage: React.FC = () => {
                   className="rounded border-[#DCE2EA] text-[#142D4E] focus:ring-[#142D4E]"
                 />
                 <label htmlFor="notifyCheck" className="text-xs text-[#0F1D30] dark:text-[#FFFFFF] cursor-pointer">
-                  Отправить push-уведомление студентам группы {selectedGroup}
+                  {tr(
+                    lang,
+                    `Отправить push-уведомление студентам группы ${selectedGroup}`,
+                    `Send push notification to group ${selectedGroup}`
+                  )}
                 </label>
               </div>
 
@@ -848,7 +1008,7 @@ export const SchedulePage: React.FC = () => {
                   disabled={saving}
                   className="px-3 py-1.5 rounded-lg border border-[#DCE2EA] hover:bg-[#F8FAFC] text-xs font-sans text-[#667085] cursor-pointer"
                 >
-                  Сбросить в штатное
+                  {tr(lang, 'Сбросить в штатное', 'Restore Regular')}
                 </button>
                 <div className="flex items-center space-x-2">
                   <button
@@ -856,14 +1016,14 @@ export const SchedulePage: React.FC = () => {
                     onClick={() => setEditingEntry(null)}
                     className="px-3 py-1.5 rounded-lg border border-[#DCE2EA] text-xs font-sans text-[#667085] cursor-pointer"
                   >
-                    Отмена
+                    {tr(lang, 'Отмена', 'Cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
                     className="px-4 py-1.5 rounded-lg bg-[#142D4E] text-[#FFFFFF] text-xs font-sans font-semibold hover:bg-[#0E1F36] cursor-pointer"
                   >
-                    {saving ? 'Сохранение...' : 'Сохранить изменения'}
+                    {saving ? tr(lang, 'Сохранение...', 'Saving...') : tr(lang, 'Сохранить изменения', 'Save Changes')}
                   </button>
                 </div>
               </div>

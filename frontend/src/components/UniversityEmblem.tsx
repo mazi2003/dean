@@ -20,14 +20,13 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
   const fillGold = isMono ? 'currentColor' : '#245A91';
   const fillGoldBright = isMono ? 'currentColor' : '#4B8CD1';
   const fillParchment = isMono ? 'currentColor' : '#FFFFFF';
-  const fillCrimson = isMono ? 'currentColor' : '#C63740';
 
   if (variant === 'wordmark') {
     return (
       <div className={`inline-flex items-center space-x-3.5 select-none ${className}`}>
         <UniversityEmblem size={size} variant="full" />
         <div className="flex flex-col">
-          <span className="font-serif font-extrabold tracking-wider uppercase text-base sm:text-lg leading-none text-[#FFFFFF] drop-shadow-xs" style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}>
+          <span className="font-sans font-bold tracking-tight uppercase text-base sm:text-lg leading-none text-[#FFFFFF] drop-shadow-xs">
             DemoTech
           </span>
           <span className="text-[10px] sm:text-[11px] font-sans uppercase tracking-[0.22em] text-[#245A91] font-semibold mt-1">
@@ -81,13 +80,13 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
       <circle cx="60" cy="60" r="55" stroke={strokeRim} strokeWidth="0.8" strokeDasharray="1.5 2" opacity="0.8" />
       <circle cx="60" cy="60" r="47" stroke={strokeRim} strokeWidth="1.2" />
 
-      {/* 2. Circular Latin Inscription (Oxford / ETH style authentic lettering) */}
-      <text fill={fillGold} fontSize="5.2" fontWeight="700" letterSpacing="0.2em" style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}>
+      {/* 2. Circular Latin Inscription in primary academic sans */}
+      <text fill={fillGold} fontSize="5" fontWeight="700" letterSpacing="0.16em" fontFamily="var(--font-sans)">
         <textPath href="#sealTextPathTop" startOffset="50%" textAnchor="middle">
           UNIVERSITAS DEMOTECHNICA
         </textPath>
       </text>
-      <text fill={fillGold} fontSize="4.8" fontWeight="600" letterSpacing="0.24em" style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}>
+      <text fill={fillGold} fontSize="4.6" fontWeight="600" letterSpacing="0.2em" fontFamily="var(--font-sans)">
         <textPath href="#sealTextPathBottom" startOffset="50%" textAnchor="middle">
           • MMXXVI • VERITAS •
         </textPath>
@@ -190,7 +189,7 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
           fontWeight="700"
           textAnchor="middle"
           letterSpacing="0.1em"
-          style={{ fontFamily: "'Cinzel', Georgia, serif" }}
+          fontFamily="var(--font-sans)"
         >
           SCIENTIA
         </text>

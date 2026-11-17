@@ -96,7 +96,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                   )}
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#142D4E] dark:text-[#FFFFFF]">
+                <h2 className="text-xl sm:text-2xl font-semibold text-[#142D4E] dark:text-[#FFFFFF]">
                   {profile.fullName}
                 </h2>
                 <p className="text-xs text-[#667085] font-sans">
@@ -197,7 +197,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Academic Standing */}
                   <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-3">
-                    <h3 className="font-serif font-bold text-xs uppercase tracking-wider text-[#142D4E] dark:text-[#245A91] flex items-center space-x-2">
+                    <h3 className="font-semibold text-xs uppercase tracking-wider text-[#142D4E] dark:text-[#245A91] flex items-center space-x-2">
                       <GraduationCap className="w-4 h-4" />
                       <span>Учебные реквизиты</span>
                     </h3>
@@ -239,7 +239,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
 
                   {/* Contact and Identity Information */}
                   <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-3">
-                    <h3 className="font-serif font-bold text-xs uppercase tracking-wider text-[#142D4E] dark:text-[#245A91] flex items-center space-x-2">
+                    <h3 className="font-semibold text-xs uppercase tracking-wider text-[#142D4E] dark:text-[#245A91] flex items-center space-x-2">
                       <User className="w-4 h-4" />
                       <span>Контакты и место жительства</span>
                     </h3>
@@ -320,7 +320,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 {/* Exams List */}
                 <div className="rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] overflow-hidden">
                   <div className="bg-[#F8FAFC] dark:bg-[#111714] px-4 py-2.5 border-b border-[#DCE2EA] dark:border-[#1E395B] flex items-center justify-between">
-                    <span className="text-xs font-serif font-bold uppercase tracking-wider text-[#142D4E] dark:text-[#245A91]">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#142D4E] dark:text-[#245A91]">
                       Экзаменационная ведомость — 3 семестр
                     </span>
                     <span className="text-[11px] font-mono text-[#667085]">

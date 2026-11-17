@@ -7,15 +7,12 @@ import {
   EyeOff,
   ArrowRight,
   ShieldCheck,
-  Building,
   KeyRound,
   Sun,
   Moon,
-  Globe,
-  GraduationCap,
   Compass,
-  CheckCircle2,
   BookOpen,
+  Globe2,
 } from 'lucide-react';
 import { UNIVERSITY_INFO } from '../services/mockData';
 import { UniversityEmblem } from '../components/UniversityEmblem';
@@ -55,14 +52,11 @@ export const LoginPage: React.FC = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
             <UniversityEmblem size={24} variant="full" />
-            <span
-              className="font-bold text-xs sm:text-sm tracking-wider uppercase text-[#FFFFFF]"
-              style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}
-            >
+            <span className="font-bold text-xs sm:text-sm tracking-tight uppercase text-[#FFFFFF]">
               DemoTech University
             </span>
             <span className="hidden sm:inline text-[#245A91]/40">•</span>
-            <span className="hidden sm:inline text-[11px] font-serif italic text-[#245A91]">
+            <span className="hidden sm:inline text-[11px] font-sans italic text-[#245A91]">
               Veritas • Scientia • Innovatio
             </span>
           </div>
@@ -70,14 +64,25 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center space-x-2">
             <button
               onClick={toggleLang}
-              className="px-2 py-0.5 text-[10px] font-mono font-semibold rounded text-[#FFFFFF] hover:text-[#245A91] hover:bg-[#142D4E] border border-[#245A91]/40 transition-colors uppercase"
+              className="px-2 py-0.5 text-[10px] font-mono font-semibold rounded text-[#FFFFFF] hover:text-[#93C5FD] hover:bg-[#142D4E] border border-[#60A5FA]/40 transition-colors uppercase tracking-wider flex items-center space-x-1 cursor-pointer"
+              title={lang === 'ru' ? 'Switch to English' : 'Переключить на русский'}
+              aria-label="Toggle language"
             >
-              {lang.toUpperCase()}
+              <Globe2 className="w-2.5 h-2.5 text-[#93C5FD]" />
+              <span>{lang.toUpperCase()}</span>
             </button>
             <button
               onClick={toggleTheme}
-              className="p-1 rounded text-[#FFFFFF]/80 hover:text-white hover:bg-[#142D4E] transition-colors"
-              title="Переключить тему"
+              className="p-1 rounded text-[#FFFFFF]/80 hover:text-white hover:bg-[#142D4E] transition-colors cursor-pointer"
+              title={
+                lang === 'ru'
+                  ? theme === 'light'
+                    ? 'Включить тёмную тему'
+                    : 'Включить светлую тему'
+                  : theme === 'light'
+                  ? 'Enable dark mode'
+                  : 'Enable light mode'
+              }
               aria-label="Toggle theme"
             >
               {theme === 'light' ? (
@@ -109,10 +114,7 @@ export const LoginPage: React.FC = () => {
                   <UniversityEmblem size={44} variant="full" />
                 </div>
                 <div>
-                  <h2
-                    className="font-bold text-lg tracking-wider uppercase text-[#FFFFFF] leading-none"
-                    style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}
-                  >
+                  <h2 className="font-bold text-lg tracking-tight uppercase text-[#FFFFFF] leading-none">
                     DemoTech
                   </h2>
                   <p className="text-[11px] text-[#245A91] font-sans uppercase tracking-widest mt-1">
@@ -125,7 +127,7 @@ export const LoginPage: React.FC = () => {
               </div>
 
               <div className="space-y-2 border-t border-[#245A91]/30 pt-4">
-                <h3 className="font-serif font-bold text-base sm:text-lg text-[#F8FAFC] leading-snug">
+                <h3 className="font-semibold text-base sm:text-lg text-[#F8FAFC] leading-snug">
                   {lang === 'ru'
                     ? 'Академическое превосходство и передовые технологии'
                     : 'Academic Prestige & Modern Scientific Education'}
@@ -177,9 +179,11 @@ export const LoginPage: React.FC = () => {
               <div className="border-b border-[#DCE2EA] dark:border-[#193150] pb-4">
                 <div className="inline-flex items-center space-x-1.5 text-xs font-mono font-semibold text-[#142D4E] dark:text-[#245A91] mb-1">
                   <KeyRound className="w-3.5 h-3.5 text-[#245A91]" />
-                  <span>ЕДИНАЯ ТОЧКА АУТЕНТИФИКАЦИИ (SSO)</span>
+                  <span>
+                    {lang === 'ru' ? 'ЕДИНАЯ ТОЧКА АУТЕНТИФИКАЦИИ (SSO)' : 'SINGLE SIGN-ON (SSO)'}
+                  </span>
                 </div>
-                <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
+                <h1 className="text-xl sm:text-2xl font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
                   {lang === 'ru' ? 'Вход в личный кабинет' : 'Institutional Single Sign-On'}
                 </h1>
                 <p className="text-xs text-[#667085] dark:text-[#94A3B8] mt-1 font-sans">
@@ -290,9 +294,9 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Mandatory Disclaimer Footer */}
-      <div className="py-4 text-center text-[11px] text-[#667085] dark:text-[#94A3B8] px-4 font-sans border-t border-[#DCE2EA] dark:border-[#193150]">
-        {UNIVERSITY_INFO.disclaimer}
-      </div>
+      <footer className="py-4 text-center text-[11px] text-[#667085] dark:text-[#94A3B8] px-4 font-sans border-t border-[#DCE2EA] dark:border-[#193150]">
+        {lang === 'ru' ? UNIVERSITY_INFO.disclaimer : UNIVERSITY_INFO.disclaimerEn}
+      </footer>
     </div>
   );
 };

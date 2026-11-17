@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Info, Building, Mail, Phone, MapPin, Globe, ExternalLink, Compass } from 'lucide-react';
+import { ShieldCheck, Info, Building, Mail, Phone, MapPin } from 'lucide-react';
 import { UNIVERSITY_INFO } from '../services/mockData';
 import { UniversityEmblem } from './UniversityEmblem';
 
@@ -21,10 +21,7 @@ export const Footer: React.FC = () => {
                 <UniversityEmblem size={30} variant="full" />
               </div>
               <div>
-                <h4
-                  className="font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] tracking-wider uppercase leading-none"
-                  style={{ fontFamily: "'Cinzel', 'Crimson Pro', Georgia, serif" }}
-                >
+                <h4 className="font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] tracking-tight uppercase leading-none">
                   DemoTech
                 </h4>
                 <p className="text-[10px] text-[#245A91] font-sans uppercase tracking-widest mt-1">
@@ -33,72 +30,83 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-xs font-serif italic text-[#475467] dark:text-[#CBD5E1] leading-relaxed">
-              «Veritas • Scientia • Innovatio» — Международный научно-технологический университет, основанный в 2026 году.
+            <p className="text-xs italic text-[#475467] dark:text-[#CBD5E1] leading-relaxed">
+              {lang === 'ru'
+                ? '«Veritas • Scientia • Innovatio» — Международный научно-технологический университет, основанный в 2026 году.'
+                : '"Veritas • Scientia • Innovatio" — International Institute of Science & Technology, founded in 2026.'}
             </p>
 
             <div className="pt-1 text-[11px] font-sans space-y-1.5 text-[#475467] dark:text-[#CBD5E1]">
               <div className="flex items-center space-x-2">
                 <MapPin className="w-3.5 h-3.5 text-[#245A91] flex-shrink-0" />
-                <span>Главный кампус • Академический проспект, 1</span>
+                <span>
+                  {lang === 'ru'
+                    ? 'Главный кампус • Академический проспект, 1'
+                    : 'Main Campus • 1 Academic Avenue'}
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Building className="w-3.5 h-3.5 text-[#245A91] flex-shrink-0" />
-                <span>Деканат: Главный корпус, 3 этаж, каб. 312</span>
+                <span>
+                  {lang === 'ru'
+                    ? 'Деканат: Главный корпус, 3 этаж, каб. 312'
+                    : "Dean's Office: Main Building, 3rd Floor, Rm 312"}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Column 2: Academic Faculties & Schools */}
           <div className="space-y-3">
-            <h5 className="font-serif font-bold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
+            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
               {lang === 'ru' ? 'Факультеты и институты' : 'Faculties & Schools'}
             </h5>
             <ul className="text-xs space-y-2 font-sans">
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Факультет международных отношений
+                {lang === 'ru' ? 'Факультет международных отношений' : 'School of International Relations'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Институт компьютерных наук и ИИ
+                {lang === 'ru' ? 'Институт компьютерных наук и ИИ' : 'Institute of Computer Science & AI'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Школа мировой экономики и финансов
+                {lang === 'ru' ? 'Школа мировой экономики и финансов' : 'School of World Economy & Finance'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Академический совет и аспирантура
+                {lang === 'ru' ? 'Академический совет и аспирантура' : 'Academic Senate & Graduate School'}
               </li>
             </ul>
           </div>
 
           {/* Column 3: Student & Registrar Services */}
           <div className="space-y-3">
-            <h5 className="font-serif font-bold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
+            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
               {lang === 'ru' ? 'Службы деканата' : 'Student & Registrar Services'}
             </h5>
             <ul className="text-xs space-y-2 font-sans">
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Выдача справок об обучении с ЭЦП
+                {lang === 'ru' ? 'Выдача справок об обучении с ЭЦП' : 'Certified Enrollment Documents'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Академические ведомости и БРС
+                {lang === 'ru' ? 'Академические ведомости и БРС' : 'Academic Records & Rating'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Стипендиальный комитет (ПГАС)
+                {lang === 'ru' ? 'Стипендиальный комитет (ПГАС)' : 'Merit Scholarship Committee'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                Центр академической мобильности (ECTS)
+                {lang === 'ru' ? 'Центр академической мобильности (ECTS)' : 'Academic Mobility Office (ECTS)'}
               </li>
             </ul>
           </div>
 
           {/* Column 4: Institutional Contacts & Registry Hours */}
           <div className="space-y-3">
-            <h5 className="font-serif font-bold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
+            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
               {lang === 'ru' ? 'Контакты канцелярии' : 'Registry & Office Hours'}
             </h5>
             <div className="text-xs font-sans space-y-2">
               <p className="text-[#475467] dark:text-[#CBD5E1]">
-                Часы работы: <strong>Пн-Пт 09:00 - 18:00</strong>
+                {lang === 'ru' ? 'Часы работы:' : 'Hours:'}{' '}
+                <strong>{lang === 'ru' ? 'Пн-Пт 09:00 - 18:00' : 'Mon–Fri 09:00–18:00'}</strong>
               </p>
               <div className="flex items-center space-x-2 text-[#475467] dark:text-[#CBD5E1]">
                 <Mail className="w-3.5 h-3.5 text-[#245A91]" />
@@ -110,7 +118,7 @@ export const Footer: React.FC = () => {
               </div>
               <div className="pt-2 flex items-center space-x-2 text-[11px] text-[#142D4E] dark:text-[#245A91] font-semibold">
                 <ShieldCheck className="w-4 h-4 text-[#245A91]" />
-                <span>ЭЦП ГОСТ Р 34.10-2012</span>
+                <span>{lang === 'ru' ? 'ЭЦП ГОСТ Р 34.10-2012' : 'Qualified Digital Seal (GOST)'}</span>
               </div>
             </div>
           </div>
@@ -135,7 +143,7 @@ export const Footer: React.FC = () => {
             <span>All rights reserved</span>
             <span>•</span>
             <span className="flex items-center">
-              <ShieldCheck className="w-3.5 h-3.5 mr-1 text-[#142D4E] dark:text-[#245A91]" />
+              <ShieldCheck className="w-3.5 h-3.5 mr-1 text-[#142D4E] dark:text-[#60A5FA]" />
               {lang === 'ru' ? 'Изоляция персональных данных: сессионный контроль' : 'Student data isolation verified'}
             </span>
             <span>•</span>

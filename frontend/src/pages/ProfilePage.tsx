@@ -1,28 +1,14 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
-  User,
-  Shield,
-  Building,
-  Mail,
-  Phone,
-  Clock,
-  MapPin,
   Lock,
   LogOut,
-  Award,
   ShieldCheck,
   GraduationCap,
-  Calendar,
-  FileCheck2,
-  Megaphone,
-  QrCode,
-  KeyRound,
-  CheckCircle2,
-  FileBadge,
 } from 'lucide-react';
 import { UNIVERSITY_INFO } from '../services/mockData';
 import { UniversityEmblem } from '../components/UniversityEmblem';
+import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
 
 export const ProfilePage: React.FC = () => {
   const { user, profile, logout, lang } = useAuth();
@@ -54,25 +40,27 @@ export const ProfilePage: React.FC = () => {
           <div className="flex-1 space-y-2">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
               <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#142D4E]/15 text-[#142D4E] dark:text-[#245A91] border border-[#142D4E]/30">
-                {isStaff ? '🏛️ Сотрудник деканата' : `Группа ${profile?.group}`}
+                {isStaff
+                  ? tr(lang, '🏛️ Сотрудник деканата', "🏛️ Dean's Office Staff")
+                  : tr(lang, `Группа ${profile?.group}`, `Group ${profile?.group}`)}
               </span>
               {isStaff ? (
                 <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border border-[#245A91]/40">
-                  Статус: Аккредитованный администратор
+                  {tr(lang, 'Статус: Аккредитованный администратор', 'Status: Accredited Administrator')}
                 </span>
               ) : (
                 <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border border-[#245A91]/40">
-                  {profile?.year} курс • {profile?.studyForm || 'Бюджет'}
+                  {tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)} • {getStudyFormLabel(profile?.studyForm, lang)}
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
               {user?.fullName}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#475467] dark:text-[#CBD5E1] font-sans">
-              {profile?.program} • {profile?.faculty}
+              {localizeText(profile?.program, lang)} • {localizeText(profile?.faculty, lang)}
             </p>
 
             <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-xs font-mono text-[#667085] dark:text-[#94A3B8]">
@@ -82,7 +70,9 @@ export const ProfilePage: React.FC = () => {
               {!isStaff && (
                 <>
                   <span>•</span>
-                  <span>Студбилет: {profile?.studentNumber}</span>
+                  <span>
+                    {tr(lang, 'Студбилет:', 'Student ID:')} {profile?.studentNumber}
+                  </span>
                 </>
               )}
             </div>
@@ -93,7 +83,7 @@ export const ProfilePage: React.FC = () => {
             className="px-4 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#C63740]/10 hover:text-[#C63740] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium transition-colors flex items-center space-x-1.5 self-center sm:self-start cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Выйти из кабинета</span>
+            <span>{tr(lang, 'Выйти из кабинета', 'Sign Out')}</span>
           </button>
         </div>
       </div>
@@ -104,54 +94,64 @@ export const ProfilePage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Academic Enrollment Info */}
         <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs space-y-4">
-          <h3 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
+          <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
             <GraduationCap className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
             <span>
-              {isStaff ? 'Служебные реквизиты сотрудника' : 'Учебные реквизиты студента'}
+              {isStaff
+                ? tr(lang, 'Служебные реквизиты сотрудника', 'Staff Credentials')
+                : tr(lang, 'Учебные реквизиты студента', 'Student Enrollment Record')}
             </span>
           </h3>
 
           <div className="space-y-2.5 text-xs font-sans">
             <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-              <span className="text-[#667085]">Учебное заведение:</span>
-              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{UNIVERSITY_INFO.nameEn}</span>
+              <span className="text-[#667085]">{tr(lang, 'Учебное заведение:', 'Institution:')}</span>
+              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                {lang === 'ru' ? UNIVERSITY_INFO.name : UNIVERSITY_INFO.nameEn}
+              </span>
             </div>
             <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-              <span className="text-[#667085]">Факультет:</span>
-              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{profile?.faculty}</span>
+              <span className="text-[#667085]">{tr(lang, 'Факультет:', 'Faculty:')}</span>
+              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{localizeText(profile?.faculty, lang)}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-              <span className="text-[#667085]">Направление:</span>
-              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{profile?.program}</span>
+              <span className="text-[#667085]">{tr(lang, 'Направление:', 'Program:')}</span>
+              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{localizeText(profile?.program, lang)}</span>
             </div>
             {!isStaff ? (
               <>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">Академическая группа:</span>
+                  <span className="text-[#667085]">{tr(lang, 'Академическая группа:', 'Academic Group:')}</span>
                   <span className="font-mono font-bold text-[#142D4E] dark:text-[#245A91]">{profile?.group}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">Форма обучения:</span>
-                  <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{profile?.studyForm || 'Очная'}</span>
+                  <span className="text-[#667085]">{tr(lang, 'Форма обучения:', 'Study Mode:')}</span>
+                  <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                    {profile?.studyForm ? getStudyFormLabel(profile.studyForm, lang) : tr(lang, 'Очная', 'Full-time')}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-[#667085]">Номер студенческого билета:</span>
+                  <span className="text-[#667085]">{tr(lang, 'Номер студенческого билета:', 'Student ID Number:')}</span>
                   <span className="font-mono font-bold text-[#142D4E] dark:text-[#245A91]">{profile?.studentNumber}</span>
                 </div>
               </>
             ) : (
               <>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">Табельный номер:</span>
+                  <span className="text-[#667085]">{tr(lang, 'Табельный номер:', 'Staff ID:')}</span>
                   <span className="font-mono font-bold text-[#142D4E] dark:text-[#245A91]">ТАБ-0441</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">Должность:</span>
-                  <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">Зам. декана по УМР</span>
+                  <span className="text-[#667085]">{tr(lang, 'Должность:', 'Position:')}</span>
+                  <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                    {tr(lang, 'Зам. декана по УМР', 'Vice Dean for Academic Affairs')}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-[#667085]">Кабинет и часы приема:</span>
-                  <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">Каб. 312 • Пн-Пт 9-18</span>
+                  <span className="text-[#667085]">{tr(lang, 'Кабинет и часы приема:', 'Office & Hours:')}</span>
+                  <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                    {tr(lang, 'Каб. 312 • Пн-Пт 9-18', 'Rm 312 • Mon–Fri 9–18')}
+                  </span>
                 </div>
               </>
             )}
@@ -160,35 +160,49 @@ export const ProfilePage: React.FC = () => {
 
         {/* Digital Identity & Security Certificate (GOST R 34.10) */}
         <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs space-y-4">
-          <h3 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
+          <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
             <ShieldCheck className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
-            <span>Цифровой сертификат и безопасность</span>
+            <span>{tr(lang, 'Цифровой сертификат и безопасность', 'Digital Certificate & Security')}</span>
           </h3>
 
           <div className="space-y-3 text-xs font-sans">
             <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-              <span className="text-[10px] uppercase font-mono text-[#667085] block">Стандарт криптографической подписи</span>
+              <span className="text-[10px] uppercase font-mono text-[#667085] block">
+                {tr(lang, 'Стандарт криптографической подписи', 'Cryptographic Signature Standard')}
+              </span>
               <span className="font-mono font-semibold text-[#142D4E] dark:text-[#245A91]">
                 ГОСТ Р 34.10-2012 / 34.11-2012
               </span>
               <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
-                Усиленная квалифицированная ЭЦП деканата для справок и приказов.
+                {tr(
+                  lang,
+                  'Усиленная квалифицированная ЭЦП деканата для справок и приказов.',
+                  "Qualified Dean's Office digital signature for certificates and decrees."
+                )}
               </p>
             </div>
 
             <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-              <span className="text-[10px] uppercase font-mono text-[#667085] block">Удостоверяющий центр</span>
+              <span className="text-[10px] uppercase font-mono text-[#667085] block">
+                {tr(lang, 'Удостоверяющий центр', 'Certification Authority')}
+              </span>
               <span className="font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
-                УЦ «DemoTech Root Certification Authority»
+                {tr(lang, 'УЦ «DemoTech Root Certification Authority»', 'CA "DemoTech Root Certification Authority"')}
               </span>
               <p className="text-[11px] text-[#667085] font-mono">
-                Серийный номер: 77AA-9402-E12F-2026-REG
+                {tr(lang, 'Серийный номер:', 'Serial Number:')} 77AA-9402-E12F-2026-REG
               </p>
             </div>
 
             <div className="flex items-center space-x-2 text-[11px] text-[#142D4E] dark:text-[#245A91]">
               <Lock className="w-3.5 h-3.5" />
-              <span>Сессионная изоляция персональных данных активна</span>
+              <span>
+                {tr(
+                  lang,
+                  'Сессионная изоляция персональных данных активна',
+                  'Session-level personal data isolation active'
+                )}
+              </span>
             </div>
           </div>
         </div>
@@ -197,12 +211,20 @@ export const ProfilePage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────
           3. REGULATORY COMPLIANCE MEMORANDUM
           ───────────────────────────────────────────────────────────── */}
-      <div className="p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#15201A] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans text-[#667085] dark:text-[#94A3B8] space-y-2">
-        <h4 className="font-serif font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
-          Регламент обработки персональных данных и статус концепта
+      <div className="p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans text-[#667085] dark:text-[#94A3B8] space-y-2">
+        <h4 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+          {tr(
+            lang,
+            'Регламент обработки персональных данных и статус концепта',
+            'Data Privacy Policy & Concept Notice'
+          )}
         </h4>
         <p className="leading-relaxed">
-          Настоящий веб-сервис «Цифровой деканат DemoTech University» является конкурсным концептом студенческого портала. Все представленные персональные данные, номера приказов, зачетные книжки и оценки являются учебными и вымышленными. Система не хранит конфиденциальные данные реальных физических лиц.
+          {tr(
+            lang,
+            'Настоящий веб-сервис «Цифровой деканат DemoTech University» является конкурсным концептом студенческого портала. Все представленные персональные данные, номера приказов, зачетные книжки и оценки являются учебными и вымышленными. Система не хранит конфиденциальные данные реальных физических лиц.',
+            'This "DemoTech University Digital Dean\'s Office" web application is a competition concept prototype. All displayed personal data, decree numbers, academic records, and grades are fictional. No real personal data is stored.'
+          )}
         </p>
       </div>
     </div>
