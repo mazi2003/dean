@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/vercel-db-sync.mjs",
     "typecheck": "tsc --noEmit",
     "dev": "ts-node src/server.ts",
     "start": "node dist/server.js",

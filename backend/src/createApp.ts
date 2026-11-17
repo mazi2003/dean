@@ -5,6 +5,7 @@ import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 
 import { getCookieSigningKey } from './lib/config';
+import { prisma } from './lib/prisma';
 import { authRoutes } from './routes/auth';
 import { profileRoutes } from './routes/profile';
 import { scheduleRoutes } from './routes/schedule';
@@ -96,9 +97,20 @@ export function configureApp(app: FastifyInstance): FastifyInstance {
     return reply.code(404).send({ code: 'NOT_FOUND', message: 'Route not found' });
   });
 
-  // Health check (no auth)
-  app.get('/api/v1/health', async (_req, reply) => {
-    return reply.send({ status: 'ok', timestamp: new Date().toISOString() });
+  // Health check (no auth). Pass ?db=1 to verify PostgreSQL connectivity & seed state.
+  app.get('/api/v1/health', async (req, reply) => {
+    const query = (req.query ?? {}) as { db?: string };
+    const base = { status: 'ok', timestamp: new Date().toISOString() };
+    if (query.db !== '1') {
+      return reply.send(base);
+    }
+
+    try {
+      const usersCount = await prisma.user.count();
+      return reply.send({ ...base, db: 'ok', seeded: usersCount > 0 });
+    } catch {
+      return reply.code(503).send({ ...base, db: 'error', seeded: false });
+    }
   });
 
   // Routes under /api/v1 prefix

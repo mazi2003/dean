@@ -37,9 +37,11 @@ npx ts-node --esm seed.ts
 
 | Переменная | Обязательна | Описание |
 |---|---|---|
-| `DATABASE_URL` | Да | Строка подключения к PostgreSQL (pooled URL для serverless) |
+| `DATABASE_URL` | Да | Строка подключения к PostgreSQL (pooled URL для serverless; также поддерживаются `DATABASE_URL_POOLED`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL`) |
 | `JWT_SECRET` | Да | Случайная строка (минимум 32 символа) |
 | `COOKIE_SECRET` | Да | Случайная строка для подписи cookie (минимум 32 символа) |
+| `SEED_STUDENT_PASSWORD` | Для авто-сида | Пароль демо-студентов (`DemoStudent123!`) — при наличии вместе с `SEED_STAFF_PASSWORD` сборка `backend` автоматически выполнит `prisma migrate deploy` и сид |
+| `SEED_STAFF_PASSWORD` | Для авто-сида | Пароль демо-сотрудника деканата (`DemoStaff123!`) |
 | `COOKIE_SECURE` | Рекомендуется | `true` для HTTPS на Vercel |
 | `TRUST_PROXY` | Рекомендуется | `true` (учитывает `X-Forwarded-*` заголовки Vercel) |
 | `CORS_ORIGIN` | Опционально | Ваш production-домен (через запятую для нескольких); домены Vercel (`VERCEL_URL`, `VERCEL_PROJECT_PRODUCTION_URL`) добавляются автоматически |
@@ -60,7 +62,7 @@ vercel link
 vercel --prod
 ```
 
-Проверка работоспособности после деплоя:
+Проверка работоспособности и состояния БД/сида после деплоя:
 ```bash
-curl https://<your-project>.vercel.app/api/v1/health
+curl "https://<your-project>.vercel.app/api/v1/health?db=1"
 ```

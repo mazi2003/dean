@@ -25,10 +25,15 @@ describe('Vercel Fastify entrypoint & CORS configuration', () => {
     process.env = { ...originalEnv };
   });
 
-  it('default Fastify export serves /api/v1/health and 404 JSON', async () => {
+  it('default Fastify export serves /api/v1/health, ?db=1 check, and 404 JSON', async () => {
     const healthRes = await supertest(defaultApp.server).get('/api/v1/health');
     expect(healthRes.status).toBe(200);
     expect(healthRes.body.status).toBe('ok');
+
+    const dbHealthRes = await supertest(defaultApp.server).get('/api/v1/health?db=1');
+    expect(dbHealthRes.status).toBe(200);
+    expect(dbHealthRes.body.db).toBe('ok');
+    expect(dbHealthRes.body.seeded).toBe(true);
 
     const missingRes = await supertest(defaultApp.server).get('/api/v1/does-not-exist');
     expect(missingRes.status).toBe(404);

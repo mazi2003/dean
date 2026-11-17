@@ -61,6 +61,16 @@ export const api = {
     }
 
     if (!res.ok) {
+      if (res.status === 429) {
+        throw new Error(await parseErrorMessage(res, 'Слишком много попыток входа. Попробуйте позже.'));
+      }
+      if (res.status === 404 || res.status >= 500) {
+        const serverMsg = await parseErrorMessage(res, '');
+        const detail = serverMsg && serverMsg !== 'Internal server error' ? ` (${serverMsg})` : '';
+        throw new Error(
+          `Сервер авторизации или БД не настроены (HTTP ${res.status})${detail}. Проверьте DATABASE_URL, миграции и сид.`
+        );
+      }
       const msg = await parseErrorMessage(res, 'Неверный адрес электронной почты или пароль');
       throw new Error(msg);
     }

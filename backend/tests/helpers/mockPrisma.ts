@@ -416,6 +416,7 @@ export async function createStatefulMockPrisma() {
       findMany: async ({ where }: { where?: { role?: string } } = {}) => {
         return users.filter((u) => (!where?.role || u.role === where.role));
       },
+      count: async () => users.length,
     },
     studentProfile: {
       findUnique: async ({ where, include }: { where: { userId: string }; include?: Record<string, unknown> }) => {
