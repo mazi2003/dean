@@ -75,7 +75,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
     const updateTime = () => {
       const now = new Date();
       setCurrentTime(
-        now.toLocaleTimeString('ru-RU', {
+        now.toLocaleTimeString(lang === 'ru' ? 'ru-RU' : 'en-US', {
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
@@ -94,7 +94,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, [isQrExpanded, profile?.studentNumber]);
+  }, [isQrExpanded, profile?.studentNumber, lang]);
 
   // Turnstile scanner audio chime simulation
   const playTurnstileBeep = () => {
@@ -162,14 +162,14 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             <div className="flex items-center space-x-1.5">
               <UniversityEmblem size={20} />
               <span className="font-bold text-xs uppercase tracking-tight text-[#142D4E] dark:text-[#FFFFFF]">
-                DemoTech СКУД
+                {tr(lang, 'DemoTech СКУД', 'DemoTech Access')}
               </span>
             </div>
 
             <button
               onClick={() => setIsQrExpanded(false)}
               className="p-1 rounded-full bg-[#142D4E]/10 hover:bg-[#142D4E]/20 text-[#142D4E] dark:text-[#FFFFFF] transition-colors cursor-pointer"
-              aria-label="Close scanner view"
+              aria-label={tr(lang, 'Закрыть сканер', 'Close scanner view')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -187,7 +187,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                 {user.fullName}
               </h4>
               <p className="text-[10px] text-[#667085] dark:text-[#94A3B8] truncate">
-                Гр. {profile?.group || 'ДУ-101'} • № {profile?.studentNumber}
+                {tr(lang, 'Гр.', 'Group')} {profile?.group || 'ДУ-101'} • № {profile?.studentNumber}
               </p>
             </div>
             <div className="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono font-bold">
@@ -248,7 +248,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             {scanSimulated ? (
               <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-sans font-semibold flex items-center justify-center space-x-2 animate-bounce">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>Турникет № 1 разблокирован! Проход разрешен.</span>
+                <span>
+                  {tr(lang, 'Турникет № 1 разблокирован! Проход разрешен.', 'Turnstile #1 unlocked! Access granted.')}
+                </span>
               </div>
             ) : (
               <button
@@ -258,13 +260,19 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               >
                 <Scan className="w-4 h-4 text-[#93C5FD]" />
                 <span>
-                  {isScanning ? 'Лазерное сканирование...' : 'Проверить считывание сканером'}
+                  {isScanning
+                    ? tr(lang, 'Лазерное сканирование...', 'Scanning optical QR...')
+                    : tr(lang, 'Проверить считывание сканером', 'Test Optical Scanner Read')}
                 </span>
               </button>
             )}
 
             <p className="text-[10px] text-[#667085] font-sans">
-              Поднесите экран к оптическому считывателю турникета на дистанцию 10-15 см.
+              {tr(
+                lang,
+                'Поднесите экран к оптическому считывателю турникета на дистанцию 10-15 см.',
+                'Hold your screen 10–15 cm in front of the turnstile optical reader.',
+              )}
             </p>
           </div>
         </div>
@@ -277,7 +285,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           <button
             onClick={onClose}
             className="absolute top-3.5 right-3.5 z-30 p-1.5 rounded-full bg-[#0E1F36]/80 hover:bg-[#0E1F36] text-[#FFFFFF] border border-[#245A91]/40 hover:border-[#245A91] transition-colors shadow-sm cursor-pointer"
-            aria-label="Close"
+            aria-label={tr(lang, 'Закрыть', 'Close')}
           >
             <X className="w-4 h-4" />
           </button>
@@ -328,17 +336,17 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   {user.fullName}
                 </h2>
                 <p className="text-[11px] font-sans text-[#93C5FD] font-medium">
-                  {profile?.group} • {profile?.year} курс
+                  {profile?.group} • {tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}
                 </p>
                 <p className="text-[10px] text-[#FFFFFF]/80 line-clamp-1 font-sans">
-                  {profile?.program}
+                  {localizeText(profile?.program, lang)}
                 </p>
                 <div className="pt-1 flex items-center space-x-2 text-[10px] font-mono">
                   <span className="px-2 py-0.5 rounded bg-[#0E1F36] border border-[#245A91]/40 text-[#93C5FD]">
                     № {profile?.studentNumber}
                   </span>
                   <span className="text-[#FFFFFF]/75 font-sans">
-                    {profile?.studyForm || 'Бюджет'}
+                    {getStudyFormLabel(profile?.studyForm || 'Бюджет', lang)}
                   </span>
                 </div>
               </div>
@@ -353,7 +361,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               <div className="space-y-0.5">
                 <div className="flex items-center space-x-1.5">
                   <span className="text-[10px] font-sans text-[#CBD5E1] uppercase tracking-wider">
-                    Турникет кампуса
+                    {tr(lang, 'Турникет кампуса', 'Campus Turnstile')}
                   </span>
                   <span className="text-[9px] font-sans text-[#93C5FD] bg-[#245A91]/30 px-1.5 py-0.5 rounded border border-[#60A5FA]/40 flex items-center space-x-1 group-hover:bg-[#245A91]/50 transition-colors">
                     <Maximize2 className="w-2.5 h-2.5 text-[#93C5FD]" />
@@ -395,7 +403,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             {turnstilePassed ? (
               <div className="p-2.5 rounded-lg bg-[#142D4E]/10 border border-[#142D4E]/30 text-[#142D4E] dark:text-[#60A5FA] text-xs font-sans font-semibold flex items-center justify-center space-x-2 animate-bounce">
                 <CheckCircle2 className="w-4 h-4 text-[#142D4E] dark:text-[#60A5FA]" />
-                <span>Проход через турникет разрешен! Приятного дня.</span>
+                <span>
+                  {tr(lang, 'Проход через турникет разрешен! Приятного дня.', 'Turnstile access granted! Have a great day.')}
+                </span>
               </div>
             ) : (
               <button
@@ -405,13 +415,15 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               >
                 <Wifi className={`w-4 h-4 text-[#93C5FD] ${isNfcTapping ? 'animate-ping' : ''}`} />
                 <span>
-                  {isNfcTapping ? 'Считывание бесконтактного чипа...' : 'Приложить к турникету (NFC Test)'}
+                  {isNfcTapping
+                    ? tr(lang, 'Считывание бесконтактного чипа...', 'Reading contactless NFC chip...')
+                    : tr(lang, 'Приложить к турникету (NFC Test)', 'Tap at Turnstile (NFC Test)')}
                 </span>
               </button>
             )}
 
             <p className="text-[10px] text-[#667085] font-sans">
-              {UNIVERSITY_INFO.faculty}
+              {localizeText(UNIVERSITY_INFO.faculty, lang)}
             </p>
           </div>
         </div>

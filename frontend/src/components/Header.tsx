@@ -107,11 +107,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
             {/* University Heraldic Lockup */}
             <div
-              className="flex items-center space-x-2.5 sm:space-x-3.5 cursor-pointer group min-w-0 flex-1"
+              className="flex items-center space-x-2 sm:space-x-3.5 cursor-pointer group min-w-0 flex-1"
               onClick={() => setActiveTab(isStaff ? 'staff_requests' : 'today')}
             >
               <div className="relative flex-shrink-0">
-                <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl bg-[#0E1F36] border border-[#60A5FA]/50 flex items-center justify-center p-1 sm:p-1.5 shadow-md group-hover:border-[#93C5FD] transition-all">
+                <div className="w-9 h-9 sm:w-13 sm:h-13 rounded-xl bg-[#0E1F36] border border-[#60A5FA]/50 flex items-center justify-center p-1 sm:p-1.5 shadow-md group-hover:border-[#93C5FD] transition-all">
                   <UniversityEmblem size={38} variant="full" />
                 </div>
                 <span className="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#60A5FA] ring-2 ring-[#142D4E]" />
@@ -119,10 +119,10 @@ export const Header: React.FC<HeaderProps> = ({
 
               <div className="min-w-0">
                 <div className="flex items-center space-x-1.5 sm:space-x-2">
-                  <span className="font-bold text-base sm:text-2xl tracking-tight uppercase text-[#FFFFFF] group-hover:text-[#F8FAFC] transition-colors leading-none truncate">
+                  <span className="font-bold text-sm sm:text-2xl tracking-tight uppercase text-[#FFFFFF] group-hover:text-[#F8FAFC] transition-colors leading-none whitespace-nowrap">
                     DemoTech
                   </span>
-                  <span className="hidden xs:inline-block text-[8px] sm:text-[10px] font-sans font-semibold tracking-widest uppercase px-1.5 sm:px-2 py-0.5 rounded border border-[#60A5FA]/50 text-[#93C5FD] bg-[#0E1F36]/80 flex-shrink-0">
+                  <span className="hidden sm:inline-block text-[10px] font-sans font-semibold tracking-widest uppercase px-2 py-0.5 rounded border border-[#60A5FA]/50 text-[#93C5FD] bg-[#0E1F36]/80 flex-shrink-0">
                     {isStaff
                       ? (lang === 'ru' ? 'Деканат' : 'Faculty Registry')
                       : (lang === 'ru' ? 'Студент' : 'Student')}

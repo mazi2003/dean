@@ -453,7 +453,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
           {/* Academic Standing Metric Box (ECTS + GPA) */}
           <div className="flex items-center space-x-3 bg-[#F8FAFC] dark:bg-[#0E1B2D] p-3.5 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] self-start">
-            <div className="w-10 h-10 rounded-md bg-[#142D4E] text-[#245A91] flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-md bg-[#142D4E] text-[#93C5FD] flex items-center justify-center flex-shrink-0">
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
@@ -461,13 +461,13 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 {lang === 'ru' ? 'Академический статус' : 'Academic Standing'}
               </p>
               <div className="flex items-baseline space-x-1.5">
-                <span className="font-mono text-xl font-bold text-[#142D4E] dark:text-[#245A91]">
+                <span className="font-mono text-xl font-bold text-[#142D4E] dark:text-[#FFFFFF]">
                   {profile?.gpa ? profile.gpa.toFixed(2) : '4.80'}
                 </span>
                 <span className="text-[11px] text-[#667085] dark:text-[#94A3B8] font-mono">
                   / 5.0 GPA
                 </span>
-                <span className="text-[10px] text-[#245A91] font-mono font-bold pl-1">
+                <span className="text-[10px] text-[#245A91] dark:text-[#93C5FD] font-mono font-bold pl-1">
                   (48 ECTS)
                 </span>
               </div>
@@ -481,7 +481,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             onClick={() => setActiveTab('requests')}
             className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-medium transition-colors cursor-pointer"
           >
-            <FileText className="w-3.5 h-3.5 text-[#245A91]" />
+            <FileText className="w-3.5 h-3.5 text-[#93C5FD]" />
             <span>{lang === 'ru' ? 'Заказать справку с ЭЦП' : 'Request Certified Document'}</span>
           </button>
           <button
@@ -530,8 +530,8 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <span className="text-[10px] font-mono text-[#667085] uppercase block">
               {tr(lang, '1 февраля 2026', 'Feb 1, 2026')}
             </span>
-            <div className="flex items-center space-x-1.5 font-semibold text-[#142D4E] dark:text-[#245A91]">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
+            <div className="flex items-center space-x-1.5 font-semibold text-[#142D4E] dark:text-[#93C5FD]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD] flex-shrink-0" />
               <span>{tr(lang, 'Старт семестра', 'Term Start')}</span>
             </div>
             <p className="text-[10px] text-[#667085]">
@@ -540,11 +540,11 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </div>
 
           <div className="p-3 rounded-lg bg-[#142D4E]/10 dark:bg-[#142D4E]/30 border border-[#142D4E]/30 dark:border-[#245A91]/40 space-y-1">
-            <span className="text-[10px] font-mono text-[#142D4E] dark:text-[#245A91] font-bold uppercase block">
+            <span className="text-[10px] font-mono text-[#142D4E] dark:text-[#93C5FD] font-bold uppercase block">
               {tr(lang, '10 – 24 ноября', 'Nov 10 – 24')}
             </span>
-            <div className="flex items-center space-x-1.5 font-bold text-[#142D4E] dark:text-[#245A91]">
-              <span className="w-2 h-2 rounded-full bg-[#142D4E] dark:bg-[#245A91] animate-pulse" />
+            <div className="flex items-center space-x-1.5 font-bold text-[#142D4E] dark:text-[#93C5FD]">
+              <span className="w-2 h-2 rounded-full bg-[#142D4E] dark:bg-[#93C5FD] animate-pulse flex-shrink-0" />
               <span>{tr(lang, 'Промежуточный срез', 'Midterm Checkpoint')}</span>
             </div>
             <p className="text-[10px] text-[#475467] dark:text-[#CBD5E1]">

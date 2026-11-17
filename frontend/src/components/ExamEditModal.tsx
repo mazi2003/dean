@@ -64,6 +64,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
   onSave,
   onReset,
 }) => {
+  const { lang } = useAuth();
   const [date, setDate] = useState(exam.date || '');
   const [time, setTime] = useState(exam.time || '10:00 – 14:00');
   const [room, setRoom] = useState(exam.room || '');
@@ -121,15 +122,15 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#142D4E] text-[#245A91]">
-                  ГРУППА {exam.groupId}
+                  {tr(lang, 'ГРУППА', 'GROUP')} {exam.groupId}
                 </span>
                 <span className="text-[11px] font-mono text-[#667085]">{exam.code}</span>
               </div>
               <h2 className="font-semibold text-base sm:text-lg text-[#142D4E] dark:text-[#FFFFFF] mt-0.5">
-                Распоряжение деканата: график экзамена
+                {tr(lang, 'Распоряжение деканата: график экзамена', "Dean's Directive: Exam Schedule")}
               </h2>
               <p className="text-xs text-[#667085] font-sans truncate max-w-md">
-                {exam.subject}
+                {localizeText(exam.subject, lang)}
               </p>
             </div>
           </div>
@@ -148,7 +149,15 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
           <div className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] flex items-center space-x-3">
             <AlertTriangle className="w-4 h-4 text-[#245A91] flex-shrink-0" />
             <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
-              Изменение даты или аудитории экзамена утверждается распоряжением декана. При включенном флажке студенты группы <strong className="text-[#142D4E] dark:text-[#245A91]">{exam.groupId}</strong> получат срочное системное оповещение.
+              {lang === 'ru' ? (
+                <>
+                  Изменение даты или аудитории экзамена утверждается распоряжением декана. При включенном флажке студенты группы <strong className="text-[#142D4E] dark:text-[#245A91]">{exam.groupId}</strong> получат срочное системное оповещение.
+                </>
+              ) : (
+                <>
+                  Changes to an exam date or room are approved by Dean&apos;s directive. When checked below, students in group <strong className="text-[#142D4E] dark:text-[#245A91]">{exam.groupId}</strong> receive an urgent portal alert.
+                </>
+              )}
             </p>
           </div>
 
@@ -157,7 +166,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
-                <span>Дата проведения экзамена</span>
+                <span>{tr(lang, 'Дата проведения экзамена', 'Exam Date')}</span>
               </label>
               <input
                 type="text"
@@ -167,7 +176,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                   setDate(e.target.value);
                   if (status === 'scheduled') setStatus('date_changed');
                 }}
-                placeholder="Например: 15 декабря 2026"
+                placeholder={tr(lang, 'Например: 15 декабря 2026', 'e.g., December 15, 2026')}
                 className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] font-semibold focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               />
             </div>
@@ -176,7 +185,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <Clock className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
-                <span>Время проведения</span>
+                <span>{tr(lang, 'Время проведения', 'Exam Time')}</span>
               </label>
               <input
                 type="text"
@@ -192,7 +201,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <MapPin className="w-3.5 h-3.5 text-[#C63740]" />
-                <span>Аудитория проведения</span>
+                <span>{tr(lang, 'Аудитория проведения', 'Exam Room')}</span>
               </label>
               <input
                 type="text"
@@ -202,7 +211,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                   setRoom(e.target.value);
                   if (status === 'scheduled') setStatus('room_changed');
                 }}
-                placeholder="Главный корпус, ауд. 312"
+                placeholder={tr(lang, 'Главный корпус, ауд. 312', 'Main Building, Room 312')}
                 className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               />
             </div>
@@ -211,18 +220,18 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <Shield className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
-                <span>Статус в графике сессии</span>
+                <span>{tr(lang, 'Статус в графике сессии', 'Session Schedule Status')}</span>
               </label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value as ExamStatus)}
                 className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] font-medium focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               >
-                <option value="scheduled">Штатный график (scheduled)</option>
-                <option value="date_changed">Перенос даты экзамена (date_changed)</option>
-                <option value="room_changed">Замена аудитории (room_changed)</option>
-                <option value="postponed">Перенос на резервный день (postponed)</option>
-                <option value="cancelled">Экзамен отменен (cancelled)</option>
+                <option value="scheduled">{tr(lang, 'Штатный график (scheduled)', 'As Scheduled (scheduled)')}</option>
+                <option value="date_changed">{tr(lang, 'Перенос даты экзамена (date_changed)', 'Date Rescheduled (date_changed)')}</option>
+                <option value="room_changed">{tr(lang, 'Замена аудитории (room_changed)', 'Room Changed (room_changed)')}</option>
+                <option value="postponed">{tr(lang, 'Перенос на резервный день (postponed)', 'Postponed to Reserve Date (postponed)')}</option>
+                <option value="cancelled">{tr(lang, 'Экзамен отменен (cancelled)', 'Exam Cancelled (cancelled)')}</option>
               </select>
             </div>
           </div>
@@ -232,14 +241,14 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <User className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
-                <span>Экзаменатор / Председатель</span>
+                <span>{tr(lang, 'Экзаменатор / Председатель', 'Examiner / Chair')}</span>
               </label>
               <input
                 type="text"
                 required
                 value={examiner}
                 onChange={e => setExaminer(e.target.value)}
-                placeholder="Проф. Воронов А.Н."
+                placeholder={tr(lang, 'Проф. Воронов А.Н.', 'Prof. A.N. Voronov')}
                 className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               />
             </div>
@@ -247,13 +256,13 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <Users className="w-3.5 h-3.5 text-[#667085]" />
-                <span>Члены комиссии (если есть)</span>
+                <span>{tr(lang, 'Члены комиссии (если есть)', 'Commission Members (optional)')}</span>
               </label>
               <input
                 type="text"
                 value={commission}
                 onChange={e => setCommission(e.target.value)}
-                placeholder="Доц. Романова Е.В., доц. Смирнов А.К."
+                placeholder={tr(lang, 'Доц. Романова Е.В., доц. Смирнов А.К.', 'Assoc. Prof. E.V. Romanova, A.K. Smirnov')}
                 className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               />
             </div>
@@ -264,13 +273,13 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[#667085]" />
-                <span>Предэкзаменационная консультация</span>
+                <span>{tr(lang, 'Предэкзаменационная консультация', 'Pre-Exam Consultation')}</span>
               </label>
               <input
                 type="text"
                 value={consultation}
                 onChange={e => setConsultation(e.target.value)}
-                placeholder="10 декабря в 15:00 (ауд. 312)"
+                placeholder={tr(lang, '10 декабря в 15:00 (ауд. 312)', 'December 10 at 15:00 (Room 312)')}
                 className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               />
             </div>
@@ -278,18 +287,28 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5 flex items-center space-x-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-[#667085]" />
-                <span>Формат аттестации</span>
+                <span>{tr(lang, 'Формат аттестации', 'Assessment Format')}</span>
               </label>
               <select
                 value={format}
                 onChange={e => setFormat(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
               >
-                <option value="Устный экзамен по билетам">Устный экзамен по билетам</option>
-                <option value="Письменный экзамен и эссе">Письменный экзамен и эссе</option>
-                <option value="Компьютерное тестирование и кейсы">Компьютерное тестирование и кейсы</option>
-                <option value="Комплексный экзамен (аудирование и собеседование)">Комплексный экзамен (собеседование)</option>
-                <option value="Комиссионная пересдача (Комиссия факультета)">Комиссионная пересдача (Комиссия)</option>
+                <option value="Устный экзамен по билетам">
+                  {tr(lang, 'Устный экзамен по билетам', 'Oral Exam (Exam Tickets)')}
+                </option>
+                <option value="Письменный экзамен и эссе">
+                  {tr(lang, 'Письменный экзамен и эссе', 'Written Exam & Essay')}
+                </option>
+                <option value="Компьютерное тестирование и кейсы">
+                  {tr(lang, 'Компьютерное тестирование и кейсы', 'Computer Testing & Case Studies')}
+                </option>
+                <option value="Комплексный экзамен (аудирование и собеседование)">
+                  {tr(lang, 'Комплексный экзамен (собеседование)', 'Comprehensive Exam (Listening & Oral)')}
+                </option>
+                <option value="Комиссионная пересдача (Комиссия факультета)">
+                  {tr(lang, 'Комиссионная пересдача (Комиссия)', 'Commission Retake (Faculty Board)')}
+                </option>
               </select>
             </div>
           </div>
@@ -297,13 +316,17 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
           {/* Change Note / Rationale */}
           <div>
             <label className="block text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-1.5">
-              Официальное основание переноса / примечание деканата
+              {tr(lang, 'Официальное основание переноса / примечание деканата', "Official Rationale / Dean's Office Note")}
             </label>
             <textarea
               rows={2}
               value={changeNote}
               onChange={e => setChangeNote(e.target.value)}
-              placeholder="Распоряжение деканата № 21-Э: дата экзамена перенесена в связи с участием лектора в международном форуме..."
+              placeholder={tr(
+                lang,
+                'Распоряжение деканата № 21-Э: дата экзамена перенесена в связи с участием лектора в международном форуме...',
+                "Dean's Directive No. 21-E: exam rescheduled due to lecturer's conference attendance...",
+              )}
               className="w-full px-3 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-[#0F1D30] dark:text-[#FFFFFF] placeholder-[#667085] focus:outline-hidden focus:border-[#142D4E] dark:focus:border-[#245A91]"
             />
           </div>
@@ -314,10 +337,10 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
               <BellRing className="w-4 h-4 text-[#245A91]" />
               <div>
                 <span className="font-semibold text-xs text-[#0F1D30] dark:text-[#FFFFFF] block">
-                  Оповестить группу {exam.groupId}
+                  {tr(lang, `Оповестить группу ${exam.groupId}`, `Notify group ${exam.groupId}`)}
                 </span>
                 <span className="text-[10px] text-[#667085]">
-                  Отправить срочное уведомление всем студентам группы
+                  {tr(lang, 'Отправить срочное уведомление всем студентам группы', 'Send urgent notification to all group students')}
                 </span>
               </div>
             </div>
@@ -341,7 +364,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                   className="px-3 py-1.5 rounded-lg text-[11px] font-sans font-medium text-[#667085] hover:text-[#C63740] hover:bg-[#F8FAFC] transition-colors cursor-pointer flex items-center space-x-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Вернуть первоначальный график</span>
+                  <span>{tr(lang, 'Вернуть первоначальный график', 'Restore Original Schedule')}</span>
                 </button>
               )}
             </div>
@@ -352,7 +375,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                 onClick={onClose}
                 className="px-4 py-2 rounded-lg text-xs font-sans text-[#667085] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] hover:bg-[#F8FAFC] cursor-pointer"
               >
-                Отмена
+                {tr(lang, 'Отмена', 'Cancel')}
               </button>
               <button
                 type="submit"
@@ -360,11 +383,11 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                 className="px-4 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs cursor-pointer transition-colors disabled:opacity-50 flex items-center space-x-1.5"
               >
                 {saving ? (
-                  <span>Сохранение...</span>
+                  <span>{tr(lang, 'Сохранение...', 'Saving...')}</span>
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4 text-[#245A91]" />
-                    <span>Утвердить изменения</span>
+                    <span>{tr(lang, 'Утвердить изменения', 'Approve Changes')}</span>
                   </>
                 )}
               </button>

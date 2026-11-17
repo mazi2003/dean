@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
+import { getJwtSigningKey } from '../lib/config';
 
 export interface JwtPayload {
   sub: string;    // userId
@@ -19,9 +20,7 @@ export async function authenticate(
   }
 
   try {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) throw new Error('JWT_SECRET not configured');
-    const payload = jwt.verify(token, secret) as JwtPayload;
+    const payload = jwt.verify(token, getJwtSigningKey()) as JwtPayload;
     request.user = payload;
   } catch {
     return reply.code(401).send({ code: 'UNAUTHORIZED', message: 'Not authenticated' });

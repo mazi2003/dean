@@ -3,10 +3,11 @@ import { z } from 'zod';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
+import { getJwtSigningKey } from '../lib/config';
 import { authenticate } from '../middleware/auth';
 
 const LoginSchema = z.object({
-  email: z.string().email(),
+  email: z.string().trim().toLowerCase().email(),
   password: z.string().min(1),
 });
 
@@ -23,12 +24,13 @@ export async function authRoutes(app: FastifyInstance) {
           details: parsed.error.flatten(),
         });
       }
-      const { email, password } = parsed.data;
+      const normalizedEmail = parsed.data.email.trim().toLowerCase();
+      const { password } = parsed.data;
 
       // Always do the hash comparison (constant-time, no early exit on "user not found")
-      const user = await prisma.user.findUnique({ where: { email } });
+      const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
-      // Use a dummy hash if user not found (constant-time protection)
+      // Validly formatted dummy argon2id digest so verification exercises full KDF work factor
       const dummyHash = '$argon2id$v=19$m=65536,t=3,p=4$dummysaltdummysalt$dummyhashresultdummyhashresultdummyhashresult';
       const hashToVerify = user?.passwordHash ?? dummyHash;
 
@@ -43,14 +45,13 @@ export async function authRoutes(app: FastifyInstance) {
         return reply.code(401).send({ code: 'UNAUTHORIZED', message: 'Invalid credentials' });
       }
 
-      const secret = process.env.JWT_SECRET ?? 'changeme';
       const token = jwt.sign(
         { sub: user.id, email: user.email, role: user.role },
-        secret,
+        getJwtSigningKey(),
         { expiresIn: '24h' }
       );
 
-      const isProduction = process.env.NODE_ENV === 'production';
+      const isProduction = process.env.NODE_ENV === 'production' || process.env.COOKIE_SECURE === 'true';
       reply.setCookie('dean_session', token, {
         httpOnly: true,
         secure: isProduction,

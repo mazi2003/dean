@@ -443,7 +443,7 @@ export const SchedulePage: React.FC = () => {
                   : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30]'
               }`}
             >
-              {lang === 'ru' ? 'Занятия' : 'Lectures'}
+              {lang === 'ru' ? 'Занятия' : 'Classes'}
             </button>
             <button
               onClick={() => setActiveSubTab('exams')}

@@ -30,7 +30,7 @@ export async function gradesRoutes(app: FastifyInstance) {
       const sp = await prisma.studentProfile.findUnique({ where: { userId } });
       if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
 
-      const where: { studentId: string; semester?: number } = { studentId: sp.id };
+      const where: { studentProfileId: string; semester?: number } = { studentProfileId: sp.id };
       if (parsed.data.semester) where.semester = parsed.data.semester;
 
       const grades = await prisma.grade.findMany({
@@ -39,7 +39,7 @@ export async function gradesRoutes(app: FastifyInstance) {
         orderBy: [{ semester: 'asc' }, { subject: { name: 'asc' } }],
       });
 
-      const items = grades.map(g => ({
+      const items = grades.map((g) => ({
         id: g.id,
         subject: g.subject.name,
         credits: g.subject.credits,
@@ -48,24 +48,25 @@ export async function gradesRoutes(app: FastifyInstance) {
         grade: g.grade,
         creditStatus: g.creditStatus,
         examDate: g.examDate ? g.examDate.toISOString().split('T')[0] : null,
+        semester: g.semester,
       }));
 
-      const earnedItems = items.filter(i => i.creditStatus === 'earned');
-      const creditsEarned = earnedItems.reduce((sum, i) => sum + i.credits, 0);
+      const earnedItems = items.filter((i) => i.creditStatus === 'earned');
+      const creditsEarned = earnedItems.reduce((sum: number, i) => sum + i.credits, 0);
       const creditsRequired = 240; // standard
 
-      const pointItems = items.filter(i => i.points !== null);
+      const pointItems = items.filter((i) => i.points !== null);
       const averagePoints = pointItems.length > 0
-        ? Math.round((pointItems.reduce((s, i) => s + (i.points ?? 0), 0) / pointItems.length) * 10) / 10
+        ? Math.round((pointItems.reduce((s: number, i) => s + (i.points ?? 0), 0) / pointItems.length) * 10) / 10
         : 0;
 
-      const gradedItems = items.filter(i => i.grade !== null);
+      const gradedItems = items.filter((i) => i.grade !== null);
       const gpa = gradedItems.length > 0
-        ? Math.round((gradedItems.reduce((s, i) => s + gradeToGpa(i.grade), 0) / gradedItems.length) * 100) / 100
+        ? Math.round((gradedItems.reduce((s: number, i) => s + gradeToGpa(i.grade), 0) / gradedItems.length) * 100) / 100
         : 0;
 
       const now = new Date();
-      const upcomingExams = items.filter(i =>
+      const upcomingExams = items.filter((i) =>
         i.examDate !== null && new Date(i.examDate) > now && i.creditStatus !== 'earned'
       );
 

@@ -1,9 +1,10 @@
 import { FastifyInstance } from 'fastify';
+import { Prisma, RequestStatus, ScheduleStatus } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { authenticate, requireStaff } from '../middleware/auth';
 
-// Valid status transitions
+// Valid status transitions per workflow spec
 const VALID_TRANSITIONS: Record<string, string[]> = {
   submitted: ['in_review', 'rejected'],
   in_review: ['needs_info', 'ready', 'rejected'],
@@ -13,6 +14,8 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   cancelled: [],
 };
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const StaffRequestsQuerySchema = z.object({
   status: z.enum(['submitted', 'in_review', 'needs_info', 'ready', 'rejected', 'cancelled']).optional(),
   page: z.coerce.number().int().min(1).default(1),
@@ -21,12 +24,12 @@ const StaffRequestsQuerySchema = z.object({
 
 const ChangeStatusSchema = z.object({
   status: z.enum(['submitted', 'in_review', 'needs_info', 'ready', 'rejected', 'cancelled']),
-  comment: z.string().optional(),
+  comment: z.string().max(1000).optional(),
 });
 
 const AnnouncementSchema = z.object({
-  title: z.string().min(1),
-  body: z.string().min(1),
+  title: z.string().min(1).max(200),
+  body: z.string().min(1).max(2000),
   group: z.string().nullable().optional(),
 });
 
@@ -36,18 +39,31 @@ const ScheduleChangeSchema = z.object({
   room: z.string().optional(),
   start: z.string().optional(),
   end: z.string().optional(),
-  note: z.string().optional(),
+  note: z.string().max(500).optional(),
+});
+
+const ExamChangeSchema = z.object({
+  examId: z.string().min(1),
+  date: z.string().optional(),
+  time: z.string().optional(),
+  room: z.string().optional(),
+  status: z.enum(['scheduled', 'date_changed', 'room_changed', 'postponed', 'cancelled']).optional(),
+  changeNote: z.string().nullable().optional(),
+  notifyGroup: z.boolean().optional(),
+  targetGroup: z.string().optional(),
+  subject: z.string().optional(),
 });
 
 function formatRequest(r: {
   id: string;
+  studentId: string;
   typeCode: string;
   requestType: { title: string; slaDays: number };
   status: string;
   createdAt: Date;
   updatedAt: Date;
   data: unknown;
-  history?: Array<{ status: string; createdAt: Date; comment: string | null }>;
+  history?: Array<{ id?: string; status: string; createdAt: Date; comment: string | null }>;
   student?: { id: string; email: string; fullName: string; role: string };
 }) {
   const expectedBy = new Date(r.createdAt);
@@ -55,22 +71,44 @@ function formatRequest(r: {
 
   return {
     id: r.id,
+    studentId: r.studentId,
+    studentName: r.student?.fullName,
     typeCode: r.typeCode,
     typeTitle: r.requestType.title,
+    slaDays: r.requestType.slaDays,
     status: r.status,
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
     expectedBy: expectedBy.toISOString().split('T')[0],
+    expectedDate: expectedBy.toISOString().split('T')[0],
     data: r.data,
-    history: r.history?.map(h => ({
-      status: h.status,
-      at: h.createdAt.toISOString(),
-      comment: h.comment,
-    })) ?? [],
+    history:
+      r.history?.map((h) => ({
+        id: h.id,
+        status: h.status,
+        at: h.createdAt.toISOString(),
+        createdAt: h.createdAt.toISOString(),
+        comment: h.comment,
+      })) ?? [],
     student: r.student
       ? { id: r.student.id, email: r.student.email, fullName: r.student.fullName, role: r.student.role }
       : undefined,
   };
+}
+
+function calculateStudentMetrics<T extends { creditStatus: string; points: number | null }>(grades: T[]) {
+  const debts = grades.filter((gr) => gr.creditStatus === 'failed');
+  let sumPoints = 0;
+  let pointsCount = 0;
+  for (const gr of grades) {
+    if (gr.points !== null) {
+      sumPoints += gr.points;
+      pointsCount++;
+    }
+  }
+  const avgScore = pointsCount > 0 ? Math.round((sumPoints / pointsCount) * 10) / 10 : 75.0;
+  const gpa = avgScore >= 85 ? 4.8 : avgScore >= 75 ? 4.2 : 3.4;
+  return { debts, avgScore, gpa };
 }
 
 export async function staffRoutes(app: FastifyInstance) {
@@ -84,8 +122,8 @@ export async function staffRoutes(app: FastifyInstance) {
       }
 
       const { status, page, pageSize } = parsed.data;
-      const where: { status?: string } = {};
-      if (status) where.status = status;
+      const where: Prisma.RequestWhereInput = {};
+      if (status) where.status = status as RequestStatus;
 
       const [total, items] = await Promise.all([
         prisma.request.count({ where }),
@@ -106,7 +144,7 @@ export async function staffRoutes(app: FastifyInstance) {
         page,
         pageSize,
         total,
-        items: items.map(r => formatRequest(r)),
+        items: items.map((r) => formatRequest(r)),
       });
     },
   });
@@ -116,6 +154,10 @@ export async function staffRoutes(app: FastifyInstance) {
     preHandler: [authenticate, requireStaff],
     handler: async (request, reply) => {
       const { id } = request.params as { id: string };
+      if (!UUID_REGEX.test(id)) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
+      }
+
       const parsed = ChangeStatusSchema.safeParse(request.body);
       if (!parsed.success) {
         return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
@@ -132,12 +174,15 @@ export async function staffRoutes(app: FastifyInstance) {
         return reply.code(409).send({ code: 'CONFLICT', message: `Cannot transition from ${r.status} to ${parsed.data.status}` });
       }
 
+      const staffUserId = request.user!.sub;
       const [updated] = await prisma.$transaction([
         prisma.request.update({
           where: { id },
           data: {
-            status: parsed.data.status,
-            history: { create: [{ status: parsed.data.status, comment: parsed.data.comment ?? null }] },
+            status: parsed.data.status as RequestStatus,
+            history: {
+              create: [{ status: parsed.data.status as RequestStatus, actorId: staffUserId, comment: parsed.data.comment ?? null }],
+            },
           },
           include: {
             requestType: true,
@@ -160,6 +205,27 @@ export async function staffRoutes(app: FastifyInstance) {
     },
   });
 
+  // GET /api/v1/staff/announcements
+  app.get('/staff/announcements', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (_request, reply) => {
+      const announcements = await prisma.announcement.findMany({
+        orderBy: { createdAt: 'desc' },
+      });
+      return reply.send(
+        announcements.map((a) => ({
+          id: a.id,
+          title: a.title,
+          body: a.body,
+          targetGroup: a.targetGroup ?? 'all',
+          priority: 'high',
+          kind: 'announcement',
+          createdAt: a.createdAt.toISOString(),
+        }))
+      );
+    },
+  });
+
   // POST /api/v1/staff/announcements
   app.post('/staff/announcements', {
     preHandler: [authenticate, requireStaff],
@@ -172,24 +238,27 @@ export async function staffRoutes(app: FastifyInstance) {
       const { title, body, group: groupName } = parsed.data;
 
       // Create announcement record
-      await prisma.announcement.create({
+      const created = await prisma.announcement.create({
         data: { title, body, targetGroup: groupName ?? null },
       });
 
       // Find target users
       let targetUserIds: string[];
       if (groupName) {
-        const groupRecord = await prisma.group.findFirst({ where: { code: groupName }, include: { studentProfiles: { select: { userId: true } } } });
-        targetUserIds = groupRecord?.studentProfiles.map(sp => sp.userId) ?? [];
+        const groupRecord = await prisma.group.findFirst({
+          where: { code: groupName },
+          include: { studentProfiles: { select: { userId: true } } },
+        });
+        targetUserIds = groupRecord?.studentProfiles.map((sp) => sp.userId) ?? [];
       } else {
         const students = await prisma.user.findMany({ where: { role: 'student' }, select: { id: true } });
-        targetUserIds = students.map(u => u.id);
+        targetUserIds = students.map((u) => u.id);
       }
 
       // Create notifications
       if (targetUserIds.length > 0) {
         await prisma.notification.createMany({
-          data: targetUserIds.map(userId => ({
+          data: targetUserIds.map((userId) => ({
             userId,
             kind: 'announcement' as const,
             title,
@@ -199,7 +268,7 @@ export async function staffRoutes(app: FastifyInstance) {
         });
       }
 
-      return reply.code(201).send({ ok: true });
+      return reply.code(201).send({ ok: true, id: created.id, count: targetUserIds.length });
     },
   });
 
@@ -208,10 +277,12 @@ export async function staffRoutes(app: FastifyInstance) {
     preHandler: [authenticate, requireStaff],
     handler: async (request, reply) => {
       const { id } = request.params;
-      try {
-        await prisma.announcement.delete({ where: { id } });
-      } catch {
-        // ignore if already deleted
+      if (UUID_REGEX.test(id)) {
+        try {
+          await prisma.announcement.delete({ where: { id } });
+        } catch {
+          // ignore if already deleted
+        }
       }
       return reply.code(200).send({ ok: true });
     },
@@ -239,12 +310,12 @@ export async function staffRoutes(app: FastifyInstance) {
 
       // Build update data
       const updateData: {
-        status: string;
+        status: ScheduleStatus;
         changeNote?: string;
         roomId?: string | null;
         startTime?: string;
         endTime?: string;
-      } = { status };
+      } = { status: status as ScheduleStatus };
       if (note) updateData.changeNote = note;
       if (start) updateData.startTime = start;
       if (end) updateData.endTime = end;
@@ -257,17 +328,18 @@ export async function staffRoutes(app: FastifyInstance) {
       await prisma.scheduleEntry.update({ where: { id: scheduleEntryId }, data: updateData });
 
       // Notify affected group
-      const affectedUserIds = entry.group.studentProfiles.map(sp => sp.userId);
+      const affectedUserIds = entry.group.studentProfiles.map((sp) => sp.userId);
       const dateStr = entry.date.toISOString().split('T')[0];
-      const notifTitle = status === 'cancelled'
-        ? `Class cancelled: ${entry.subject.name} on ${dateStr}`
-        : status === 'room_changed'
-          ? `Room changed: ${entry.subject.name} on ${dateStr}`
-          : `Schedule changed: ${entry.subject.name} on ${dateStr}`;
+      const notifTitle =
+        status === 'cancelled'
+          ? `Class cancelled: ${entry.subject.name} on ${dateStr}`
+          : status === 'room_changed'
+            ? `Room changed: ${entry.subject.name} on ${dateStr}`
+            : `Schedule changed: ${entry.subject.name} on ${dateStr}`;
 
       if (affectedUserIds.length > 0) {
         await prisma.notification.createMany({
-          data: affectedUserIds.map(userId => ({
+          data: affectedUserIds.map((userId) => ({
             userId,
             kind: 'schedule_change' as const,
             title: notifTitle,
@@ -285,8 +357,12 @@ export async function staffRoutes(app: FastifyInstance) {
   app.post('/staff/exam-changes', {
     preHandler: [authenticate, requireStaff],
     handler: async (request, reply) => {
-      const body = request.body as Record<string, any>;
-      const { examId, date, time, room, status, changeNote, notifyGroup, targetGroup, subject } = body;
+      const parsed = ExamChangeSchema.safeParse(request.body);
+      if (!parsed.success) {
+        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
+      }
+
+      const { examId, date, time, room, status, changeNote, notifyGroup, targetGroup, subject } = parsed.data;
 
       if (notifyGroup && targetGroup) {
         const groupRecord = await prisma.group.findFirst({
@@ -294,7 +370,7 @@ export async function staffRoutes(app: FastifyInstance) {
           include: { studentProfiles: { select: { userId: true } } },
         });
 
-        const targetUserIds = groupRecord?.studentProfiles.map(sp => sp.userId) ?? [];
+        const targetUserIds = groupRecord?.studentProfiles.map((sp) => sp.userId) ?? [];
         if (targetUserIds.length > 0) {
           const statusMap: Record<string, string> = {
             date_changed: 'Перенос даты экзамена',
@@ -305,10 +381,10 @@ export async function staffRoutes(app: FastifyInstance) {
           };
           const title = `Изменение даты экзамена: ${subject || 'Экзамен'}`;
           const noteText = changeNote ? ` Примечание деканата: ${changeNote}.` : '';
-          const notifBody = `Внимание, группа ${targetGroup}! По дисциплине «${subject || 'Экзамен'}» статус: ${statusMap[status] || 'Изменение'}. Дата: ${date}, время: ${time}, ауд.: ${room}.${noteText}`;
+          const notifBody = `Внимание, группа ${targetGroup}! По дисциплине «${subject || 'Экзамен'}» статус: ${(status && statusMap[status]) || 'Изменение'}. Дата: ${date ?? '—'}, время: ${time ?? '—'}, ауд.: ${room ?? '—'}.${noteText}`;
 
           await prisma.notification.createMany({
-            data: targetUserIds.map(userId => ({
+            data: targetUserIds.map((userId) => ({
               userId,
               kind: 'schedule_change' as const,
               title,
@@ -340,22 +416,22 @@ export async function staffRoutes(app: FastifyInstance) {
         orderBy: { code: 'asc' },
       });
 
-      const formatted = groups.map(g => {
+      const formatted = groups.map((g) => {
         const studentProfiles = g.studentProfiles;
         let totalDebt = 0;
         let sumPoints = 0;
         let pointCount = 0;
 
-        studentProfiles.forEach(sp => {
-          const debts = sp.grades.filter(gr => gr.creditStatus === 'failed');
+        for (const sp of studentProfiles) {
+          const debts = sp.grades.filter((gr) => gr.creditStatus === 'failed');
           totalDebt += debts.length;
-          sp.grades.forEach(gr => {
+          for (const gr of sp.grades) {
             if (gr.points !== null) {
               sumPoints += gr.points;
               pointCount++;
             }
-          });
-        });
+          }
+        }
 
         const avgScore = pointCount > 0 ? sumPoints / pointCount : 80;
         const avgGpa = avgScore >= 85 ? 4.6 : avgScore >= 70 ? 4.0 : 3.4;
@@ -367,20 +443,57 @@ export async function staffRoutes(app: FastifyInstance) {
           faculty: g.program.faculty.name,
           year: 2023,
           courseNumber: g.year,
-          studentsCount: studentProfiles.length > 0 ? studentProfiles.length : (g.code === 'ДУ-101' ? 28 : 24),
-          budgetCount: Math.ceil(studentProfiles.length * 0.6) || (g.code === 'ДУ-101' ? 18 : 14),
-          contractCount: Math.floor(studentProfiles.length * 0.4) || (g.code === 'ДУ-101' ? 10 : 10),
-          curatorName: g.code === 'ДУ-101' ? 'проф. Лебедев Д.В.' : 'доц. Ковалев С.А.',
-          curatorContact: g.code === 'ДУ-101' ? 'd.lebedev@demo.edu • Ауд. 314' : 's.kovalev@demo.edu • Ауд. 208',
-          starostaName: g.code === 'ДУ-101' ? 'Айгуль Нурова' : 'Алина Захарова',
-          starostaEmail: g.code === 'ДУ-101' ? 'aigul.nurova@demo.edu' : 'a.zakharova@demo.edu',
-          starostaPhone: g.code === 'ДУ-101' ? '+7 (999) 123-45-67' : '+7 (999) 456-78-90',
+          studentsCount: studentProfiles.length > 0 ? studentProfiles.length : g.code === 'DU-101' ? 28 : 24,
+          budgetCount: Math.ceil(studentProfiles.length * 0.6) || (g.code === 'DU-101' ? 18 : 14),
+          contractCount: Math.floor(studentProfiles.length * 0.4) || (g.code === 'DU-101' ? 10 : 10),
+          curatorName: g.code === 'DU-101' ? 'проф. Лебедев Д.В.' : 'доц. Ковалев С.А.',
+          curatorContact: g.code === 'DU-101' ? 'd.lebedev@demo.edu • Ауд. 314' : 's.kovalev@demo.edu • Ауд. 208',
+          starostaName: g.code === 'DU-101' ? 'Айгуль Нурова' : 'Алина Захарова',
+          starostaEmail: g.code === 'DU-101' ? 'aigul.nurova@demo.edu' : 'a.zakharova@demo.edu',
+          starostaPhone: g.code === 'DU-101' ? '+7 (999) 123-45-67' : '+7 (999) 456-78-90',
           averageGpa: avgGpa,
           debtCount: totalDebt,
         };
       });
 
       return reply.send(formatted);
+    },
+  });
+
+  // GET /api/v1/staff/students
+  app.get('/staff/students', {
+    preHandler: [authenticate, requireStaff],
+    handler: async (_request, reply) => {
+      const profiles = await prisma.studentProfile.findMany({
+        include: {
+          user: true,
+          group: true,
+          grades: true,
+        },
+        orderBy: { studentNumber: 'asc' },
+      });
+
+      const students = profiles.map((sp) => {
+        const { debts, avgScore, gpa } = calculateStudentMetrics(sp.grades);
+        return {
+          id: sp.userId,
+          fullName: sp.user.fullName,
+          email: sp.user.email,
+          phone: sp.user.email === 'aigul.nurova@demo.edu' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+          group: sp.group.code,
+          year: sp.year,
+          studentNumber: sp.studentNumber,
+          studyForm: sp.user.email === 'timur.belov@demo.edu' ? ('Контракт' as const) : ('Бюджет' as const),
+          gpa,
+          averageScore: avgScore,
+          debtCount: debts.length,
+          debtSubjects: debts.map((d) => d.subjectId),
+          isStarosta: sp.user.email === 'aigul.nurova@demo.edu',
+          status: 'active' as const,
+        };
+      });
+
+      return reply.send(students);
     },
   });
 
@@ -403,33 +516,23 @@ export async function staffRoutes(app: FastifyInstance) {
 
       if (!group) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Group not found' });
 
-      const students = group.studentProfiles.map(sp => {
-        const debts = sp.grades.filter(gr => gr.creditStatus === 'failed');
-        let sumPoints = 0;
-        let pointsCount = 0;
-        sp.grades.forEach(gr => {
-          if (gr.points !== null) {
-            sumPoints += gr.points;
-            pointsCount++;
-          }
-        });
-        const avgScore = pointsCount > 0 ? Math.round((sumPoints / pointsCount) * 10) / 10 : 75.0;
-        const gpa = avgScore >= 85 ? 4.8 : avgScore >= 75 ? 4.2 : 3.4;
+      const students = group.studentProfiles.map((sp) => {
+        const { debts, avgScore, gpa } = calculateStudentMetrics(sp.grades);
 
         return {
           id: sp.userId,
           fullName: sp.user.fullName,
           email: sp.user.email,
-          phone: sp.userId === 'usr-aigul-101' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+          phone: sp.user.email === 'aigul.nurova@demo.edu' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
           group: group.code,
           year: sp.year,
           studentNumber: sp.studentNumber,
-          studyForm: sp.userId === 'usr-timur-205' ? 'Контракт' : 'Бюджет',
+          studyForm: sp.user.email === 'timur.belov@demo.edu' ? ('Контракт' as const) : ('Бюджет' as const),
           gpa,
           averageScore: avgScore,
           debtCount: debts.length,
-          debtSubjects: debts.map(d => d.subjectId),
-          isStarosta: sp.userId === 'usr-aigul-101',
+          debtSubjects: debts.map((d) => d.subjectId),
+          isStarosta: sp.user.email === 'aigul.nurova@demo.edu',
           status: 'active' as const,
         };
       });
@@ -443,6 +546,9 @@ export async function staffRoutes(app: FastifyInstance) {
     preHandler: [authenticate, requireStaff],
     handler: async (request, reply) => {
       const { id } = request.params as { id: string };
+      if (!UUID_REGEX.test(id)) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Student profile not found' });
+      }
 
       const user = await prisma.user.findUnique({
         where: { id },
@@ -470,38 +576,32 @@ export async function staffRoutes(app: FastifyInstance) {
       }
 
       const sp = user.studentProfile;
-      const debts = sp.grades.filter(gr => gr.creditStatus === 'failed');
-      let sumPoints = 0;
-      let pointsCount = 0;
-      sp.grades.forEach(gr => {
-        if (gr.points !== null) {
-          sumPoints += gr.points;
-          pointsCount++;
-        }
-      });
-      const avgScore = pointsCount > 0 ? Math.round((sumPoints / pointsCount) * 10) / 10 : 75.0;
-      const gpa = avgScore >= 85 ? 4.8 : avgScore >= 75 ? 4.2 : 3.4;
+      const debts = sp.grades.filter((gr) => gr.creditStatus === 'failed');
+      const { avgScore, gpa } = calculateStudentMetrics(sp.grades);
 
       const profile = {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
-        phone: user.id === 'usr-aigul-101' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
+        phone: user.email === 'aigul.nurova@demo.edu' ? '+7 (999) 123-45-67' : '+7 (999) 234-56-78',
         group: sp.group.code,
         year: sp.year,
         studentNumber: sp.studentNumber,
-        studyForm: user.id === 'usr-timur-205' ? 'Контракт' as const : 'Бюджет' as const,
+        studyForm: user.email === 'timur.belov@demo.edu' ? ('Контракт' as const) : ('Бюджет' as const),
         gpa,
         averageScore: avgScore,
         debtCount: debts.length,
-        debtSubjects: debts.map(d => d.subject.name),
-        isStarosta: user.id === 'usr-aigul-101',
+        debtSubjects: debts.map((d) => d.subject.name),
+        isStarosta: user.email === 'aigul.nurova@demo.edu',
         status: 'active' as const,
         faculty: sp.faculty.name,
         program: sp.program.name,
         admissionYear: 2023,
         recordBookNumber: `ЗК-${sp.studentNumber.replace('СТ-', '')}`,
-        dormitoryInfo: user.id === 'usr-timur-205' ? 'Студгородок №1, корп. 2, комн. 415' : 'Проживание по постоянной регистрации (г. Москва)',
+        dormitoryInfo:
+          user.email === 'timur.belov@demo.edu'
+            ? 'Студгородок №1, корп. 2, комн. 415'
+            : 'Проживание по постоянной регистрации (г. Москва)',
         snils: '184-293-841 02',
       };
 
@@ -509,10 +609,12 @@ export async function staffRoutes(app: FastifyInstance) {
         semester: 3,
         averagePoints: avgScore,
         gpa,
-        creditsEarned: 24,
+        creditsEarned: sp.grades
+          .filter((g) => g.creditStatus === 'earned')
+          .reduce((sum, g) => sum + g.subject.credits, 0),
         creditsRequired: 30,
         upcomingExams: [],
-        items: sp.grades.map(g => ({
+        items: sp.grades.map((g) => ({
           id: g.id,
           subject: g.subject.name,
           credits: g.subject.credits,
@@ -521,7 +623,7 @@ export async function staffRoutes(app: FastifyInstance) {
           grade: g.grade,
           creditStatus: g.creditStatus,
           examDate: g.examDate ? g.examDate.toISOString().split('T')[0] : null,
-          retakeDate: g.retakeDate ? g.retakeDate.toISOString().split('T')[0] : null,
+          retakeDate: g.creditStatus === 'failed' && g.examDate ? g.examDate.toISOString().split('T')[0] : null,
           semester: g.semester,
         })),
       };
@@ -529,7 +631,7 @@ export async function staffRoutes(app: FastifyInstance) {
       return reply.send({
         profile,
         gradesSummary,
-        requests: user.requests.map(r => formatRequest(r)),
+        requests: user.requests.map((r) => formatRequest(r)),
       });
     },
   });

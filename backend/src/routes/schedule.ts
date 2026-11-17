@@ -6,6 +6,7 @@ import { authenticate } from '../middleware/auth';
 const ScheduleQuerySchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
 function formatEntry(entry: {
@@ -15,8 +16,9 @@ function formatEntry(entry: {
   endTime: string;
   subject: { name: string };
   type: string;
-  room: { name: string } | null;
-  teacher: { user: { fullName: string } } | null;
+  room: { code: string } | null;
+  teacher: { fullName: string } | null;
+  group?: { code: string } | null;
   status: string;
   changeNote: string | null;
 }) {
@@ -27,15 +29,16 @@ function formatEntry(entry: {
     end: entry.endTime,
     subject: entry.subject.name,
     type: entry.type,
-    room: entry.room?.name ?? null,
-    teacher: entry.teacher?.user?.fullName ?? null,
+    room: entry.room?.code ?? null,
+    teacher: entry.teacher?.fullName ?? null,
+    groupId: entry.group?.code ?? undefined,
     status: entry.status,
     changeNote: entry.changeNote,
   };
 }
 
 export async function scheduleRoutes(app: FastifyInstance) {
-  // GET /api/v1/schedule?from=&to=
+  // GET /api/v1/schedule?from=&to=&date=
   app.get('/schedule', {
     preHandler: [authenticate],
     handler: async (request, reply) => {
@@ -59,8 +62,10 @@ export async function scheduleRoutes(app: FastifyInstance) {
       sunday.setDate(monday.getDate() + 6);
       sunday.setHours(23, 59, 59, 999);
 
-      const from = parsed.data.from ? new Date(parsed.data.from) : monday;
-      const to = parsed.data.to ? new Date(parsed.data.to + 'T23:59:59') : sunday;
+      const fromStr = parsed.data.date ?? parsed.data.from;
+      const toStr = parsed.data.date ?? parsed.data.to;
+      const from = fromStr ? new Date(fromStr) : monday;
+      const to = toStr ? new Date(toStr + 'T23:59:59.999Z') : sunday;
 
       const entries = await prisma.scheduleEntry.findMany({
         where: {
@@ -70,7 +75,8 @@ export async function scheduleRoutes(app: FastifyInstance) {
         include: {
           subject: true,
           room: true,
-          teacher: { include: { user: true } },
+          teacher: true,
+          group: true,
         },
         orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
       });
@@ -95,7 +101,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
 
       const todayEntries = await prisma.scheduleEntry.findMany({
         where: { groupId: sp.groupId, date: { gte: todayStart, lte: todayEnd } },
-        include: { subject: true, room: true, teacher: { include: { user: true } } },
+        include: { subject: true, room: true, teacher: true, group: true },
         orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
       });
 
@@ -106,7 +112,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
           date: { gt: todayEnd },
           status: { not: 'cancelled' },
         },
-        include: { subject: true, room: true, teacher: { include: { user: true } } },
+        include: { subject: true, room: true, teacher: true, group: true },
         orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
       });
 

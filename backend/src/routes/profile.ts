@@ -38,7 +38,7 @@ export async function profileRoutes(app: FastifyInstance) {
         faculty: sp?.group?.program?.faculty?.name ?? null,
         program: sp?.group?.program?.name ?? null,
         year: sp?.year ?? null,
-        group: sp?.group?.name ?? null,
+        group: sp?.group?.code ?? null,
         studentNumber: sp?.studentNumber ?? null,
       });
     },

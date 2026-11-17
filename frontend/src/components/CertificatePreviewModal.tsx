@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import { X, Printer, Download, ShieldCheck } from 'lucide-react';
 import { StudentRequest } from '../types';
 import { UNIVERSITY_INFO } from '../services/mockData';
@@ -13,11 +13,10 @@ interface CertificatePreviewModalProps {
 
 export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = ({ request, onClose }) => {
   const { lang } = useAuth();
-  const issuedDate = useMemo(
-    () => new Date().toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US'),
-    [lang],
-  );
+  const [issuedTimestamp] = useState(() => Date.now());
   if (!request) return null;
+
+  const issuedDate = new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US').format(issuedTimestamp);
 
   const handlePrint = () => {
     window.print();

@@ -628,11 +628,39 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
           <div className="flex flex-wrap items-center gap-2 text-xs pb-1 font-sans">
             <Filter className="w-3.5 h-3.5 text-[#667085] mr-1 flex-shrink-0" />
             {[
-              { id: 'all', label: `Все заявления (${requests.length})` },
-              { id: 'submitted', label: `Новые (${requests.filter(r => r.status === 'submitted').length})` },
-              { id: 'in_review', label: `В работе (${requests.filter(r => r.status === 'in_review').length})` },
-              { id: 'needs_info', label: `Требуют уточнения (${requests.filter(r => r.status === 'needs_info').length})` },
-              { id: 'ready', label: `Подписано ЭЦП (${requests.filter(r => r.status === 'ready').length})` },
+              { id: 'all', label: tr(lang, `Все заявления (${requests.length})`, `All Requests (${requests.length})`) },
+              {
+                id: 'submitted',
+                label: tr(
+                  lang,
+                  `Новые (${requests.filter(r => r.status === 'submitted').length})`,
+                  `New (${requests.filter(r => r.status === 'submitted').length})`,
+                ),
+              },
+              {
+                id: 'in_review',
+                label: tr(
+                  lang,
+                  `В работе (${requests.filter(r => r.status === 'in_review').length})`,
+                  `In Review (${requests.filter(r => r.status === 'in_review').length})`,
+                ),
+              },
+              {
+                id: 'needs_info',
+                label: tr(
+                  lang,
+                  `Требуют уточнения (${requests.filter(r => r.status === 'needs_info').length})`,
+                  `Needs Info (${requests.filter(r => r.status === 'needs_info').length})`,
+                ),
+              },
+              {
+                id: 'ready',
+                label: tr(
+                  lang,
+                  `Подписано ЭЦП (${requests.filter(r => r.status === 'ready').length})`,
+                  `Signed EDS (${requests.filter(r => r.status === 'ready').length})`,
+                ),
+              },
             ].map(t => (
               <button
                 key={t.id}
@@ -653,10 +681,10 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             <div className="p-12 text-center rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B]">
               <FileCheck className="w-10 h-10 text-[#245A91] mx-auto mb-2 opacity-60" />
               <p className="text-sm font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
-                Нет заявлений в выбранной очереди
+                {tr(lang, 'Нет заявлений в выбранной очереди', 'No requests in the selected queue')}
               </p>
               <p className="text-xs text-[#667085] dark:text-[#94A3B8] mt-1 font-sans">
-                Все поступившие обращения студентов обработаны.
+                {tr(lang, 'Все поступившие обращения студентов обработаны.', 'All incoming student requests have been processed.')}
               </p>
             </div>
           ) : (
@@ -685,7 +713,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           </span>
                         </div>
                         <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
-                          {req.typeTitle}
+                          {localizeText(req.typeTitle, lang)}
                         </h3>
                       </div>
 
@@ -699,7 +727,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           className="px-3.5 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs flex items-center space-x-1.5 transition-colors"
                         >
                           <FileCheck className="w-3.5 h-3.5 text-[#245A91]" />
-                          <span>Изменить статус / ЭЦП</span>
+                          <span>{tr(lang, 'Изменить статус / ЭЦП', 'Update Status / EDS')}</span>
                         </button>
                       </div>
                     </div>
@@ -709,7 +737,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       <div className="flex items-center space-x-2">
                         <User className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
                         <span className="font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
-                          {req.studentName || 'Студент факультета'}
+                          {req.studentName || tr(lang, 'Студент факультета', 'Faculty Student')}
                         </span>
                         <span className="text-[#667085]">({req.studentGroup || 'ДУ-101'})</span>
                         <button
@@ -717,11 +745,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           onClick={() => handleOpenStudentDossier(req.studentId)}
                           className="ml-2 px-2 py-0.5 rounded text-[10px] font-sans font-medium text-[#142D4E] dark:text-[#245A91] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors cursor-pointer"
                         >
-                          Личное дело
+                          {tr(lang, 'Личное дело', 'Student Dossier')}
                         </button>
                       </div>
                       <div className="text-[11px] font-mono text-[#667085]">
-                        Подано: {dateStr} • Срок ответа: до {req.expectedDate}
+                        {tr(lang, 'Подано', 'Submitted')}: {dateStr} • {tr(lang, 'Срок ответа: до', 'Due by')} {req.expectedDate}
                       </div>
                     </div>
 
@@ -751,10 +779,10 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-sm text-[#FFFFFF]">
-                  Решение по заявлению № {selectedReq.id}
+                  {tr(lang, 'Решение по заявлению №', 'Decision for Request #')} {selectedReq.id}
                 </h3>
                 <p className="text-xs text-[#245A91] font-sans">
-                  {selectedReq.typeTitle} • {selectedReq.studentName} ({selectedReq.studentGroup})
+                  {localizeText(selectedReq.typeTitle, lang)} • {selectedReq.studentName} ({selectedReq.studentGroup})
                 </p>
               </div>
               <button
@@ -768,29 +796,33 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             <form onSubmit={handleUpdateStatus} className="p-6 space-y-4 text-xs sm:text-sm font-sans">
               <div>
                 <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
-                  Установить новый статус:
+                  {tr(lang, 'Установить новый статус:', 'Set new status:')}
                 </label>
                 <select
                   value={newStatus}
                   onChange={e => setNewStatus(e.target.value as RequestStatus)}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                 >
-                  <option value="in_review">В обработке (на рассмотрении деканата)</option>
-                  <option value="needs_info">Требуется уточнение у студента</option>
-                  <option value="ready">Готово с ЭЦП (выпустить электронный документ)</option>
-                  <option value="rejected">Отклонить заявление</option>
+                  <option value="in_review">{tr(lang, 'В обработке (на рассмотрении деканата)', "In Review (under Dean's Office consideration)")}</option>
+                  <option value="needs_info">{tr(lang, 'Требуется уточнение у студента', 'Clarification needed from student')}</option>
+                  <option value="ready">{tr(lang, 'Готово с ЭЦП (выпустить электронный документ)', 'Ready with EDS (issue signed digital document)')}</option>
+                  <option value="rejected">{tr(lang, 'Отклонить заявление', 'Reject request')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
-                  Официальный комментарий деканата для студента:
+                  {tr(lang, 'Официальный комментарий деканата для студента:', "Official Dean's Office comment for the student:")}
                 </label>
                 <textarea
                   rows={3}
                   value={comment}
                   onChange={e => setComment(e.target.value)}
-                  placeholder="Например: Документ заверен усиленной квалифицированной ЭЦП деканата и доступен в личном кабинете."
+                  placeholder={tr(
+                    lang,
+                    'Например: Документ заверен усиленной квалифицированной ЭЦП деканата и доступен в личном кабинете.',
+                    "e.g., Document signed with the Dean's Office qualified digital signature and available in your portal.",
+                  )}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
                 />
               </div>
@@ -801,14 +833,16 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   onClick={() => setSelectedReq(null)}
                   className="px-4 py-2 text-xs font-sans text-[#667085] hover:bg-[#F8FAFC] rounded-lg"
                 >
-                  Отмена
+                  {tr(lang, 'Отмена', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={updating}
                   className="px-4 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 disabled:opacity-50"
                 >
-                  {updating ? 'Сохранение...' : 'Утвердить и уведомить студента'}
+                  {updating
+                    ? tr(lang, 'Сохранение...', 'Saving...')
+                    : tr(lang, 'Утвердить и уведомить студента', 'Approve & Notify Student')}
                 </button>
               </div>
             </form>
@@ -823,10 +857,10 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-sm text-[#FFFFFF]">
-                  Публикация официального распоряжения
+                  {tr(lang, 'Публикация официального распоряжения', 'Publish Official Directive')}
                 </h3>
                 <p className="text-xs text-[#245A91] font-sans">
-                  Рассылка уведомления в личные кабинеты студентов
+                  {tr(lang, 'Рассылка уведомления в личные кабинеты студентов', 'Broadcast notification to student portals')}
                 </p>
               </div>
               <button
@@ -841,61 +875,61 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
-                    Получатели
+                    {tr(lang, 'Получатели', 'Recipients')}
                   </label>
                   <select
                     value={announceTarget}
                     onChange={e => setAnnounceTarget(e.target.value)}
                     className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                   >
-                    <option value="all">Все студенты</option>
-                    <option value="ДУ-101">Группа ДУ-101</option>
-                    <option value="ДУ-205">Группа ДУ-205</option>
-                    <option value="usr-aigul-101">Айгуль Нурова</option>
-                    <option value="usr-timur-205">Тимур Белов</option>
-                    <option value="usr-lina-101">Лина Окафор</option>
+                    <option value="all">{tr(lang, 'Все студенты', 'All Students')}</option>
+                    <option value="ДУ-101">{tr(lang, 'Группа ДУ-101', 'Group ДУ-101')}</option>
+                    <option value="ДУ-205">{tr(lang, 'Группа ДУ-205', 'Group ДУ-205')}</option>
+                    <option value="usr-aigul-101">{tr(lang, 'Айгуль Нурова', 'Aigul Nurova')}</option>
+                    <option value="usr-timur-205">{tr(lang, 'Тимур Белов', 'Timur Belov')}</option>
+                    <option value="usr-lina-101">{tr(lang, 'Лина Окафор', 'Lina Okafor')}</option>
                   </select>
                 </div>
                 <div>
                   <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
-                    Приоритет
+                    {tr(lang, 'Приоритет', 'Priority')}
                   </label>
                   <select
                     value={announcePriority}
-                    onChange={e => setAnnouncePriority(e.target.value as any)}
+                    onChange={e => setAnnouncePriority(e.target.value as 'normal' | 'high' | 'urgent')}
                     className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                   >
-                    <option value="normal">Обычное</option>
-                    <option value="high">Важное</option>
-                    <option value="urgent">⚡ Срочное</option>
+                    <option value="normal">{tr(lang, 'Обычное', 'Normal')}</option>
+                    <option value="high">{tr(lang, 'Важное', 'Important')}</option>
+                    <option value="urgent">{tr(lang, '⚡ Срочное', '⚡ Urgent')}</option>
                   </select>
                 </div>
               </div>
 
               <div>
                 <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
-                  Заголовок объявления
+                  {tr(lang, 'Заголовок объявления', 'Announcement Title')}
                 </label>
                 <input
                   type="text"
                   required
                   value={announceTitle}
                   onChange={e => setAnnounceTitle(e.target.value)}
-                  placeholder="Например: О графике проведения пересдач осенней сессии"
+                  placeholder={tr(lang, 'Например: О графике проведения пересдач осенней сессии', 'e.g., Fall Semester Retake Examination Schedule')}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                 />
               </div>
 
               <div>
                 <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
-                  Текст сообщения
+                  {tr(lang, 'Текст сообщения', 'Message Body')}
                 </label>
                 <textarea
                   required
                   rows={4}
                   value={announceMsg}
                   onChange={e => setAnnounceMsg(e.target.value)}
-                  placeholder="Полный текст приказа с указанием дат, аудиторий и порядка действий..."
+                  placeholder={tr(lang, 'Полный текст приказа с указанием дат, аудиторий и порядка действий...', 'Full text of the directive including dates, rooms, and required steps...')}
                   className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
                 />
               </div>
@@ -906,14 +940,16 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   onClick={() => setIsAnnounceModalOpen(false)}
                   className="px-4 py-2 text-xs font-sans text-[#667085] hover:bg-[#F8FAFC] rounded-lg"
                 >
-                  Отмена
+                  {tr(lang, 'Отмена', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={sendingAnnounce}
                   className="px-4 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 disabled:opacity-50"
                 >
-                  {sendingAnnounce ? 'Отправка...' : 'Опубликовать'}
+                  {sendingAnnounce
+                    ? tr(lang, 'Отправка...', 'Sending...')
+                    : tr(lang, 'Опубликовать', 'Publish')}
                 </button>
               </div>
             </form>
@@ -928,7 +964,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
         onSendMessage={(name, id, group) => {
           setIsAnnounceModalOpen(true);
           setAnnounceTarget(id || group || 'all');
-          setAnnounceTitle(`Уведомление деканата для: ${name}`);
+          setAnnounceTitle(tr(lang, `Уведомление деканата для: ${name}`, `Dean's Office Notice for: ${name}`));
         }}
       />
     </div>

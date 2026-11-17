@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify';
+import { Prisma, RequestStatus, RequestTypeCode } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
@@ -10,19 +11,29 @@ const RequestsQuerySchema = z.object({
 });
 
 const CreateRequestSchema = z.object({
-  typeCode: z.string().min(1),
-  data: z.record(z.unknown()),
+  typeCode: z.enum([
+    'study_certificate',
+    'military_certificate',
+    'scholarship_application',
+    'academic_leave',
+    'transcript',
+    'dormitory_application',
+  ]),
+  data: z.record(z.string(), z.unknown()),
 });
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function formatRequest(r: {
   id: string;
+  studentId: string;
   typeCode: string;
   requestType: { title: string; slaDays: number };
   status: string;
   createdAt: Date;
   updatedAt: Date;
   data: unknown;
-  history?: Array<{ status: string; createdAt: Date; comment: string | null }>;
+  history?: Array<{ id?: string; status: string; createdAt: Date; comment: string | null }>;
   student?: { id: string; email: string; fullName: string; role: string };
 }) {
   const expectedBy = new Date(r.createdAt);
@@ -30,18 +41,24 @@ function formatRequest(r: {
 
   return {
     id: r.id,
+    studentId: r.studentId,
     typeCode: r.typeCode,
     typeTitle: r.requestType.title,
+    slaDays: r.requestType.slaDays,
     status: r.status,
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
     expectedBy: expectedBy.toISOString().split('T')[0],
+    expectedDate: expectedBy.toISOString().split('T')[0],
     data: r.data,
-    history: r.history?.map(h => ({
-      status: h.status,
-      at: h.createdAt.toISOString(),
-      comment: h.comment,
-    })) ?? [],
+    history:
+      r.history?.map((h) => ({
+        id: h.id,
+        status: h.status,
+        at: h.createdAt.toISOString(),
+        createdAt: h.createdAt.toISOString(),
+        comment: h.comment,
+      })) ?? [],
     student: r.student
       ? { id: r.student.id, email: r.student.email, fullName: r.student.fullName, role: r.student.role }
       : undefined,
@@ -54,13 +71,15 @@ export async function requestsRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
     handler: async (_request, reply) => {
       const types = await prisma.requestType.findMany({ orderBy: { code: 'asc' } });
-      return reply.send(types.map(t => ({
-        code: t.code,
-        title: t.title,
-        description: t.description,
-        slaDays: t.slaDays,
-        fields: t.fields,
-      })));
+      return reply.send(
+        types.map((t) => ({
+          code: t.code,
+          title: t.title,
+          description: t.description,
+          slaDays: t.slaDays,
+          fields: t.fields,
+        }))
+      );
     },
   });
 
@@ -74,12 +93,9 @@ export async function requestsRoutes(app: FastifyInstance) {
       }
 
       const userId = request.user!.sub;
-      const sp = await prisma.studentProfile.findUnique({ where: { userId } });
-      if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
-
       const { status, page, pageSize } = parsed.data;
-      const where: { studentId: string; status?: string } = { studentId: sp.id };
-      if (status) where.status = status;
+      const where: Prisma.RequestWhereInput = { studentId: userId };
+      if (status) where.status = status as RequestStatus;
 
       const [total, items] = await Promise.all([
         prisma.request.count({ where }),
@@ -99,7 +115,7 @@ export async function requestsRoutes(app: FastifyInstance) {
         page,
         pageSize,
         total,
-        items: items.map(r => formatRequest(r)),
+        items: items.map((r) => formatRequest(r)),
       });
     },
   });
@@ -122,19 +138,21 @@ export async function requestsRoutes(app: FastifyInstance) {
       const sp = await prisma.studentProfile.findUnique({ where: { userId } });
       if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
 
-      const rt = await prisma.requestType.findUnique({ where: { code: parsed.data.typeCode } });
+      const rt = await prisma.requestType.findUnique({
+        where: { code: parsed.data.typeCode as RequestTypeCode },
+      });
       if (!rt) {
         return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Unknown request type' });
       }
 
       const newRequest = await prisma.request.create({
         data: {
-          studentId: sp.id,
-          typeCode: parsed.data.typeCode,
-          data: parsed.data.data,
+          studentId: userId,
+          typeCode: parsed.data.typeCode as RequestTypeCode,
+          data: parsed.data.data as Prisma.InputJsonValue,
           status: 'submitted',
           history: {
-            create: [{ status: 'submitted', comment: null }],
+            create: [{ status: 'submitted', actorId: userId, comment: null }],
           },
         },
         include: {
@@ -152,12 +170,13 @@ export async function requestsRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
     handler: async (request, reply) => {
       const { id } = request.params as { id: string };
-      const userId = request.user!.sub;
-      const sp = await prisma.studentProfile.findUnique({ where: { userId } });
-      if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
+      if (!UUID_REGEX.test(id)) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
+      }
 
+      const userId = request.user!.sub;
       const r = await prisma.request.findFirst({
-        where: { id, studentId: sp.id }, // IDOR protection: must be owner
+        where: { id, studentId: userId }, // IDOR protection: must be owner
         include: {
           requestType: true,
           history: { orderBy: { createdAt: 'asc' } },
@@ -174,12 +193,13 @@ export async function requestsRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
     handler: async (request, reply) => {
       const { id } = request.params as { id: string };
-      const userId = request.user!.sub;
-      const sp = await prisma.studentProfile.findUnique({ where: { userId } });
-      if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
+      if (!UUID_REGEX.test(id)) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
+      }
 
+      const userId = request.user!.sub;
       const r = await prisma.request.findFirst({
-        where: { id, studentId: sp.id },
+        where: { id, studentId: userId }, // IDOR protection: must be owner
         include: { requestType: true },
       });
 
@@ -193,7 +213,9 @@ export async function requestsRoutes(app: FastifyInstance) {
         where: { id },
         data: {
           status: 'cancelled',
-          history: { create: [{ status: 'cancelled', comment: 'Cancelled by student' }] },
+          history: {
+            create: [{ status: 'cancelled', actorId: userId, comment: 'Cancelled by student' }],
+          },
         },
         include: {
           requestType: true,

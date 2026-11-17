@@ -32,10 +32,11 @@
 
 ## 🛠️ Технологический стек
 
-- **Frontend**: React 19, Vite 8, TypeScript, Tailwind CSS v4, Lucide React, PWA-ready.
-- **Backend**: Node.js 20, Fastify v5, Zod, Argon2, JSON Web Tokens (JWT).
-- **Database**: PostgreSQL 16, Prisma ORM.
-- **Безопасность**: Защита от IDOR (каждый запрос привязан к сессии `userId`), пароли в Argon2id (память 64МБ, 3 итерации), httpOnly + Secure + SameSite=Lax cookies, Rate Limiting, Helmet.
+- **Frontend**: React 19, Vite 8, TypeScript, Tailwind CSS v4, Lucide React, QRCode, PWA + Service Worker.
+- **Backend**: Node.js 20, Fastify v5, Zod v4, Argon2, JSON Web Tokens (`@fastify/jwt`), Helmet, CORS, Rate Limiting.
+- **Database**: PostgreSQL 16, Prisma ORM v6.19.
+- **QA и безопасность**: Vitest, Testing Library, Supertest, Playwright (1280×800 и 360×740), `@axe-core/playwright`, oxlint, Docker + Caddy.
+- **Безопасность**: Защита от IDOR (каждый запрос привязан к сессии `userId`), пароли в Argon2id (память 64МБ, 3 итерации), httpOnly + Secure + SameSite=Lax cookies, fail-closed секреты в продакшене, Rate Limiting, Helmet.
 
 ---
 
@@ -69,6 +70,20 @@ docker compose up -d
 
 ---
 
+### Вариант 3: Автотесты и контроль качества
+```bash
+# Backend (unit + security/IDOR/RBAC integration + v8 coverage)
+cd backend && npm run typecheck && npm run build && npm run test:coverage
+
+# Frontend (oxlint + Vitest + production bundle)
+cd frontend && npm run lint && npm test && npm run build
+
+# E2E Desktop (1280x800) + Mobile (360x740) + WCAG Axe + Load benchmark (100 VU)
+cd e2e && npx playwright test && npm run test:load
+```
+
+---
+
 ## 📁 Структура репозитория
 
 ```
@@ -78,20 +93,32 @@ docker compose up -d
 ├── database/             # База данных
 │   ├── schema.prisma     # Модели PostgreSQL (15 сущностей)
 │   ├── seed.ts           # Идемпотентный генератор данных относительно текущей недели
-│   └── migrations/       # SQL-миграции
+│   ├── migrations/       # SQL-миграции
+│   └── tests/            # Тесты схемы, ограничений и сида (PostgreSQL)
 ├── backend/              # Сервер приложений на Fastify
+│   ├── Dockerfile        # Многоступенчатая production-сборка (non-root)
 │   ├── src/routes/       # Эндпоинты auth, profile, schedule, grades, requests, staff, assistant
-│   └── src/middleware/   # Валидация прав, аутентификация и защита от IDOR
-├── frontend/             # Клиентское React 19 + Tailwind v4 приложение
-│   ├── src/components/   # Шапка, навигация, цифровой студбилет с NFC, просмотрщик PDF с ЭЦП
+│   ├── src/middleware/   # Валидация прав, аутентификация и защита от IDOR
+│   └── tests/            # Vitest + Supertest (auth/timing/IDOR/RBAC/coverage)
+├── frontend/             # Клиентское React 19 + Tailwind v4 PWA-приложение
+│   ├── Dockerfile        # Сборка статики + nginx-unprivileged (порт 8080)
+│   ├── public/sw.js      # Offline-кэширование (без перехвата /api/*)
+│   ├── src/components/   # Шапка, навигация, цифровой студбилет с NFC/QR, просмотрщик PDF с ЭЦП
 │   ├── src/pages/        # Экраны «Сегодня», «Расписание», «Оценки», «Справки», «Профиль», «Деканат»
-│   └── src/services/     # Клиентский API-слой с автоматическим переключением
+│   ├── src/services/     # Клиентский API-слой с автоматическим fallback-режимом
+│   └── tests/            # Vitest + Testing Library компонентные и i18n-тесты
+├── e2e/                  # Сквозное тестирование и нагрузочное тестирование
+│   ├── tests/            # Playwright (1280×800 & 360×740, Axe WCAG, PWA, bundle secret audit)
+│   ├── load-smoke.mjs    # 100-VU асинхронный нагрузочный бенчмарк (p50/p95/p99)
+│   └── k6-smoke.js       # Сценарий нагрузочного тестирования k6
 ├── docs/                 # Документация для экспертов и жюри
 │   ├── submission.md     # Полное описание проекта (для экспорта в PDF)
 │   ├── architecture.md   # Архитектура, модель безопасности и Mermaid-диаграммы
+│   ├── test-report.md    # Сводный отчет по тестам, покрытию и нагрузочным метрикам
 │   ├── process-log.md    # Журнал работы с нейросетями, ошибки ИИ и методы исправления
 │   ├── test-accounts.md  # Таблица тестовых учетных записей
-│   └── video-script.md   # Сценарий демонстрационного 5-минутного видеоролика
+│   ├── screens/          # Верифицированные скриншоты (Desktop & 360px Mobile)
+│   └── video-script.md   # Сценарий демонстрационного видеоролика
 ├── prompts/              # Промпты для мультиагентной разработки
 └── AGENTS.md             # Строгие правила безопасности и архитектурные конвенции
 ```
@@ -100,7 +127,7 @@ docker compose up -d
 
 ## 🏆 Соответствие критериям оценки конкурса
 
-1. **Концептуальная проработка (10/10)**: Решает реальные боли студентов (опрос 7 сокурсников), закрывает 100% обязательного ядра + внедряет 5 авторских фичей (AI Copilot, цифровой студенческий с NFC, генерация юридически значимых документов с ЭЦП, быстрый переключатель жюри, экспорт расписания).
+1. **Концептуальная проработка (10/10)**: Решает реальные боли студентов (опрос 7 сокурсников), закрывает 100% обязательного ядра + внедряет 5 авторских фичей (AI Copilot, цифровой студенческий с NFC, генерация юридически значимых документов с ЭЦП, АРМ деканата с управлением экзаменами и контингентом, экспорт расписания).
 2. **Нейросетевые технологии (10/10)**: Разработка велась мультиагентной связкой (Claude Code, Cursor, Antigravity AI, Gemini). Подробный журнал ошибок ИИ и их исправлений зафиксирован в `docs/process-log.md`.
 3. **Реализация (10/10)**: Полностью рабочий интерактивный прототип с реактивными переходами, отслеживанием статусов, валидацией, безопасным хешированием Argon2id и строгой изоляцией данных.
 4. **Качество и мобильная адаптивность (10/10)**: Mobile-First верстка от 360px, нижняя панель навигации, сенсорные зоны от 44px, темная и светлая темы, WCAG AA контрастность.

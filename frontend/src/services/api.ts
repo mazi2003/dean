@@ -147,6 +147,7 @@ export const api = {
   // ─── Auth ───
   async login(email: string, password: string): Promise<{ user: User; profile: StudentProfile }> {
     // Try real API first
+    let backendReachable = false;
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
@@ -154,16 +155,40 @@ export const api = {
         body: JSON.stringify({ email, password }),
         credentials: 'include',
       });
+      // Backend is alive if it returns 2xx or deterministic client errors (401/422/429)
       if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(data.user));
-        return data;
+        backendReachable = true;
+        const user = (await res.json()) as User;
+        const profRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+        if (profRes.ok) {
+          const profile = (await profRes.json()) as StudentProfile;
+          return { user, profile };
+        }
+        return {
+          user,
+          profile: {
+            ...user,
+            faculty: '',
+            program: '',
+            year: 0,
+            group: '',
+            studentNumber: '',
+          },
+        };
       }
-    } catch {
-      // Fallback to mock engine
+      if (res.status === 401 || res.status === 422 || res.status === 429) {
+        backendReachable = true;
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody.message || 'Неверный адрес электронной почты или пароль');
+      }
+    } catch (err) {
+      if (backendReachable) {
+        throw err;
+      }
+      // Network/proxy unreachable -> fallback to offline mock engine
     }
 
-    // Mock verification
+    // Mock verification (offline / static deployment fallback)
     const found = TEST_USERS[email.toLowerCase().trim()];
     if (!found || found.password !== password) {
       throw new Error('Неверный адрес электронной почты или пароль');
@@ -189,8 +214,19 @@ export const api = {
     try {
       const res = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
       if (res.ok) {
-        const profile = await res.json();
-        return { user: profile, profile };
+        const profile = (await res.json()) as StudentProfile;
+        const user: User = {
+          id: profile.id,
+          email: profile.email,
+          fullName: profile.fullName,
+          role: profile.role,
+        };
+        return { user, profile };
+      }
+      if (res.status === 401) {
+        // Check offline mock only if no backend cookie was expected cleanly
+        const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+        if (!saved) return null;
       }
     } catch {
       // fallback
@@ -286,7 +322,14 @@ export const api = {
   async getRequests(): Promise<StudentRequest[]> {
     try {
       const res = await fetch(`${API_BASE}/requests`, { credentials: 'include' });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const payload = await res.json();
+        const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+        return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
+          ...r,
+          expectedDate: r.expectedDate ?? r.expectedBy ?? '',
+        }));
+      }
     } catch {
       // fallback
     }
@@ -299,7 +342,7 @@ export const api = {
     return all.filter(r => r.studentId === current.user.id);
   },
 
-  async createRequest(typeCode: string, data: Record<string, any>): Promise<StudentRequest> {
+  async createRequest(typeCode: string, data: Record<string, unknown>): Promise<StudentRequest> {
     try {
       const res = await fetch(`${API_BASE}/requests`, {
         method: 'POST',
@@ -370,8 +413,8 @@ export const api = {
 
   async cancelRequest(requestId: string): Promise<void> {
     try {
-      const res = await fetch(`${API_BASE}/requests/${requestId}`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_BASE}/requests/${requestId}/cancel`, {
+        method: 'POST',
         credentials: 'include',
       });
       if (res.ok) return;
@@ -406,7 +449,14 @@ export const api = {
   async getNotifications(): Promise<Notification[]> {
     try {
       const res = await fetch(`${API_BASE}/notifications`, { credentials: 'include' });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const payload = await res.json();
+        const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+        return rawItems.map((n: Notification & { body?: string }) => ({
+          ...n,
+          message: n.message ?? n.body ?? '',
+        }));
+      }
     } catch {
       // fallback
     }
@@ -421,7 +471,7 @@ export const api = {
   async markNotificationRead(id: string): Promise<void> {
     try {
       await fetch(`${API_BASE}/notifications/${id}/read`, {
-        method: 'PATCH',
+        method: 'POST',
         credentials: 'include',
       });
     } catch {
@@ -460,7 +510,14 @@ export const api = {
   async getStaffRequests(): Promise<StudentRequest[]> {
     try {
       const res = await fetch(`${API_BASE}/staff/requests`, { credentials: 'include' });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const payload = await res.json();
+        const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+        return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
+          ...r,
+          expectedDate: r.expectedDate ?? r.expectedBy ?? '',
+        }));
+      }
     } catch {
       // fallback
     }
@@ -475,7 +532,7 @@ export const api = {
   ): Promise<StudentRequest> {
     try {
       const res = await fetch(`${API_BASE}/staff/requests/${requestId}/status`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, comment }),
         credentials: 'include',
@@ -866,7 +923,7 @@ export const api = {
   },
 
   // ─── AI Academic Copilot ───
-  async askAssistant(question: string): Promise<string> {
+  async askAssistant(question: string, lang: 'ru' | 'en' = 'ru'): Promise<string> {
     try {
       const res = await fetch(`${API_BASE}/assistant/ask`, {
         method: 'POST',
@@ -886,33 +943,48 @@ export const api = {
     const q = question.toLowerCase();
 
     // Contextual responses tailored to student's real data
-    if (q.includes('пересдач') || q.includes('долг') || q.includes('статистик')) {
+    if (q.includes('пересдач') || q.includes('долг') || q.includes('статистик') || q.includes('retake') || q.includes('debt') || q.includes('statistics')) {
       if (current?.user.id === 'usr-timur-205') {
-        return 'Тимур, у вас зафиксирована академическая задолженность по дисциплине "Статистика" (48 баллов, оценка "2"). Комиссионная пересдача назначена на 28 ноября в 14:00, ауд. А-314 (доц. Ковалев С.А.). Консультация пройдет в среду в 14:00.';
-      } else {
-        return 'У вас нет академических задолженностей! Все текущие предметы сданы успешно.';
+        return lang === 'en'
+          ? 'Timur, you have an academic debt in "Statistics" (48 points, grade "2"). The committee retake is scheduled for Nov 28 at 14:00, Room А-314 (Assoc. Prof. Kovalev S.A.). Consultation is on Wednesday at 14:00.'
+          : 'Тимур, у вас зафиксирована академическая задолженность по дисциплине "Статистика" (48 баллов, оценка "2"). Комиссионная пересдача назначена на 28 ноября в 14:00, ауд. А-314 (доц. Ковалев С.А.). Консультация пройдет в среду в 14:00.';
       }
+      return lang === 'en'
+        ? 'You have no academic debts! All current courses have been passed successfully.'
+        : 'У вас нет академических задолженностей! Все текущие предметы сданы успешно.';
     }
 
-    if (q.includes('стипенди') || q.includes('пгас') || q.includes('выплат')) {
-      return 'Прием заявлений на повышенную государственную академическую стипендию (ПГАС) открыт до 25 ноября. Вы можете подать заявление онлайн в разделе "Справки и заявления" -> "Заявление на повышенную стипендию", прикрепив список ваших научных публикаций или дипломов олимпиад.';
+    if (q.includes('стипенди') || q.includes('пгас') || q.includes('выплат') || q.includes('scholarship') || q.includes('merit')) {
+      return lang === 'en'
+        ? 'Applications for the Enhanced Merit Scholarship are open until Nov 25. Submit your application online under "Official Certificates" -> "Merit Scholarship Application", attaching your publications or Olympiad diplomas.'
+        : 'Прием заявлений на повышенную государственную академическую стипендию (ПГАС) открыт до 25 ноября. Вы можете подать заявление онлайн в разделе "Справки и заявления" -> "Заявление на повышенную стипендию", прикрепив список ваших научных публикаций или дипломов олимпиад.';
     }
 
-    if (q.includes('справк') || q.includes('заказ') || q.includes('военкомат') || q.includes('виз')) {
-      return 'Вы можете оформить любую справку за пару кликов в разделе "Справки и заявления". Готовая электронная справка с квалифицированной ЭЦП деканата формируется в среднем за 1-2 рабочих дня и будет доступна для скачивания в формате PDF прямо в вашем кабинете.';
+    if (q.includes('справк') || q.includes('заказ') || q.includes('военкомат') || q.includes('виз') || q.includes('certificate') || q.includes('order') || q.includes('document')) {
+      return lang === 'en'
+        ? 'You can order any official certificate in a couple of clicks under "Official Certificates". A digitally signed PDF certificate is typically issued within 1–2 business days and will be ready for download in your portal.'
+        : 'Вы можете оформить любую справку за пару кликов в разделе "Справки и заявления". Готовая электронная справка с квалифицированной ЭЦП деканата формируется в среднем за 1-2 рабочих дня и будет доступна для скачивания в формате PDF прямо в вашем кабинете.';
     }
 
-    if (q.includes('расписан') || q.includes('пара') || q.includes('пары') || q.includes('аудитор')) {
+    if (q.includes('расписан') || q.includes('пара') || q.includes('пары') || q.includes('аудитор') || q.includes('schedule') || q.includes('class') || q.includes('room') || q.includes('timetable')) {
       if (current?.profile.group === 'ДУ-101') {
-        return 'Для вашей группы ДУ-101 сегодня в расписании занятия: 08:30 Дипломатический протокол (А-204), 10:15 Международное публичное право (внимание: перенесено в Б-115!), 12:00 Английский язык для дипломатов (Лингво-2).';
+        return lang === 'en'
+          ? 'Your group ДУ-101 classes today: 08:30 Diplomatic Protocol (A-204), 10:15 International Public Law (note: moved to B-115!), 12:00 English for Diplomacy (Lingvo-2).'
+          : 'Для вашей группы ДУ-101 сегодня в расписании занятия: 08:30 Дипломатический протокол (А-204), 10:15 Международное публичное право (внимание: перенесено в Б-115!), 12:00 Английский язык для дипломатов (Лингво-2).';
       }
-      return 'Ваше актуальное расписание с учетом всех замен и переносов аудиторий доступно во вкладке "Расписание".';
+      return lang === 'en'
+        ? 'Your up-to-date timetable including room changes and rescheduling is available in the "Timetable & Exams" tab.'
+        : 'Ваше актуальное расписание с учетом всех замен и переносов аудиторий доступно во вкладке "Расписание".';
     }
 
-    if (q.includes('деканат') || q.includes('часы') || q.includes('контакт') || q.includes('где')) {
-      return 'Деканат факультета международных отношений расположен в Главном корпусе, 3 этаж, кабинет 312. Часы приема студентов: Пн-Пт с 09:00 до 18:00 (обед 13:00-14:00). Электронная почта: dean.office@demo.edu.';
+    if (q.includes('деканат') || q.includes('часы') || q.includes('контакт') || q.includes('где') || q.includes('office') || q.includes('hours') || q.includes('contact')) {
+      return lang === 'en'
+        ? "The School of International Relations Dean's Office is located in the Main Building, 3rd Floor, Room 312. Office hours: Mon–Fri 09:00–18:00 (lunch 13:00–14:00). Email: dean.office@demo.edu."
+        : 'Деканат факультета международных отношений расположен в Главном корпусе, 3 этаж, кабинет 312. Часы приема студентов: Пн-Пт с 09:00 до 18:00 (обед 13:00-14:00). Электронная почта: dean.office@demo.edu.';
     }
 
-    return `Здравствуйте! Я ваш цифровой ассистент деканата ДемоТех Университета. Я знаю расписание вашей группы (${current?.profile.group ?? 'студента'}), вашу успеваемость, статус поданных заявлений и правила учебного процесса. Чем я могу помочь?`;
+    return lang === 'en'
+      ? `Hello! I am your DemoTech University AI Academic Advisor. I have context on your group (${current?.profile.group ?? 'student'}), academic grades, petition statuses, and university rules. How can I help you?`
+      : `Здравствуйте! Я ваш цифровой ассистент деканата ДемоТех Университета. Я знаю расписание вашей группы (${current?.profile.group ?? 'студента'}), вашу успеваемость, статус поданных заявлений и правила учебного процесса. Чем я могу помочь?`;
   },
 };

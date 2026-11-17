@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, StudentProfile } from '../types';
 import { api } from '../services/api';
 
@@ -31,8 +31,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return 'light';
     }
   });
-  const [lang, setLang] = useState<'ru' | 'en'>('ru');
+  const [lang, setLang] = useState<'ru' | 'en'>(() => {
+    try {
+      const saved = localStorage.getItem('dean_lang');
+      if (saved === 'en' || saved === 'ru') return saved;
+      return 'ru';
+    } catch {
+      return 'ru';
+    }
+  });
   const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    try {
+      document.documentElement.lang = lang;
+      localStorage.setItem('dean_lang', lang);
+    } catch {
+      // ignore
+    }
+  }, [lang]);
 
   useEffect(() => {
     try {
@@ -47,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [theme]);
 
-  const refreshUnreadCount = async () => {
+  const refreshUnreadCount = useCallback(async () => {
     try {
       if (user) {
         const notifs = await api.getNotifications();
@@ -56,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       // ignore
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     const init = async () => {
@@ -79,20 +96,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    if (user) {
-      refreshUnreadCount();
-    }
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const notifs = await api.getNotifications();
+        if (!cancelled) setUnreadCount(notifs.filter(n => !n.read).length);
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const res = await api.login(email, password);
-      setUser(res.user);
-      setProfile(res.profile);
-    } finally {
-      setIsLoading(false);
-    }
+    const res = await api.login(email, password);
+    setUser(res.user);
+    setProfile(res.profile);
   };
 
   const logout = async () => {

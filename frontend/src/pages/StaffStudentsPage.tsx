@@ -145,7 +145,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#667085] dark:text-[#94A3B8]">
-              <span className="font-mono text-[#142D4E] dark:text-[#245A91] font-semibold">
+              <span className="font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold">
                 {tr(lang, 'Деканат Факультета МО', "Dean's Office — Faculty of IR")}
               </span>
               <span>•</span>
@@ -174,7 +174,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                 onClick={() => onOpenAnnouncement(selectedGroup !== 'all' ? selectedGroup : undefined)}
                 className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs cursor-pointer transition-colors"
               >
-                <Megaphone className="w-4 h-4 text-[#245A91]" />
+                <Megaphone className="w-4 h-4 text-[#93C5FD]" />
                 <span>
                   {selectedGroup !== 'all'
                     ? tr(lang, `Написать группе ${selectedGroup}`, `Message Group ${selectedGroup}`)

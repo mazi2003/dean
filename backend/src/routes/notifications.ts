@@ -1,14 +1,17 @@
 import { FastifyInstance } from 'fastify';
+import { NotificationKind, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
 
 const NotifQuerySchema = z.object({
-  unread: z.enum(['true', 'false']).optional().transform(v => v === 'true' ? true : v === 'false' ? false : undefined),
+  unread: z.enum(['true', 'false']).optional().transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
   kind: z.enum(['announcement', 'deadline', 'request_update', 'schedule_change']).optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
 });
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function notificationsRoutes(app: FastifyInstance) {
   // GET /api/v1/notifications
@@ -23,9 +26,9 @@ export async function notificationsRoutes(app: FastifyInstance) {
       const userId = request.user!.sub;
       const { unread, kind, page, pageSize } = parsed.data;
 
-      const where: { userId: string; read?: boolean; kind?: string } = { userId };
+      const where: Prisma.NotificationWhereInput = { userId };
       if (unread !== undefined) where.read = !unread;
-      if (kind) where.kind = kind;
+      if (kind) where.kind = kind as NotificationKind;
 
       const [total, unreadCount, items] = await Promise.all([
         prisma.notification.count({ where }),
@@ -43,11 +46,13 @@ export async function notificationsRoutes(app: FastifyInstance) {
         pageSize,
         total,
         unreadCount,
-        items: items.map(n => ({
+        items: items.map((n) => ({
           id: n.id,
+          userId: n.userId,
           kind: n.kind,
           title: n.title,
           body: n.body,
+          message: n.body,
           createdAt: n.createdAt.toISOString(),
           read: n.read,
           link: n.link,
@@ -61,8 +66,11 @@ export async function notificationsRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
     handler: async (request, reply) => {
       const { id } = request.params as { id: string };
-      const userId = request.user!.sub;
+      if (!UUID_REGEX.test(id)) {
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
+      }
 
+      const userId = request.user!.sub;
       const notif = await prisma.notification.findFirst({ where: { id, userId } });
       if (!notif) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
 

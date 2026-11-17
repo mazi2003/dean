@@ -94,7 +94,8 @@ model Faculty {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  programs  Program[]
+  programs        Program[]
+  studentProfiles StudentProfile[]
 
   @@map("faculties")
 }
@@ -153,9 +154,6 @@ model StudentProfile {
   @@index([facultyId])
   @@map("student_profiles")
 }
-
-// Faculty relation from StudentProfile side — add missing back-relation
-// (Prisma requires explicit back-relations on Faculty)
 
 model Subject {
   id        String   @id @default(uuid())

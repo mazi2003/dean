@@ -25,11 +25,18 @@ export async function assistantRoutes(app: FastifyInstance) {
       const userId = request.user!.sub;
       const sp = await prisma.studentProfile.findUnique({
         where: { userId },
-        include: { group: { include: { program: { include: { faculty: true } } } } },
+        include: {
+          group: { include: { program: { include: { faculty: true } } } },
+          grades: { include: { subject: true } },
+        },
       });
 
+      const failedGrades = sp?.grades
+        .filter((g) => g.creditStatus === 'failed')
+        .map((g) => g.subject.name) ?? [];
+
       const contextSummary = sp
-        ? `Student: group ${sp.group?.name ?? 'N/A'}, program ${sp.group?.program?.name ?? 'N/A'}`
+        ? `Student: group ${sp.group?.code ?? 'N/A'}, program ${sp.group?.program?.name ?? 'N/A'}, failedSubjects: ${failedGrades.length > 0 ? failedGrades.join(', ') : 'none'}`
         : 'Staff member';
 
       try {
