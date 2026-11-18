@@ -3,13 +3,26 @@ import crypto from 'node:crypto';
 let cachedDevJwtKey: string | null = null;
 let cachedDevCookieKey: string | null = null;
 
+export function isVercelRuntime(): boolean {
+  return Boolean(
+    process.env.VERCEL === '1' ||
+    process.env.VERCEL ||
+    process.env.VERCEL_ENV ||
+    process.env.VERCEL_URL ||
+    process.env.VERCEL_REGION ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME
+  );
+}
+
 function deriveVercelRuntimeKey(purpose: string): string {
   const seed = [
     process.env.VERCEL_PROJECT_ID,
     process.env.VERCEL_GIT_REPO_SLUG,
     process.env.VERCEL_GIT_COMMIT_SHA,
     process.env.VERCEL_URL,
-    'demotech-vercel-runtime',
+    process.env.VERCEL_BRANCH_URL,
+    process.env.VERCEL_ENV,
+    'demotech-dean-office-runtime-salt-v1',
   ]
     .filter(Boolean)
     .join(':');
@@ -26,7 +39,7 @@ export function getJwtSigningKey(): string {
   if (configured && configured.length >= 16) {
     return configured;
   }
-  if (process.env.VERCEL === '1') {
+  if (isVercelRuntime()) {
     return deriveVercelRuntimeKey('dean-jwt-signing-key');
   }
   if (process.env.NODE_ENV === 'production') {
@@ -48,7 +61,7 @@ export function getCookieSigningKey(): string {
   if (configured && configured.length >= 16) {
     return configured;
   }
-  if (process.env.VERCEL === '1') {
+  if (isVercelRuntime()) {
     return deriveVercelRuntimeKey('dean-cookie-signing-key');
   }
   if (process.env.NODE_ENV === 'production') {

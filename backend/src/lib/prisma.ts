@@ -1,4 +1,5 @@
 import type { PrismaClient } from '@prisma/client';
+import { isVercelRuntime } from './config';
 import { getServerlessFallbackPrisma } from './serverlessFallbackPrisma';
 
 const globalForPrisma = globalThis as unknown as {
@@ -60,7 +61,7 @@ function createModelWrapper(modelName: keyof PrismaClient, methods: string[]) {
           const result = await model[methodProp](...args);
 
           if (
-            process.env.VERCEL === '1' &&
+            isVercelRuntime() &&
             modelName === 'user' &&
             methodProp === 'findUnique' &&
             result === null
@@ -78,7 +79,7 @@ function createModelWrapper(modelName: keyof PrismaClient, methods: string[]) {
 
           return result;
         } catch (err) {
-          if (process.env.VERCEL === '1') {
+          if (isVercelRuntime()) {
             globalForPrisma.useFallbackOnly = true;
           } else {
             throw err;
