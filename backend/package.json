@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "src/app.ts",
   "scripts": {
-    "build": "tsc && node scripts/vercel-db-sync.mjs",
+    "build": "node scripts/vercel-db-sync.mjs",
+    "build:tsc": "tsc",
     "typecheck": "tsc --noEmit",
     "dev": "ts-node src/server.ts",
     "start": "node dist/server.js",

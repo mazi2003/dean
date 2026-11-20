@@ -21,7 +21,24 @@ describe('Vercel Fastify entrypoint, zero-DB fallback & CORS configuration', () 
     process.env = { ...originalEnv };
   });
 
-  it('default Fastify export serves /api/v1/health, ?db=1 check, and 404 JSON', async () => {
+  it('default export is a callable (req, res) handler function compatible with @vercel/node and srvx', async () => {
+    expect(typeof defaultApp).toBe('function');
+    expect(typeof defaultApp.listen).toBe('function');
+
+    // Invoking defaultApp directly as a Node (req, res) listener (as @vercel/node & srvx do)
+    const directHealthRes = await supertest(defaultApp).get('/api/v1/health?db=1');
+    expect(directHealthRes.status).toBe(200);
+    expect(directHealthRes.body.status).toBe('ok');
+    expect(directHealthRes.body.db).toBe('ok');
+    expect(directHealthRes.body.seeded).toBe(true);
+
+    const directLoginRes = await supertest(defaultApp)
+      .post('/api/v1/auth/login')
+      .set('X-Forwarded-For', '10.99.0.99')
+      .send({ email: 'aigul.nurova@demo.edu', password: 'DemoStudent123!' });
+    expect(directLoginRes.status).toBe(200);
+    expect(directLoginRes.body.email).toBe('aigul.nurova@demo.edu');
+
     const healthRes = await supertest(defaultApp.server).get('/api/v1/health');
     expect(healthRes.status).toBe(200);
     expect(healthRes.body.status).toBe('ok');
