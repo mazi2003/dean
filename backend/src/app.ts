@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
+import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import Fastify from 'fastify';
 import { configureApp, getFastifyOptions } from './createApp';
 
@@ -35,7 +35,13 @@ Object.assign(handler, {
     await fastifyApp.close();
   },
   inject: fastifyApp.inject.bind(fastifyApp),
-  listen: fastifyApp.listen.bind(fastifyApp),
+  // Express-style listen: Vercel's Node launcher treats any export with .listen() as a server,
+  // calls listen({ host, port: 0 }, cb) and requires `this` in cb to be a real http.Server.
+  // Fastify's own listen() does not satisfy that contract (caused hanging requests on Vercel).
+  listen: (...args: unknown[]) => {
+    const server = http.createServer(handler);
+    return server.listen(...(args as Parameters<typeof server.listen>));
+  },
 });
 
 Object.defineProperty(handler, 'server', {

@@ -51,6 +51,41 @@ describe('Vercel Fastify entrypoint, zero-DB fallback & CORS configuration', () 
     const missingRes = await supertest(defaultApp.server).get('/api/v1/does-not-exist');
     expect(missingRes.status).toBe(404);
     expect(missingRes.body.code).toBe('NOT_FOUND');
+
+    // Express-style listen compatibility for @vercel/node-bridge:
+    // Vercel calls listener.listen({ host, port: 0 }, cb) and requires `this` in cb to be an http.Server
+    const ephemeralServer = await new Promise<import('node:http').Server>((resolve, reject) => {
+      const srv = (
+        defaultApp.listen as unknown as (
+          opts: { host: string; port: number },
+          cb: (this: import('node:http').Server) => void
+        ) => import('node:http').Server
+      )({ host: '127.0.0.1', port: 0 }, function listeningCallback() {
+        try {
+          expect(this).toBeDefined();
+          expect(typeof this.address).toBe('function');
+          resolve(this);
+        } catch (err) {
+          reject(err);
+        }
+      });
+      srv.on('error', reject);
+    });
+    try {
+      const addr = ephemeralServer.address();
+      expect(addr).not.toBeNull();
+      expect(typeof addr).toBe('object');
+      if (addr && typeof addr === 'object') {
+        const res = await fetch(`http://127.0.0.1:${addr.port}/api/v1/health`);
+        expect(res.status).toBe(200);
+        const body = (await res.json()) as { status: string };
+        expect(body.status).toBe('ok');
+      }
+    } finally {
+      await new Promise<void>((resolve, reject) => {
+        ephemeralServer.close((err) => (err ? reject(err) : resolve()));
+      });
+    }
   });
 
   it('authenticates student and staff accounts on Vercel even when DATABASE_URL and JWT_SECRET are unset', async () => {
