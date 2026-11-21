@@ -13,14 +13,14 @@
     'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;
 
-  /* Innopolis University Brand & Accent Tokens */
-  --color-innopolis-green: #33b712;
-  --color-innopolis-green-light: #63ec41;
-  --color-innopolis-green-dark: #27960d;
-  --color-innopolis-green-accent: #45d320;
-  --color-innopolis-dark: #161821;
-  --color-innopolis-canvas: #ebeef3;
-  --color-innopolis-panel: #f6f6f9;
+  /* Modern University Brand & Accent Tokens */
+  --color-brand-green: #33b712;
+  --color-brand-green-light: #63ec41;
+  --color-brand-green-dark: #27960d;
+  --color-brand-green-accent: #45d320;
+  --color-brand-dark: #161821;
+  --color-brand-canvas: #ebeef3;
+  --color-brand-panel: #f6f6f9;
 
   /* Backward-compatible semantic color variables */
   --color-academic-green: #33b712;
@@ -120,8 +120,8 @@
   }
 }
 
-/* Innopolis UI Component Helpers */
-.btn-innopolis-primary {
+/* Modern UI Component Helpers */
+.btn-brand-primary {
   background: radial-gradient(50% 50% at 50% 0%, #63ec41 0%, #33b712 100%);
   color: #ffffff;
   font-family: var(--font-heading);
@@ -130,17 +130,17 @@
   box-shadow: 0 4px 16px rgba(51, 183, 18, 0.28);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.btn-innopolis-primary:hover {
+.btn-brand-primary:hover {
   filter: brightness(1.06);
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(51, 183, 18, 0.36);
 }
-.btn-innopolis-primary:active {
+.btn-brand-primary:active {
   transform: translateY(0);
   filter: brightness(0.98);
 }
 
-.btn-innopolis-dark {
+.btn-brand-dark {
   background-color: #161821;
   color: #ffffff;
   font-family: var(--font-heading);
@@ -148,11 +148,11 @@
   border-radius: 9999px;
   transition: all 0.2s ease;
 }
-.btn-innopolis-dark:hover {
+.btn-brand-dark:hover {
   background-color: #262a38;
 }
 
-.card-innopolis {
+.card-brand {
   background-color: var(--bg-surface);
   border-radius: 1.75rem; /* 28px */
   border: 1px solid var(--border-subtle);
@@ -160,7 +160,7 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Custom scrollbar with Innopolis green accent */
+/* Custom scrollbar with vibrant green accent */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

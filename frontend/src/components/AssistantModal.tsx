@@ -107,7 +107,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
     >
       <div className="relative w-full max-w-lg h-[620px] max-h-[92vh] bg-white dark:bg-[#171c26] rounded-3xl shadow-2xl overflow-hidden border border-[#e2e4e8] dark:border-[#273142] flex flex-col">
-        {/* Academic Header (Innopolis Style) */}
+        {/* Academic Header (Modern Campus Style) */}
         <div className="p-4 bg-[#161821] text-white flex items-center justify-between border-b border-white/10 shadow-xs">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-[#11141c] border border-[#33b712]/50 flex items-center justify-center p-1.5 shadow-inner">
@@ -139,7 +139,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
           </button>
         </div>
 
-        {/* Quick Question Chips (Innopolis Pill Badges) */}
+        {/* Quick Question Chips (Interactive Pill Badges) */}
         <div className="p-3 bg-[#f6f6f9] dark:bg-[#121620] border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2 overflow-x-auto text-[11px] font-sans">
           <span className="text-[#475569] dark:text-[#94a3b8] font-heading font-medium whitespace-nowrap pl-1">
             {tr(lang, 'Частые вопросы:', 'Quick questions:')}
@@ -248,7 +248,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
               type="submit"
               disabled={loading || !input.trim()}
               aria-label={tr(lang, 'Отправить сообщение', 'Send message')}
-              className="min-w-[44px] min-h-[44px] px-5 py-2.5 rounded-full btn-innopolis-primary text-white font-heading font-semibold text-xs flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
+              className="min-w-[44px] min-h-[44px] px-5 py-2.5 rounded-full btn-brand-primary text-white font-heading font-semibold text-xs flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
             >
               <Send className="w-3.5 h-3.5 text-white" />
               <span className="hidden sm:inline">{tr(lang, 'Отправить', 'Send')}</span>

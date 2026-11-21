@@ -1237,7 +1237,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 
           <button
             onClick={handleClose}
-            className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] rounded-full btn-innopolis-primary text-xs font-heading font-semibold transition-all cursor-pointer shadow-md text-center"
+            className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] rounded-full btn-brand-primary text-xs font-heading font-semibold transition-all cursor-pointer shadow-md text-center"
           >
             {tr(lang, 'Вернуться к расписанию', 'Back to Timetable')}
           </button>

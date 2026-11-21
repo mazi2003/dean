@@ -47,7 +47,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#ebeef3] dark:bg-[#0f121a] text-[#161821] dark:text-[#ffffff] flex flex-col justify-between transition-colors select-none">
       {/* ─────────────────────────────────────────────────────────────
-          GLOBAL UTILITY HEADER (Innopolis Minimalist Style)
+          GLOBAL UTILITY HEADER (Modern Minimalist Style)
           ───────────────────────────────────────────────────────────── */}
       <div className="w-full bg-white dark:bg-[#171c26] text-[#161821] dark:text-[#cbd5e1] border-b border-[#e2e4e8] dark:border-[#273142] py-2.5 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -97,7 +97,7 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          MAIN AUTHENTICATION PORTAL (Two-Pane Innopolis Modern Layout)
+          MAIN AUTHENTICATION PORTAL (Two-Pane Modern Academic Layout)
           ───────────────────────────────────────────────────────────── */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10">
         <div className="w-full max-w-4xl bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
@@ -260,7 +260,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full min-h-[44px] py-3 px-6 rounded-full btn-innopolis-primary text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full min-h-[44px] py-3 px-6 rounded-full btn-brand-primary text-xs sm:text-sm flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
                 >
                   <span>
                     {loading

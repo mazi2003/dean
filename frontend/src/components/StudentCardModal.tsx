@@ -346,7 +346,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               <button
                 onClick={handleQrScanSimulate}
                 disabled={isScanning}
-                className="w-full min-h-[44px] py-2.5 px-4 rounded-full btn-innopolis-primary text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md disabled:opacity-50"
+                className="w-full min-h-[44px] py-2.5 px-4 rounded-full btn-brand-primary text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md disabled:opacity-50"
               >
                 <Scan className="w-4 h-4 text-white" />
                 <span>
@@ -445,7 +445,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             <X className="w-5 h-5" />
           </button>
 
-          {/* Innopolis High-Tech Pass Surface */}
+          {/* High-Tech Digital Pass Surface */}
           <div className="relative p-6 bg-[#161821] text-white overflow-hidden select-none">
             {/* Dynamic decorative green gradient glow */}
             <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-[#33b712]/20 blur-2xl pointer-events-none" />
@@ -600,7 +600,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               <button
                 onClick={handleNfcSimulate}
                 disabled={isNfcTapping}
-                className="w-full min-h-[44px] py-2.5 px-4 rounded-full btn-innopolis-primary text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md disabled:opacity-50"
+                className="w-full min-h-[44px] py-2.5 px-4 rounded-full btn-brand-primary text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md disabled:opacity-50"
               >
                 <Wifi className={`w-4 h-4 text-white ${isNfcTapping ? 'animate-ping' : ''}`} />
                 <span>

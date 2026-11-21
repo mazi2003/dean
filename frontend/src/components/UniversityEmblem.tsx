@@ -47,7 +47,7 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
       aria-label="DemoTech University Official Seal"
     >
       <defs>
-        {/* Innopolis vibrant green gradient */}
+        {/* Vibrant emerald gradient */}
         <radialGradient id="innoGrad" cx="50%" cy="30%" r="70%">
           <stop offset="0%" stopColor="#63ec41" />
           <stop offset="100%" stopColor="#33b712" />

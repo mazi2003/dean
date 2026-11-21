@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="mt-auto border-t border-[#e2e4e8] dark:border-[#273142] bg-white dark:bg-[#121620] text-[#475569] dark:text-[#94a3b8] transition-colors select-none">
       {/* ─────────────────────────────────────────────────────────────
-          MULTI-COLUMN INSTITUTIONAL FOOTER (Innopolis Design System)
+          MULTI-COLUMN INSTITUTIONAL FOOTER (Modern Campus Design System)
           ───────────────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">

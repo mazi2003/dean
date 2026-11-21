@@ -49,7 +49,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* ─────────────────────────────────────────────────────────────
-          1. TRANSCRIPT HEADER (Innopolis Design System)
+          1. TRANSCRIPT HEADER (Modern Campus Design System)
           ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
@@ -95,7 +95,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. ACADEMIC SUMMARY METRICS (Innopolis Cards)
+          2. ACADEMIC SUMMARY METRICS (Interactive Campus Cards)
           ───────────────────────────────────────────────────────────── */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Cumulative GPA */}

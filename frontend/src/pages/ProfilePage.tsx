@@ -13,7 +13,7 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
       {/* ─────────────────────────────────────────────────────────────
-          1. ACADEMIC DOSSIER HEADER (Innopolis Design System)
+          1. ACADEMIC DOSSIER HEADER (Modern Campus Design System)
           ───────────────────────────────────────────────────────────── */}
       <div className="rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] p-6 sm:p-8 shadow-xs relative overflow-hidden">
         <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-5 pointer-events-none">

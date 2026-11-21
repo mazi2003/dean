@@ -114,7 +114,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   }
 
   // ─────────────────────────────────────────────────────────────
-  // STAFF COMMAND CENTER VIEW (Innopolis Design System)
+  // STAFF COMMAND CENTER VIEW (Modern Campus Design System)
   // ─────────────────────────────────────────────────────────────
   if (isStaff) {
     const newRequestsCount = requests.filter((r) => r.status === 'submitted').length;
@@ -181,7 +181,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           <div className="mt-6 pt-5 border-t border-[#e2e4e8] dark:border-[#273142] flex flex-wrap gap-2.5 text-xs">
             <button
               onClick={() => setActiveTab('staff_requests')}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full btn-innopolis-primary text-xs font-heading cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full btn-brand-primary text-xs font-heading cursor-pointer"
             >
               <Inbox className="w-3.5 h-3.5 text-white" />
               <span>{tr(lang, 'Очередь заявлений', 'Inquiries Queue')}</span>
@@ -351,7 +351,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   }
 
   // ─────────────────────────────────────────────────────────────
-  // STUDENT PORTAL VIEW (Innopolis Design System)
+  // STUDENT PORTAL VIEW (Modern Campus Design System)
   // ─────────────────────────────────────────────────────────────
   const todayClasses = schedule.slice(0, 3);
   const nextClass = todayClasses[0];
@@ -423,7 +423,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* ─────────────────────────────────────────────────────────────
-          1. ACADEMIC INSTITUTIONAL MASTHEAD (Innopolis Style)
+          1. ACADEMIC INSTITUTIONAL MASTHEAD (Modern Campus Style)
           ───────────────────────────────────────────────────────────── */}
       <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 sm:p-8 shadow-xs relative overflow-hidden">
         <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-5 pointer-events-none">
@@ -479,11 +479,11 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </div>
         </div>
 
-        {/* Quick Action Pills (Innopolis Pill Controls) */}
+        {/* Quick Action Pills (Pill Filter Controls) */}
         <div className="mt-6 pt-5 border-t border-[#e2e4e8] dark:border-[#273142] flex flex-wrap gap-2.5 text-xs">
           <button
             onClick={() => setActiveTab('requests')}
-            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full btn-innopolis-primary text-xs font-heading cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full btn-brand-primary text-xs font-heading cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5 text-white" />
             <span>{lang === 'ru' ? 'Заказать справку' : 'Request Certificate'}</span>
@@ -587,7 +587,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. URGENT ACADEMIC NOTICE (Innopolis Warning Card)
+          3. URGENT ACADEMIC NOTICE (Academic Warning Card)
           ───────────────────────────────────────────────────────────── */}
       {urgentNotif && (
         <section className="bg-[#fff9e6] dark:bg-[#2c2210] border border-[#ffeeba] dark:border-[#523e1b] p-4 rounded-3xl text-[#161821] dark:text-[#ffffff] flex items-start justify-between gap-4 shadow-xs">

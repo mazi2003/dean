@@ -117,7 +117,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
     }
   };
 
-  // Innopolis Kanban Status Tokens with Colored Status Dots
+  // Kanban Status Tokens with Colored Status Dots
   const statusConfig = {
     submitted: {
       label: getRequestStatusLabel('submitted', lang, 'student'),
@@ -169,7 +169,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* ─────────────────────────────────────────────────────────────
-          1. HEADER & ORDER ACTION (Innopolis Design System)
+          1. HEADER & ORDER ACTION (Modern Campus Design System)
           ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
@@ -196,7 +196,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
 
         <button
           onClick={() => handleOpenWizard()}
-          className="px-5 py-2.5 min-h-[44px] rounded-full btn-innopolis-primary text-xs sm:text-sm font-heading font-semibold flex items-center space-x-2 self-start sm:self-center cursor-pointer shadow-md"
+          className="px-5 py-2.5 min-h-[44px] rounded-full btn-brand-primary text-xs sm:text-sm font-heading font-semibold flex items-center space-x-2 self-start sm:self-center cursor-pointer shadow-md"
         >
           <Plus className="w-4 h-4 text-white" />
           <span>{lang === 'ru' ? 'Подать новое заявление' : 'Order Document'}</span>
@@ -204,7 +204,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. CERTIFICATE CATALOG (Innopolis Pastel Category Cards)
+          2. CERTIFICATE CATALOG (Academic Category Cards)
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {requestTypes.map((t, index) => {
@@ -252,7 +252,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. MY PETITIONS REGISTRY (Innopolis Kanban Style List)
+          3. MY PETITIONS REGISTRY (Digital Registry Kanban List)
           ───────────────────────────────────────────────────────────── */}
       <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] overflow-hidden shadow-xs">
         <div className="p-5 bg-[#f6f6f9] dark:bg-[#121620] border-b border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
@@ -314,7 +314,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                     </div>
 
                     <div className="flex items-center space-x-2.5">
-                      {/* Innopolis status dot pill */}
+                      {/* Status indicator pill */}
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-heading font-semibold border flex items-center space-x-2 ${cfg.pillClass}`}
                       >
@@ -402,7 +402,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. ORDER WIZARD MODAL (Innopolis Rounded-3xl Dialog)
+          4. ORDER WIZARD MODAL (Modern Rounded Dialog)
           ───────────────────────────────────────────────────────────── */}
       {isWizardOpen && selectedType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -493,7 +493,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 rounded-full btn-innopolis-primary text-white font-heading font-semibold flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-full btn-brand-primary text-white font-heading font-semibold flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>

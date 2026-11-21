@@ -122,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside className="hidden md:flex flex-col w-64 lg:w-72 bg-[#f6f6f9] dark:bg-[#121620] border-r border-[#e2e4e8] dark:border-[#273142] p-4 lg:p-5 space-y-5 transition-colors select-none">
       {/* ─────────────────────────────────────────────────────────────
-          STUDENT / STAFF PROFILE CARD (Innopolis High-Tech Surface)
+          STUDENT / STAFF PROFILE CARD (High-Tech Digital Surface)
           ───────────────────────────────────────────────────────────── */}
       <div className="p-4 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs relative overflow-hidden">
         <div className="flex items-center space-x-3.5">
@@ -171,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          PORTAL NAVIGATION ITEMS (Innopolis Pill Menu)
+          PORTAL NAVIGATION ITEMS (Navigation Pill Menu)
           ───────────────────────────────────────────────────────────── */}
       <div className="flex-1 space-y-1.5">
         <div className="px-3 pb-1 text-[10px] font-heading font-semibold tracking-wider uppercase text-[#475569] dark:text-[#94a3b8]">

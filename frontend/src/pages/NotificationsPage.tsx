@@ -143,7 +143,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. CATEGORY FILTERS (Innopolis Pill Controls)
+          2. CATEGORY FILTERS (Pill Filter Controls)
           ───────────────────────────────────────────────────────────── */}
       <div className="flex items-center space-x-2 overflow-x-auto text-xs pb-1 font-sans">
         <Filter className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8] mr-1 flex-shrink-0" />
@@ -169,7 +169,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. NOTIFICATIONS LIST (Innopolis Cards)
+          3. NOTIFICATIONS LIST (Interactive Campus Cards)
           ───────────────────────────────────────────────────────────── */}
       <div className="space-y-3">
         {filteredNotifs.length === 0 ? (

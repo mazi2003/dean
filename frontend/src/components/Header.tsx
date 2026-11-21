@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#171c26]/95 backdrop-blur-md border-b border-[#e2e4e8] dark:border-[#273142] shadow-xs transition-colors select-none">
       {/* ─────────────────────────────────────────────────────────────
-          TIER 1: INNOPOLIS-STYLE MINIMALIST UTILITY BAR
+          TIER 1: Modern High-Tech MINIMALIST UTILITY BAR
           ───────────────────────────────────────────────────────────── */}
       <div className="bg-[#f6f6f9] dark:bg-[#121620] text-[#161821] dark:text-[#cbd5e1] border-b border-[#e2e4e8] dark:border-[#273142] py-1 px-3 sm:px-6 lg:px-8 text-[11px] font-sans">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
@@ -208,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          TIER 2: INNOPOLIS-STYLE CLEAN PRIMARY NAVIGATION BAR
+          TIER 2: Modern High-Tech CLEAN PRIMARY NAVIGATION BAR
           ───────────────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
@@ -249,10 +249,10 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Academic Actions & Identity Pill Bar */}
           <div className="flex items-center space-x-1 sm:space-x-2.5 flex-shrink-0">
-            {/* AI Copilot / Dean's Advisory Assistant (Innopolis Primary Gradient Button) */}
+            {/* AI Copilot / Dean's Advisory Assistant (Primary Gradient Action Button) */}
             <button
               onClick={onOpenAssistant}
-              className="flex items-center justify-center space-x-1.5 px-3 sm:px-4 py-2 min-w-[44px] min-h-[44px] rounded-full btn-innopolis-primary text-xs font-heading font-semibold transition-all cursor-pointer"
+              className="flex items-center justify-center space-x-1.5 px-3 sm:px-4 py-2 min-w-[44px] min-h-[44px] rounded-full btn-brand-primary text-xs font-heading font-semibold transition-all cursor-pointer"
               title={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
               aria-label={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
             >
