@@ -144,8 +144,8 @@ export const Footer: React.FC = () => {
             </p>
           </div>
 
-          <div className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-mono">
-            DemoTech University © 2026 • Innopolis Edition
+          <div className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
+            DemoTech University © 2026 • Digital Dean&apos;s Office
           </div>
         </div>
       </div>

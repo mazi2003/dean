@@ -48,7 +48,7 @@ export const GradesPage: React.FC = () => {
           ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#166534] dark:text-[#45d320] font-semibold mb-1">
+          <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#166534] dark:text-[#45d320] font-semibold mb-1">
             <span>{localizeText(profile?.faculty, lang)}</span>
             <span>•</span>
             <span>№ {profile?.studentNumber}</span>

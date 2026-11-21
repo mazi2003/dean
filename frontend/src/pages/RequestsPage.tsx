@@ -173,7 +173,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
           ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#166534] dark:text-[#45d320] font-semibold mb-1">
+          <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#166534] dark:text-[#45d320] font-semibold mb-1">
             <span>{tr(lang, 'Канцелярия деканата', "Dean's Registry")}</span>
             <span>•</span>
             <span>{tr(lang, 'Кабинет 312', 'Room 312')}</span>
@@ -227,7 +227,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                   <div className="w-9 h-9 rounded-2xl bg-white dark:bg-[#161821] border border-black/5 flex items-center justify-center shadow-2xs">
                     <FileBadge className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                   </div>
-                  <span className="text-[10px] font-mono font-semibold text-[#475569] dark:text-[#94a3b8] bg-white/80 dark:bg-black/30 px-2.5 py-0.5 rounded-full">
+                  <span className="text-[10px] font-sans font-medium text-[#475569] dark:text-[#94a3b8] bg-white/80 dark:bg-black/30 px-2.5 py-0.5 rounded-full">
                     {tr(lang, `Срок: ${t.slaDays} дн.`, `SLA: ${t.slaDays}d`)}
                   </span>
                 </div>

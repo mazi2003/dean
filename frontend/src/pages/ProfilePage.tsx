@@ -63,7 +63,7 @@ export const ProfilePage: React.FC = () => {
               {localizeText(profile?.program, lang)} • {localizeText(profile?.faculty, lang)}
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-xs font-mono text-[#475569] dark:text-[#94a3b8]">
+            <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
               <span>ID: {user?.id}</span>
               <span>•</span>
               <span>Email: {user?.email}</span>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Bell,
@@ -11,6 +11,8 @@ import {
   Globe2,
   Compass,
   Eye,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 import { UniversityEmblem } from './UniversityEmblem';
 import { resolveAvatarSrc } from '../utils/avatar';
@@ -42,6 +44,24 @@ export const Header: React.FC<HeaderProps> = ({
   } = useAuth();
   const isStaff = user?.role === 'staff';
 
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  );
+  const [simulateOffline, setSimulateOffline] = useState(false);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const isActuallyOffline = !isOnline || simulateOffline;
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#171c26]/95 backdrop-blur-md border-b border-[#e2e4e8] dark:border-[#273142] shadow-xs transition-colors select-none">
       {/* ─────────────────────────────────────────────────────────────
@@ -66,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Academic Term & Utility Controls */}
           <div className="flex items-center space-x-2 sm:space-x-3 text-[11px] flex-shrink-0">
             {/* Term indicator */}
-            <div className="hidden md:flex items-center space-x-1.5 text-[#166534] dark:text-[#45d320] font-mono text-[11px] font-medium bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full">
+            <div className="hidden md:flex items-center space-x-1.5 text-[#166534] dark:text-[#45d320] font-sans text-[11px] font-medium bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full">
               <CalendarDays className="w-3 h-3 text-[#166534] dark:text-[#45d320]" />
               <span>
                 {lang === 'ru' ? 'Весенний семестр 2026 • 8-я неделя' : 'Spring Term 2026 • Week 8'}
@@ -129,9 +149,62 @@ export const Header: React.FC<HeaderProps> = ({
                 <Sun className="w-3.5 h-3.5 text-[#b45309] dark:text-[#fbbf24]" />
               )}
             </button>
+
+            {/* PWA Offline-First Mode Status & Simulator Button */}
+            <button
+              onClick={() => setSimulateOffline(!simulateOffline)}
+              className={`hidden lg:flex items-center space-x-1.5 text-[11px] font-mono px-2.5 py-1 min-h-[36px] rounded-full transition-all cursor-pointer border ${
+                isActuallyOffline
+                  ? 'bg-[#fef3c7] dark:bg-[#451a03] text-[#92400e] dark:text-[#fde68a] border-[#f59e0b]'
+                  : 'bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border-[#33b712]/30 hover:border-[#33b712]'
+              }`}
+              title={
+                lang === 'ru'
+                  ? 'Статус PWA: Нажмите для симуляции офлайн-режима'
+                  : 'PWA Cache: Click to toggle offline simulation'
+              }
+            >
+              {isActuallyOffline ? (
+                <>
+                  <WifiOff className="w-3 h-3 text-[#d97706] animate-pulse" />
+                  <span>{lang === 'ru' ? 'Офлайн (PWA кэш)' : 'Offline (PWA)'}</span>
+                </>
+              ) : (
+                <>
+                  <Wifi className="w-3 h-3 text-[#33b712]" />
+                  <span>{lang === 'ru' ? 'Офлайн-кэш готов' : 'Offline Ready'}</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Offline Alert Banner if offline or simulated */}
+      {isActuallyOffline && (
+        <div className="bg-[#b45309] text-white px-3 sm:px-6 py-2 text-xs font-sans flex items-center justify-between border-b border-[#92400e] animate-fade-in">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 min-w-0">
+              <WifiOff className="w-4 h-4 text-white flex-shrink-0 animate-pulse" />
+              <span className="truncate">
+                {tr(
+                  lang,
+                  '📴 Автономный режим • Расписание, оценки и электронный студенческий билет закэшированы в PWA и доступны без интернета.',
+                  '📴 Offline Mode • Timetable, grades, and digital student pass are cached in PWA and fully available offline.'
+                )}
+              </span>
+            </div>
+            <button
+              onClick={() => setSimulateOffline(false)}
+              className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-white/20 hover:bg-white/30 text-white cursor-pointer flex-shrink-0"
+            >
+              {simulateOffline
+                ? tr(lang, 'Выключить тест', 'Exit Demo')
+                : tr(lang, 'Проверить связь', 'Check Network')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────
           TIER 2: INNOPOLIS-STYLE CLEAN PRIMARY NAVIGATION BAR
@@ -235,7 +308,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <p className="text-xs font-heading font-semibold text-[#161821] dark:text-[#ffffff] truncate leading-tight">
                     {user?.fullName?.split(' ')[0]} {user?.fullName?.split(' ')[1]?.[0]}.
                   </p>
-                  <p className="text-[10px] text-[#166534] dark:text-[#45d320] font-mono leading-none truncate mt-0.5 font-semibold">
+                  <p className="text-[10px] text-[#166534] dark:text-[#45d320] font-sans leading-none truncate mt-0.5 font-semibold">
                     {isStaff ? (lang === 'ru' ? 'Инспектор' : 'Inspector') : profile?.group}
                   </p>
                 </div>

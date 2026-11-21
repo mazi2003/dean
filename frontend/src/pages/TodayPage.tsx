@@ -22,6 +22,7 @@ import {
 import { ScheduleEntry, StudentRequest, Notification, ExamEntry } from '../types';
 import { api } from '../services/api';
 import { UniversityEmblem } from '../components/UniversityEmblem';
+import { ScheduleCollisionAlert } from '../components/ScheduleCollisionAlert';
 import {
   tr,
   getScheduleTypeLabel,
@@ -35,6 +36,7 @@ interface TodayPageProps {
   onOpenCard: () => void;
   onOpenAssistant: () => void;
   onPreviewCert: (req: StudentRequest) => void;
+  onOpenMap?: (room?: string) => void;
 }
 
 export const TodayPage: React.FC<TodayPageProps> = ({
@@ -42,6 +44,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   onOpenCard,
   onOpenAssistant,
   onPreviewCert,
+  onOpenMap,
 }) => {
   const { user, profile, lang } = useAuth();
   const isStaff = user?.role === 'staff';
@@ -129,7 +132,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="space-y-2">
               <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
-                <span className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
+                <span className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                   {tr(lang, 'Деканат Факультета МО', "Dean's Office, School of IR")}
                 </span>
                 <span>•</span>
@@ -522,7 +525,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 : 'Academic Calendar & Semester Milestones'}
             </h3>
           </div>
-          <span className="text-xs font-mono font-semibold text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] px-3 py-1 rounded-full">
+          <span className="text-xs font-sans font-semibold text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] px-3 py-1 rounded-full">
             {lang === 'ru'
               ? '8-я учебная неделя из 16 (50% семестра)'
               : 'Week 8 of 16 (50% Term Completed)'}
@@ -532,7 +535,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         {/* Milestone Progress Steps (Pastel category accents) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-sans">
           <div className="p-3.5 rounded-2xl bg-[#ebfbee] dark:bg-[#1e2d24] border border-[#33b712]/30 space-y-1">
-            <span className="text-[10px] font-mono text-[#166534] dark:text-[#45d320] uppercase font-bold block">
+            <span className="text-[10px] font-sans text-[#166534] dark:text-[#45d320] uppercase font-bold block">
               {tr(lang, '1 февраля 2026', 'Feb 1, 2026')}
             </span>
             <div className="flex items-center space-x-1.5 font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
@@ -545,7 +548,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#e8f4fd] dark:bg-[#1a2838] border border-[#3598fe]/30 space-y-1">
-            <span className="text-[10px] font-mono text-[#0369a1] dark:text-[#38bdf8] font-bold uppercase block">
+            <span className="text-[10px] font-sans text-[#0369a1] dark:text-[#38bdf8] font-bold uppercase block">
               {tr(lang, '10 – 24 ноября', 'Nov 10 – 24')}
             </span>
             <div className="flex items-center space-x-1.5 font-heading font-bold text-[#161821] dark:text-[#ffffff]">
@@ -558,7 +561,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#fbf0eb] dark:bg-[#2b1f1a] border border-[#ff7675]/30 space-y-1">
-            <span className="text-[10px] font-mono text-[#c2410c] dark:text-[#fb923c] uppercase font-bold block">
+            <span className="text-[10px] font-sans text-[#c2410c] dark:text-[#fb923c] uppercase font-bold block">
               {tr(lang, '1 декабря 2026', 'Dec 1, 2026')}
             </span>
             <div className="flex items-center space-x-1.5 font-heading font-medium text-[#161821] dark:text-[#ffffff]">
@@ -570,7 +573,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#f4ebfc] dark:bg-[#281b36] border border-[#8b5cf6]/30 space-y-1">
-            <span className="text-[10px] font-mono text-[#7c3aed] dark:text-[#c4b5fd] uppercase font-bold block">
+            <span className="text-[10px] font-sans text-[#7c3aed] dark:text-[#c4b5fd] uppercase font-bold block">
               {tr(lang, '10 – 28 декабря', 'Dec 10 – 28')}
             </span>
             <div className="flex items-center space-x-1.5 font-heading font-medium text-[#161821] dark:text-[#ffffff]">
@@ -625,7 +628,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     {lang === 'ru' ? 'Ближайшее занятие' : 'Next Upcoming Class'}
                   </span>
                 </div>
-                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border border-[#33b712]/30">
+                <span className="text-xs font-sans font-semibold px-3 py-1 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border border-[#33b712]/30">
                   {getScheduleTypeLabel(nextClass.type, lang)}
                 </span>
               </div>
@@ -650,12 +653,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       {nextClass.start} – {nextClass.end}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2 text-xs font-sans text-[#4b5563] dark:text-[#cbd5e1]">
-                    <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3]" />
+                  <button
+                    onClick={() => onOpenMap?.(nextClass.room)}
+                    className="flex items-center space-x-2 text-xs font-sans text-[#4b5563] dark:text-[#cbd5e1] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
+                    title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
+                  >
+                    <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
                     <span>
-                      {tr(lang, 'Аудитория', 'Room')} <strong>{nextClass.room}</strong>
+                      {tr(lang, 'Аудитория', 'Room')}{' '}
+                      <strong className="underline decoration-dotted underline-offset-2">{nextClass.room}</strong>
                     </span>
-                  </div>
+                  </button>
                 </div>
               </div>
             </section>
@@ -707,10 +715,14 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-1 font-mono font-bold text-[#161821] dark:text-[#ffffff]">
-                    <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3]" />
-                    <span>{item.room}</span>
-                  </div>
+                  <button
+                    onClick={() => onOpenMap?.(item.room)}
+                    className="flex items-center space-x-1 font-mono font-bold text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
+                    title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
+                  >
+                    <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
+                    <span className="underline decoration-dotted underline-offset-2">{item.room}</span>
+                  </button>
                 </div>
               ))}
             </div>
@@ -779,13 +791,34 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       <span className="font-bold text-[#166534] dark:text-[#45d320] block">
                         {ex.date}
                       </span>
-                      <span className="text-[#475569] dark:text-[#94a3b8] text-[11px]">
-                        {tr(lang, 'в', 'at')} {ex.time} • {ex.room}
-                      </span>
+                      <button
+                        onClick={() => onOpenMap?.(ex.room)}
+                        className="text-[#475569] dark:text-[#94a3b8] hover:text-[#166534] dark:hover:text-[#45d320] text-[11px] flex items-center sm:justify-end space-x-1 cursor-pointer group transition-colors"
+                        title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
+                      >
+                        <span>{tr(lang, 'в', 'at')} {ex.time} •</span>
+                        <MapPin className="w-3 h-3 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
+                        <span className="underline decoration-dotted underline-offset-2">{ex.room}</span>
+                      </button>
                     </div>
                   </div>
                 </div>
-              ))}
+
+                {/* Schedule Collision Alert for Retakes */}
+                {ex.isDebt && (
+                  <div className="pt-1">
+                    <ScheduleCollisionAlert
+                      compact
+                      retakeDate={ex.date}
+                      retakeTime={ex.time}
+                      retakeSubject={ex.subject}
+                      retakeRoom={ex.room}
+                      onOpenMap={onOpenMap}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
             </div>
           </section>
         </div>

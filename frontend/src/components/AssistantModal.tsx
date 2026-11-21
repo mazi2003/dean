@@ -118,7 +118,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                 <span>{tr(lang, 'Консультант деканата', "Dean's Office AI Advisor")}</span>
                 <span className="w-2 h-2 rounded-full bg-[#33b712] inline-block animate-pulse" />
               </h3>
-              <p className="text-[10px] text-[#45d320] font-mono">
+              <p className="text-[10px] text-[#45d320] font-sans font-medium">
                 {profile?.group
                   ? tr(
                       lang,
@@ -212,7 +212,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
 
         {/* Input Bar */}
         <div className="p-3.5 bg-white dark:bg-[#171c26] border-t border-[#e2e4e8] dark:border-[#273142] space-y-1.5">
-          <div className="flex items-center justify-between text-[10px] text-[#475569] dark:text-[#94a3b8] px-2 font-mono">
+          <div className="flex items-center justify-between text-[10px] text-[#475569] dark:text-[#94a3b8] px-2 font-sans">
             <span>
               {tr(
                 lang,
@@ -221,7 +221,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
               )}
             </span>
             {lastSource && (
-              <span className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
+              <span className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                 {lastSource === 'llm' ? 'LLM' : tr(lang, 'Движок правил', 'Rules Engine')}
               </span>
             )}

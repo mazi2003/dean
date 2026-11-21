@@ -122,7 +122,7 @@ export const LoginPage: React.FC = () => {
                   <p className="text-[11px] text-[#45d320] font-heading font-semibold uppercase tracking-wider mt-1">
                     University
                   </p>
-                  <p className="text-[9px] text-white/60 font-mono mt-0.5">Innopolis Campus • 2026</p>
+                  <p className="text-[10px] text-white/70 font-sans mt-0.5 font-medium">DemoTech Campus • 2026</p>
                 </div>
               </div>
 
@@ -174,7 +174,7 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative z-10 pt-5 mt-6 border-t border-white/10 text-[10px] text-[#45d320] font-mono tracking-wider font-semibold">
+            <div className="relative z-10 pt-5 mt-6 border-t border-white/10 text-[10px] text-[#45d320] font-sans tracking-widest font-semibold uppercase">
               VERITAS • SCIENTIA • INNOVATIO
             </div>
           </div>
@@ -183,7 +183,7 @@ export const LoginPage: React.FC = () => {
           <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
             <div className="space-y-6">
               <div className="border-b border-[#e2e4e8] dark:border-[#273142] pb-4">
-                <div className="inline-flex items-center space-x-1.5 text-xs font-mono font-semibold text-[#166534] dark:text-[#45d320] mb-1">
+                <div className="inline-flex items-center space-x-1.5 text-xs font-sans font-semibold tracking-wide text-[#166534] dark:text-[#45d320] mb-1">
                   <KeyRound className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
                   <span>
                     {lang === 'ru' ? 'ЕДИНАЯ ТОЧКА АУТЕНТИФИКАЦИИ (SSO)' : 'SINGLE SIGN-ON (SSO)'}

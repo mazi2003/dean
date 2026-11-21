@@ -321,7 +321,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       {/* 1. Header & Section Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#161821] dark:text-[#45d320] font-semibold mb-1">
+          <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#161821] dark:text-[#45d320] font-semibold mb-1">
             <ShieldCheck className="w-4 h-4 text-[#161821] dark:text-[#45d320]" />
             <span>
               {tr(
