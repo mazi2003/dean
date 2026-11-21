@@ -112,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'profile',
       label: lang === 'ru' ? 'Служебный профиль' : 'Staff Dossier',
-      sublabel: lang === 'ru' ? 'Права доступа (RBAC)' : 'Role permissions',
+      sublabel: lang === 'ru' ? 'Служебные полномочия' : 'Role permissions',
       icon: User,
     },
   ];
