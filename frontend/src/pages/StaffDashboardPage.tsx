@@ -424,7 +424,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   )}
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">
+              <span className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8]">
                 {tr(
                   lang,
                   'Доставка в личный кабинет студента и push',
@@ -705,7 +705,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div className="flex items-center space-x-2">
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                            className={`px-2 py-0.5 rounded text-[10px] font-sans font-bold uppercase ${
                               ann.priority === 'urgent'
                                 ? 'bg-[#be123c] text-white'
                                 : ann.priority === 'high'
@@ -719,14 +719,14 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                                 ? tr(lang, 'Важно', 'Important')
                                 : tr(lang, 'Обычное', 'Normal')}
                           </span>
-                          <span className="text-xs font-mono font-semibold text-[#161821] dark:text-[#45d320]">
+                          <span className="text-xs font-sans font-semibold text-[#161821] dark:text-[#45d320]">
                             {tr(lang, 'Целевая группа', 'Target Group')}:{' '}
                             {ann.targetGroup === 'all'
                               ? tr(lang, 'Все студенты', 'All Students')
                               : ann.targetGroup}
                           </span>
                         </div>
-                        <span className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">{dateStr}</span>
+                        <span className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8]">{dateStr}</span>
                       </div>
 
                       <h4 className="font-semibold text-sm text-[#161821] dark:text-[#FFFFFF]">
@@ -875,7 +875,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           >
                             {badge.label}
                           </span>
-                          <span className="font-mono text-xs text-[#475569] dark:text-[#94A3B8]">№ {req.id}</span>
+                          <span className="font-sans text-xs text-[#475569] dark:text-[#94A3B8]">№ {req.id}</span>
                         </div>
                         <h3 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
                           {localizeText(req.typeTitle, lang)}
@@ -913,7 +913,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           {tr(lang, 'Личное дело', 'Student Dossier')}
                         </button>
                       </div>
-                      <div className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">
+                      <div className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8]">
                         {tr(lang, 'Подано', 'Submitted')}: {dateStr} •{' '}
                         {tr(lang, 'Срок ответа: до', 'Due by')} {req.expectedDate}
                       </div>

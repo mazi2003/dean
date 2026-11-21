@@ -244,7 +244,7 @@ export const LoginPage: React.FC = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full pl-10 pr-11 py-2.5 text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:ring-2 focus:ring-[#33b712] focus:border-transparent focus:outline-none transition-all font-mono"
+                      className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full pl-10 pr-11 py-2.5 text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:ring-2 focus:ring-[#33b712] focus:border-transparent focus:outline-none transition-all font-sans"
                     />
                     <button
                       type="button"
@@ -292,26 +292,26 @@ export const LoginPage: React.FC = () => {
                 {lang === 'ru' ? (
                   <>
                     <strong>Студенты:</strong>{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
+                    <code className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                       aigul.nurova@demo.edu
                     </code>
                     ,{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
+                    <code className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                       timur.belov@demo.edu
                     </code>
                     ,{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
+                    <code className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                       lina.okafor@demo.edu
                     </code>
-                    {' '}(пароль: <code className="font-mono text-[#161821] dark:text-white font-bold">DemoStudent123!</code>)
+                    {' '}(пароль: <code className="font-sans text-[#161821] dark:text-white font-bold">DemoStudent123!</code>)
                   </>
                 ) : (
                   <>
                     <strong>Students:</strong>{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320]">aigul.nurova@demo.edu</code>,{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320]">timur.belov@demo.edu</code>,{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320]">lina.okafor@demo.edu</code>
-                    {' '}(pass: <code className="font-mono text-[#161821] dark:text-white">DemoStudent123!</code>)
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">aigul.nurova@demo.edu</code>,{' '}
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">timur.belov@demo.edu</code>,{' '}
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">lina.okafor@demo.edu</code>
+                    {' '}(pass: <code className="font-sans text-[#161821] dark:text-white">DemoStudent123!</code>)
                   </>
                 )}
               </p>
@@ -319,16 +319,16 @@ export const LoginPage: React.FC = () => {
                 {lang === 'ru' ? (
                   <>
                     <strong>Сотрудник деканата:</strong>{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
+                    <code className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                       dean.office@demo.edu
                     </code>
-                    {' '}(пароль: <code className="font-mono text-[#161821] dark:text-white font-bold">DemoStaff123!</code>)
+                    {' '}(пароль: <code className="font-sans text-[#161821] dark:text-white font-bold">DemoStaff123!</code>)
                   </>
                 ) : (
                   <>
                     <strong>Dean staff:</strong>{' '}
-                    <code className="font-mono text-[#166534] dark:text-[#45d320]">dean.office@demo.edu</code>
-                    {' '}(pass: <code className="font-mono text-[#161821] dark:text-white">DemoStaff123!</code>)
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">dean.office@demo.edu</code>
+                    {' '}(pass: <code className="font-sans text-[#161821] dark:text-white">DemoStaff123!</code>)
                   </>
                 )}
               </p>

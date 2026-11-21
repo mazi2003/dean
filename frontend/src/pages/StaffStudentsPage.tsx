@@ -153,7 +153,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94A3B8]">
-              <span className="font-mono text-[#161821] dark:text-[#45d320] font-semibold">
+              <span className="font-sans text-[#161821] dark:text-[#45d320] font-semibold">
                 {tr(lang, 'Деканат Факультета МО', "Dean's Office — Faculty of IR")}
               </span>
               <span>•</span>
@@ -215,7 +215,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             {tr(lang, 'Академические группы', 'Academic Groups')}
           </span>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-2xl font-bold text-[#161821] dark:text-[#45d320]">
+            <span className="font-sans text-2xl font-bold text-[#161821] dark:text-[#45d320]">
               {groups.length}
             </span>
             <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'группы', 'groups')}</span>
@@ -237,7 +237,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             {tr(lang, 'Контингент студентов', 'Enrolled Students')}
           </span>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-2xl font-bold text-[#161821] dark:text-[#45d320]">
+            <span className="font-sans text-2xl font-bold text-[#161821] dark:text-[#45d320]">
               {totalStudents}
             </span>
             <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'в реестре', 'registered')}</span>
@@ -264,7 +264,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             {tr(lang, 'С задолженностями', 'With Arrears')}
           </span>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-2xl font-bold text-rose-600 dark:text-rose-400">
+            <span className="font-sans text-2xl font-bold text-rose-600 dark:text-rose-400">
               {withDebtsCount}
             </span>
             <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'обучающихся', 'students')}</span>
@@ -289,7 +289,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             {tr(lang, 'Средний балл факультета', 'Faculty Mean GPA')}
           </span>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-2xl font-bold text-emerald-700 dark:text-emerald-400">
+            <span className="font-sans text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               {avgGpa}
             </span>
             <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'из 5.0', 'out of 5.0')}</span>
@@ -347,7 +347,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                 <div className="space-y-3">
                   {/* Group Code & Year Badge */}
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-base font-bold text-[#161821] dark:text-[#45d320] bg-[#161821]/10 dark:bg-[#33b712]/15 px-2.5 py-1 rounded-md">
+                    <span className="font-sans text-base font-bold text-[#161821] dark:text-[#45d320] bg-[#161821]/10 dark:bg-[#33b712]/15 px-2.5 py-1 rounded-md">
                       {group.code}
                     </span>
                     <span className="text-[11px] font-sans font-medium px-2 py-0.5 rounded-md bg-[#f6f6f9] dark:bg-[#111714] border border-[#e2e4e8] dark:border-[#273142] text-[#475569] dark:text-[#94A3B8]">
@@ -371,7 +371,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
                         {tr(lang, 'Студентов:', 'Students:')}
                       </span>
-                      <span className="font-mono font-bold text-[#161821] dark:text-[#FFFFFF]">
+                      <span className="font-sans font-bold text-[#161821] dark:text-[#FFFFFF]">
                         {tr(lang, `${group.studentsCount} чел.`, `${group.studentsCount} students`)}
                       </span>
                       <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
@@ -389,7 +389,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
                         {tr(lang, 'Средний GPA:', 'Mean GPA:')}
                       </span>
-                      <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                      <span className="font-sans font-bold text-emerald-700 dark:text-emerald-400">
                         {group.averageGpa.toFixed(2)}
                       </span>
                       {group.debtCount > 0 ? (
@@ -417,7 +417,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                           {tr(lang, 'Староста', 'Group Rep')}: {group.starostaName}
                         </span>
                       </div>
-                      <div className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-mono mt-0.5">
+                      <div className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-sans mt-0.5">
                         {group.starostaPhone}
                       </div>
                     </div>
@@ -481,7 +481,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         `Group ${selectedGroup} Students`
                       )}
                 </span>
-                <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-[#f6f6f9] dark:bg-[#111714] border border-[#e2e4e8] dark:border-[#273142] text-[#475569] dark:text-[#94A3B8]">
+                <span className="text-xs font-sans font-semibold px-2 py-0.5 rounded-full bg-[#f6f6f9] dark:bg-[#111714] border border-[#e2e4e8] dark:border-[#273142] text-[#475569] dark:text-[#94A3B8]">
                   {tr(lang, `${filteredStudents.length} чел.`, `${filteredStudents.length} total`)}
                 </span>
               </h3>
@@ -655,7 +655,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         <h4 className="text-sm font-semibold text-[#161821] dark:text-[#FFFFFF] group-hover:text-[#161821] dark:group-hover:text-[#166534] dark:text-[#45d320] transition-colors">
                           {student.fullName}
                         </h4>
-                        <span className="px-1.5 py-0.2 rounded-md font-mono text-[10px] font-bold bg-[#161821] text-[#FFFFFF]">
+                        <span className="px-1.5 py-0.2 rounded-md font-sans text-[10px] font-bold bg-[#161821] text-[#FFFFFF]">
                           {student.group}
                         </span>
                         <span
@@ -675,13 +675,13 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3 text-xs text-[#475569] dark:text-[#94A3B8] font-sans">
-                        <span className="font-mono text-[11px]">{student.studentNumber}</span>
+                        <span className="font-sans text-[11px]">{student.studentNumber}</span>
                         <span>•</span>
                         <span>{student.email}</span>
                         {student.phone && (
                           <>
                             <span>•</span>
-                            <span className="font-mono text-[11px]">{student.phone}</span>
+                            <span className="font-sans text-[11px]">{student.phone}</span>
                           </>
                         )}
                       </div>
@@ -695,7 +695,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       <div className="flex items-center md:justify-end space-x-1.5">
                         <span className="text-[11px] text-[#475569] dark:text-[#94A3B8] font-sans">GPA:</span>
                         <span
-                          className={`font-mono text-sm font-bold ${
+                          className={`font-sans text-sm font-bold ${
                             student.gpa >= 4.5
                               ? 'text-emerald-700 dark:text-emerald-400'
                               : student.gpa >= 3.8
@@ -705,7 +705,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         >
                           {student.gpa.toFixed(2)}
                         </span>
-                        <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-mono">
+                        <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-sans">
                           ({student.averageScore}%)
                         </span>
                       </div>

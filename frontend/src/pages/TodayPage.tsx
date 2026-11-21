@@ -166,10 +166,10 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   {lang === 'ru' ? 'Входящие заявления' : 'Active Inquiries'}
                 </p>
                 <div className="flex items-baseline space-x-1.5">
-                  <span className="font-mono text-xl font-bold text-[#161821] dark:text-[#ffffff]">
+                  <span className="font-sans text-xl font-bold text-[#161821] dark:text-[#ffffff]">
                     {requests.length}
                   </span>
-                  <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-mono font-bold">
+                  <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-sans font-bold">
                     ({newRequestsCount} {lang === 'ru' ? 'новых' : 'new'})
                   </span>
                 </div>
@@ -213,7 +213,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               {tr(lang, 'Новые заявления', 'New Inquiries')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#be123c] dark:text-[#fecdd3]">
+              <span className="font-sans text-2xl font-bold text-[#be123c] dark:text-[#fecdd3]">
                 {newRequestsCount}
               </span>
               <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'ожидают', 'pending')}</span>
@@ -231,7 +231,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               {tr(lang, 'В обработке', 'In Review')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#0369a1] dark:text-[#38bdf8]">
+              <span className="font-sans text-2xl font-bold text-[#0369a1] dark:text-[#38bdf8]">
                 {inReviewCount}
               </span>
               <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'заявлений', 'requests')}</span>
@@ -249,7 +249,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               {tr(lang, 'Готово к выдаче', 'Ready to Issue')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#166534] dark:text-[#45d320]">
+              <span className="font-sans text-2xl font-bold text-[#166534] dark:text-[#45d320]">
                 {readyCount}
               </span>
               <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'готовых', 'ready')}</span>
@@ -267,7 +267,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               {tr(lang, 'Потоки в расписании', 'Active Streams')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#161821] dark:text-[#ffffff]">
+              <span className="font-sans text-2xl font-bold text-[#161821] dark:text-[#ffffff]">
                 2
               </span>
               <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'группы', 'groups')}</span>
@@ -317,7 +317,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     <span className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
                       {localizeText(req.typeTitle, lang)}
                     </span>
-                    <span className="font-mono text-[11px] text-[#475569] dark:text-[#94a3b8]">№ {req.id}</span>
+                    <span className="font-sans text-[11px] text-[#475569] dark:text-[#94a3b8]">№ {req.id}</span>
                   </div>
                   <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5">
                     {tr(lang, 'Студент:', 'Student:')}{' '}
@@ -332,7 +332,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className="px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-[#f6f6f9] dark:bg-[#121620] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142]">
+                  <span className="px-3 py-1 rounded-full text-[11px] font-sans font-semibold bg-[#f6f6f9] dark:bg-[#121620] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142]">
                     {getRequestStatusLabel(req.status, lang, 'staff')}
                   </span>
                   <button
@@ -434,7 +434,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           <div className="space-y-2">
             {/* Academic metadata pill */}
             <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
-              <span className="font-mono text-[#166534] dark:text-[#45d320] font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full">
+              <span className="font-sans text-[#166534] dark:text-[#45d320] font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full">
                 {profile?.group}
               </span>
               <span>•</span>
@@ -465,13 +465,13 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 {lang === 'ru' ? 'Академический статус' : 'Academic Standing'}
               </p>
               <div className="flex items-baseline space-x-1.5">
-                <span className="font-mono text-xl font-bold text-[#161821] dark:text-[#ffffff]">
+                <span className="font-sans text-xl font-bold text-[#161821] dark:text-[#ffffff]">
                   {profile?.gpa ? profile.gpa.toFixed(2) : '4.80'}
                 </span>
-                <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-mono">
+                <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
                   / 5.0 GPA
                 </span>
-                <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-mono font-bold pl-1">
+                <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-sans font-bold pl-1">
                   (48 ECTS)
                 </span>
               </div>
@@ -647,7 +647,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 </div>
 
                 <div className="sm:border-l sm:border-[#e2e4e8] sm:dark:border-[#273142] sm:pl-4 space-y-2">
-                  <div className="flex items-center space-x-2 text-xs font-mono text-[#161821] dark:text-[#ffffff]">
+                  <div className="flex items-center space-x-2 text-xs font-sans text-[#161821] dark:text-[#ffffff]">
                     <Clock className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                     <span className="font-bold text-sm">
                       {nextClass.start} – {nextClass.end}
@@ -697,10 +697,10 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between text-xs hover:border-[#33b712]/50 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="font-mono text-[#166534] dark:text-[#45d320] font-bold text-[11px] w-6">
+                    <span className="font-sans text-[#166534] dark:text-[#45d320] font-bold text-[11px] w-6">
                       {idx + 1}
                     </span>
-                    <span className="font-mono text-[#475569] dark:text-[#94a3b8] text-[11px] w-24">
+                    <span className="font-sans text-[#475569] dark:text-[#94a3b8] text-[11px] w-24">
                       {item.start}–{item.end}
                     </span>
                     <div>
@@ -709,7 +709,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       </h4>
                       <p className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
                         {item.teacher} •{' '}
-                        <span className="uppercase font-mono">
+                        <span className="uppercase font-sans">
                           {getScheduleTypeLabel(item.type, lang)}
                         </span>
                       </p>
@@ -717,7 +717,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   </div>
                   <button
                     onClick={() => onOpenMap?.(item.room)}
-                    className="flex items-center space-x-1 font-mono font-bold text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
+                    className="flex items-center space-x-1 font-sans font-bold text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
                     title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
                   >
                     <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
@@ -741,7 +741,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     : 'Upcoming Examination Program'}
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-[#475569] dark:text-[#94a3b8]">
+              <span className="text-[11px] font-sans text-[#475569] dark:text-[#94a3b8]">
                 {lang === 'ru' ? 'Зимняя сессия 2026' : 'Winter Session 2026'}
               </span>
             </div>
@@ -758,24 +758,24 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   >
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
+                        <span className="font-sans text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
                           {ex.code}
                         </span>
                         <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#161821] dark:text-[#ffffff]">
                           {localizeText(ex.subject, lang)}
                         </h4>
                         {ex.status === 'date_changed' && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white">
                             {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
                           </span>
                         )}
                         {ex.status === 'room_changed' && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white">
                             {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
                           </span>
                         )}
                         {ex.isDebt && (
-                          <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
                             {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
                           </span>
                         )}
@@ -786,7 +786,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       </p>
                     </div>
 
-                    <div className="flex items-center space-x-4 font-mono text-xs flex-shrink-0">
+                    <div className="flex items-center space-x-4 font-sans text-xs flex-shrink-0">
                       <div className="text-left sm:text-right">
                         <span className="font-bold text-[#166534] dark:text-[#45d320] block">
                           {ex.date}
@@ -850,7 +850,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       <span className="font-heading font-semibold text-xs text-white block">
                         {localizeText(r.typeTitle, lang)}
                       </span>
-                      <span className="text-[10px] font-mono text-[#45d320]">№ {r.id}</span>
+                      <span className="text-[10px] font-sans text-[#45d320]">№ {r.id}</span>
                     </div>
                     <span className="text-[11px] font-heading font-semibold text-[#45d320] flex items-center space-x-1">
                       <span>{tr(lang, 'Открыть PDF', 'Open PDF')}</span>
@@ -897,11 +897,11 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       <span className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff]">
                         {localizeText(r.typeTitle, lang)}
                       </span>
-                      <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30 font-semibold">
+                      <span className="text-[10px] font-sans px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30 font-semibold">
                         {getRequestStatusLabel(r.status, lang, 'staff')}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-[#475569] dark:text-[#94a3b8] font-mono">
+                    <div className="flex items-center justify-between text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
                       <span>
                         {tr(lang, `Срок: до ${r.expectedDate}`, `Due: ${r.expectedDate}`)}
                       </span>

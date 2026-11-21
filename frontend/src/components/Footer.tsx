@@ -99,14 +99,14 @@ export const Footer: React.FC = () => {
                 <Mail className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
                 <a
                   href={`mailto:${UNIVERSITY_INFO.deanOfficeEmail}`}
-                  className="hover:underline font-mono"
+                  className="hover:underline font-sans"
                 >
                   {UNIVERSITY_INFO.deanOfficeEmail}
                 </a>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
-                <span className="font-mono">{UNIVERSITY_INFO.deanOfficePhone}</span>
+                <span className="font-sans">{UNIVERSITY_INFO.deanOfficePhone}</span>
               </div>
               <p className="text-[11px] text-[#475569] dark:text-[#94a3b8] pt-1 leading-relaxed">
                 {UNIVERSITY_INFO.deanOfficeHours}

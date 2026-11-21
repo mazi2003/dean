@@ -63,7 +63,7 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
                   '⚡ Schedule Collision Detected'
                 )}
               </span>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#f97316] text-white">
+              <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#f97316] text-white">
                 {tr(lang, 'НАКЛАДКА СЛОТА', 'SLOT OVERLAP')}
               </span>
             </div>
@@ -135,7 +135,7 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
 
       {/* Expanded Dean's Directive Details */}
       {showDirectiveModal && (
-        <div className="p-4 rounded-xl bg-white dark:bg-[#11141c] border border-[#f97316]/30 text-xs font-mono space-y-2 animate-fade-in shadow-xs">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#11141c] border border-[#f97316]/30 text-xs font-sans space-y-2 animate-fade-in shadow-xs">
           <div className="flex items-center justify-between border-b border-[#e2e4e8] dark:border-[#273142] pb-2 text-[10px] text-[#475569] dark:text-[#94a3b8]">
             <span>РАСПОРЯЖЕНИЕ ДЕКАНАТА № 118-А-СТ</span>
             <span>20.11.2026 г.</span>

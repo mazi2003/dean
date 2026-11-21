@@ -130,7 +130,7 @@ export const ProfilePage: React.FC = () => {
                   <span className="text-[#475569] dark:text-[#94a3b8]">
                     {tr(lang, 'Академическая группа:', 'Academic Group:')}
                   </span>
-                  <span className="font-mono font-bold text-[#166534] dark:text-[#45d320]">
+                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320]">
                     {profile?.group}
                   </span>
                 </div>
@@ -148,7 +148,7 @@ export const ProfilePage: React.FC = () => {
                   <span className="text-[#475569] dark:text-[#94a3b8]">
                     {tr(lang, 'Номер студенческого билета:', 'Student ID Number:')}
                   </span>
-                  <span className="font-mono font-bold text-[#166534] dark:text-[#45d320]">
+                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320]">
                     {profile?.studentNumber}
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export const ProfilePage: React.FC = () => {
                   <span className="text-[#475569] dark:text-[#94a3b8]">
                     {tr(lang, 'Табельный номер:', 'Staff ID:')}
                   </span>
-                  <span className="font-mono font-bold text-[#166534] dark:text-[#45d320]">
+                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320]">
                     ТАБ-0441
                   </span>
                 </div>

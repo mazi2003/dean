@@ -78,7 +78,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
 
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[#161821] text-[#45d320]">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-sans font-bold bg-[#161821] text-[#45d320]">
                     {tr(lang, 'ГРУППА', 'GROUP')} {profile.group}
                   </span>
                   <span className="px-2 py-0.5 rounded-md text-[10px] font-sans font-medium bg-[#ebeef3] dark:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF]">
@@ -114,7 +114,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 </h2>
                 <p className="text-xs text-[#475569] dark:text-[#94A3B8] font-sans">
                   {localizeText(profile.program, lang)} • {tr(lang, 'Студ. билет:', 'Student ID:')}{' '}
-                  <span className="font-mono font-semibold">{profile.studentNumber}</span>
+                  <span className="font-sans font-semibold">{profile.studentNumber}</span>
                 </p>
               </div>
             </div>
@@ -125,7 +125,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Средний балл (GPA)', 'Cumulative GPA')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#45d320]">
+                <span className="font-sans text-lg font-bold text-[#161821] dark:text-[#45d320]">
                   {profile.gpa.toFixed(2)}
                 </span>
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
@@ -137,7 +137,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Рейтинг БРС', 'BRS Rating')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#45d320]">
+                <span className="font-sans text-lg font-bold text-[#161821] dark:text-[#45d320]">
                   {profile.averageScore}%
                 </span>
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
@@ -149,7 +149,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Кредиты ECTS', 'ECTS Credits')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#FFFFFF]">
+                <span className="font-sans text-lg font-bold text-[#161821] dark:text-[#FFFFFF]">
                   {gradesSummary.creditsEarned}
                 </span>
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
@@ -165,7 +165,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Заявления в деканат', 'Submitted Requests')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#FFFFFF]">
+                <span className="font-sans text-lg font-bold text-[#161821] dark:text-[#FFFFFF]">
                   {requests.length}
                 </span>
                 <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
@@ -206,7 +206,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 }`}
               >
                 <span>{tr(lang, 'Заявления и справки', 'Requests & Certificates')}</span>
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#e2e4e8] dark:bg-[#273142] font-mono">
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#e2e4e8] dark:bg-[#273142] font-sans">
                   {requests.length}
                 </span>
               </button>
@@ -247,13 +247,13 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                           <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                             {tr(lang, 'Номер студбилета:', 'Student ID:')}
                           </span>
-                          <span className="font-mono font-semibold">{profile.studentNumber}</span>
+                          <span className="font-sans font-semibold">{profile.studentNumber}</span>
                         </div>
                         <div>
                           <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                             {tr(lang, 'Номер зачетки:', 'Record Book No.:')}
                           </span>
-                          <span className="font-mono font-semibold">
+                          <span className="font-sans font-semibold">
                             {profile.recordBookNumber}
                           </span>
                         </div>
@@ -306,7 +306,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                           <span className="text-[#475569] dark:text-[#94A3B8] block text-[10px]">
                             {tr(lang, 'Телефон для связи:', 'Contact Phone:')}
                           </span>
-                          <span className="font-mono font-medium">
+                          <span className="font-sans font-medium">
                             {profile.phone || '+7 (999) 000-00-00'}
                           </span>
                         </div>
@@ -328,7 +328,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                           <span className="text-[#475569] dark:text-[#94A3B8] block text-[10px]">
                             {tr(lang, 'СНИЛС:', 'Insurance ID (SNILS):')}
                           </span>
-                          <span className="font-mono">{profile.snils || '184-293-841 02'}</span>
+                          <span className="font-sans">{profile.snils || '184-293-841 02'}</span>
                         </div>
                       </div>
                     </div>
@@ -389,7 +389,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                         'Examination Grade Sheet — Semester 3'
                       )}
                     </span>
-                    <span className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">
+                    <span className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8]">
                       {gradesSummary.items.length} {tr(lang, 'дисциплин', 'courses')}
                     </span>
                   </div>
@@ -418,7 +418,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
 
                         <div className="flex items-center space-x-3 self-end sm:self-auto">
                           {item.points !== null && (
-                            <span className="text-xs font-mono font-bold text-[#161821] dark:text-[#45d320]">
+                            <span className="text-xs font-sans font-bold text-[#161821] dark:text-[#45d320]">
                               {item.points} {tr(lang, 'б.', 'pts')}
                             </span>
                           )}
@@ -497,7 +497,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#475569] dark:text-[#94A3B8] font-mono">
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#475569] dark:text-[#94A3B8] font-sans">
                         <span>№ {req.id}</span>
                         <span>•</span>
                         <span>

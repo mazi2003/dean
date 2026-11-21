@@ -402,7 +402,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                     "Dean's Office Dispatcher Mode: Timetable Management"
                   )}
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#33b712]/20 text-[#161821] dark:text-[#45d320] border border-[#33b712]/40">
+                <span className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-[#33b712]/20 text-[#161821] dark:text-[#45d320] border border-[#33b712]/40">
                   {tr(lang, 'ПРАВА ДЕКАНАТА', 'DEAN AUTHORITY')}
                 </span>
               </div>
@@ -426,7 +426,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
               aria-label={tr(lang, 'Группа:', 'Group:')}
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="bg-transparent text-xs font-mono font-bold text-[#161821] dark:text-[#45d320] focus:outline-none cursor-pointer pr-2"
+              className="bg-transparent text-xs font-sans font-bold text-[#161821] dark:text-[#45d320] focus:outline-none cursor-pointer pr-2"
             >
               <option value="ДУ-101">
                 {tr(lang, 'ДУ-101 (2 курс, МО)', 'ДУ-101 (Year 2, IR)')}
@@ -559,7 +559,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         : 'bg-white dark:bg-[#171c26] text-[#475569] dark:text-[#CBD5E1] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] border-[#e2e4e8] dark:border-[#273142]'
                     }`}
                   >
-                    <span className="block text-[10px] font-mono tracking-wider opacity-80 uppercase">
+                    <span className="block text-[10px] font-sans tracking-wider opacity-80 uppercase">
                       {day.short}
                     </span>
                     <span className="hidden sm:block text-xs font-semibold mt-0.5">
@@ -651,7 +651,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                     <div className="flex items-start space-x-3.5">
                       {/* Period Badge */}
                       <div className="w-10 h-10 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex flex-col items-center justify-center flex-shrink-0 text-center">
-                        <span className="font-mono text-xs font-bold text-[#161821] dark:text-[#45d320]">
+                        <span className="font-sans text-xs font-bold text-[#161821] dark:text-[#45d320]">
                           {idx + 1}
                         </span>
                         <span className="text-[8px] font-sans uppercase text-[#475569] dark:text-[#94A3B8]">
@@ -662,28 +662,28 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
                           {viewMode === 'week' && dayInfo && (
-                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#161821] text-[#FFFFFF]">
+                            <span className="text-[10px] font-sans font-bold px-1.5 py-0.5 rounded bg-[#161821] text-[#FFFFFF]">
                               {dayInfo.short}
                             </span>
                           )}
-                          <span className="text-xs font-mono font-bold text-[#161821] dark:text-[#45d320]">
+                          <span className="text-xs font-sans font-bold text-[#161821] dark:text-[#45d320]">
                             {item.start} – {item.end}
                           </span>
-                          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] border border-[#e2e4e8] dark:border-[#273142]">
+                          <span className="text-[10px] font-sans uppercase px-2 py-0.5 rounded bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] border border-[#e2e4e8] dark:border-[#273142]">
                             {getScheduleTypeLabel(item.type, lang)}
                           </span>
                           {isCanceled && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
+                            <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
                               {getScheduleStatusLabel('cancelled', lang)}
                             </span>
                           )}
                           {isMoved && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
+                            <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
                               {getScheduleStatusLabel('moved', lang)}
                             </span>
                           )}
                           {isRoomChanged && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
+                            <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
                               {getScheduleStatusLabel('room_changed', lang)}
                             </span>
                           )}
@@ -703,7 +703,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         </p>
 
                         {item.changeNote && (
-                          <p className="text-xs font-mono text-[#be123c] dark:text-[#fecdd3] font-medium pt-0.5">
+                          <p className="text-xs font-sans text-[#be123c] dark:text-[#fecdd3] font-medium pt-0.5">
                             {tr(lang, 'Примечание деканата:', "Dean's note:")} {item.changeNote}
                           </p>
                         )}
@@ -714,7 +714,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                       <button
                         type="button"
                         onClick={() => onOpenMap?.(item.room)}
-                        className="flex items-center space-x-1.5 font-mono text-xs font-bold text-[#161821] dark:text-[#45d320] hover:text-[#166534] dark:hover:text-[#86efac] transition-colors cursor-pointer group"
+                        className="flex items-center space-x-1.5 font-sans text-xs font-bold text-[#161821] dark:text-[#45d320] hover:text-[#166534] dark:hover:text-[#86efac] transition-colors cursor-pointer group"
                         title={lang === 'ru' ? 'Найти аудиторию на карте кампуса' : 'Locate room on campus map'}
                       >
                         <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
@@ -748,7 +748,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
           <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-xs font-bold text-[#161821] dark:text-[#45d320]">
+                <span className="font-sans text-xs font-bold text-[#161821] dark:text-[#45d320]">
                   {tr(
                     lang,
                     'Зимняя промежуточная аттестация 2026/2027',
@@ -830,7 +830,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                     {/* Header Row */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#e2e4e8] dark:border-[#273142] pb-2.5">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#161821] text-[#FFFFFF]">
+                        <span className="font-sans text-xs font-bold px-2 py-0.5 rounded bg-[#161821] text-[#FFFFFF]">
                           {ex.code}
                         </span>
                         <h4
@@ -841,34 +841,34 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
                         {/* Status Badges */}
                         {isDateChanged && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
                             {getExamStatusLabel('date_changed', lang)}
                           </span>
                         )}
                         {isRoomChanged && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-600 text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-blue-600 text-white">
                             {getExamStatusLabel('room_changed', lang)}
                           </span>
                         )}
                         {isPostponed && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-700 text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-purple-700 text-white">
                             {getExamStatusLabel('postponed', lang)}
                           </span>
                         )}
                         {isCancelled && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
                             {getExamStatusLabel('cancelled', lang)}
                           </span>
                         )}
                         {ex.isDebt && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
                             {tr(lang, 'КОМИССИОННАЯ ПЕРЕСДАЧА', 'COMMITTEE RETAKE')}
                           </span>
                         )}
                       </div>
 
                       <div className="flex items-center space-x-3 self-end sm:self-auto">
-                        <span className="text-xs font-mono font-bold text-[#161821] dark:text-[#45d320]">
+                        <span className="text-xs font-sans font-bold text-[#161821] dark:text-[#45d320]">
                           {ex.credits} ECTS
                         </span>
                         {isStaff && (
@@ -886,7 +886,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                     {/* Information Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-sans">
                       <div>
-                        <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94A3B8] block">
+                        <span className="text-[10px] uppercase font-sans text-[#475569] dark:text-[#94A3B8] block">
                           {tr(lang, 'Формат аттестации', 'Assessment Format')}
                         </span>
                         <span className="font-medium text-[#161821] dark:text-[#FFFFFF]">
@@ -906,7 +906,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                       </div>
 
                       <div>
-                        <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94A3B8] block">
+                        <span className="text-[10px] uppercase font-sans text-[#475569] dark:text-[#94A3B8] block">
                           {tr(lang, 'Дата и время экзамена', 'Exam Date & Time')}
                         </span>
                         <span
@@ -914,13 +914,13 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         >
                           {ex.date}
                         </span>
-                        <p className="text-[11px] text-[#475569] dark:text-[#CBD5E1] font-mono mt-0.5">
+                        <p className="text-[11px] text-[#475569] dark:text-[#CBD5E1] font-sans mt-0.5">
                           {tr(lang, 'Время:', 'Time:')} {ex.time}
                         </p>
                       </div>
 
                       <div>
-                        <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94A3B8] block">
+                        <span className="text-[10px] uppercase font-sans text-[#475569] dark:text-[#94A3B8] block">
                           {tr(lang, 'Место и консультация', 'Location & Consultation')}
                         </span>
                         <div className="flex items-center space-x-1 font-medium text-[#161821] dark:text-[#FFFFFF]">
@@ -935,7 +935,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
                     {/* Dean's Official Change Note if present */}
                     {ex.changeNote && (
-                      <div className="p-2.5 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-mono text-[#161821] dark:text-[#45d320] flex items-center space-x-2">
+                      <div className="p-2.5 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#161821] dark:text-[#45d320] flex items-center space-x-2">
                         <Shield className="w-3.5 h-3.5 flex-shrink-0" />
                         <span>
                           {tr(lang, 'Основание деканата:', "Dean's notice:")} {ex.changeNote}
@@ -1020,7 +1020,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                     type="time"
                     value={editStart}
                     onChange={(e) => setEditStart(e.target.value)}
-                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 font-mono text-xs text-[#161821] dark:text-[#FFFFFF]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 font-sans text-xs text-[#161821] dark:text-[#FFFFFF]"
                   />
                 </div>
                 <div>
@@ -1033,7 +1033,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                     type="time"
                     value={editEnd}
                     onChange={(e) => setEditEnd(e.target.value)}
-                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 font-mono text-xs text-[#161821] dark:text-[#FFFFFF]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 font-sans text-xs text-[#161821] dark:text-[#FFFFFF]"
                   />
                 </div>
               </div>

@@ -185,7 +185,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                     {idx === 0 && !isUser ? defaultGreeting : m.text}
                   </p>
                   <span
-                    className={`block text-[10px] mt-1 font-mono text-right ${
+                    className={`block text-[10px] mt-1 font-sans text-right ${
                       isUser ? 'text-[#45d320]' : 'text-[#475569] dark:text-[#94a3b8]'
                     }`}
                   >

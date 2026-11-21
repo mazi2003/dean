@@ -154,7 +154,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* PWA Offline-First Mode Status & Simulator Button */}
             <button
               onClick={() => setSimulateOffline(!simulateOffline)}
-              className={`hidden lg:flex items-center space-x-1.5 text-[11px] font-mono px-2.5 py-1 min-h-[36px] rounded-full transition-all cursor-pointer border ${
+              className={`hidden lg:flex items-center space-x-1.5 text-[11px] font-sans px-2.5 py-1 min-h-[36px] rounded-full transition-all cursor-pointer border ${
                 isActuallyOffline
                   ? 'bg-[#fef3c7] dark:bg-[#451a03] text-[#92400e] dark:text-[#fde68a] border-[#f59e0b]'
                   : 'bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border-[#33b712]/30 hover:border-[#33b712]'
@@ -197,7 +197,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <button
               onClick={() => setSimulateOffline(false)}
-              className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-white/20 hover:bg-white/30 text-white cursor-pointer flex-shrink-0"
+              className="text-[10px] font-sans font-bold px-2.5 py-1 rounded-full bg-white/20 hover:bg-white/30 text-white cursor-pointer flex-shrink-0"
             >
               {simulateOffline
                 ? tr(lang, 'Выключить тест', 'Exit Demo')
@@ -283,7 +283,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#be123c] text-white text-[10px] font-mono font-bold flex items-center justify-center shadow-xs">
+                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#be123c] text-white text-[10px] font-sans font-bold flex items-center justify-center shadow-xs">
                   {unreadCount}
                 </span>
               )}

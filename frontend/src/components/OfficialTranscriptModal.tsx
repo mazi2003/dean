@@ -92,7 +92,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                 <UniversityEmblem size={44} variant="full" />
               </div>
               <div>
-                <div className="text-[9px] font-mono tracking-wider text-[#475569] dark:text-[#94A3B8] uppercase">
+                <div className="text-[9px] font-sans tracking-wider text-[#475569] dark:text-[#94A3B8] uppercase">
                   {lang === 'ru'
                     ? 'МИНОБРНАУКИ РОССИИ • ЛИЦЕНЗИЯ № 2841 • АККРЕДИТАЦИЯ № 3105'
                     : 'MINISTRY OF HIGHER EDUCATION • ACCREDITATION NO. 3105'}
@@ -107,7 +107,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                     "Faculty of International Relations • Dean's Office"
                   )}
                 </p>
-                <p className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-mono">
+                <p className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-sans">
                   {tr(
                     lang,
                     'г. Москва, Университетская наб., д. 1 • Тел.: +7 (495) 000-00-00',
@@ -117,7 +117,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               </div>
             </div>
 
-            <div className="text-right font-mono text-[11px] text-[#475569] dark:text-[#94A3B8] bg-[#f6f6f9] dark:bg-[#171c26] p-2.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142]">
+            <div className="text-right font-sans text-[11px] text-[#475569] dark:text-[#94A3B8] bg-[#f6f6f9] dark:bg-[#171c26] p-2.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142]">
               <div>
                 {tr(lang, 'Исх. №', 'Ref. No.')}{' '}
                 <span className="font-bold text-[#161821] dark:text-[#45d320]">
@@ -163,7 +163,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                 {tr(lang, 'Номер студенческого билета / Зачетки:', 'Student ID / Record Book No.:')}
               </span>
-              <span className="font-mono font-semibold">
+              <span className="font-sans font-semibold">
                 {profile.studentNumber} / {profile.recordBookNumber}
               </span>
             </div>
@@ -215,17 +215,17 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                 <tbody className="divide-y divide-[#e2e4e8] dark:divide-[#273142] bg-white dark:bg-[#171c26]">
                   {gradesSummary.items.map((item, idx) => (
                     <tr key={item.id} className="hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533]/50">
-                      <td className="py-2 px-3 text-[#475569] dark:text-[#94A3B8] font-mono text-[11px]">{idx + 1}</td>
+                      <td className="py-2 px-3 text-[#475569] dark:text-[#94A3B8] font-sans text-[11px]">{idx + 1}</td>
                       <td className="py-2 px-3 font-medium text-[#161821] dark:text-[#FFFFFF]">
                         {localizeText(item.subject, lang)}
                       </td>
-                      <td className="py-2 px-2 text-center font-mono text-[#475569] dark:text-[#94A3B8]">
+                      <td className="py-2 px-2 text-center font-sans text-[#475569] dark:text-[#94A3B8]">
                         {item.credits}
                       </td>
                       <td className="py-2 px-2 text-center text-[11px] text-[#475569] dark:text-[#94A3B8]">
                         {getAssessmentTypeLabel(item.assessmentType, lang)}
                       </td>
-                      <td className="py-2 px-2 text-center font-mono font-semibold">
+                      <td className="py-2 px-2 text-center font-sans font-semibold">
                         {item.points ?? '—'}
                       </td>
                       <td className="py-2 px-3 text-right font-semibold">
@@ -273,13 +273,13 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               <span className="text-[#475569] dark:text-[#94A3B8]">
                 {tr(lang, 'Средний балл (GPA): ', 'Cumulative GPA: ')}
               </span>
-              <span className="font-mono font-bold text-base text-[#161821] dark:text-[#45d320]">
+              <span className="font-sans font-bold text-base text-[#161821] dark:text-[#45d320]">
                 {profile.gpa.toFixed(2)}
               </span>
               <span className="text-[#475569] dark:text-[#94A3B8] ml-2">
                 • {tr(lang, 'Средний рейтинг БРС: ', 'BRS Avg Score: ')}
               </span>
-              <span className="font-mono font-bold text-[#161821] dark:text-[#45d320]">
+              <span className="font-sans font-bold text-[#161821] dark:text-[#45d320]">
                 {profile.averageScore}%
               </span>
             </div>
@@ -287,7 +287,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               <span className="text-[#475569] dark:text-[#94A3B8]">
                 {tr(lang, 'Освоено кредитов: ', 'Credits Earned: ')}
               </span>
-              <span className="font-mono font-bold">
+              <span className="font-sans font-bold">
                 {tr(
                   lang,
                   `${gradesSummary.creditsEarned} из ${gradesSummary.creditsRequired} ECTS`,
@@ -309,7 +309,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                   {tr(lang, 'ДОКУМЕНТ ПОДПИСАН ЭЛЕКТРОННОЙ ПОДПИСЬЮ', 'DOCUMENT DIGITALLY SIGNED')}
                 </div>
               </div>
-              <div className="space-y-0.5 text-[9px] font-mono text-[#475569] dark:text-[#CBD5E1]">
+              <div className="space-y-0.5 text-[9px] font-sans text-[#475569] dark:text-[#CBD5E1]">
                 <div>
                   <span className="font-semibold text-[#161821] dark:text-[#45d320]">
                     {tr(lang, 'Сертификат:', 'Certificate:')}
@@ -350,7 +350,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                 <p className="text-[9px] text-[#475569] dark:text-[#94A3B8]">
                   {tr(lang, 'М.П. (Гербовая печать деканата)', "Official Seal of Dean's Office")}
                 </p>
-                <p className="font-mono text-[9px] text-[#1D4ED8] dark:text-[#45d320] pt-1">
+                <p className="font-sans text-[9px] text-[#1D4ED8] dark:text-[#45d320] pt-1">
                   {tr(lang, 'Реестр:', 'Registry:')} demotech.edu/verify/77AA-9402
                 </p>
               </div>

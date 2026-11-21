@@ -132,19 +132,19 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
             <div>
               <p>
                 {tr(lang, 'Рег. №', 'Reg. No.')}{' '}
-                <strong className="font-mono text-[#161821]">
+                <strong className="font-sans text-[#161821]">
                   {tr(lang, 'ЭД', 'ED')}-{request.id.toUpperCase()}
                 </strong>
               </p>
               <p>
                 {tr(lang, 'Дата выдачи:', 'Issue Date:')}{' '}
-                <strong className="font-mono">{issuedDate}</strong>
+                <strong className="font-sans">{issuedDate}</strong>
               </p>
             </div>
             <div className="text-right">
               <p>
                 {tr(lang, 'Код валидации:', 'Verification Code:')}{' '}
-                <strong className="font-mono text-[#161821]">
+                <strong className="font-sans text-[#161821]">
                   {request.id.slice(-6).toUpperCase()}
                 </strong>
               </p>
@@ -226,7 +226,7 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
                   {tr(lang, 'ИЛЛЮСТРАТИВНЫЙ ШТАМП (ДЕМО)', 'ILLUSTRATIVE STAMP (DEMO)')}
                 </span>
               </div>
-              <div className="space-y-0.5 text-[9px] font-mono text-[#475569]">
+              <div className="space-y-0.5 text-[9px] font-sans text-[#475569]">
                 <p>
                   <strong className="text-[#161821]">{tr(lang, 'Сертификат:', 'Cert:')}</strong>{' '}
                   00C8-DEMO-2026-СПР-{request.id.slice(0, 8).toUpperCase()}
@@ -242,7 +242,7 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
                   01.09.2025 – 31.08.2027
                 </p>
               </div>
-              <div className="pt-1 border-t border-[#e2e4e8] flex items-center justify-between text-[8px] font-mono text-[#475569]">
+              <div className="pt-1 border-t border-[#e2e4e8] flex items-center justify-between text-[8px] font-sans text-[#475569]">
                 <span>{tr(lang, 'Конкурсный макет (вымышл.)', 'Competition concept')}</span>
                 <span className="font-semibold text-[#161821]">
                   demotech.edu/verify/{request.id.slice(0, 8)}

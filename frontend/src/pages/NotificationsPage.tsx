@@ -223,14 +223,14 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
                         {cfg.label}
                       </span>
                       {isUrgent && (
-                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
+                        <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
                           {tr(lang, 'ВАЖНОЕ РАСПОРЯЖЕНИЕ', 'URGENT NOTICE')}
                         </span>
                       )}
                       {!n.read && (
                         <span className="w-2 h-2 rounded-full bg-[#33b712]" />
                       )}
-                      <span className="text-[11px] font-mono text-[#475569] dark:text-[#94a3b8]">
+                      <span className="text-[11px] font-sans text-[#475569] dark:text-[#94a3b8]">
                         {n.createdAt}
                       </span>
                     </div>

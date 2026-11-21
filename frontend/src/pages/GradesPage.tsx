@@ -109,10 +109,10 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
             </div>
           </div>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-3xl font-bold text-[#166534] dark:text-[#45d320]">
+            <span className="font-sans text-3xl font-bold text-[#166534] dark:text-[#45d320]">
               {(grades.items.length > 0 ? grades.gpa : 0).toFixed(2)}
             </span>
-            <span className="font-mono text-xs text-[#475569] dark:text-[#94a3b8]">/ 5.00</span>
+            <span className="font-sans text-xs text-[#475569] dark:text-[#94a3b8]">/ 5.00</span>
           </div>
           <p className="text-[11px] font-sans text-[#4b5563] dark:text-[#cbd5e1]">
             {grades.gpa >= 4.5
@@ -132,10 +132,10 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
             </div>
           </div>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-3xl font-bold text-[#161821] dark:text-[#ffffff]">
+            <span className="font-sans text-3xl font-bold text-[#161821] dark:text-[#ffffff]">
               {(grades.items.length > 0 ? grades.averagePoints : 0).toFixed(1)}
             </span>
-            <span className="font-mono text-xs text-[#475569] dark:text-[#94a3b8]">/ 100</span>
+            <span className="font-sans text-xs text-[#475569] dark:text-[#94a3b8]">/ 100</span>
           </div>
           <p className="text-[11px] font-sans text-[#4b5563] dark:text-[#cbd5e1]">
             {tr(
@@ -157,10 +157,10 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
             </div>
           </div>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-3xl font-bold text-[#161821] dark:text-[#ffffff]">
+            <span className="font-sans text-3xl font-bold text-[#161821] dark:text-[#ffffff]">
               {grades.items.length > 0 ? grades.creditsEarned : 0}
             </span>
-            <span className="font-mono text-xs text-[#475569] dark:text-[#94a3b8]">
+            <span className="font-sans text-xs text-[#475569] dark:text-[#94a3b8]">
               / {grades.creditsRequired || 240} ECTS
             </span>
           </div>
@@ -183,7 +183,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
                   {tr(lang, 'Академическая задолженность:', 'Academic Debt:')}{' '}
                   {localizeText(failedSubject.subject, lang)}
                 </h3>
-                <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
+                <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
                   {tr(lang, 'НЕЗАЧЕТ', 'FAILED')}
                 </span>
               </div>
@@ -194,7 +194,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
                   'Faculty board retake assessment has been scheduled. All pending lab coursework must be submitted for admission.'
                 )}
               </p>
-              <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-[#be123c] dark:text-[#fecdd3] font-semibold">
+              <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-sans text-[#be123c] dark:text-[#fecdd3] font-semibold">
                 <span>
                   {tr(lang, 'Дата пересдачи: 28 ноября 2026 г.', 'Retake Date: Nov 28, 2026')}
                 </span>
@@ -241,7 +241,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
               )}
             </h3>
           </div>
-          <span className="text-xs font-mono text-[#475569] dark:text-[#94a3b8]">
+          <span className="text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
             {tr(lang, `${grades.items.length} дисциплин`, `${grades.items.length} courses`)}
           </span>
         </div>
@@ -253,7 +253,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
           className="overflow-x-auto focus:outline-hidden focus:ring-1 focus:ring-[#33b712]"
         >
           <table className="w-full text-left text-xs font-sans">
-            <thead className="bg-[#f6f6f9]/60 dark:bg-[#121620]/60 border-b border-[#e2e4e8] dark:border-[#273142] text-[10px] uppercase tracking-wider text-[#475569] dark:text-[#94a3b8] font-mono">
+            <thead className="bg-[#f6f6f9]/60 dark:bg-[#121620]/60 border-b border-[#e2e4e8] dark:border-[#273142] text-[10px] uppercase tracking-wider text-[#475569] dark:text-[#94a3b8] font-sans">
               <tr>
                 <th className="py-3 px-4 w-12">№</th>
                 <th className="py-3 px-4">
@@ -275,7 +275,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
                       isFail ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15' : ''
                     }`}
                   >
-                    <td className="py-3.5 px-4 font-mono text-[#475569] dark:text-[#94a3b8]">
+                    <td className="py-3.5 px-4 font-sans text-[#475569] dark:text-[#94a3b8]">
                       {String(idx + 1).padStart(2, '0')}
                     </td>
                     <td className="py-3.5 px-4">
@@ -291,10 +291,10 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
                         )}
                       </p>
                     </td>
-                    <td className="py-3.5 px-4 font-mono font-semibold text-[#161821] dark:text-[#ffffff]">
+                    <td className="py-3.5 px-4 font-sans font-semibold text-[#161821] dark:text-[#ffffff]">
                       {item.credits} ECTS
                     </td>
-                    <td className="py-3.5 px-4 font-mono">
+                    <td className="py-3.5 px-4 font-sans">
                       <span
                         className={`font-bold ${
                           isFail

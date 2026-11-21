@@ -149,7 +149,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 : `${profile?.group} • ${lang === 'ru' ? `${profile?.year} курс` : `Year ${profile?.year}`}`}
             </p>
             {!isStaff && (
-              <p className="text-[10px] font-mono text-[#475569] dark:text-[#94a3b8] truncate">
+              <p className="text-[10px] font-sans text-[#475569] dark:text-[#94a3b8] truncate">
                 № {profile?.studentNumber}
               </p>
             )}
@@ -162,7 +162,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[#475569] dark:text-[#94a3b8] font-sans text-[11px]">
               {lang === 'ru' ? 'Средний балл (GPA):' : 'Cumulative GPA:'}
             </span>
-            <div className="flex items-center space-x-1.5 font-mono font-bold text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full border border-[#33b712]/30">
+            <div className="flex items-center space-x-1.5 font-sans font-bold text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full border border-[#33b712]/30">
               <Award className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
               <span>{profile?.gpa ? profile.gpa.toFixed(2) : '4.80'}</span>
             </div>
@@ -213,7 +213,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               {item.badge !== undefined && item.badge > 0 ? (
                 <span
-                  className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] font-sans font-bold px-2 py-0.5 rounded-full ${
                     isActive
                       ? 'bg-[#166534] text-white'
                       : 'bg-[#be123c] text-white'

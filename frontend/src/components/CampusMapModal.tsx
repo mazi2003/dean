@@ -554,7 +554,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     'Interactive Campus Map & Indoor Wayfinding'
                   )}
                 </h2>
-                <span className="hidden sm:inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#166534] text-white">
+                <span className="hidden sm:inline-block text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#166534] text-white">
                   3D Маршрутизация
                 </span>
               </div>
@@ -745,7 +745,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                             `➡️ DIRECT ROUTE ON FLOOR ${destLocation.floor} (SAME LEVEL)`
                           )}
                   </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
+                  <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
                     {floorDiff !== 0
                       ? tr(lang, 'ЛЕСТНИЦА / ЛИФТ', 'STAIRS / ELEVATOR')
                       : tr(lang, 'БЕЗ ЛЕСТНИЦ', 'NO STAIRS')}
@@ -780,7 +780,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedFloorOverride(originLocation.floor)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors cursor-pointer border ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-sans font-semibold transition-colors cursor-pointer border ${
                     selectedFloor === originLocation.floor
                       ? 'bg-[#161821] text-white border-[#161821]'
                       : 'bg-white dark:bg-[#121620] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#273142]'
@@ -792,7 +792,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedFloorOverride(destLocation.floor)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors cursor-pointer border ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-sans font-semibold transition-colors cursor-pointer border ${
                     selectedFloor === destLocation.floor
                       ? 'bg-[#161821] text-white border-[#161821]'
                       : 'bg-white dark:bg-[#121620] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#273142]'
@@ -810,7 +810,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
             ───────────────────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-xs font-mono text-[#475569] dark:text-[#94a3b8]">
+            <div className="flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
               <Compass className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
               <span className="font-bold text-[#161821] dark:text-white uppercase tracking-wider">
                 {lang === 'ru' ? `Просмотр: ${selectedFloor} этаж` : `View: Floor ${selectedFloor}`}
@@ -1048,7 +1048,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                       <text
                         x={room.x + 16}
                         y={room.y + 28}
-                        className={`font-mono text-sm font-bold ${
+                        className={`font-sans text-sm font-bold ${
                           isDestination
                             ? 'fill-[#be123c] dark:fill-[#fecdd3]'
                             : isOrigin
@@ -1074,7 +1074,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                       <text
                         x={room.x + 16}
                         y={room.y + 68}
-                        className="text-[9px] font-mono fill-[#64748b] dark:fill-[#94a3b8]"
+                        className="text-[9px] font-sans fill-[#64748b] dark:fill-[#94a3b8]"
                       >
                         {room.capacity} мест • {selectedFloor} эт.
                       </text>
@@ -1195,10 +1195,10 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   <span>{tr(lang, 'Расчетное время в пути', 'Estimated Transit Time')}</span>
                 </div>
                 <div className="mt-2 flex items-baseline space-x-2">
-                  <span className="text-2xl font-mono font-bold text-white">
+                  <span className="text-2xl font-sans font-bold text-white">
                     {floorDiff === 0 ? '~45 сек' : `~1 мин ${Math.abs(floorDiff) * 20} сек`}
                   </span>
-                  <span className="text-xs text-[#45d320] font-mono">
+                  <span className="text-xs text-[#45d320] font-sans">
                     {floorDiff === 0 ? 'пешком' : 'лифт / ступени'}
                   </span>
                 </div>
@@ -1209,7 +1209,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-[#45d320]">
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-sans text-[#45d320]">
                 <span>{destLocation.code} • ДОСТУПНО</span>
                 <span className="flex items-center space-x-1">
                   <Wind className="w-3 h-3" />

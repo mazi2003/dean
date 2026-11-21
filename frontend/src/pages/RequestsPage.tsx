@@ -266,7 +266,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
               )}
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-[#475569] dark:text-[#94a3b8]">
+          <span className="text-[11px] font-sans text-[#475569] dark:text-[#94a3b8]">
             {tr(lang, 'Архив с 2026 г.', 'Archive since 2026')}
           </span>
         </div>
@@ -300,16 +300,16 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-mono text-xs text-[#475569] dark:text-[#94a3b8]">№ {req.id}</span>
+                        <span className="font-sans text-xs text-[#475569] dark:text-[#94a3b8]">№ {req.id}</span>
                         <h4 className="font-heading font-semibold text-sm sm:text-base text-[#161821] dark:text-[#ffffff]">
                           {localizeText(req.typeTitle, lang)}
                         </h4>
                       </div>
                       <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans">
                         {tr(lang, 'Подано:', 'Submitted:')}{' '}
-                        <span className="font-mono">{req.createdAt}</span> •{' '}
+                        <span className="font-sans">{req.createdAt}</span> •{' '}
                         {tr(lang, 'Срок исполнения: до', 'Expected by:')}{' '}
-                        <span className="font-mono font-medium">{req.expectedDate}</span>
+                        <span className="font-sans font-medium">{req.expectedDate}</span>
                       </p>
                     </div>
 

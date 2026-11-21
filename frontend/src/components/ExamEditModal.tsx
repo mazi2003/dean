@@ -121,10 +121,10 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#161821] text-[#45d320]">
+                <span className="font-sans text-[10px] font-bold px-2 py-0.5 rounded bg-[#161821] text-[#45d320]">
                   {tr(lang, 'ГРУППА', 'GROUP')} {exam.groupId}
                 </span>
-                <span className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">{exam.code}</span>
+                <span className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8]">{exam.code}</span>
               </div>
               <h2 className="font-semibold text-base sm:text-lg text-[#161821] dark:text-[#FFFFFF] mt-0.5">
                 {tr(
@@ -207,7 +207,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 placeholder="10:00 – 14:00"
-                className="w-full px-3 py-2 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-[#161821] dark:text-[#FFFFFF] font-mono focus:outline-hidden focus:border-[#161821] dark:focus:border-[#33b712]"
+                className="w-full px-3 py-2 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-[#161821] dark:text-[#FFFFFF] font-sans focus:outline-hidden focus:border-[#161821] dark:focus:border-[#33b712]"
               />
             </div>
 

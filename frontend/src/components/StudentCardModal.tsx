@@ -269,11 +269,11 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               <h4 className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff] truncate">
                 {user.fullName}
               </h4>
-              <p className="text-[10px] text-[#475569] dark:text-[#94a3b8] truncate font-mono">
+              <p className="text-[10px] text-[#475569] dark:text-[#94a3b8] truncate font-sans">
                 {tr(lang, 'Гр.', 'Group')} {profile?.group || 'ДУ-101'} • № {profile?.studentNumber}
               </p>
             </div>
-            <div className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#ebfbee] dark:bg-[#16351d] text-[#166534] dark:text-[#45d320] text-[10px] font-mono font-bold">
+            <div className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#ebfbee] dark:bg-[#16351d] text-[#166534] dark:text-[#45d320] text-[10px] font-sans font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-[#33b712] animate-pulse" />
               <span>PASS</span>
             </div>
@@ -312,7 +312,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           </div>
 
           {/* Live Anti-Tamper Security Telemetry */}
-          <div className="w-full mt-3 p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between text-xs font-mono">
+          <div className="w-full mt-3 p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between text-xs font-sans">
             <div className="flex items-center space-x-1.5 text-[#166534] dark:text-[#45d320]">
               <Clock className="w-3.5 h-3.5" />
               <span className="font-bold">{currentTime || '12:00:00'}</span>
@@ -460,7 +460,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   <UniversityEmblem size={28} />
                 </div>
                 <div>
-                  <div className="text-[9px] font-mono tracking-wider text-[#45d320] uppercase font-semibold">
+                  <div className="text-[9px] font-sans tracking-wider text-[#45d320] uppercase font-semibold">
                     {lang === 'ru'
                       ? 'МИНОБРНАУКИ РОССИИ • ГОСАККРЕДИТАЦИЯ'
                       : 'STATE ACCREDITED UNIVERSITY'}
@@ -468,7 +468,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-white">
                     {UNIVERSITY_INFO.name}
                   </h3>
-                  <p className="text-[10px] text-white/80 font-mono tracking-wide">
+                  <p className="text-[10px] text-white/80 font-sans tracking-wide">
                     {lang === 'ru' ? 'Студенческий билет № ' : 'Student ID No. '}
                     <span className="font-bold text-[#45d320]">
                       {profile?.studentNumber || '2024-БИ-0412'}
@@ -476,7 +476,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#11141c] border border-[#33b712]/40 text-[#45d320] text-[10px] font-mono flex-shrink-0">
+              <div className="flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[#11141c] border border-[#33b712]/40 text-[#45d320] text-[10px] font-sans flex-shrink-0">
                 <Wifi className="w-3.5 h-3.5 rotate-90 text-[#45d320]" />
                 <span>NFC</span>
               </div>
@@ -503,7 +503,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                 <p className="text-[10px] text-white/80 line-clamp-1 font-sans">
                   {localizeText(profile?.program, lang)}
                 </p>
-                <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] font-sans">
                   <span className="px-2 py-0.5 rounded-full bg-white/10 text-white font-medium">
                     {getStudyFormLabel(profile?.studyForm || 'Бюджет', lang)}
                   </span>
@@ -515,7 +515,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             </div>
 
             {/* Official Order Citation Strip */}
-            <div className="mb-4 relative z-10 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 flex items-center justify-between text-[9px] font-mono text-white/80">
+            <div className="mb-4 relative z-10 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 flex items-center justify-between text-[9px] font-sans text-white/80">
               <span className="text-[#45d320] font-medium">
                 {lang === 'ru' ? 'Основание выдачи:' : 'Matriculation Order:'}
               </span>
@@ -546,10 +546,10 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                     <span>{lang === 'ru' ? 'Увеличить' : 'Enlarge'}</span>
                   </span>
                 </div>
-                <p className="font-mono text-xs text-[#45d320] font-bold">
+                <p className="font-sans text-xs text-[#45d320] font-bold">
                   VALID • {currentTime ? 'ACTIVE' : 'ONLINE'}
                 </p>
-                <p className="text-[9px] text-white/60 font-mono">
+                <p className="text-[9px] text-white/60 font-sans">
                   CRC32: {profile?.studentNumber?.replace(/[^0-9]/g, '') || '84920'} •{' '}
                   {lang === 'ru' ? 'Нажмите для считывания' : 'Tap to scan'}
                 </p>
