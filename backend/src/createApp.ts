@@ -16,20 +16,20 @@ import { staffRoutes } from './routes/staff';
 import { assistantRoutes } from './routes/assistant';
 
 export function resolveCorsOrigins(): string | string[] {
-  const configured = process.env.CORS_ORIGIN
-    ?.split(',')
+  const configured = process.env.CORS_ORIGIN?.split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
 
-  const vercelOrigins = process.env.VERCEL === '1'
-    ? [
-        process.env.VERCEL_URL,
-        process.env.VERCEL_BRANCH_URL,
-        process.env.VERCEL_PROJECT_PRODUCTION_URL,
-      ]
-        .filter((host): host is string => Boolean(host && host.trim()))
-        .map((host) => (host.startsWith('http') ? host : `https://${host}`))
-    : [];
+  const vercelOrigins =
+    process.env.VERCEL === '1'
+      ? [
+          process.env.VERCEL_URL,
+          process.env.VERCEL_BRANCH_URL,
+          process.env.VERCEL_PROJECT_PRODUCTION_URL,
+        ]
+          .filter((host): host is string => Boolean(host && host.trim()))
+          .map((host) => (host.startsWith('http') ? host : `https://${host}`))
+      : [];
 
   const combined = [...new Set([...(configured ?? []), ...vercelOrigins])];
   if (combined.length === 0) {
@@ -70,16 +70,25 @@ export function configureApp(app: FastifyInstance): FastifyInstance {
 
   // Central error handler — registered BEFORE routes so child scopes inherit it cleanly
   app.setErrorHandler((error: FastifyError | unknown, _request, reply) => {
-    const fastifyErr = (typeof error === 'object' && error !== null ? error : {}) as Partial<FastifyError>;
+    const fastifyErr = (
+      typeof error === 'object' && error !== null ? error : {}
+    ) as Partial<FastifyError>;
     const statusCode = typeof fastifyErr.statusCode === 'number' ? fastifyErr.statusCode : 500;
     const message = typeof fastifyErr.message === 'string' ? fastifyErr.message : 'Error';
-    const code = statusCode === 429 ? 'TOO_MANY_REQUESTS'
-      : statusCode === 404 ? 'NOT_FOUND'
-        : statusCode === 403 ? 'FORBIDDEN'
-          : statusCode === 401 ? 'UNAUTHORIZED'
-            : statusCode === 422 ? 'VALIDATION_ERROR'
-              : statusCode === 400 ? 'BAD_REQUEST'
-                : 'INTERNAL_ERROR';
+    const code =
+      statusCode === 429
+        ? 'TOO_MANY_REQUESTS'
+        : statusCode === 404
+          ? 'NOT_FOUND'
+          : statusCode === 403
+            ? 'FORBIDDEN'
+            : statusCode === 401
+              ? 'UNAUTHORIZED'
+              : statusCode === 422
+                ? 'VALIDATION_ERROR'
+                : statusCode === 400
+                  ? 'BAD_REQUEST'
+                  : 'INTERNAL_ERROR';
 
     // Only log 5xx
     if (statusCode >= 500) {
@@ -114,16 +123,19 @@ export function configureApp(app: FastifyInstance): FastifyInstance {
   });
 
   // Routes under /api/v1 prefix
-  app.register(async (v1) => {
-    await v1.register(authRoutes);
-    await v1.register(profileRoutes);
-    await v1.register(scheduleRoutes);
-    await v1.register(gradesRoutes);
-    await v1.register(requestsRoutes);
-    await v1.register(notificationsRoutes);
-    await v1.register(staffRoutes);
-    await v1.register(assistantRoutes);
-  }, { prefix: '/api/v1' });
+  app.register(
+    async (v1) => {
+      await v1.register(authRoutes);
+      await v1.register(profileRoutes);
+      await v1.register(scheduleRoutes);
+      await v1.register(gradesRoutes);
+      await v1.register(requestsRoutes);
+      await v1.register(notificationsRoutes);
+      await v1.register(staffRoutes);
+      await v1.register(assistantRoutes);
+    },
+    { prefix: '/api/v1' }
+  );
 
   return app;
 }

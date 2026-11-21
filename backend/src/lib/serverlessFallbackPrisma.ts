@@ -56,7 +56,11 @@ async function createFallbackStore() {
     { id: 'prog-ir-01', name: 'Международные отношения (Бакалавриат)', facultyId: faculty.id },
     { id: 'prog-we-01', name: 'Мировая экономика (Бакалавриат)', facultyId: faculty.id },
     { id: 'prog-ds-01', name: 'Дипломатическая служба (Магистратура)', facultyId: faculty.id },
-    { id: 'prog-il-01', name: 'Международное публичное право (Бакалавриат)', facultyId: faculty.id },
+    {
+      id: 'prog-il-01',
+      name: 'Международное публичное право (Бакалавриат)',
+      facultyId: faculty.id,
+    },
   ];
 
   const groups = [
@@ -123,15 +127,69 @@ async function createFallbackStore() {
   ];
 
   const users = [
-    { id: ids.aigulUserId, email: 'aigul.nurova@demo.edu', passwordHash: studentPasswordHash, fullName: 'Айгуль Нурова', role: 'student' },
-    { id: ids.timurUserId, email: 'timur.belov@demo.edu', passwordHash: studentPasswordHash, fullName: 'Тимур Белов', role: 'student' },
-    { id: ids.linaUserId, email: 'lina.okafor@demo.edu', passwordHash: studentPasswordHash, fullName: 'Лина Окафор', role: 'student' },
-    { id: ids.staffUserId, email: 'dean.office@demo.edu', passwordHash: staffPasswordHash, fullName: 'Мария Волкова (Сотрудник деканата)', role: 'staff' },
-    { id: '11111111-1111-4111-8111-111111111105', email: 'd.morozov@demo.edu', passwordHash: studentPasswordHash, fullName: 'Даниил Морозов', role: 'student' },
-    { id: '11111111-1111-4111-8111-111111111106', email: 's.kim@demo.edu', passwordHash: studentPasswordHash, fullName: 'София Ким', role: 'student' },
-    { id: '11111111-1111-4111-8111-111111111107', email: 'a.zakharova@demo.edu', passwordHash: studentPasswordHash, fullName: 'Алина Захарова', role: 'student' },
-    { id: '11111111-1111-4111-8111-111111111108', email: 'd.savelev@demo.edu', passwordHash: studentPasswordHash, fullName: 'Дмитрий Савельев', role: 'student' },
-    { id: '11111111-1111-4111-8111-111111111109', email: 'p.sergeeva@demo.edu', passwordHash: studentPasswordHash, fullName: 'Полина Сергеева', role: 'student' },
+    {
+      id: ids.aigulUserId,
+      email: 'aigul.nurova@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'Айгуль Нурова',
+      role: 'student',
+    },
+    {
+      id: ids.timurUserId,
+      email: 'timur.belov@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'Тимур Белов',
+      role: 'student',
+    },
+    {
+      id: ids.linaUserId,
+      email: 'lina.okafor@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'Лина Окафор',
+      role: 'student',
+    },
+    {
+      id: ids.staffUserId,
+      email: 'dean.office@demo.edu',
+      passwordHash: staffPasswordHash,
+      fullName: 'Мария Волкова (Сотрудник деканата)',
+      role: 'staff',
+    },
+    {
+      id: '11111111-1111-4111-8111-111111111105',
+      email: 'd.morozov@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'Даниил Морозов',
+      role: 'student',
+    },
+    {
+      id: '11111111-1111-4111-8111-111111111106',
+      email: 's.kim@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'София Ким',
+      role: 'student',
+    },
+    {
+      id: '11111111-1111-4111-8111-111111111107',
+      email: 'a.zakharova@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'Алина Захарова',
+      role: 'student',
+    },
+    {
+      id: '11111111-1111-4111-8111-111111111108',
+      email: 'd.savelev@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'Дмитрий Савельев',
+      role: 'student',
+    },
+    {
+      id: '11111111-1111-4111-8111-111111111109',
+      email: 'p.sergeeva@demo.edu',
+      passwordHash: studentPasswordHash,
+      fullName: 'Полина Сергеева',
+      role: 'student',
+    },
   ];
 
   const studentProfiles = [
@@ -339,28 +397,222 @@ async function createFallbackStore() {
   const futureDate2 = addDays(monday, 21);
 
   const grades = [
-    { id: 'grd-a1', studentProfileId: 'sp-aigul', subjectId: subjects[0].id, semester: 3, points: 94, grade: 5, creditStatus: 'earned', assessmentType: 'credit', examDate: null, retakeDate: null, teacher: 'проф. Соколов И.В.' },
-    { id: 'grd-a2', studentProfileId: 'sp-aigul', subjectId: subjects[2].id, semester: 3, points: 90, grade: 5, creditStatus: 'earned', assessmentType: 'exam', examDate: null, retakeDate: null, teacher: 'доц. Ковалев С.И.' },
-    { id: 'grd-a3', studentProfileId: 'sp-aigul', subjectId: subjects[4].id, semester: 3, points: 86, grade: 5, creditStatus: 'earned', assessmentType: 'exam', examDate: null, retakeDate: null, teacher: 'проф. Соколов И.В.' },
-    { id: 'grd-a4', studentProfileId: 'sp-aigul', subjectId: subjects[5].id, semester: 3, points: 84, grade: 4, creditStatus: 'earned', assessmentType: 'credit', examDate: null, retakeDate: null, teacher: 'доц. Ковалев С.И.' },
-    { id: 'grd-a5', studentProfileId: 'sp-aigul', subjectId: subjects[1].id, semester: 3, points: null, grade: null, creditStatus: 'in_progress', assessmentType: 'exam', examDate: futureDate, retakeDate: null, teacher: 'проф. Воронов А.Н.' },
-    { id: 'grd-t1', studentProfileId: 'sp-timur', subjectId: subjects[3].id, semester: 3, points: 48, grade: 2, creditStatus: 'failed', assessmentType: 'exam', examDate: futureDate2, retakeDate: new Date('2026-11-28T00:00:00.000Z'), teacher: 'доц. Ковалев С.И.' },
-    { id: 'grd-t2', studentProfileId: 'sp-timur', subjectId: subjects[2].id, semester: 3, points: 78, grade: 4, creditStatus: 'earned', assessmentType: 'exam', examDate: null, retakeDate: null, teacher: 'доц. Ковалев С.И.' },
-    { id: 'grd-l1', studentProfileId: 'sp-lina', subjectId: subjects[0].id, semester: 3, points: 76, grade: 4, creditStatus: 'earned', assessmentType: 'credit', examDate: null, retakeDate: null, teacher: 'проф. Соколов И.В.' },
-    { id: 'grd-m1', studentProfileId: 'sp-morozov', subjectId: subjects[0].id, semester: 3, points: 82, grade: 4, creditStatus: 'earned', assessmentType: 'credit', examDate: null, retakeDate: null, teacher: 'проф. Соколов И.В.' },
-    { id: 'grd-k1', studentProfileId: 'sp-kim', subjectId: subjects[0].id, semester: 3, points: 91, grade: 5, creditStatus: 'earned', assessmentType: 'credit', examDate: null, retakeDate: null, teacher: 'проф. Соколов И.В.' },
-    { id: 'grd-z1', studentProfileId: 'sp-zakharova', subjectId: subjects[2].id, semester: 3, points: 93, grade: 5, creditStatus: 'earned', assessmentType: 'exam', examDate: null, retakeDate: null, teacher: 'доц. Ковалев С.И.' },
-    { id: 'grd-s1', studentProfileId: 'sp-savelev', subjectId: subjects[0].id, semester: 3, points: 89, grade: 5, creditStatus: 'earned', assessmentType: 'credit', examDate: null, retakeDate: null, teacher: 'проф. Соколов И.В.' },
-    { id: 'grd-sr1', studentProfileId: 'sp-sergeeva', subjectId: subjects[1].id, semester: 3, points: 88, grade: 5, creditStatus: 'earned', assessmentType: 'exam', examDate: null, retakeDate: null, teacher: 'проф. Воронов А.Н.' },
+    {
+      id: 'grd-a1',
+      studentProfileId: 'sp-aigul',
+      subjectId: subjects[0].id,
+      semester: 3,
+      points: 94,
+      grade: 5,
+      creditStatus: 'earned',
+      assessmentType: 'credit',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'проф. Соколов И.В.',
+    },
+    {
+      id: 'grd-a2',
+      studentProfileId: 'sp-aigul',
+      subjectId: subjects[2].id,
+      semester: 3,
+      points: 90,
+      grade: 5,
+      creditStatus: 'earned',
+      assessmentType: 'exam',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'доц. Ковалев С.И.',
+    },
+    {
+      id: 'grd-a3',
+      studentProfileId: 'sp-aigul',
+      subjectId: subjects[4].id,
+      semester: 3,
+      points: 86,
+      grade: 5,
+      creditStatus: 'earned',
+      assessmentType: 'exam',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'проф. Соколов И.В.',
+    },
+    {
+      id: 'grd-a4',
+      studentProfileId: 'sp-aigul',
+      subjectId: subjects[5].id,
+      semester: 3,
+      points: 84,
+      grade: 4,
+      creditStatus: 'earned',
+      assessmentType: 'credit',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'доц. Ковалев С.И.',
+    },
+    {
+      id: 'grd-a5',
+      studentProfileId: 'sp-aigul',
+      subjectId: subjects[1].id,
+      semester: 3,
+      points: null,
+      grade: null,
+      creditStatus: 'in_progress',
+      assessmentType: 'exam',
+      examDate: futureDate,
+      retakeDate: null,
+      teacher: 'проф. Воронов А.Н.',
+    },
+    {
+      id: 'grd-t1',
+      studentProfileId: 'sp-timur',
+      subjectId: subjects[3].id,
+      semester: 3,
+      points: 48,
+      grade: 2,
+      creditStatus: 'failed',
+      assessmentType: 'exam',
+      examDate: futureDate2,
+      retakeDate: new Date('2026-11-28T00:00:00.000Z'),
+      teacher: 'доц. Ковалев С.И.',
+    },
+    {
+      id: 'grd-t2',
+      studentProfileId: 'sp-timur',
+      subjectId: subjects[2].id,
+      semester: 3,
+      points: 78,
+      grade: 4,
+      creditStatus: 'earned',
+      assessmentType: 'exam',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'доц. Ковалев С.И.',
+    },
+    {
+      id: 'grd-l1',
+      studentProfileId: 'sp-lina',
+      subjectId: subjects[0].id,
+      semester: 3,
+      points: 76,
+      grade: 4,
+      creditStatus: 'earned',
+      assessmentType: 'credit',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'проф. Соколов И.В.',
+    },
+    {
+      id: 'grd-m1',
+      studentProfileId: 'sp-morozov',
+      subjectId: subjects[0].id,
+      semester: 3,
+      points: 82,
+      grade: 4,
+      creditStatus: 'earned',
+      assessmentType: 'credit',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'проф. Соколов И.В.',
+    },
+    {
+      id: 'grd-k1',
+      studentProfileId: 'sp-kim',
+      subjectId: subjects[0].id,
+      semester: 3,
+      points: 91,
+      grade: 5,
+      creditStatus: 'earned',
+      assessmentType: 'credit',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'проф. Соколов И.В.',
+    },
+    {
+      id: 'grd-z1',
+      studentProfileId: 'sp-zakharova',
+      subjectId: subjects[2].id,
+      semester: 3,
+      points: 93,
+      grade: 5,
+      creditStatus: 'earned',
+      assessmentType: 'exam',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'доц. Ковалев С.И.',
+    },
+    {
+      id: 'grd-s1',
+      studentProfileId: 'sp-savelev',
+      subjectId: subjects[0].id,
+      semester: 3,
+      points: 89,
+      grade: 5,
+      creditStatus: 'earned',
+      assessmentType: 'credit',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'проф. Соколов И.В.',
+    },
+    {
+      id: 'grd-sr1',
+      studentProfileId: 'sp-sergeeva',
+      subjectId: subjects[1].id,
+      semester: 3,
+      points: 88,
+      grade: 5,
+      creditStatus: 'earned',
+      assessmentType: 'exam',
+      examDate: null,
+      retakeDate: null,
+      teacher: 'проф. Воронов А.Н.',
+    },
   ];
 
   const requestTypes = [
-    { code: 'study_certificate', title: 'Справка об обучении', description: 'Официальная справка о статусе обучающегося', fields: [{ key: 'purpose', label: 'Место требования', type: 'text', required: true }], slaDays: 2 },
-    { code: 'military_certificate', title: 'Справка для военкомата (Приложение №4)', description: 'Воинский учет', fields: [{ key: 'commissariat', label: 'Военный комиссариат', type: 'text', required: true }], slaDays: 5 },
-    { code: 'scholarship_application', title: 'Заявление на повышенную стипендию (ПГАС)', description: 'Конкурс достижений', fields: [{ key: 'category', label: 'Номинация', type: 'text', required: true }], slaDays: 10 },
-    { code: 'academic_leave', title: 'Академический отпуск', description: 'Временный перерыв в обучении', fields: [{ key: 'reason', label: 'Основание', type: 'text', required: true }], slaDays: 14 },
-    { code: 'transcript', title: 'Академическая справка (Транскрипт)', description: 'Выписка оценок и кредитов ECTS', fields: [{ key: 'language', label: 'Язык документа', type: 'text', required: true }], slaDays: 5 },
-    { code: 'dormitory_application', title: 'Заявление на предоставление общежития', description: 'Заселение в студгородок', fields: [{ key: 'reason', label: 'Причина обращения', type: 'text', required: true }], slaDays: 7 },
+    {
+      code: 'study_certificate',
+      title: 'Справка об обучении',
+      description: 'Официальная справка о статусе обучающегося',
+      fields: [{ name: 'purpose', label: 'Место требования', type: 'text', required: true }],
+      slaDays: 2,
+    },
+    {
+      code: 'military_certificate',
+      title: 'Справка для военкомата (Приложение №4)',
+      description: 'Воинский учет',
+      fields: [
+        { name: 'commissariat', label: 'Военный комиссариат', type: 'text', required: true },
+      ],
+      slaDays: 5,
+    },
+    {
+      code: 'scholarship_application',
+      title: 'Заявление на повышенную стипендию (ПГАС)',
+      description: 'Конкурс достижений',
+      fields: [{ name: 'category', label: 'Номинация', type: 'text', required: true }],
+      slaDays: 10,
+    },
+    {
+      code: 'academic_leave',
+      title: 'Академический отпуск',
+      description: 'Временный перерыв в обучении',
+      fields: [{ name: 'reason', label: 'Основание', type: 'text', required: true }],
+      slaDays: 14,
+    },
+    {
+      code: 'transcript',
+      title: 'Академическая справка (Транскрипт)',
+      description: 'Выписка оценок и кредитов ECTS',
+      fields: [{ name: 'language', label: 'Язык документа', type: 'text', required: true }],
+      slaDays: 5,
+    },
+    {
+      code: 'dormitory_application',
+      title: 'Заявление на предоставление общежития',
+      description: 'Заселение в студгородок',
+      fields: [{ name: 'reason', label: 'Причина обращения', type: 'text', required: true }],
+      slaDays: 7,
+    },
   ];
 
   const requests: Array<{
@@ -409,10 +661,38 @@ async function createFallbackStore() {
     comment: string | null;
     createdAt: Date;
   }> = [
-    { id: 'h-1', requestId: ids.aigulReqId, actorId: ids.aigulUserId, status: 'submitted', comment: null, createdAt: new Date(Date.now() - 86400_000 * 2) },
-    { id: 'h-2', requestId: ids.aigulReqId, actorId: ids.staffUserId, status: 'in_review', comment: 'Заявление принято инспектором деканата в обработку', createdAt: new Date(Date.now() - 86400_000) },
-    { id: 'h-3', requestId: ids.timurReqNeedsInfoId, actorId: ids.staffUserId, status: 'needs_info', comment: 'Пожалуйста, приложите справку о составе семьи и доходах', createdAt: new Date(Date.now() - 86400_000) },
-    { id: 'h-4', requestId: ids.timurReqReadyId, actorId: ids.staffUserId, status: 'ready', comment: 'Академический транскрипт сформирован и готов к выдаче', createdAt: new Date(Date.now() - 86400_000) },
+    {
+      id: 'h-1',
+      requestId: ids.aigulReqId,
+      actorId: ids.aigulUserId,
+      status: 'submitted',
+      comment: null,
+      createdAt: new Date(Date.now() - 86400_000 * 2),
+    },
+    {
+      id: 'h-2',
+      requestId: ids.aigulReqId,
+      actorId: ids.staffUserId,
+      status: 'in_review',
+      comment: 'Заявление принято инспектором деканата в обработку',
+      createdAt: new Date(Date.now() - 86400_000),
+    },
+    {
+      id: 'h-3',
+      requestId: ids.timurReqNeedsInfoId,
+      actorId: ids.staffUserId,
+      status: 'needs_info',
+      comment: 'Пожалуйста, приложите справку о составе семьи и доходах',
+      createdAt: new Date(Date.now() - 86400_000),
+    },
+    {
+      id: 'h-4',
+      requestId: ids.timurReqReadyId,
+      actorId: ids.staffUserId,
+      status: 'ready',
+      comment: 'Академический транскрипт сформирован и готов к выдаче',
+      createdAt: new Date(Date.now() - 86400_000),
+    },
   ];
 
   const notifications: Array<{
@@ -425,11 +705,56 @@ async function createFallbackStore() {
     link: string | null;
     createdAt: Date;
   }> = [
-    { id: '33333333-3333-4333-8333-333333333310', userId: ids.aigulUserId, kind: 'request_update', title: 'Справка об обучении в обработке', body: 'Ваше заявление передано на подпись в деканат.', read: false, link: '/requests', createdAt: new Date() },
-    { id: '33333333-3333-4333-8333-333333333311', userId: ids.timurUserId, kind: 'request_update', title: 'Требуется уточнение по заявлению на общежитие', body: 'Пожалуйста, загрузите справку о доходах.', read: false, link: '/requests', createdAt: new Date() },
-    { id: '33333333-3333-4333-8333-333333333301', userId: ids.linaUserId, kind: 'schedule_change', title: 'Замена аудитории (Международное право)', body: 'Семинар перенесен в ауд. Б-115.', read: false, link: '/schedule', createdAt: new Date() },
-    { id: '33333333-3333-4333-8333-333333333302', userId: ids.linaUserId, kind: 'announcement', title: 'Прием заявок на ПГАС до 25 ноября', body: 'Подайте документы через раздел «Справки и заявления».', read: false, link: '/requests', createdAt: new Date() },
-    { id: '33333333-3333-4333-8333-333333333303', userId: ids.linaUserId, kind: 'announcement', title: 'Опубликован график зимней экзаменационной сессии', body: 'Проверьте даты консультаций и экзаменов во вкладке «Расписание».', read: false, link: '/schedule', createdAt: new Date() },
+    {
+      id: '33333333-3333-4333-8333-333333333310',
+      userId: ids.aigulUserId,
+      kind: 'request_update',
+      title: 'Справка об обучении в обработке',
+      body: 'Ваше заявление передано на подпись в деканат.',
+      read: false,
+      link: '/requests',
+      createdAt: new Date(),
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333311',
+      userId: ids.timurUserId,
+      kind: 'request_update',
+      title: 'Требуется уточнение по заявлению на общежитие',
+      body: 'Пожалуйста, загрузите справку о доходах.',
+      read: false,
+      link: '/requests',
+      createdAt: new Date(),
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333301',
+      userId: ids.linaUserId,
+      kind: 'schedule_change',
+      title: 'Замена аудитории (Международное право)',
+      body: 'Семинар перенесен в ауд. Б-115.',
+      read: false,
+      link: '/schedule',
+      createdAt: new Date(),
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333302',
+      userId: ids.linaUserId,
+      kind: 'announcement',
+      title: 'Прием заявок на ПГАС до 25 ноября',
+      body: 'Подайте документы через раздел «Справки и заявления».',
+      read: false,
+      link: '/requests',
+      createdAt: new Date(),
+    },
+    {
+      id: '33333333-3333-4333-8333-333333333303',
+      userId: ids.linaUserId,
+      kind: 'announcement',
+      title: 'Опубликован график зимней экзаменационной сессии',
+      body: 'Проверьте даты консультаций и экзаменов во вкладке «Расписание».',
+      read: false,
+      link: '/schedule',
+      createdAt: new Date(),
+    },
   ];
 
   const announcements: Array<{
@@ -530,13 +855,18 @@ async function createFallbackStore() {
     },
   ];
 
-  function hydrateStudentProfile(sp: (typeof studentProfiles)[number], include?: Record<string, unknown>) {
+  function hydrateStudentProfile(
+    sp: (typeof studentProfiles)[number],
+    include?: Record<string, unknown>
+  ) {
     const grp = groups.find((g) => g.id === sp.groupId)!;
     const prog = programs.find((p) => p.id === sp.programId)!;
-    const spGrades = grades.filter((g) => g.studentProfileId === sp.id).map((g) => ({
-      ...g,
-      subject: subjects.find((s) => s.id === g.subjectId)!,
-    }));
+    const spGrades = grades
+      .filter((g) => g.studentProfileId === sp.id)
+      .map((g) => ({
+        ...g,
+        subject: subjects.find((s) => s.id === g.subjectId)!,
+      }));
     const usr = users.find((u) => u.id === sp.userId)!;
     const res: Record<string, unknown> = { ...sp };
     if (include?.user) res.user = usr;
@@ -558,7 +888,7 @@ async function createFallbackStore() {
       .filter((h) => h.requestId === r.id)
       .map((h) => ({
         ...h,
-        actor: h.actorId ? users.find((u) => u.id === h.actorId) ?? null : null,
+        actor: h.actorId ? (users.find((u) => u.id === h.actorId) ?? null) : null,
       }));
     const stu = users.find((u) => u.id === r.studentId)!;
     const sp = studentProfiles.find((p) => p.userId === stu.id);
@@ -567,7 +897,9 @@ async function createFallbackStore() {
       ...r,
       ...(include?.requestType ? { requestType: rt } : {}),
       ...(include?.history ? { history: hist } : {}),
-      ...(include?.student ? { student: { ...stu, studentProfile: sp ? { ...sp, group: grp } : null } } : {}),
+      ...(include?.student
+        ? { student: { ...stu, studentProfile: sp ? { ...sp, group: grp } : null } }
+        : {}),
     };
   }
 
@@ -583,28 +915,48 @@ async function createFallbackStore() {
 
   return {
     user: {
-      findUnique: async ({ where, include }: { where: { id?: string; email?: string }; include?: Record<string, unknown> }) => {
+      findUnique: async ({
+        where,
+        include,
+      }: {
+        where: { id?: string; email?: string };
+        include?: Record<string, unknown>;
+      }) => {
         const u = users.find((x) => (where.id ? x.id === where.id : x.email === where.email));
         if (!u) return null;
         const out: Record<string, unknown> = { ...u };
         if (include?.studentProfile) {
           const sp = studentProfiles.find((p) => p.userId === u.id) ?? null;
-          const spInc = typeof include.studentProfile === 'object' ? (include.studentProfile as { include?: Record<string, unknown> }).include : undefined;
+          const spInc =
+            typeof include.studentProfile === 'object'
+              ? (include.studentProfile as { include?: Record<string, unknown> }).include
+              : undefined;
           out.studentProfile = sp ? hydrateStudentProfile(sp, spInc) : null;
         }
         if (include?.requests) {
-          const reqInc = typeof include.requests === 'object' ? (include.requests as { include?: Record<string, unknown> }).include : undefined;
-          out.requests = requests.filter((r) => r.studentId === u.id).map((r) => hydrateRequest(r, reqInc));
+          const reqInc =
+            typeof include.requests === 'object'
+              ? (include.requests as { include?: Record<string, unknown> }).include
+              : undefined;
+          out.requests = requests
+            .filter((r) => r.studentId === u.id)
+            .map((r) => hydrateRequest(r, reqInc));
         }
         return out;
       },
       findMany: async ({ where }: { where?: { role?: string } } = {}) => {
-        return users.filter((u) => (!where?.role || u.role === where.role));
+        return users.filter((u) => !where?.role || u.role === where.role);
       },
       count: async () => users.length,
     },
     studentProfile: {
-      findUnique: async ({ where, include }: { where: { userId: string }; include?: Record<string, unknown> }) => {
+      findUnique: async ({
+        where,
+        include,
+      }: {
+        where: { userId: string };
+        include?: Record<string, unknown>;
+      }) => {
         const sp = studentProfiles.find((p) => p.userId === where.userId);
         return sp ? hydrateStudentProfile(sp, include) : null;
       },
@@ -645,7 +997,9 @@ async function createFallbackStore() {
       },
     },
     exam: {
-      findMany: async ({ where }: { where?: { groupId?: string; group?: { code: string } } } = {}) => {
+      findMany: async ({
+        where,
+      }: { where?: { groupId?: string; group?: { code: string } } } = {}) => {
         return exams
           .filter((ex) => {
             if (where?.groupId && ex.groupId !== where.groupId) return false;
@@ -690,17 +1044,27 @@ async function createFallbackStore() {
       },
     },
     scheduleEntry: {
-      findMany: async ({ where }: { where: { groupId: string; date?: { gte?: Date; lte?: Date } } }) => {
+      findMany: async ({
+        where,
+      }: {
+        where: { groupId: string; date?: { gte?: Date; lte?: Date } };
+      }) => {
         return scheduleEntries
           .filter((s) => {
             if (s.groupId !== where.groupId) return false;
-            if (where.date?.gte && s.date < new Date(where.date.gte.toISOString().split('T')[0])) return false;
-            if (where.date?.lte && s.date > new Date(where.date.lte.toISOString().split('T')[0])) return false;
+            if (where.date?.gte && s.date < new Date(where.date.gte.toISOString().split('T')[0]))
+              return false;
+            if (where.date?.lte && s.date > new Date(where.date.lte.toISOString().split('T')[0]))
+              return false;
             return true;
           })
           .map(hydrateSchedule);
       },
-      findFirst: async ({ where }: { where: { groupId: string; date?: { gt?: Date }; status?: { not?: string } } }) => {
+      findFirst: async ({
+        where,
+      }: {
+        where: { groupId: string; date?: { gt?: Date }; status?: { not?: string } };
+      }) => {
         const found = scheduleEntries.find(
           (s) =>
             s.groupId === where.groupId &&
@@ -731,7 +1095,11 @@ async function createFallbackStore() {
     grade: {
       findMany: async ({ where }: { where: { studentProfileId: string; semester?: number } }) => {
         return grades
-          .filter((g) => g.studentProfileId === where.studentProfileId && (!where.semester || g.semester === where.semester))
+          .filter(
+            (g) =>
+              g.studentProfileId === where.studentProfileId &&
+              (!where.semester || g.semester === where.semester)
+          )
           .map((g) => ({
             ...g,
             subject: subjects.find((s) => s.id === g.subjectId)!,
@@ -740,27 +1108,72 @@ async function createFallbackStore() {
     },
     requestType: {
       findMany: async () => requestTypes,
-      findUnique: async ({ where }: { where: { code: string } }) => requestTypes.find((t) => t.code === where.code) ?? null,
+      findUnique: async ({ where }: { where: { code: string } }) =>
+        requestTypes.find((t) => t.code === where.code) ?? null,
     },
     request: {
       count: async ({ where }: { where?: { studentId?: string; status?: string } } = {}) =>
-        requests.filter((r) => (!where?.studentId || r.studentId === where.studentId) && (!where?.status || r.status === where.status)).length,
-      findMany: async ({ where, include, skip = 0, take = 20 }: { where?: { studentId?: string; status?: string }; include?: Record<string, unknown>; skip?: number; take?: number }) => {
+        requests.filter(
+          (r) =>
+            (!where?.studentId || r.studentId === where.studentId) &&
+            (!where?.status || r.status === where.status)
+        ).length,
+      findMany: async ({
+        where,
+        include,
+        skip = 0,
+        take = 20,
+      }: {
+        where?: { studentId?: string; status?: string };
+        include?: Record<string, unknown>;
+        skip?: number;
+        take?: number;
+      }) => {
         return requests
-          .filter((r) => (!where?.studentId || r.studentId === where.studentId) && (!where?.status || r.status === where.status))
+          .filter(
+            (r) =>
+              (!where?.studentId || r.studentId === where.studentId) &&
+              (!where?.status || r.status === where.status)
+          )
           .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
           .slice(skip, skip + take)
           .map((r) => hydrateRequest(r, include));
       },
-      findFirst: async ({ where, include }: { where: { id: string; studentId?: string }; include?: Record<string, unknown> }) => {
-        const found = requests.find((r) => r.id === where.id && (!where.studentId || r.studentId === where.studentId));
+      findFirst: async ({
+        where,
+        include,
+      }: {
+        where: { id: string; studentId?: string };
+        include?: Record<string, unknown>;
+      }) => {
+        const found = requests.find(
+          (r) => r.id === where.id && (!where.studentId || r.studentId === where.studentId)
+        );
         return found ? hydrateRequest(found, include) : null;
       },
-      findUnique: async ({ where, include }: { where: { id: string }; include?: Record<string, unknown> }) => {
+      findUnique: async ({
+        where,
+        include,
+      }: {
+        where: { id: string };
+        include?: Record<string, unknown>;
+      }) => {
         const found = requests.find((r) => r.id === where.id);
         return found ? hydrateRequest(found, include) : null;
       },
-      create: async ({ data, include }: { data: { studentId: string; typeCode: string; data: Record<string, unknown>; status: string; history?: { create: Array<{ status: string; actorId?: string; comment: string | null }> } }; include?: Record<string, unknown> }) => {
+      create: async ({
+        data,
+        include,
+      }: {
+        data: {
+          studentId: string;
+          typeCode: string;
+          data: Record<string, unknown>;
+          status: string;
+          history?: { create: Array<{ status: string; actorId?: string; comment: string | null }> };
+        };
+        include?: Record<string, unknown>;
+      }) => {
         const created = {
           id: crypto.randomUUID(),
           studentId: data.studentId,
@@ -783,7 +1196,18 @@ async function createFallbackStore() {
         }
         return hydrateRequest(created, include);
       },
-      update: async ({ where, data, include }: { where: { id: string }; data: { status: string; history?: { create: Array<{ status: string; actorId?: string; comment: string | null }> } }; include?: Record<string, unknown> }) => {
+      update: async ({
+        where,
+        data,
+        include,
+      }: {
+        where: { id: string };
+        data: {
+          status: string;
+          history?: { create: Array<{ status: string; actorId?: string; comment: string | null }> };
+        };
+        include?: Record<string, unknown>;
+      }) => {
         const r = requests.find((x) => x.id === where.id)!;
         r.status = data.status;
         r.updatedAt = new Date();
@@ -803,11 +1227,27 @@ async function createFallbackStore() {
     notification: {
       count: async ({ where }: { where: { userId: string; read?: boolean; kind?: string } }) =>
         notifications.filter(
-          (n) => n.userId === where.userId && (where.read === undefined || n.read === where.read) && (!where.kind || n.kind === where.kind)
+          (n) =>
+            n.userId === where.userId &&
+            (where.read === undefined || n.read === where.read) &&
+            (!where.kind || n.kind === where.kind)
         ).length,
-      findMany: async ({ where, skip = 0, take = 20 }: { where: { userId: string; read?: boolean; kind?: string }; skip?: number; take?: number }) =>
+      findMany: async ({
+        where,
+        skip = 0,
+        take = 20,
+      }: {
+        where: { userId: string; read?: boolean; kind?: string };
+        skip?: number;
+        take?: number;
+      }) =>
         notifications
-          .filter((n) => n.userId === where.userId && (where.read === undefined || n.read === where.read) && (!where.kind || n.kind === where.kind))
+          .filter(
+            (n) =>
+              n.userId === where.userId &&
+              (where.read === undefined || n.read === where.read) &&
+              (!where.kind || n.kind === where.kind)
+          )
           .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
           .slice(skip, skip + take),
       findFirst: async ({ where }: { where: { id: string; userId: string } }) =>
@@ -817,7 +1257,13 @@ async function createFallbackStore() {
         n.read = data.read;
         return n;
       },
-      updateMany: async ({ where, data }: { where: { userId: string; read?: boolean }; data: { read: boolean } }) => {
+      updateMany: async ({
+        where,
+        data,
+      }: {
+        where: { userId: string; read?: boolean };
+        data: { read: boolean };
+      }) => {
         let count = 0;
         for (const n of notifications) {
           if (n.userId === where.userId && (where.read === undefined || n.read === where.read)) {
@@ -827,21 +1273,54 @@ async function createFallbackStore() {
         }
         return { count };
       },
-      create: async ({ data }: { data: { userId: string; kind: string; title: string; body: string; link: string | null } }) => {
+      create: async ({
+        data,
+      }: {
+        data: { userId: string; kind: string; title: string; body: string; link: string | null };
+      }) => {
         const created = { id: crypto.randomUUID(), ...data, read: false, createdAt: new Date() };
         notifications.unshift(created);
         return created;
       },
-      createMany: async ({ data }: { data: Array<{ userId: string; kind: string; title: string; body: string; link: string | null }> }) => {
+      createMany: async ({
+        data,
+      }: {
+        data: Array<{
+          userId: string;
+          kind: string;
+          title: string;
+          body: string;
+          link: string | null;
+        }>;
+      }) => {
         for (const d of data) {
-          notifications.unshift({ id: crypto.randomUUID(), ...d, read: false, createdAt: new Date() });
+          notifications.unshift({
+            id: crypto.randomUUID(),
+            ...d,
+            read: false,
+            createdAt: new Date(),
+          });
         }
         return { count: data.length };
       },
     },
     announcement: {
-      findMany: async () => [...announcements].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
-      create: async ({ data }: { data: { title: string; body: string; targetGroup: string | null; targetUserId?: string | null; priority?: string; kind?: string; recipientCount?: number; recipients?: string[] } }) => {
+      findMany: async () =>
+        [...announcements].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
+      create: async ({
+        data,
+      }: {
+        data: {
+          title: string;
+          body: string;
+          targetGroup: string | null;
+          targetUserId?: string | null;
+          priority?: string;
+          kind?: string;
+          recipientCount?: number;
+          recipients?: string[];
+        };
+      }) => {
         const created = {
           id: crypto.randomUUID(),
           targetUserId: null,

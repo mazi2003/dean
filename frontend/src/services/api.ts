@@ -62,13 +62,15 @@ export const api = {
 
     if (!res.ok) {
       if (res.status === 429) {
-        throw new Error(await parseErrorMessage(res, 'Слишком много попыток входа. Попробуйте позже.'));
+        throw new Error(
+          await parseErrorMessage(res, 'Слишком много попыток входа. Попробуйте позже.')
+        );
       }
       if (res.status === 404 || res.status >= 500) {
         const serverMsg = await parseErrorMessage(res, '');
         const detail = serverMsg && serverMsg !== 'Internal server error' ? ` (${serverMsg})` : '';
         throw new Error(
-          `Сервер авторизации или БД не настроены (HTTP ${res.status})${detail}. Проверьте DATABASE_URL, миграции и сид.`
+          `Сервер авторизации или БД временно недоступны (HTTP ${res.status})${detail}. Попробуйте повторить попытку позже.`
         );
       }
       const msg = await parseErrorMessage(res, 'Неверный адрес электронной почты или пароль');
@@ -144,8 +146,8 @@ export const api = {
   },
 
   // ─── Grades ───
-  async getGrades(): Promise<GradesSummary> {
-    const res = await apiFetch('/grades');
+  async getGrades(semester?: number): Promise<GradesSummary> {
+    const res = await apiFetch(`/grades${semester !== undefined ? `?semester=${semester}` : ''}`);
     if (!res.ok) {
       throw new Error(await parseErrorMessage(res, 'Не удалось загрузить оценки'));
     }
@@ -167,7 +169,7 @@ export const api = {
       throw new Error(await parseErrorMessage(res, 'Не удалось загрузить заявления'));
     }
     const payload = await res.json();
-    const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+    const rawItems = Array.isArray(payload) ? payload : (payload.items ?? []);
     return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
       ...r,
       expectedDate: r.expectedDate ?? r.expectedBy ?? '',
@@ -187,7 +189,9 @@ export const api = {
   },
 
   async cancelRequest(requestId: string): Promise<void> {
-    const res = await apiFetch(`/requests/${encodeURIComponent(requestId)}/cancel`, { method: 'POST' });
+    const res = await apiFetch(`/requests/${encodeURIComponent(requestId)}/cancel`, {
+      method: 'POST',
+    });
     if (!res.ok) {
       throw new Error(await parseErrorMessage(res, 'Не удалось отменить заявление'));
     }
@@ -200,7 +204,7 @@ export const api = {
       throw new Error(await parseErrorMessage(res, 'Не удалось загрузить уведомления'));
     }
     const payload = await res.json();
-    const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+    const rawItems = Array.isArray(payload) ? payload : (payload.items ?? []);
     return rawItems.map((n: Notification & { body?: string }) => ({
       ...n,
       message: n.message ?? n.body ?? '',
@@ -228,7 +232,7 @@ export const api = {
       throw new Error(await parseErrorMessage(res, 'Не удалось загрузить очередь заявлений'));
     }
     const payload = await res.json();
-    const rawItems = Array.isArray(payload) ? payload : payload.items ?? [];
+    const rawItems = Array.isArray(payload) ? payload : (payload.items ?? []);
     return rawItems.map((r: StudentRequest & { expectedBy?: string }) => ({
       ...r,
       expectedDate: r.expectedDate ?? r.expectedBy ?? '',
@@ -260,7 +264,9 @@ export const api = {
   },
 
   async deleteStaffAnnouncement(announcementId: string): Promise<void> {
-    const res = await apiFetch(`/staff/announcements/${encodeURIComponent(announcementId)}`, { method: 'DELETE' });
+    const res = await apiFetch(`/staff/announcements/${encodeURIComponent(announcementId)}`, {
+      method: 'DELETE',
+    });
     if (!res.ok) {
       throw new Error(await parseErrorMessage(res, 'Не удалось удалить объявление'));
     }
@@ -332,9 +338,10 @@ export const api = {
   },
 
   async getGroupStudents(groupCode?: string): Promise<StudentListItem[]> {
-    const path = groupCode && groupCode !== 'all'
-      ? `/staff/groups/${encodeURIComponent(groupCode)}/students`
-      : '/staff/students';
+    const path =
+      groupCode && groupCode !== 'all'
+        ? `/staff/groups/${encodeURIComponent(groupCode)}/students`
+        : '/staff/students';
     const res = await apiFetch(path);
     if (!res.ok) {
       throw new Error(await parseErrorMessage(res, 'Не удалось загрузить список студентов'));
@@ -364,9 +371,8 @@ export const api = {
 
   // ─── Examination Session & Scheduling ───
   async getExams(groupCode?: string): Promise<ExamEntry[]> {
-    const path = groupCode && groupCode !== 'all'
-      ? `/exams?group=${encodeURIComponent(groupCode)}`
-      : '/exams';
+    const path =
+      groupCode && groupCode !== 'all' ? `/exams?group=${encodeURIComponent(groupCode)}` : '/exams';
     const res = await apiFetch(path);
     if (!res.ok) {
       throw new Error(await parseErrorMessage(res, 'Не удалось загрузить график экзаменов'));

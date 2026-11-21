@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
@@ -23,16 +23,34 @@ import { StudentRequest } from './types';
 const MainLayout: React.FC = () => {
   const { user, isLoading, lang } = useAuth();
   const [activeTab, setActiveTab] = useState<string>('today');
+  const [tabNonce, setTabNonce] = useState(0);
+
+  const handleTabChange = useCallback((tab: string) => {
+    setActiveTab(tab);
+    setTabNonce((n) => n + 1);
+  }, []);
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [certToPreview, setCertToPreview] = useState<StudentRequest | null>(null);
-  const [announcePrefill, setAnnouncePrefill] = useState<{ group?: string; studentId?: string; studentName?: string }>({});
+  const [announcePrefill, setAnnouncePrefill] = useState<{
+    group?: string;
+    studentId?: string;
+    studentName?: string;
+  }>({});
 
   const resolvedTab = useMemo(() => {
-    if (user?.role === 'staff' && (activeTab === 'today' || activeTab === 'grades' || activeTab === 'requests')) {
+    if (
+      user?.role === 'staff' &&
+      (activeTab === 'today' || activeTab === 'grades' || activeTab === 'requests')
+    ) {
       return 'staff_requests';
     }
-    if (user?.role === 'student' && (activeTab === 'staff_requests' || activeTab === 'staff_actions' || activeTab === 'staff_students')) {
+    if (
+      user?.role === 'student' &&
+      (activeTab === 'staff_requests' ||
+        activeTab === 'staff_actions' ||
+        activeTab === 'staff_students')
+    ) {
       return 'today';
     }
     return activeTab;
@@ -41,7 +59,8 @@ const MainLayout: React.FC = () => {
   // Dynamic browser tab title
   useEffect(() => {
     if (!user) {
-      document.title = lang === 'ru' ? 'Вход • DemoTech University' : 'Sign In • DemoTech University';
+      document.title =
+        lang === 'ru' ? 'Вход • DemoTech University' : 'Sign In • DemoTech University';
       return;
     }
 
@@ -82,11 +101,13 @@ const MainLayout: React.FC = () => {
             <UniversityEmblem size={44} />
           </div>
           <div className="text-center space-y-1">
-            <p className="font-semibold text-sm text-[#142D4E] dark:text-[#245A91] tracking-tight">
+            <p className="font-semibold text-sm text-[#142D4E] dark:text-[#93C5FD] tracking-tight">
               DemoTech University
             </p>
             <p className="text-xs text-[#667085] dark:text-[#94A3B8] font-sans">
-              {lang === 'ru' ? 'Загрузка цифрового деканата...' : "Loading Digital Dean's Office..."}
+              {lang === 'ru'
+                ? 'Загрузка цифрового деканата...'
+                : "Loading Digital Dean's Office..."}
             </p>
           </div>
         </div>
@@ -102,7 +123,7 @@ const MainLayout: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-[#F2F4F7] dark:bg-[#0B1524] text-[#0F1D30] dark:text-[#FFFFFF] transition-colors">
       <Header
         activeTab={resolvedTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         onOpenCard={() => setIsCardOpen(true)}
         onOpenAssistant={() => setIsAssistantOpen(true)}
       />
@@ -110,7 +131,7 @@ const MainLayout: React.FC = () => {
       <div className="flex-1 flex max-w-7xl w-full mx-auto">
         <Sidebar
           activeTab={resolvedTab}
-          setActiveTab={setActiveTab}
+          setActiveTab={handleTabChange}
           onOpenCard={() => setIsCardOpen(true)}
           onOpenAssistant={() => setIsAssistantOpen(true)}
         />
@@ -118,7 +139,7 @@ const MainLayout: React.FC = () => {
         <main className="flex-1 min-w-0 pb-20 md:pb-8 overflow-x-hidden overflow-y-auto">
           {resolvedTab === 'today' && (
             <TodayPage
-              setActiveTab={setActiveTab}
+              setActiveTab={handleTabChange}
               onOpenCard={() => setIsCardOpen(true)}
               onOpenAssistant={() => setIsAssistantOpen(true)}
               onPreviewCert={(req) => setCertToPreview(req)}
@@ -129,22 +150,21 @@ const MainLayout: React.FC = () => {
           {resolvedTab === 'requests' && (
             <RequestsPage onPreviewCert={(req) => setCertToPreview(req)} />
           )}
-          {resolvedTab === 'notifications' && (
-            <NotificationsPage setActiveTab={setActiveTab} />
-          )}
+          {resolvedTab === 'notifications' && <NotificationsPage setActiveTab={handleTabChange} />}
           {resolvedTab === 'profile' && <ProfilePage />}
           {resolvedTab === 'staff_students' && (
             <StaffStudentsPage
               onOpenAnnouncement={(group, studentId, studentName) => {
                 setAnnouncePrefill({ group, studentId, studentName });
-                setActiveTab('staff_actions');
+                handleTabChange('staff_actions');
               }}
             />
           )}
           {(resolvedTab === 'staff_requests' || resolvedTab === 'staff_actions') && (
             <StaffDashboardPage
               activeTab={resolvedTab}
-              setActiveTab={setActiveTab}
+              setActiveTab={handleTabChange}
+              tabNonce={tabNonce}
               initialAnnounceTarget={announcePrefill.group}
               initialAnnounceStudentId={announcePrefill.studentId}
               initialAnnounceStudentName={announcePrefill.studentName}
@@ -153,7 +173,7 @@ const MainLayout: React.FC = () => {
         </main>
       </div>
 
-      <BottomNav activeTab={resolvedTab} setActiveTab={setActiveTab} />
+      <BottomNav activeTab={resolvedTab} setActiveTab={handleTabChange} />
       <Footer />
 
       {/* Global Modals */}

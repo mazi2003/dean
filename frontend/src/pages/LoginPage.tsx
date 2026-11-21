@@ -31,9 +31,10 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
     try {
       await login(email.trim(), password);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '';
       setError(
-        err.message ||
+        message ||
           (lang === 'ru'
             ? 'Ошибка авторизации. Проверьте адрес почты и пароль.'
             : 'Authentication failed. Please verify your credentials.')
@@ -56,7 +57,7 @@ export const LoginPage: React.FC = () => {
               DemoTech University
             </span>
             <span className="hidden sm:inline text-[#245A91]/40">•</span>
-            <span className="hidden sm:inline text-[11px] font-sans italic text-[#245A91]">
+            <span className="hidden sm:inline text-[11px] font-sans italic text-[#93C5FD]">
               Veritas • Scientia • Innovatio
             </span>
           </div>
@@ -64,31 +65,31 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center space-x-2">
             <button
               onClick={toggleLang}
-              className="px-2 py-0.5 text-[10px] font-mono font-semibold rounded text-[#FFFFFF] hover:text-[#93C5FD] hover:bg-[#142D4E] border border-[#60A5FA]/40 transition-colors uppercase tracking-wider flex items-center space-x-1 cursor-pointer"
+              className="px-2 py-1 min-w-[44px] min-h-[44px] text-[11px] font-mono font-semibold rounded text-[#FFFFFF] hover:text-[#93C5FD] hover:bg-[#142D4E] border border-[#60A5FA]/40 transition-colors uppercase tracking-wider flex items-center justify-center space-x-1 cursor-pointer"
               title={lang === 'ru' ? 'Switch to English' : 'Переключить на русский'}
               aria-label="Toggle language"
             >
-              <Globe2 className="w-2.5 h-2.5 text-[#93C5FD]" />
+              <Globe2 className="w-3.5 h-3.5 text-[#93C5FD]" />
               <span>{lang.toUpperCase()}</span>
             </button>
             <button
               onClick={toggleTheme}
-              className="p-1 rounded text-[#FFFFFF]/80 hover:text-white hover:bg-[#142D4E] transition-colors cursor-pointer"
+              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded text-[#FFFFFF]/80 hover:text-white hover:bg-[#142D4E] transition-colors cursor-pointer"
               title={
                 lang === 'ru'
                   ? theme === 'light'
                     ? 'Включить тёмную тему'
                     : 'Включить светлую тему'
                   : theme === 'light'
-                  ? 'Enable dark mode'
-                  : 'Enable light mode'
+                    ? 'Enable dark mode'
+                    : 'Enable light mode'
               }
               aria-label="Toggle theme"
             >
               {theme === 'light' ? (
-                <Moon className="w-3.5 h-3.5 text-[#245A91]" />
+                <Moon className="w-4 h-4 text-[#93C5FD]" />
               ) : (
-                <Sun className="w-3.5 h-3.5 text-[#245A91]" />
+                <Sun className="w-4 h-4 text-[#93C5FD]" />
               )}
             </button>
           </div>
@@ -117,12 +118,10 @@ export const LoginPage: React.FC = () => {
                   <h2 className="font-bold text-lg tracking-tight uppercase text-[#FFFFFF] leading-none">
                     DemoTech
                   </h2>
-                  <p className="text-[11px] text-[#245A91] font-sans uppercase tracking-widest mt-1">
+                  <p className="text-[11px] text-[#93C5FD] font-sans uppercase tracking-widest mt-1">
                     University
                   </p>
-                  <p className="text-[9px] text-[#FFFFFF]/70 font-mono">
-                    Anno Domini MMXXVI
-                  </p>
+                  <p className="text-[9px] text-[#FFFFFF]/70 font-mono">Anno Domini MMXXVI</p>
                 </div>
               </div>
 
@@ -146,7 +145,9 @@ export const LoginPage: React.FC = () => {
                     <BookOpen className="w-2.5 h-2.5 text-[#245A91]" />
                   </div>
                   <span className="text-[#FFFFFF]/90">
-                    {lang === 'ru' ? 'Европейская кредитная система ECTS' : 'European Credit Transfer System (ECTS)'}
+                    {lang === 'ru'
+                      ? 'Европейская кредитная система ECTS'
+                      : 'European Credit Transfer System (ECTS)'}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2.5">
@@ -154,7 +155,9 @@ export const LoginPage: React.FC = () => {
                     <ShieldCheck className="w-2.5 h-2.5 text-[#245A91]" />
                   </div>
                   <span className="text-[#FFFFFF]/90">
-                    {lang === 'ru' ? 'Электронные макеты справок (иллюстрация)' : 'Illustrative digital certificate previews'}
+                    {lang === 'ru'
+                      ? 'Электронные макеты справок (иллюстрация)'
+                      : 'Illustrative digital certificate previews'}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2.5">
@@ -162,13 +165,15 @@ export const LoginPage: React.FC = () => {
                     <Compass className="w-2.5 h-2.5 text-[#245A91]" />
                   </div>
                   <span className="text-[#FFFFFF]/90">
-                    {lang === 'ru' ? 'Академический ИИ-консультант деканата' : 'Dean\'s Office AI Academic Advisor'}
+                    {lang === 'ru'
+                      ? 'Академический ИИ-консультант деканата'
+                      : "Dean's Office AI Academic Advisor"}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="relative z-10 pt-6 mt-6 border-t border-[#245A91]/30 text-[10px] text-[#245A91] font-mono">
+            <div className="relative z-10 pt-6 mt-6 border-t border-[#245A91]/30 text-[10px] text-[#93C5FD] font-mono">
               VERITAS • SCIENTIA • INNOVATIO
             </div>
           </div>
@@ -177,8 +182,8 @@ export const LoginPage: React.FC = () => {
           <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
             <div className="space-y-6">
               <div className="border-b border-[#DCE2EA] dark:border-[#193150] pb-4">
-                <div className="inline-flex items-center space-x-1.5 text-xs font-mono font-semibold text-[#142D4E] dark:text-[#245A91] mb-1">
-                  <KeyRound className="w-3.5 h-3.5 text-[#245A91]" />
+                <div className="inline-flex items-center space-x-1.5 text-xs font-mono font-semibold text-[#142D4E] dark:text-[#93C5FD] mb-1">
+                  <KeyRound className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD]" />
                   <span>
                     {lang === 'ru' ? 'ЕДИНАЯ ТОЧКА АУТЕНТИФИКАЦИИ (SSO)' : 'SINGLE SIGN-ON (SSO)'}
                   </span>
@@ -199,7 +204,10 @@ export const LoginPage: React.FC = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm font-sans select-text">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4 text-xs sm:text-sm font-sans select-text"
+              >
                 <div>
                   <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5 text-xs">
                     {lang === 'ru' ? 'Университетская почта' : 'Institutional Email'}
@@ -212,7 +220,7 @@ export const LoginPage: React.FC = () => {
                       type="email"
                       required
                       value={email}
-                      onChange={e => setEmail(e.target.value)}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="student@demo.edu"
                       className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg pl-9 pr-3 py-2.5 text-[#0F1D30] dark:text-[#FFFFFF] placeholder-[#667085]/50 focus:ring-2 focus:ring-[#142D4E] dark:focus:ring-[#245A91] focus:border-transparent focus:outline-none transition-colors"
                     />
@@ -233,14 +241,14 @@ export const LoginPage: React.FC = () => {
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
-                      onChange={e => setPassword(e.target.value)}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
                       className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg pl-9 pr-10 py-2.5 text-[#0F1D30] dark:text-[#FFFFFF] placeholder-[#667085]/50 focus:ring-2 focus:ring-[#142D4E] dark:focus:ring-[#245A91] focus:border-transparent focus:outline-none transition-colors font-mono"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPassword(p => !p)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#667085] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer"
+                      onClick={() => setShowPassword((p) => !p)}
+                      className="absolute inset-y-0 right-0 pr-3 pl-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#667085] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer"
                       aria-label="Toggle password visibility"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -251,14 +259,18 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-2.5 px-4 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] active:bg-[#0c201b] text-[#FFFFFF] font-sans font-semibold text-xs sm:text-sm border border-[#245A91]/40 hover:border-[#245A91] transition-all flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer shadow-sm"
+                  className="w-full min-h-[44px] py-2.5 px-4 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] active:bg-[#0c201b] text-[#FFFFFF] font-sans font-semibold text-xs sm:text-sm border border-[#245A91]/40 hover:border-[#245A91] transition-all flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer shadow-sm"
                 >
                   <span>
                     {loading
-                      ? (lang === 'ru' ? 'Проверка учетных данных...' : 'Authenticating...')
-                      : (lang === 'ru' ? 'Войти в личный кабинет' : 'Authenticate & Sign In')}
+                      ? lang === 'ru'
+                        ? 'Проверка учетных данных...'
+                        : 'Authenticating...'
+                      : lang === 'ru'
+                        ? 'Войти в личный кабинет'
+                        : 'Authenticate & Sign In'}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-[#245A91]" />
+                  <ArrowRight className="w-4 h-4 text-[#93C5FD]" />
                 </button>
               </form>
             </div>
@@ -268,7 +280,7 @@ export const LoginPage: React.FC = () => {
                 ───────────────────────────────────────────────────────────── */}
             <div className="pt-4 border-t border-[#DCE2EA] dark:border-[#193150] text-[11px] font-sans text-[#667085] dark:text-[#94A3B8] space-y-1.5 select-text">
               <div className="flex items-center space-x-1.5 font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD]" />
                 <span>
                   {lang === 'ru'
                     ? 'Справочные данные для экспертной комиссии жюри:'
@@ -278,13 +290,63 @@ export const LoginPage: React.FC = () => {
               <p className="leading-relaxed font-sans">
                 {lang === 'ru' ? (
                   <>
-                    <strong>Студенты:</strong> <code className="font-mono text-[#142D4E] dark:text-[#245A91]">aigul.nurova@demo.edu</code>, <code className="font-mono text-[#142D4E] dark:text-[#245A91]">timur.belov@demo.edu</code>, <code className="font-mono text-[#142D4E] dark:text-[#245A91]">lina.okafor@demo.edu</code> (пароль: <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">DemoStudent123!</code>).<br />
-                    <strong>Деканат:</strong> <code className="font-mono text-[#142D4E] dark:text-[#245A91]">dean.office@demo.edu</code> (пароль: <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">DemoStaff123!</code>).
+                    <strong>Студенты:</strong>{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      aigul.nurova@demo.edu
+                    </code>
+                    ,{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      timur.belov@demo.edu
+                    </code>
+                    ,{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      lina.okafor@demo.edu
+                    </code>{' '}
+                    (пароль:{' '}
+                    <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">
+                      DemoStudent123!
+                    </code>
+                    ).
+                    <br />
+                    <strong>Деканат:</strong>{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      dean.office@demo.edu
+                    </code>{' '}
+                    (пароль:{' '}
+                    <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">
+                      DemoStaff123!
+                    </code>
+                    ).
                   </>
                 ) : (
                   <>
-                    <strong>Students:</strong> <code className="font-mono text-[#142D4E] dark:text-[#245A91]">aigul.nurova@demo.edu</code>, <code className="font-mono text-[#142D4E] dark:text-[#245A91]">timur.belov@demo.edu</code>, <code className="font-mono text-[#142D4E] dark:text-[#245A91]">lina.okafor@demo.edu</code> (password: <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">DemoStudent123!</code>).<br />
-                    <strong>Faculty Staff:</strong> <code className="font-mono text-[#142D4E] dark:text-[#245A91]">dean.office@demo.edu</code> (password: <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">DemoStaff123!</code>).
+                    <strong>Students:</strong>{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      aigul.nurova@demo.edu
+                    </code>
+                    ,{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      timur.belov@demo.edu
+                    </code>
+                    ,{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      lina.okafor@demo.edu
+                    </code>{' '}
+                    (password:{' '}
+                    <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">
+                      DemoStudent123!
+                    </code>
+                    ).
+                    <br />
+                    <strong>Faculty Staff:</strong>{' '}
+                    <code className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+                      dean.office@demo.edu
+                    </code>{' '}
+                    (password:{' '}
+                    <code className="font-mono text-[#0F1D30] dark:text-[#FFFFFF]">
+                      DemoStaff123!
+                    </code>
+                    ).
                   </>
                 )}
               </p>

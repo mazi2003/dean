@@ -18,13 +18,10 @@ import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 
 // Use a dedicated test DB if provided, fall back to DATABASE_URL
-const TEST_DB_URL =
-  process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL ?? '';
+const TEST_DB_URL = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL ?? '';
 
 if (!TEST_DB_URL) {
-  throw new Error(
-    'Set TEST_DATABASE_URL (or DATABASE_URL) before running database tests.'
-  );
+  throw new Error('Set TEST_DATABASE_URL (or DATABASE_URL) before running database tests.');
 }
 
 const prisma = new PrismaClient({
@@ -76,6 +73,7 @@ describe('Database schema & seed', () => {
       'request_status_history',
       'notifications',
       'announcements',
+      'exams',
     ];
 
     for (const table of expected) {
@@ -85,18 +83,29 @@ describe('Database schema & seed', () => {
 
   it('2a. Seed produces correct user count', async () => {
     const count = await prisma.user.count();
-    // 3 students + 1 staff
-    expect(count).toBe(4);
+    // 15 students + 1 staff
+    expect(count).toBe(16);
   });
 
   it('2b. Seed produces correct student count', async () => {
     const count = await prisma.user.count({ where: { role: 'student' } });
-    expect(count).toBe(3);
+    expect(count).toBe(15);
   });
 
-  it('2c. Seed produces correct request type count', async () => {
+  it('2c. Seed produces correct request type count and standardized fields[].name', async () => {
     const count = await prisma.requestType.count();
     expect(count).toBe(6);
+
+    const requestTypes = await prisma.requestType.findMany();
+    for (const rt of requestTypes) {
+      expect(Array.isArray(rt.fields)).toBe(true);
+      const fields = rt.fields as Array<Record<string, unknown>>;
+      for (const f of fields) {
+        expect(typeof f.name).toBe('string');
+        expect((f.name as string).length).toBeGreaterThan(0);
+        expect(f).not.toHaveProperty('key');
+      }
+    }
   });
 
   it('2d. Seed produces at least 8 announcements', async () => {
@@ -104,18 +113,33 @@ describe('Database schema & seed', () => {
     expect(count).toBeGreaterThanOrEqual(8);
   });
 
+  it('2f. Seed produces 4 Cyrillic groups and 12 exams including STAT-102 retake', async () => {
+    const groups = await prisma.group.findMany({ select: { code: true } });
+    const codes = groups.map((g) => g.code);
+    expect(groups.length).toBe(4);
+    for (const expectedCode of ['ДУ-101', 'ДУ-205', 'ДУ-301', 'ДУ-102']) {
+      expect(codes).toContain(expectedCode);
+    }
+
+    const examCount = await prisma.exam.count();
+    expect(examCount).toBe(12);
+    const statRetake = await prisma.exam.findFirst({ where: { code: 'STAT-102' } });
+    expect(statRetake).not.toBeNull();
+    expect(statRetake!.isDebt).toBe(true);
+  });
+
   it('2e. Seed is idempotent – running counts twice gives same result', async () => {
     // We read counts before and after a second "seed" pass.
     // Since the seed script isn't re-executed here, we verify that the
     // existing counts match expectations (the CI pipeline runs seed twice).
-    const userCount         = await prisma.user.count();
+    const userCount = await prisma.user.count();
     const announcementCount = await prisma.announcement.count();
-    const requestTypeCount  = await prisma.requestType.count();
+    const requestTypeCount = await prisma.requestType.count();
 
     // Run same queries again – counts must be stable
-    const userCount2         = await prisma.user.count();
+    const userCount2 = await prisma.user.count();
     const announcementCount2 = await prisma.announcement.count();
-    const requestTypeCount2  = await prisma.requestType.count();
+    const requestTypeCount2 = await prisma.requestType.count();
 
     expect(userCount2).toBe(userCount);
     expect(announcementCount2).toBe(announcementCount);
@@ -126,10 +150,10 @@ describe('Database schema & seed', () => {
     await expect(
       prisma.user.create({
         data: {
-          email:        'aigul.nurova@demo.edu', // already exists
+          email: 'aigul.nurova@demo.edu', // already exists
           passwordHash: 'x',
-          fullName:     'Duplicate',
-          role:         'student',
+          fullName: 'Duplicate',
+          role: 'student',
         },
       })
     ).rejects.toThrow();
@@ -152,9 +176,9 @@ describe('Database schema & seed', () => {
     await expect(
       prisma.$executeRaw`
         INSERT INTO grades (id, student_id, subject_id, semester, points, credit_status, assessment_type, created_at, updated_at)
-        VALUES (gen_random_uuid(), ${profile!.id}, ${subject!.id}, 99, 150, 'in_progress', 'exam', NOW(), NOW())
+        VALUES (gen_random_uuid(), ${profile!.id}::uuid, ${subject!.id}::uuid, 99, 150, 'in_progress', 'exam', NOW(), NOW())
       `
-    ).rejects.toThrow();
+    ).rejects.toThrow(/check|constraint|grades/i);
   });
 
   it('3c. Constraint: grade value outside 2-5 is rejected (DB check)', async () => {
@@ -166,9 +190,9 @@ describe('Database schema & seed', () => {
     await expect(
       prisma.$executeRaw`
         INSERT INTO grades (id, student_id, subject_id, semester, points, grade, credit_status, assessment_type, created_at, updated_at)
-        VALUES (gen_random_uuid(), ${profile!.id}, ${subject!.id}, 99, 70, 6, 'earned', 'exam', NOW(), NOW())
+        VALUES (gen_random_uuid(), ${profile!.id}::uuid, ${subject!.id}::uuid, 99, 70, 6, 'earned', 'exam', NOW(), NOW())
       `
-    ).rejects.toThrow();
+    ).rejects.toThrow(/check|constraint|grades/i);
   });
 
   it('4a. Aigul avg grade points ~88 (within ±5)', async () => {
@@ -200,9 +224,9 @@ describe('Database schema & seed', () => {
 
   it('4d. Three students have different average grade points', async () => {
     async function getAvg(email: string): Promise<number> {
-      const user    = await prisma.user.findUnique({ where: { email } });
+      const user = await prisma.user.findUnique({ where: { email } });
       const profile = await prisma.studentProfile.findUnique({ where: { userId: user!.id } });
-      const grades  = await prisma.grade.findMany({ where: { studentProfileId: profile!.id } });
+      const grades = await prisma.grade.findMany({ where: { studentProfileId: profile!.id } });
       return avg(grades.map((g) => g.points));
     }
 
@@ -229,11 +253,11 @@ describe('Database schema & seed', () => {
     }
   });
 
-  it('6. Timur has a failed Statistics grade', async () => {
-    const timur   = await prisma.user.findUnique({ where: { email: 'timur.belov@demo.edu' } });
+  it('6. Timur has a failed Статистика grade', async () => {
+    const timur = await prisma.user.findUnique({ where: { email: 'timur.belov@demo.edu' } });
     const profile = await prisma.studentProfile.findUnique({ where: { userId: timur!.id } });
-    const stats   = await prisma.subject.findUnique({ where: { name: 'Statistics' } });
-    const grade   = await prisma.grade.findFirst({
+    const stats = await prisma.subject.findUnique({ where: { name: 'Статистика' } });
+    const grade = await prisma.grade.findFirst({
       where: { studentProfileId: profile!.id, subjectId: stats!.id },
     });
 
@@ -244,7 +268,7 @@ describe('Database schema & seed', () => {
   });
 
   it('7. Aigul has 2 upcoming exams (in_progress grades)', async () => {
-    const aigul   = await prisma.user.findUnique({ where: { email: 'aigul.nurova@demo.edu' } });
+    const aigul = await prisma.user.findUnique({ where: { email: 'aigul.nurova@demo.edu' } });
     const profile = await prisma.studentProfile.findUnique({ where: { userId: aigul!.id } });
     const upcoming = await prisma.grade.findMany({
       where: { studentProfileId: profile!.id, creditStatus: 'in_progress' },
@@ -257,7 +281,7 @@ describe('Database schema & seed', () => {
   });
 
   it('8. Lina has 3 unread notifications', async () => {
-    const lina  = await prisma.user.findUnique({ where: { email: 'lina.okafor@demo.edu' } });
+    const lina = await prisma.user.findUnique({ where: { email: 'lina.okafor@demo.edu' } });
     const count = await prisma.notification.count({
       where: { userId: lina!.id, read: false },
     });
@@ -265,15 +289,15 @@ describe('Database schema & seed', () => {
   });
 
   it('9. Lina has no requests (empty state)', async () => {
-    const lina  = await prisma.user.findUnique({ where: { email: 'lina.okafor@demo.edu' } });
+    const lina = await prisma.user.findUnique({ where: { email: 'lina.okafor@demo.edu' } });
     const count = await prisma.request.count({ where: { studentId: lina!.id } });
     expect(count).toBe(0);
   });
 
   it('10. This week schedule has 2 room_changed, 1 cancelled, 1 moved entry', async () => {
     const roomChanged = await prisma.scheduleEntry.count({ where: { status: 'room_changed' } });
-    const cancelled   = await prisma.scheduleEntry.count({ where: { status: 'cancelled' } });
-    const moved       = await prisma.scheduleEntry.count({ where: { status: 'moved' } });
+    const cancelled = await prisma.scheduleEntry.count({ where: { status: 'cancelled' } });
+    const moved = await prisma.scheduleEntry.count({ where: { status: 'moved' } });
 
     expect(roomChanged).toBeGreaterThanOrEqual(2);
     expect(cancelled).toBeGreaterThanOrEqual(1);

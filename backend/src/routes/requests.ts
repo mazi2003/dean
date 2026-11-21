@@ -5,7 +5,9 @@ import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
 
 const RequestsQuerySchema = z.object({
-  status: z.enum(['submitted', 'in_review', 'needs_info', 'ready', 'rejected', 'cancelled']).optional(),
+  status: z
+    .enum(['submitted', 'in_review', 'needs_info', 'ready', 'rejected', 'cancelled'])
+    .optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
 });
@@ -19,7 +21,14 @@ const CreateRequestSchema = z.object({
     'transcript',
     'dormitory_application',
   ]),
-  data: z.record(z.string(), z.unknown()),
+  data: z
+    .record(
+      z.string().min(1).max(64),
+      z.union([z.string().max(1000), z.number(), z.boolean(), z.null()])
+    )
+    .refine((obj) => Object.keys(obj).length >= 1 && Object.keys(obj).length <= 20, {
+      message: 'Request data must contain between 1 and 20 fields',
+    }),
 });
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -77,7 +86,12 @@ export function formatRequest(r: {
         authorName: h.actor?.fullName ?? r.student?.fullName ?? 'Система',
       })) ?? [],
     student: r.student
-      ? { id: r.student.id, email: r.student.email, fullName: r.student.fullName, role: r.student.role }
+      ? {
+          id: r.student.id,
+          email: r.student.email,
+          fullName: r.student.fullName,
+          role: r.student.role,
+        }
       : undefined,
   };
 }
@@ -121,7 +135,11 @@ export async function requestsRoutes(app: FastifyInstance) {
     handler: async (request, reply) => {
       const parsed = RequestsQuerySchema.safeParse(request.query);
       if (!parsed.success) {
-        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid query', details: parsed.error.flatten() });
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid query',
+          details: parsed.error.flatten(),
+        });
       }
 
       const userId = request.user!.sub;
@@ -159,7 +177,11 @@ export async function requestsRoutes(app: FastifyInstance) {
 
       const parsed = CreateRequestSchema.safeParse(request.body);
       if (!parsed.success) {
-        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid input',
+          details: parsed.error.flatten(),
+        });
       }
 
       const userId = request.user!.sub;
@@ -180,7 +202,13 @@ export async function requestsRoutes(app: FastifyInstance) {
           data: parsed.data.data as Prisma.InputJsonValue,
           status: 'submitted',
           history: {
-            create: [{ status: 'submitted', actorId: userId, comment: 'Заявление отправлено в деканат на рассмотрение.' }],
+            create: [
+              {
+                status: 'submitted',
+                actorId: userId,
+                comment: 'Заявление отправлено в деканат на рассмотрение.',
+              },
+            ],
           },
         },
         include: requestInclude,
@@ -240,7 +268,9 @@ export async function requestsRoutes(app: FastifyInstance) {
       if (!r) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Not found' });
 
       if (!['submitted', 'in_review'].includes(r.status)) {
-        return reply.code(409).send({ code: 'CONFLICT', message: 'Cannot cancel in current status' });
+        return reply
+          .code(409)
+          .send({ code: 'CONFLICT', message: 'Cannot cancel in current status' });
       }
 
       const updated = await prisma.request.update({
@@ -248,7 +278,9 @@ export async function requestsRoutes(app: FastifyInstance) {
         data: {
           status: 'cancelled',
           history: {
-            create: [{ status: 'cancelled', actorId: userId, comment: 'Заявление отменено студентом.' }],
+            create: [
+              { status: 'cancelled', actorId: userId, comment: 'Заявление отменено студентом.' },
+            ],
           },
         },
         include: requestInclude,

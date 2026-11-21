@@ -6,9 +6,13 @@
     "db:generate": "prisma generate --schema=schema.prisma",
     "db:migrate": "prisma migrate dev --schema=schema.prisma",
     "db:migrate:deploy": "prisma migrate deploy --schema=schema.prisma",
-    "db:seed": "ts-node --esm seed.ts",
+    "db:seed": "tsx seed.ts",
     "db:reset": "prisma migrate reset --schema=schema.prisma --force",
     "db:studio": "prisma studio --schema=schema.prisma",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint seed.ts tests vitest.config.ts",
+    "format:check": "prettier --check seed.ts \"tests/**/*.ts\" vitest.config.ts",
+    "format": "prettier --write seed.ts \"tests/**/*.ts\" vitest.config.ts",
     "test": "vitest run"
   },
   "keywords": [],
@@ -24,5 +28,17 @@
   "allowScripts": {
     "argon2@0.45.2": true,
     "esbuild@0.28.2": true
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "^5.1.1"
   }
 }

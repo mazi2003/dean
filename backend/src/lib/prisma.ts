@@ -9,11 +9,13 @@ const globalForPrisma = globalThis as unknown as {
 
 function resolveConnectionUrl(): string | undefined {
   return (
-    process.env.DATABASE_URL_POOLED ??
-    process.env.DATABASE_URL ??
-    process.env.POSTGRES_PRISMA_URL ??
-    process.env.POSTGRES_URL
-  )?.trim() || undefined;
+    (
+      process.env.DATABASE_URL_POOLED ??
+      process.env.DATABASE_URL ??
+      process.env.POSTGRES_PRISMA_URL ??
+      process.env.POSTGRES_URL
+    )?.trim() || undefined
+  );
 }
 
 function getRealPrismaClient(): PrismaClient | null {
@@ -55,9 +57,9 @@ function createModelWrapper(modelName: keyof PrismaClient, methods: string[]) {
       const real = getRealPrismaClient();
       if (real) {
         try {
-          const model = (real as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>)[
-            String(modelName)
-          ];
+          const model = (
+            real as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>
+          )[String(modelName)];
           const result = await model[methodProp](...args);
 
           if (
@@ -70,16 +72,27 @@ function createModelWrapper(modelName: keyof PrismaClient, methods: string[]) {
             if (totalUsers === 0) {
               globalForPrisma.useFallbackOnly = true;
               const fallback = await getServerlessFallbackPrisma();
-              const fbModel = (fallback as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>)[
-                String(modelName)
-              ];
+              const fbModel = (
+                fallback as unknown as Record<
+                  string,
+                  Record<string, (...a: unknown[]) => Promise<unknown>>
+                >
+              )[String(modelName)];
               return fbModel[methodProp](...args);
             }
           }
 
           return result;
         } catch (err) {
-          if (isVercelRuntime()) {
+          const errObj = err as { code?: string; name?: string; message?: string } | null;
+          const isConnectionError =
+            errObj?.name === 'PrismaClientInitializationError' ||
+            (typeof errObj?.code === 'string' && /^P10\d\d$/.test(errObj.code)) ||
+            (typeof errObj?.message === 'string' &&
+              /Can't reach database server|Connection refused|ECONNREFUSED|ENOTFOUND|ETIMEDOUT/i.test(
+                errObj.message
+              ));
+          if (isVercelRuntime() && isConnectionError) {
             globalForPrisma.useFallbackOnly = true;
           } else {
             throw err;
@@ -88,9 +101,9 @@ function createModelWrapper(modelName: keyof PrismaClient, methods: string[]) {
       }
 
       const fallback = await getServerlessFallbackPrisma();
-      const fbModel = (fallback as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>)[
-        String(modelName)
-      ];
+      const fbModel = (
+        fallback as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>
+      )[String(modelName)];
       return fbModel[methodProp](...args);
     };
   }
@@ -104,11 +117,31 @@ export const prisma: PrismaClient = {
   group: createModelWrapper('group', ['findMany', 'findFirst']),
   room: createModelWrapper('room', ['findFirst', 'create']),
   exam: createModelWrapper('exam', ['findMany', 'findFirst', 'create', 'update']),
-  scheduleEntry: createModelWrapper('scheduleEntry', ['findMany', 'findFirst', 'findUnique', 'update']),
+  scheduleEntry: createModelWrapper('scheduleEntry', [
+    'findMany',
+    'findFirst',
+    'findUnique',
+    'update',
+  ]),
   grade: createModelWrapper('grade', ['findMany']),
   requestType: createModelWrapper('requestType', ['findMany', 'findUnique']),
-  request: createModelWrapper('request', ['count', 'findMany', 'findFirst', 'findUnique', 'create', 'update']),
-  notification: createModelWrapper('notification', ['count', 'findMany', 'findFirst', 'update', 'updateMany', 'create', 'createMany']),
+  request: createModelWrapper('request', [
+    'count',
+    'findMany',
+    'findFirst',
+    'findUnique',
+    'create',
+    'update',
+  ]),
+  notification: createModelWrapper('notification', [
+    'count',
+    'findMany',
+    'findFirst',
+    'update',
+    'updateMany',
+    'create',
+    'createMany',
+  ]),
   announcement: createModelWrapper('announcement', ['findMany', 'create', 'delete']),
   $transaction: async <T>(ops: Array<Promise<T>>) => Promise.all(ops),
 } as unknown as PrismaClient;

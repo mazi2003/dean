@@ -63,30 +63,42 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
           <stop offset="100%" stopColor="#143557" />
         </linearGradient>
         {/* Text path for circular inscription */}
-        <path
-          id="sealTextPathTop"
-          d="M 18,60 A 42,42 0 1,1 102,60"
-          fill="none"
-        />
-        <path
-          id="sealTextPathBottom"
-          d="M 102,60 A 42,42 0 0,1 18,60"
-          fill="none"
-        />
+        <path id="sealTextPathTop" d="M 18,60 A 42,42 0 1,1 102,60" fill="none" />
+        <path id="sealTextPathBottom" d="M 102,60 A 42,42 0 0,1 18,60" fill="none" />
       </defs>
 
       {/* 1. Outer Fine Guilloche / Concentric Rings */}
       <circle cx="60" cy="60" r="58" stroke={strokeRim} strokeWidth="1.2" />
-      <circle cx="60" cy="60" r="55" stroke={strokeRim} strokeWidth="0.8" strokeDasharray="1.5 2" opacity="0.8" />
+      <circle
+        cx="60"
+        cy="60"
+        r="55"
+        stroke={strokeRim}
+        strokeWidth="0.8"
+        strokeDasharray="1.5 2"
+        opacity="0.8"
+      />
       <circle cx="60" cy="60" r="47" stroke={strokeRim} strokeWidth="1.2" />
 
       {/* 2. Circular Latin Inscription in primary academic sans */}
-      <text fill={fillGold} fontSize="5" fontWeight="700" letterSpacing="0.16em" fontFamily="var(--font-sans)">
+      <text
+        fill={fillGold}
+        fontSize="5"
+        fontWeight="700"
+        letterSpacing="0.16em"
+        fontFamily="var(--font-sans)"
+      >
         <textPath href="#sealTextPathTop" startOffset="50%" textAnchor="middle">
           UNIVERSITAS DEMOTECHNICA
         </textPath>
       </text>
-      <text fill={fillGold} fontSize="4.6" fontWeight="600" letterSpacing="0.2em" fontFamily="var(--font-sans)">
+      <text
+        fill={fillGold}
+        fontSize="4.6"
+        fontWeight="600"
+        letterSpacing="0.2em"
+        fontFamily="var(--font-sans)"
+      >
         <textPath href="#sealTextPathBottom" startOffset="50%" textAnchor="middle">
           • MMXXVI • VERITAS •
         </textPath>
@@ -116,19 +128,48 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
       {/* 5. Guiding 8-pointed Polaris / Beacon Star (Apex of Truth) */}
       <g transform="translate(60, 29)">
         {/* Radiating beacon rays */}
-        <line x1="0" y1="-5.5" x2="0" y2="5.5" stroke={fillGoldBright} strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="-5.5" y1="0" x2="5.5" y2="0" stroke={fillGoldBright} strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="-3.5" y1="-3.5" x2="3.5" y2="3.5" stroke={fillGoldBright} strokeWidth="0.8" strokeLinecap="round" />
-        <line x1="3.5" y1="-3.5" x2="-3.5" y2="3.5" stroke={fillGoldBright} strokeWidth="0.8" strokeLinecap="round" />
+        <line
+          x1="0"
+          y1="-5.5"
+          x2="0"
+          y2="5.5"
+          stroke={fillGoldBright}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <line
+          x1="-5.5"
+          y1="0"
+          x2="5.5"
+          y2="0"
+          stroke={fillGoldBright}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <line
+          x1="-3.5"
+          y1="-3.5"
+          x2="3.5"
+          y2="3.5"
+          stroke={fillGoldBright}
+          strokeWidth="0.8"
+          strokeLinecap="round"
+        />
+        <line
+          x1="3.5"
+          y1="-3.5"
+          x2="-3.5"
+          y2="3.5"
+          stroke={fillGoldBright}
+          strokeWidth="0.8"
+          strokeLinecap="round"
+        />
         <circle cx="0" cy="0" r="1.2" fill="#FFFFFF" />
       </g>
 
       {/* 6. Classical Tripartite Colonnade Portico (Pillars of Science & Knowledge) */}
       {/* Triangular Gable Pediment */}
-      <path
-        d="M44 41 L60 34 L76 41 Z"
-        fill="url(#goldGrad)"
-      />
+      <path d="M44 41 L60 34 L76 41 Z" fill="url(#goldGrad)" />
       {/* Entablature Architrave */}
       <rect x="43" y="42" width="34" height="2" rx="0.5" fill={fillParchment} />
 
@@ -165,12 +206,60 @@ export const UniversityEmblem: React.FC<UniversityEmblemProps> = ({
         {/* Spine line */}
         <line x1="60" y1="69" x2="60" y2="79" stroke={fillShield} strokeWidth="1.2" />
         {/* Illuminated text lines on pages */}
-        <line x1="46" y1="68" x2="55" y2="69.5" stroke={fillShield} strokeWidth="0.7" opacity="0.65" />
-        <line x1="46" y1="71" x2="55" y2="72.5" stroke={fillShield} strokeWidth="0.7" opacity="0.65" />
-        <line x1="46" y1="74" x2="53" y2="75" stroke={fillShield} strokeWidth="0.7" opacity="0.65" />
-        <line x1="65" y1="69.5" x2="74" y2="68" stroke={fillShield} strokeWidth="0.7" opacity="0.65" />
-        <line x1="65" y1="72.5" x2="74" y2="71" stroke={fillShield} strokeWidth="0.7" opacity="0.65" />
-        <line x1="67" y1="75" x2="74" y2="74" stroke={fillShield} strokeWidth="0.7" opacity="0.65" />
+        <line
+          x1="46"
+          y1="68"
+          x2="55"
+          y2="69.5"
+          stroke={fillShield}
+          strokeWidth="0.7"
+          opacity="0.65"
+        />
+        <line
+          x1="46"
+          y1="71"
+          x2="55"
+          y2="72.5"
+          stroke={fillShield}
+          strokeWidth="0.7"
+          opacity="0.65"
+        />
+        <line
+          x1="46"
+          y1="74"
+          x2="53"
+          y2="75"
+          stroke={fillShield}
+          strokeWidth="0.7"
+          opacity="0.65"
+        />
+        <line
+          x1="65"
+          y1="69.5"
+          x2="74"
+          y2="68"
+          stroke={fillShield}
+          strokeWidth="0.7"
+          opacity="0.65"
+        />
+        <line
+          x1="65"
+          y1="72.5"
+          x2="74"
+          y2="71"
+          stroke={fillShield}
+          strokeWidth="0.7"
+          opacity="0.65"
+        />
+        <line
+          x1="67"
+          y1="75"
+          x2="74"
+          y2="74"
+          stroke={fillShield}
+          strokeWidth="0.7"
+          opacity="0.65"
+        />
       </g>
 
       {/* 8. Latin Motto Ribbon / Scroll */}

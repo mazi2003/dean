@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import {
-  AlertOctagon,
-  FileCheck2,
-} from 'lucide-react';
+import { AlertOctagon, FileCheck2 } from 'lucide-react';
 import { GradesSummary } from '../types';
 import { api } from '../services/api';
-import {
-  tr,
-  getAssessmentTypeLabel,
-  getGradeDescription,
-  localizeText,
-} from '../utils/i18n';
+import { tr, getAssessmentTypeLabel, getGradeDescription, localizeText } from '../utils/i18n';
 
 export const GradesPage: React.FC = () => {
   const { user, profile, lang } = useAuth();
@@ -20,18 +12,22 @@ export const GradesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
       try {
-        const data = await api.getGrades();
-        setGrades(data);
+        const data = await api.getGrades(selectedSemester);
+        if (!cancelled) setGrades(data);
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     load();
-  }, [user]);
+    return () => {
+      cancelled = true;
+    };
+  }, [user, selectedSemester]);
 
   if (loading || !grades) {
     return (
@@ -43,7 +39,7 @@ export const GradesPage: React.FC = () => {
   }
 
   // Check if there is any debt/failed subject
-  const failedSubject = grades.items.find(g => g.creditStatus === 'failed');
+  const failedSubject = grades.items.find((g) => g.creditStatus === 'failed');
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
@@ -52,7 +48,7 @@ export const GradesPage: React.FC = () => {
           ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#245A91] font-semibold mb-1">
+          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold mb-1">
             <span>{localizeText(profile?.faculty, lang)}</span>
             <span>•</span>
             <span>№ {profile?.studentNumber}</span>
@@ -103,10 +99,10 @@ export const GradesPage: React.FC = () => {
             {lang === 'ru' ? 'Средний балл (GPA)' : 'Cumulative GPA'}
           </span>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-3xl font-bold text-[#142D4E] dark:text-[#245A91]">
-              {grades.gpa.toFixed(2)}
+            <span className="font-mono text-3xl font-bold text-[#142D4E] dark:text-[#93C5FD]">
+              {(grades.items.length > 0 ? grades.gpa : 0).toFixed(2)}
             </span>
-            <span className="font-mono text-xs text-[#667085]">/ 5.00</span>
+            <span className="font-mono text-xs text-[#667085] dark:text-[#94A3B8]">/ 5.00</span>
           </div>
           <p className="text-[11px] font-sans text-[#475467] dark:text-[#CBD5E1]">
             {grades.gpa >= 4.5
@@ -122,12 +118,16 @@ export const GradesPage: React.FC = () => {
           </span>
           <div className="flex items-baseline space-x-2">
             <span className="font-mono text-3xl font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
-              {(grades.averagePoints || profile?.averageScore || 88.5).toFixed(1)}
+              {(grades.items.length > 0 ? grades.averagePoints : 0).toFixed(1)}
             </span>
-            <span className="font-mono text-xs text-[#667085]">/ 100</span>
+            <span className="font-mono text-xs text-[#667085] dark:text-[#94A3B8]">/ 100</span>
           </div>
           <p className="text-[11px] font-sans text-[#475467] dark:text-[#CBD5E1]">
-            {tr(lang, 'Балльно-рейтинговая система университета', 'University continuous rating system')}
+            {tr(
+              lang,
+              'Балльно-рейтинговая система университета',
+              'University continuous rating system'
+            )}
           </p>
         </div>
 
@@ -137,10 +137,12 @@ export const GradesPage: React.FC = () => {
             {lang === 'ru' ? 'Освоено кредитов (ECTS)' : 'Completed Credits (ECTS)'}
           </span>
           <div className="flex items-baseline space-x-2">
-            <span className="font-mono text-3xl font-bold text-[#142D4E] dark:text-[#245A91]">
-              {grades.creditsEarned || 48}
+            <span className="font-mono text-3xl font-bold text-[#142D4E] dark:text-[#93C5FD]">
+              {grades.items.length > 0 ? grades.creditsEarned : 0}
             </span>
-            <span className="font-mono text-xs text-[#667085]">/ {grades.creditsRequired || 240} ECTS</span>
+            <span className="font-mono text-xs text-[#667085] dark:text-[#94A3B8]">
+              / {grades.creditsRequired || 240} ECTS
+            </span>
           </div>
           <p className="text-[11px] font-sans text-[#475467] dark:text-[#CBD5E1]">
             {tr(lang, 'Бакалавриат • 4 академических года', 'Bachelor Program • 4 Academic Years')}
@@ -157,7 +159,7 @@ export const GradesPage: React.FC = () => {
             <AlertOctagon className="w-5 h-5 text-[#C63740] flex-shrink-0 mt-0.5" />
             <div className="flex-1 space-y-1">
               <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-base text-[#C63740] dark:text-[#F06A73]">
+                <h3 className="font-semibold text-base text-[#991B1B] dark:text-[#F06A73]">
                   {tr(lang, 'Академическая задолженность:', 'Academic Debt:')}{' '}
                   {localizeText(failedSubject.subject, lang)}
                 </h3>
@@ -172,8 +174,10 @@ export const GradesPage: React.FC = () => {
                   'Faculty board retake assessment has been scheduled. All pending lab coursework must be submitted for admission.'
                 )}
               </p>
-              <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-[#C63740] dark:text-[#F06A73] font-semibold">
-                <span>{tr(lang, 'Дата пересдачи: 28 ноября 2026 г.', 'Retake Date: Nov 28, 2026')}</span>
+              <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-[#991B1B] dark:text-[#F06A73] font-semibold">
+                <span>
+                  {tr(lang, 'Дата пересдачи: 28 ноября 2026 г.', 'Retake Date: Nov 28, 2026')}
+                </span>
                 <span>•</span>
                 <span>{tr(lang, 'Время: 14:00', 'Time: 14:00')}</span>
                 <span>•</span>
@@ -190,7 +194,7 @@ export const GradesPage: React.FC = () => {
       <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] overflow-hidden shadow-xs">
         <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#0E1B2D] border-b border-[#DCE2EA] dark:border-[#193150] flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <FileCheck2 className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
+            <FileCheck2 className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
             <h3 className="font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#0F1D30] dark:text-[#FFFFFF]">
               {tr(
                 lang,
@@ -199,17 +203,24 @@ export const GradesPage: React.FC = () => {
               )}
             </h3>
           </div>
-          <span className="text-xs font-mono text-[#667085]">
+          <span className="text-xs font-mono text-[#667085] dark:text-[#94A3B8]">
             {tr(lang, `${grades.items.length} дисциплин`, `${grades.items.length} courses`)}
           </span>
         </div>
 
-        <div className="overflow-x-auto">
+        <div
+          tabIndex={0}
+          role="region"
+          aria-label={tr(lang, 'Таблица успеваемости', 'Grades Table')}
+          className="overflow-x-auto focus:outline-hidden focus:ring-1 focus:ring-[#245A91]"
+        >
           <table className="w-full text-left text-xs font-sans">
-            <thead className="bg-[#F8FAFC]/50 dark:bg-[#0E1B2D]/50 border-b border-[#DCE2EA] dark:border-[#193150] text-[10px] uppercase tracking-wider text-[#667085] font-mono">
+            <thead className="bg-[#F8FAFC]/50 dark:bg-[#0E1B2D]/50 border-b border-[#DCE2EA] dark:border-[#193150] text-[10px] uppercase tracking-wider text-[#667085] dark:text-[#94A3B8] font-mono">
               <tr>
                 <th className="py-3 px-4 w-12">№</th>
-                <th className="py-3 px-4">{tr(lang, 'Дисциплина и кафедра', 'Course & Department')}</th>
+                <th className="py-3 px-4">
+                  {tr(lang, 'Дисциплина и кафедра', 'Course & Department')}
+                </th>
                 <th className="py-3 px-4 w-24">ECTS</th>
                 <th className="py-3 px-4 w-28">{tr(lang, 'Баллы (БРС)', 'Score')}</th>
                 <th className="py-3 px-4 w-32">{tr(lang, 'Оценка', 'Grade')}</th>
@@ -226,7 +237,7 @@ export const GradesPage: React.FC = () => {
                       isFail ? 'bg-[#C63740]/5 dark:bg-[#C63740]/15' : ''
                     }`}
                   >
-                    <td className="py-3.5 px-4 font-mono text-[#667085]">
+                    <td className="py-3.5 px-4 font-mono text-[#667085] dark:text-[#94A3B8]">
                       {String(idx + 1).padStart(2, '0')}
                     </td>
                     <td className="py-3.5 px-4">
@@ -235,7 +246,11 @@ export const GradesPage: React.FC = () => {
                       </p>
                       <p className="text-[11px] text-[#667085] dark:text-[#94A3B8] mt-0.5">
                         {getAssessmentTypeLabel(item.assessmentType, lang)} •{' '}
-                        {tr(lang, 'Кафедра международных отношений', 'Dept. of International Relations')}
+                        {tr(
+                          lang,
+                          'Кафедра международных отношений',
+                          'Dept. of International Relations'
+                        )}
                       </p>
                     </td>
                     <td className="py-3.5 px-4 font-mono font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
@@ -244,34 +259,36 @@ export const GradesPage: React.FC = () => {
                     <td className="py-3.5 px-4 font-mono">
                       <span
                         className={`font-bold ${
-                          isFail ? 'text-[#C63740] dark:text-[#F06A73]' : 'text-[#142D4E] dark:text-[#245A91]'
+                          isFail
+                            ? 'text-[#991B1B] dark:text-[#F06A73]'
+                            : 'text-[#142D4E] dark:text-[#93C5FD]'
                         }`}
                       >
                         {item.points ?? '—'}
                       </span>
-                      <span className="text-[#667085] text-[10px]"> / 100</span>
+                      <span className="text-[#667085] dark:text-[#94A3B8] text-[10px]"> / 100</span>
                     </td>
                     <td className="py-3.5 px-4">
                       <span
                         className={`font-semibold text-sm ${
                           isFail
-                            ? 'text-[#C63740] dark:text-[#F06A73]'
-                            : 'text-[#142D4E] dark:text-[#245A91]'
+                            ? 'text-[#991B1B] dark:text-[#F06A73]'
+                            : 'text-[#142D4E] dark:text-[#93C5FD]'
                         }`}
                       >
                         {item.grade
                           ? `${item.grade} (${getGradeDescription(item.grade, lang)})`
                           : isFail
-                          ? tr(lang, 'Незачет', 'Failed')
-                          : tr(lang, 'Зачтено', 'Passed')}
+                            ? tr(lang, 'Незачет', 'Failed')
+                            : tr(lang, 'Зачтено', 'Passed')}
                       </span>
                     </td>
                     <td className="py-3.5 px-4">
                       <span
                         className={`inline-block px-2 py-0.5 rounded text-[10px] font-sans font-semibold uppercase tracking-wider ${
                           isFail
-                            ? 'bg-[#C63740]/15 text-[#C63740] dark:text-[#F06A73] border border-[#C63740]/30'
-                            : 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#245A91] border border-[#142D4E]/25'
+                            ? 'bg-[#C63740]/15 dark:bg-[#C63740]/25 text-[#991B1B] dark:text-[#FCA5A5] border border-[#C63740]/30'
+                            : 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#93C5FD] border border-[#142D4E]/25'
                         }`}
                       >
                         {isFail ? tr(lang, 'Долг', 'Debt') : tr(lang, 'Зачтено', 'Passed')}

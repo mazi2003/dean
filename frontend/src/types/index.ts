@@ -97,15 +97,11 @@ export type RequestTypeCode =
   | 'dormitory_application';
 
 export type RequestStatus =
-  | 'submitted'
-  | 'in_review'
-  | 'needs_info'
-  | 'ready'
-  | 'rejected'
-  | 'cancelled';
+  'submitted' | 'in_review' | 'needs_info' | 'ready' | 'rejected' | 'cancelled';
 
 export interface RequestTypeField {
   name: string;
+  key?: string;
   label: string;
   type: 'text' | 'number' | 'select' | 'textarea' | 'date';
   required: boolean;
@@ -136,7 +132,7 @@ export interface StudentRequest {
   studentGroup?: string;
   typeCode: RequestTypeCode;
   typeTitle: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   status: RequestStatus;
   slaDays: number;
   expectedDate: string;
@@ -221,4 +217,3 @@ export interface StudentDossier {
   gradesSummary: GradesSummary;
   requests: StudentRequest[];
 }
-

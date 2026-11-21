@@ -15,7 +15,11 @@ export async function gradesRoutes(app: FastifyInstance) {
     handler: async (request, reply) => {
       const parsed = GradesQuerySchema.safeParse(request.query);
       if (!parsed.success) {
-        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid query', details: parsed.error.flatten() });
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid query',
+          details: parsed.error.flatten(),
+        });
       }
 
       const userId = request.user!.sub;

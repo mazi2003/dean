@@ -12,14 +12,7 @@
     <!-- Self-hosted Typography System (OFL-1.1): Inter & JetBrains Mono bundled locally -->
 
     <title>DemoTech • Цифровой деканат</title>
-    <script>
-      try {
-        var t = localStorage.getItem('dean_theme');
-        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        }
-      } catch (e) {}
-    </script>
+    <script src="/theme-init.js"></script>
   </head>
   <body class="antialiased selection:bg-academic-green selection:text-white">
     <div id="root"></div>

@@ -1,52 +1,56 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-sans:
+    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
 
-  --color-academic-green: #142D4E;
-  --color-academic-green-dark: #0E1F36;
-  --color-academic-green-light: #1C3B65;
-  --color-warm-ivory: #FFFFFF;
-  --color-warm-ivory-light: #F8FAFC;
-  --color-burgundy: #C63740;
-  --color-burgundy-light: #D9454E;
-  --color-charcoal: #0F1D30;
+  --color-academic-green: #142d4e;
+  --color-academic-green-dark: #0e1f36;
+  --color-academic-green-light: #1c3b65;
+  --color-warm-ivory: #ffffff;
+  --color-warm-ivory-light: #f8fafc;
+  --color-burgundy: #c63740;
+  --color-burgundy-light: #d9454e;
+  --color-charcoal: #0f1d30;
   --color-charcoal-muted: #475467;
-  --color-antique-gold: #245A91;
-  --color-antique-gold-light: #3879BC;
-  --color-pure-white: #FFFFFF;
+  --color-antique-gold: #245a91;
+  --color-antique-gold-light: #3879bc;
+  --color-pure-white: #ffffff;
 }
 
 @layer base {
   :root {
-    --bg-primary: #F2F4F7;
-    --bg-surface: #FFFFFF;
-    --bg-surface-subtle: #F8FAFC;
-    --text-primary: #0F1D30;
+    --bg-primary: #f2f4f7;
+    --bg-surface: #ffffff;
+    --bg-surface-subtle: #f8fafc;
+    --text-primary: #0f1d30;
     --text-secondary: #475467;
     --text-muted: #667085;
-    --border-subtle: #DCE2EA;
-    --border-strong: #CBD5E1;
-    --accent-green: #142D4E;
-    --accent-gold: #245A91;
-    --accent-burgundy: #C63740;
+    --border-subtle: #dce2ea;
+    --border-strong: #cbd5e1;
+    --accent-green: #142d4e;
+    --accent-gold: #245a91;
+    --accent-burgundy: #c63740;
   }
 
   .dark {
-    --bg-primary: #0B1524;
+    --bg-primary: #0b1524;
     --bg-surface: #112238;
-    --bg-surface-subtle: #162A45;
-    --text-primary: #FFFFFF;
-    --text-secondary: #CBD5E1;
-    --text-muted: #94A3B8;
-    --border-subtle: #1E395B;
-    --border-strong: #274C78;
-    --accent-green: #60A5FA;
-    --accent-gold: #93C5FD;
-    --accent-burgundy: #F06A73;
+    --bg-surface-subtle: #162a45;
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-subtle: #1e395b;
+    --border-strong: #274c78;
+    --accent-green: #60a5fa;
+    --accent-gold: #93c5fd;
+    --accent-burgundy: #f06a73;
   }
 
   * {
@@ -54,7 +58,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -74,7 +80,12 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-sans);
   }
 
@@ -103,4 +114,17 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(36, 90, 145, 0.6);
+}
+
+/* ГОСТ Р 52872-2019 / WCAG AAA High Contrast Accessibility Mode */
+html.accessibility-mode {
+  filter: contrast(1.12);
+  letter-spacing: 0.01em;
+}
+html.accessibility-mode button,
+html.accessibility-mode a,
+html.accessibility-mode input,
+html.accessibility-mode select {
+  outline: 2px solid #1d4ed8 !important;
+  outline-offset: 1px !important;
 }

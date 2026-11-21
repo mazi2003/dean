@@ -33,7 +33,10 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
   async function loginAs(email: string, password = 'DemoStudent123!') {
     const agent = supertest.agent(app.server);
     const ip = `10.10.0.${testIpSeq++}`;
-    const res = await agent.post('/api/v1/auth/login').set('X-Forwarded-For', ip).send({ email, password });
+    const res = await agent
+      .post('/api/v1/auth/login')
+      .set('X-Forwarded-For', ip)
+      .send({ email, password });
     expect(res.status).toBe(200);
     return agent;
   }
@@ -94,7 +97,9 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
     const timur = await loginAs('timur.belov@demo.edu');
     const tGrades = await timur.get('/api/v1/grades');
     expect(tGrades.status).toBe(200);
-    const failed = tGrades.body.items.find((i: { creditStatus: string }) => i.creditStatus === 'failed');
+    const failed = tGrades.body.items.find(
+      (i: { creditStatus: string }) => i.creditStatus === 'failed'
+    );
     expect(failed).toBeDefined();
     expect(failed.subject).toBe('Statistics');
     expect(failed.grade).toBe(2);
@@ -129,7 +134,9 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
     expect(badId.status).toBe(404);
 
     // Create new request & cancel workflow
-    const badCreate = await aigul.post('/api/v1/requests').send({ typeCode: 'invalid_type', data: {} });
+    const badCreate = await aigul
+      .post('/api/v1/requests')
+      .send({ typeCode: 'invalid_type', data: {} });
     expect(badCreate.status).toBe(422);
 
     const created = await aigul.post('/api/v1/requests').send({
@@ -206,7 +213,9 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
     // Deterministic rules response when AI_API_KEY is unset
     delete process.env.AI_API_KEY;
     delete process.env.AI_BASE_URL;
-    const rulesRes = await timur.post('/api/v1/assistant/ask').send({ question: 'Когда пересдача?', lang: 'ru' });
+    const rulesRes = await timur
+      .post('/api/v1/assistant/ask')
+      .send({ question: 'Когда пересдача?', lang: 'ru' });
     expect(rulesRes.status).toBe(200);
     expect(rulesRes.body.source).toBe('rules');
     expect(rulesRes.body.answer).toContain('Statistics');
@@ -225,13 +234,17 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
       return {
         ok: true,
         json: async () => ({
-          choices: [{ message: { content: 'По данным вашей зачетки есть пересдача по Statistics.' } }],
+          choices: [
+            { message: { content: 'По данным вашей зачетки есть пересдача по Statistics.' } },
+          ],
         }),
       } as unknown as Response;
     }) as typeof fetch;
 
     try {
-      const res = await timur.post('/api/v1/assistant/ask').send({ question: 'Какие у меня долги?', lang: 'ru' });
+      const res = await timur
+        .post('/api/v1/assistant/ask')
+        .send({ question: 'Какие у меня долги?', lang: 'ru' });
       expect(res.status).toBe(200);
       expect(res.body.source).toBe('llm');
       expect(res.body.answer).toContain('Statistics');

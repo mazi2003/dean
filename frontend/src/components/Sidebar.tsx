@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   Clock,
   Users,
+  type LucideIcon,
 } from 'lucide-react';
 import { resolveAvatarSrc } from '../utils/avatar';
 
@@ -30,7 +31,7 @@ interface NavItem {
   id: string;
   label: string;
   sublabel?: string;
-  icon: any;
+  icon: LucideIcon;
   badge?: number;
 }
 
@@ -180,7 +181,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {lang === 'ru' ? 'Разделы деканата' : 'Academic Portal'}
         </div>
 
-        {items.map(item => {
+        {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
@@ -204,7 +205,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <div className="truncate">
                   <span className="block truncate font-medium">{item.label}</span>
                   {item.sublabel && (
-                    <span className={`block text-[10px] truncate ${isActive ? 'text-[#CBD5E1]' : 'text-[#667085] dark:text-[#94A3B8]'}`}>
+                    <span
+                      className={`block text-[10px] truncate ${isActive ? 'text-[#CBD5E1]' : 'text-[#667085] dark:text-[#94A3B8]'}`}
+                    >
                       {item.sublabel}
                     </span>
                   )}
@@ -214,9 +217,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {item.badge !== undefined && item.badge > 0 ? (
                 <span
                   className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                    isActive
-                      ? 'bg-[#FFFFFF] text-[#142D4E]'
-                      : 'bg-[#C63740] text-white'
+                    isActive ? 'bg-[#FFFFFF] text-[#142D4E]' : 'bg-[#C63740] text-white'
                   }`}
                 >
                   {item.badge}
@@ -248,7 +249,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="w-full flex items-center space-x-2.5 px-3.5 py-2 rounded-lg text-xs font-sans font-medium bg-[#142D4E]/10 dark:bg-[#162A45] hover:bg-[#142D4E]/15 text-[#142D4E] dark:text-[#93C5FD] border border-[#142D4E]/25 dark:border-[#274C78] transition-colors cursor-pointer"
         >
           <Sparkles className="w-4 h-4 text-[#245A91] dark:text-[#93C5FD]" />
-          <span>{lang === 'ru' ? 'Консультант деканата' : 'Dean\'s AI Advisor'}</span>
+          <span>{lang === 'ru' ? 'Консультант деканата' : "Dean's AI Advisor"}</span>
         </button>
 
         {/* Office Hours & Registry Info */}
@@ -256,13 +257,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center space-x-1.5">
             <Building className="w-3 h-3 text-[#245A91] flex-shrink-0" />
             <span className="truncate">
-              {lang === 'ru' ? 'Деканат • Главный корпус, каб. 312' : "Dean's Office • Main Bldg, Rm 312"}
+              {lang === 'ru'
+                ? 'Деканат • Главный корпус, каб. 312'
+                : "Dean's Office • Main Bldg, Rm 312"}
             </span>
           </div>
           <div className="flex items-center space-x-1.5">
             <Clock className="w-3 h-3 text-[#667085] flex-shrink-0" />
             <span className="truncate">
-              {lang === 'ru' ? 'Приемные часы: Пн-Пт 9:00 - 18:00' : 'Office hours: Mon–Fri 9:00–18:00'}
+              {lang === 'ru'
+                ? 'Приемные часы: Пн-Пт 9:00 - 18:00'
+                : 'Office hours: Mon–Fri 9:00–18:00'}
             </span>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Globe2,
   Compass,
+  Eye,
 } from 'lucide-react';
 import { UniversityEmblem } from './UniversityEmblem';
 import { resolveAvatarSrc } from '../utils/avatar';
@@ -27,7 +28,18 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCard,
   onOpenAssistant,
 }) => {
-  const { user, profile, logout, theme, toggleTheme, lang, toggleLang, unreadCount } = useAuth();
+  const {
+    user,
+    profile,
+    logout,
+    theme,
+    toggleTheme,
+    accessibilityMode,
+    toggleAccessibilityMode,
+    lang,
+    toggleLang,
+    unreadCount,
+  } = useAuth();
   const isStaff = user?.role === 'staff';
 
   return (
@@ -66,27 +78,50 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Language Toggle */}
             <button
               onClick={toggleLang}
-              className="px-2 py-0.5 text-[10px] font-mono font-semibold rounded text-[#FFFFFF] hover:text-[#93C5FD] hover:bg-[#142D4E] border border-[#60A5FA]/40 transition-colors uppercase tracking-wider flex items-center space-x-1 cursor-pointer"
+              className="px-2 py-1 min-w-[44px] min-h-[44px] text-[11px] font-mono font-semibold rounded text-[#FFFFFF] hover:text-[#93C5FD] hover:bg-[#142D4E] border border-[#60A5FA]/40 transition-colors uppercase tracking-wider flex items-center justify-center space-x-1 cursor-pointer"
               title={lang === 'ru' ? 'Switch to English' : 'Переключить на русский'}
+              aria-label="Toggle language"
             >
-              <Globe2 className="w-2.5 h-2.5 text-[#93C5FD]" />
+              <Globe2 className="w-3.5 h-3.5 text-[#93C5FD]" />
               <span>{lang.toUpperCase()}</span>
+            </button>
+
+            {/* Accessibility Mode Toggle (ГОСТ Р 52872-2019 / WCAG AAA) */}
+            <button
+              onClick={toggleAccessibilityMode}
+              className={`p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded text-[#FFFFFF]/80 hover:text-white transition-colors cursor-pointer border ${
+                accessibilityMode
+                  ? 'bg-[#1D4ED8] border-[#93C5FD] text-[#FFFFFF]'
+                  : 'hover:bg-[#142D4E] border-transparent'
+              }`}
+              title={
+                lang === 'ru'
+                  ? 'Версия для слабовидящих (ГОСТ Р 52872-2019)'
+                  : 'High Contrast Accessibility Mode'
+              }
+              aria-label={
+                lang === 'ru'
+                  ? 'Включить версию для слабовидящих'
+                  : 'Toggle accessibility high contrast mode'
+              }
+            >
+              <Eye className="w-3.5 h-3.5 text-[#93C5FD]" />
             </button>
 
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-1 rounded text-[#FFFFFF]/80 hover:text-white hover:bg-[#142D4E] transition-colors cursor-pointer"
+              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded text-[#FFFFFF]/80 hover:text-white hover:bg-[#142D4E] transition-colors cursor-pointer"
               title={
                 lang === 'ru'
                   ? theme === 'light'
                     ? 'Включить тёмную тему'
                     : 'Включить светлую тему'
                   : theme === 'light'
-                  ? 'Enable dark mode'
-                  : 'Enable light mode'
+                    ? 'Enable dark mode'
+                    : 'Enable light mode'
               }
-              aria-label="Toggle Theme"
+              aria-label="Toggle theme"
             >
               {theme === 'light' ? (
                 <Moon className="w-3.5 h-3.5 text-[#93C5FD]" />
@@ -125,8 +160,12 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                   <span className="hidden sm:inline-block text-[10px] font-sans font-semibold tracking-widest uppercase px-2 py-0.5 rounded border border-[#60A5FA]/50 text-[#93C5FD] bg-[#0E1F36]/80 flex-shrink-0">
                     {isStaff
-                      ? (lang === 'ru' ? 'Деканат' : 'Faculty Registry')
-                      : (lang === 'ru' ? 'Студент' : 'Student')}
+                      ? lang === 'ru'
+                        ? 'Деканат'
+                        : 'Faculty Registry'
+                      : lang === 'ru'
+                        ? 'Студент'
+                        : 'Student'}
                   </span>
                 </div>
                 <p className="hidden sm:block text-xs text-[#E2E8F0] font-sans tracking-wide mt-1 truncate">
@@ -142,8 +181,9 @@ export const Header: React.FC<HeaderProps> = ({
               {/* AI Copilot / Dean's Advisory Assistant */}
               <button
                 onClick={onOpenAssistant}
-                className="flex items-center space-x-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-[#0E1F36] hover:bg-[#1C3B65] border border-[#60A5FA]/40 hover:border-[#93C5FD] text-[#FFFFFF] text-xs font-sans font-medium transition-all shadow-xs active:scale-95 cursor-pointer"
+                className="flex items-center justify-center space-x-1.5 px-2.5 sm:px-3 py-1.5 min-w-[44px] min-h-[44px] rounded-lg bg-[#0E1F36] hover:bg-[#1C3B65] border border-[#60A5FA]/40 hover:border-[#93C5FD] text-[#FFFFFF] text-xs font-sans font-medium transition-all shadow-xs active:scale-95 cursor-pointer"
                 title={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
+                aria-label={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#93C5FD]" />
                 <span className="hidden sm:inline">
@@ -156,10 +196,12 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={onOpenCard}
                   title={lang === 'ru' ? 'Электронный студенческий билет' : 'Digital Student ID'}
-                  aria-label={lang === 'ru' ? 'Электронный студенческий билет' : 'Digital Student ID'}
-                  className="p-1.5 sm:p-2 rounded-lg text-[#FFFFFF]/90 hover:text-white hover:bg-[#0E1F36] border border-transparent hover:border-[#60A5FA]/35 transition-colors relative cursor-pointer"
+                  aria-label={
+                    lang === 'ru' ? 'Электронный студенческий билет' : 'Digital Student ID'
+                  }
+                  className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-[#FFFFFF]/90 hover:text-white hover:bg-[#0E1F36] border border-transparent hover:border-[#60A5FA]/35 transition-colors relative cursor-pointer"
                 >
-                  <IdCard className="w-4 h-4 sm:w-5 sm:h-5 text-[#93C5FD]" />
+                  <IdCard className="w-5 h-5 text-[#93C5FD]" />
                 </button>
               )}
 
@@ -168,11 +210,11 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setActiveTab('notifications')}
                 title={lang === 'ru' ? 'Вестник и приказы деканата' : 'Announcements & Decrees'}
                 aria-label={lang === 'ru' ? 'Уведомления и приказы' : 'Notifications'}
-                className="p-1.5 sm:p-2 rounded-lg text-[#FFFFFF]/90 hover:text-white hover:bg-[#0E1F36] border border-transparent hover:border-[#60A5FA]/35 transition-colors relative cursor-pointer"
+                className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-[#FFFFFF]/90 hover:text-white hover:bg-[#0E1F36] border border-transparent hover:border-[#60A5FA]/35 transition-colors relative cursor-pointer"
               >
-                <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-4 h-4 rounded-full bg-[#C63740] text-white text-[10px] font-mono font-bold flex items-center justify-center border border-[#142D4E] shadow-xs">
+                  <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#C63740] text-white text-[10px] font-mono font-bold flex items-center justify-center border border-[#142D4E] shadow-xs">
                     {unreadCount}
                   </span>
                 )}
@@ -185,8 +227,9 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="flex items-center pl-0.5 sm:pl-1">
                 <button
                   onClick={() => setActiveTab('profile')}
-                  className="flex items-center space-x-2.5 p-1 rounded-lg hover:bg-[#0E1F36] transition-colors text-left cursor-pointer"
+                  className="flex items-center space-x-2.5 p-1 min-w-[44px] min-h-[44px] rounded-lg hover:bg-[#0E1F36] transition-colors text-left cursor-pointer"
                   title={`${user?.fullName} • ${isStaff ? (lang === 'ru' ? 'Деканат МО' : "Dean's Office") : profile?.group}`}
+                  aria-label={user?.fullName}
                 >
                   <img
                     src={resolveAvatarSrc(profile?.avatarUrl, user?.fullName)}
@@ -206,10 +249,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={logout}
                   title={lang === 'ru' ? 'Выйти из личного кабинета' : 'Sign out'}
-                  className="p-1.5 sm:p-2 ml-1 text-[#CBD5E1] hover:text-[#FFFFFF] hover:bg-[#0E1F36] rounded-lg transition-colors cursor-pointer"
+                  className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center ml-1 text-[#CBD5E1] hover:text-[#FFFFFF] hover:bg-[#0E1F36] rounded-lg transition-colors cursor-pointer"
                   aria-label="Logout"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-5 h-5" />
                 </button>
               </div>
             </div>

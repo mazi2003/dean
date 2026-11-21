@@ -33,7 +33,10 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
   async function loginAs(email: string, password: string) {
     const agent = supertest.agent(app.server);
     const ip = `10.20.0.${testIpSeq++}`;
-    const res = await agent.post('/api/v1/auth/login').set('X-Forwarded-For', ip).send({ email, password });
+    const res = await agent
+      .post('/api/v1/auth/login')
+      .set('X-Forwarded-For', ip)
+      .send({ email, password });
     expect(res.status).toBe(200);
     return agent;
   }
@@ -42,24 +45,58 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     const aigul = await loginAs('aigul.nurova@demo.edu', 'DemoStudent123!');
 
     expect((await aigul.get('/api/v1/staff/requests')).status).toBe(403);
-    expect((await aigul.post(`/api/v1/staff/requests/${ids.aigulReqId}/status`).send({ status: 'ready' })).status).toBe(403);
+    expect(
+      (
+        await aigul
+          .post(`/api/v1/staff/requests/${ids.aigulReqId}/status`)
+          .send({ status: 'ready' })
+      ).status
+    ).toBe(403);
     expect((await aigul.get('/api/v1/staff/announcements')).status).toBe(403);
-    expect((await aigul.post('/api/v1/staff/announcements').send({ title: 'x', body: 'y' })).status).toBe(403);
-    expect((await aigul.delete('/api/v1/staff/announcements/55555555-5555-4555-8555-555555555501')).status).toBe(403);
-    expect((await aigul.post('/api/v1/staff/schedule-changes').send({ scheduleEntryId: ids.du101ScheduleId, status: 'cancelled' })).status).toBe(403);
-    expect((await aigul.post('/api/v1/staff/exam-changes').send({ examId: 'ex-1' })).status).toBe(403);
+    expect(
+      (await aigul.post('/api/v1/staff/announcements').send({ title: 'x', body: 'y' })).status
+    ).toBe(403);
+    expect(
+      (await aigul.delete('/api/v1/staff/announcements/55555555-5555-4555-8555-555555555501'))
+        .status
+    ).toBe(403);
+    expect(
+      (
+        await aigul
+          .post('/api/v1/staff/schedule-changes')
+          .send({ scheduleEntryId: ids.du101ScheduleId, status: 'cancelled' })
+      ).status
+    ).toBe(403);
+    expect((await aigul.post('/api/v1/staff/exam-changes').send({ examId: 'ex-1' })).status).toBe(
+      403
+    );
     expect((await aigul.get('/api/v1/staff/groups')).status).toBe(403);
     expect((await aigul.get('/api/v1/staff/students')).status).toBe(403);
     expect((await aigul.get('/api/v1/staff/groups/DU-101/students')).status).toBe(403);
     expect((await aigul.get(`/api/v1/staff/students/${ids.timurUserId}/dossier`)).status).toBe(403);
     expect((await aigul.get('/api/v1/staff/exams')).status).toBe(403);
-    expect((await aigul.post('/api/v1/staff/exams').send({ code: 'X-1', groupId: 'DU-101', subject: 'X', format: 'Y', examiner: 'Z', date: '2026-12-20', time: '10:00', room: '101' })).status).toBe(403);
+    expect(
+      (
+        await aigul.post('/api/v1/staff/exams').send({
+          code: 'X-1',
+          groupId: 'DU-101',
+          subject: 'X',
+          format: 'Y',
+          examiner: 'Z',
+          date: '2026-12-20',
+          time: '10:00',
+          room: '101',
+        })
+      ).status
+    ).toBe(403);
     expect((await aigul.post('/api/v1/staff/exams/ex-101-1/reset')).status).toBe(403);
   });
 
   it('Staff cannot submit student requests via POST /api/v1/requests (403)', async () => {
     const staff = await loginAs('dean.office@demo.edu', 'DemoStaff123!');
-    const res = await staff.post('/api/v1/requests').send({ typeCode: 'study_certificate', data: {} });
+    const res = await staff
+      .post('/api/v1/requests')
+      .send({ typeCode: 'study_certificate', data: {} });
     expect(res.status).toBe(403);
   });
 
@@ -90,7 +127,10 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     const aigulNotifs = await aigul.get('/api/v1/notifications');
     expect(aigulNotifs.status).toBe(200);
     expect(
-      aigulNotifs.body.items.some((n: { kind: string; body: string }) => n.kind === 'request_update' && n.body === 'Подписано ЭЦП')
+      aigulNotifs.body.items.some(
+        (n: { kind: string; body: string }) =>
+          n.kind === 'request_update' && n.body === 'Подписано ЭЦП'
+      )
     ).toBe(true);
   });
 
@@ -109,11 +149,15 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     expect(createRes.body.count).toBe(2); // Aigul & Lina in DU-101
 
     const aNotifs = await aigul.get('/api/v1/notifications');
-    expect(aNotifs.body.items.some((n: { title: string }) => n.title === 'Срочное объявление для ДУ-101')).toBe(true);
+    expect(
+      aNotifs.body.items.some((n: { title: string }) => n.title === 'Срочное объявление для ДУ-101')
+    ).toBe(true);
 
     // Timur (DU-205) did NOT receive DU-101 targeted announcement
     const tNotifs = await timur.get('/api/v1/notifications');
-    expect(tNotifs.body.items.some((n: { title: string }) => n.title === 'Срочное объявление для ДУ-101')).toBe(false);
+    expect(
+      tNotifs.body.items.some((n: { title: string }) => n.title === 'Срочное объявление для ДУ-101')
+    ).toBe(false);
 
     // Journal listing & delete
     const listRes = await staff.get('/api/v1/staff/announcements');
@@ -144,7 +188,7 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     expect(badExam.status).toBe(422);
 
     const examChange = await staff.post('/api/v1/staff/exam-changes').send({
-      examId: 'ex-101-1',
+      examId: 'LAW-201',
       date: '20 декабря 2026',
       time: '10:00 – 14:00',
       room: 'Ауд. 312',
@@ -156,8 +200,14 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     expect(examChange.status).toBe(200);
 
     const aNotifs = await aigul.get('/api/v1/notifications?kind=schedule_change');
-    expect(aNotifs.body.items.some((n: { body: string }) => n.body.includes('Проектор перенесен в B-115'))).toBe(true);
-    expect(aNotifs.body.items.some((n: { title: string }) => n.title.includes('Изменение даты экзамена'))).toBe(true);
+    expect(
+      aNotifs.body.items.some((n: { body: string }) =>
+        n.body.includes('Проектор перенесен в B-115')
+      )
+    ).toBe(true);
+    expect(
+      aNotifs.body.items.some((n: { title: string }) => n.title.includes('Изменение даты экзамена'))
+    ).toBe(true);
   });
 
   it('Staff groups directory, student rosters, and personal student dossier return structured academic data', async () => {

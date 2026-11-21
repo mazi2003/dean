@@ -13,7 +13,13 @@ interface CallerContext {
   role: string;
   groupCode: string | null;
   programName: string | null;
-  failedSubjects: Array<{ name: string; points: number | null; grade: number | null; retakeDate: string | null; teacher: string | null }>;
+  failedSubjects: Array<{
+    name: string;
+    points: number | null;
+    grade: number | null;
+    retakeDate: string | null;
+    teacher: string | null;
+  }>;
   todayClasses: Array<{ startTime: string; subject: string; room: string; status: string }>;
   activeRequests: Array<{ title: string; status: string }>;
 }
@@ -24,8 +30,13 @@ function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContex
 
   // 1. Academic debts / retakes
   if (
-    q.includes('пересдач') || q.includes('долг') || q.includes('статистик') ||
-    q.includes('задолж') || q.includes('retake') || q.includes('debt') || q.includes('statistics')
+    q.includes('пересдач') ||
+    q.includes('долг') ||
+    q.includes('статистик') ||
+    q.includes('задолж') ||
+    q.includes('retake') ||
+    q.includes('debt') ||
+    q.includes('statistics')
   ) {
     if (ctx.failedSubjects.length > 0) {
       const f = ctx.failedSubjects[0];
@@ -40,7 +51,13 @@ function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContex
   }
 
   // 2. Scholarships (PGAS)
-  if (q.includes('стипенди') || q.includes('пгас') || q.includes('выплат') || q.includes('scholarship') || q.includes('merit')) {
+  if (
+    q.includes('стипенди') ||
+    q.includes('пгас') ||
+    q.includes('выплат') ||
+    q.includes('scholarship') ||
+    q.includes('merit')
+  ) {
     return lang === 'en'
       ? 'Applications for the Enhanced Merit Scholarship (PGAS) are open until Nov 25. Submit your application under "Certificates & Requests" -> "Enhanced Merit Scholarship", listing your research publications, Olympiad diplomas, or social achievements.'
       : 'Прием заявлений на повышенную государственную академическую стипендию (ПГАС) открыт до 25 ноября. Вы можете подать заявку онлайн в разделе «Справки и заявления» -> «Заявление на повышенную стипендию», указав ваши научные публикации, дипломы олимпиад или общественные достижения.';
@@ -48,14 +65,21 @@ function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContex
 
   // 3. Certificates / requests / statuses
   if (
-    q.includes('справк') || q.includes('заказ') || q.includes('заявлен') || q.includes('документ') ||
-    q.includes('certificate') || q.includes('order') || q.includes('request') || q.includes('document')
+    q.includes('справк') ||
+    q.includes('заказ') ||
+    q.includes('заявлен') ||
+    q.includes('документ') ||
+    q.includes('certificate') ||
+    q.includes('order') ||
+    q.includes('request') ||
+    q.includes('document')
   ) {
-    const reqNote = ctx.activeRequests.length > 0
-      ? (lang === 'en'
-        ? ` You currently have ${ctx.activeRequests.length} request(s) in your log (latest: "${ctx.activeRequests[0].title}" — status: ${ctx.activeRequests[0].status}).`
-        : ` Сейчас в вашем журнале ${ctx.activeRequests.length} заявк(а/и) (последняя: «${ctx.activeRequests[0].title}», статус: ${ctx.activeRequests[0].status}).`)
-      : '';
+    const reqNote =
+      ctx.activeRequests.length > 0
+        ? lang === 'en'
+          ? ` You currently have ${ctx.activeRequests.length} request(s) in your log (latest: "${ctx.activeRequests[0].title}" — status: ${ctx.activeRequests[0].status}).`
+          : ` Сейчас в вашем журнале ${ctx.activeRequests.length} заявк(а/и) (последняя: «${ctx.activeRequests[0].title}», статус: ${ctx.activeRequests[0].status}).`
+        : '';
     return lang === 'en'
       ? `You can submit a request for an enrollment certificate, transcript, or military office document in 3 clicks under "Certificates & Requests". Standard processing takes 2–5 business days.${reqNote}`
       : `Вы можете оформить справку об обучении, транскрипт или заявление в разделе «Справки и заявления». Стандартный срок обработки — 2–5 рабочих дней; готовые макеты документов отображаются прямо в кабинете.${reqNote}`;
@@ -63,11 +87,19 @@ function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContex
 
   // 4. Schedule / classes
   if (
-    q.includes('расписан') || q.includes('пара') || q.includes('пары') || q.includes('аудитор') ||
-    q.includes('schedule') || q.includes('class') || q.includes('room') || q.includes('timetable')
+    q.includes('расписан') ||
+    q.includes('пара') ||
+    q.includes('пары') ||
+    q.includes('аудитор') ||
+    q.includes('schedule') ||
+    q.includes('class') ||
+    q.includes('room') ||
+    q.includes('timetable')
   ) {
     if (ctx.todayClasses.length > 0) {
-      const list = ctx.todayClasses.map((c) => `${c.startTime} ${c.subject} (${c.room})`).join('; ');
+      const list = ctx.todayClasses
+        .map((c) => `${c.startTime} ${c.subject} (${c.room})`)
+        .join('; ');
       return lang === 'en'
         ? `Today's schedule for group ${ctx.groupCode ?? 'your group'}: ${list}.`
         : `Сегодня у группы ${ctx.groupCode ?? 'вашей группы'} по расписанию: ${list}. Актуальные замены и экспорт .ics доступны во вкладке «Расписание».`;
@@ -78,7 +110,15 @@ function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContex
   }
 
   // 5. Dean's office contacts / hours
-  if (q.includes('деканат') || q.includes('часы') || q.includes('контакт') || q.includes('где') || q.includes('office') || q.includes('hours') || q.includes('contact')) {
+  if (
+    q.includes('деканат') ||
+    q.includes('часы') ||
+    q.includes('контакт') ||
+    q.includes('где') ||
+    q.includes('office') ||
+    q.includes('hours') ||
+    q.includes('contact')
+  ) {
     return lang === 'en'
       ? "The Faculty of International Relations Dean's Office is located in the Main Building, 3rd Floor, Room 312. Office hours: Mon–Fri 09:00–18:00 (lunch 13:00–14:00). Email: dean.office@demo.edu."
       : 'Деканат факультета международных отношений расположен в Главном корпусе, 3 этаж, кабинет 312. Часы приема студентов: Пн–Пт с 09:00 до 18:00 (обед 13:00–14:00). Электронная почта: dean.office@demo.edu.';
@@ -92,11 +132,16 @@ function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContex
 
 export async function assistantRoutes(app: FastifyInstance) {
   app.post('/assistant/ask', {
+    config: { rateLimit: { max: 30, timeWindow: '1 minute' } },
     preHandler: [authenticate],
     handler: async (request, reply) => {
       const parsed = AskSchema.safeParse(request.body);
       if (!parsed.success) {
-        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid input', details: parsed.error.flatten() });
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid input',
+          details: parsed.error.flatten(),
+        });
       }
 
       const { question, lang } = parsed.data;
@@ -122,10 +167,12 @@ export async function assistantRoutes(app: FastifyInstance) {
 
       const sp = user?.studentProfile;
       const now = new Date();
-      const todayStart = new Date(now);
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date(now);
-      todayEnd.setHours(23, 59, 59, 999);
+      const todayStart = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0)
+      );
+      const todayEnd = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999)
+      );
 
       const todaySchedule = sp
         ? await prisma.scheduleEntry.findMany({
@@ -166,10 +213,20 @@ export async function assistantRoutes(app: FastifyInstance) {
       const baseUrl = process.env.AI_BASE_URL?.trim();
       const model = process.env.AI_MODEL?.trim() || 'gpt-4o-mini';
 
-      if (apiKey && baseUrl) {
+      const isAllowedBaseUrl =
+        !!baseUrl &&
+        (baseUrl.startsWith('https://') ||
+          baseUrl.startsWith('http://localhost') ||
+          baseUrl.startsWith('http://127.0.0.1'));
+
+      if (apiKey && isAllowedBaseUrl) {
         const endpoint = `${baseUrl.replace(/\/$/, '')}/chat/completions`;
-        const failedStr = ctx.failedSubjects.map((f) => `${f.name} (retake: ${f.retakeDate ?? 'TBD'})`).join(', ') || 'none';
-        const reqStr = ctx.activeRequests.map((r) => `${r.title} [${r.status}]`).join(', ') || 'none';
+        const failedStr =
+          ctx.failedSubjects
+            .map((f) => `${f.name} (retake: ${f.retakeDate ?? 'TBD'})`)
+            .join(', ') || 'none';
+        const reqStr =
+          ctx.activeRequests.map((r) => `${r.title} [${r.status}]`).join(', ') || 'none';
         const systemPrompt =
           `You are a helpful Dean's Office Academic Advisor for DemoTech University (competition prototype, fictional data). ` +
           `Respond concisely in ${lang === 'en' ? 'English' : 'Russian'}. ` +

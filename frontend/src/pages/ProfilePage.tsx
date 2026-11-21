@@ -1,11 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import {
-  Lock,
-  LogOut,
-  ShieldCheck,
-  GraduationCap,
-} from 'lucide-react';
+import { Lock, LogOut, ShieldCheck, GraduationCap } from 'lucide-react';
 import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
@@ -40,18 +35,23 @@ export const ProfilePage: React.FC = () => {
 
           <div className="flex-1 space-y-2">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#142D4E]/15 text-[#142D4E] dark:text-[#245A91] border border-[#142D4E]/30">
+              <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#142D4E]/15 text-[#142D4E] dark:text-[#93C5FD] border border-[#142D4E]/30">
                 {isStaff
                   ? tr(lang, '🏛️ Сотрудник деканата', "🏛️ Dean's Office Staff")
                   : tr(lang, `Группа ${profile?.group}`, `Group ${profile?.group}`)}
               </span>
               {isStaff ? (
-                <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border border-[#245A91]/40">
-                  {tr(lang, 'Статус: Аккредитованный администратор', 'Status: Accredited Administrator')}
+                <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#245A91]/20 text-[#142D4E] dark:text-[#93C5FD] border border-[#245A91]/40">
+                  {tr(
+                    lang,
+                    'Статус: Аккредитованный администратор',
+                    'Status: Accredited Administrator'
+                  )}
                 </span>
               ) : (
-                <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border border-[#245A91]/40">
-                  {tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)} • {getStudyFormLabel(profile?.studyForm, lang)}
+                <span className="px-2.5 py-0.5 rounded text-xs font-sans font-semibold bg-[#245A91]/20 text-[#142D4E] dark:text-[#93C5FD] border border-[#245A91]/40">
+                  {tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)} •{' '}
+                  {getStudyFormLabel(profile?.studyForm, lang)}
                 </span>
               )}
             </div>
@@ -96,7 +96,7 @@ export const ProfilePage: React.FC = () => {
         {/* Academic Enrollment Info */}
         <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs space-y-4">
           <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
-            <GraduationCap className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
+            <GraduationCap className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
             <span>
               {isStaff
                 ? tr(lang, 'Служебные реквизиты сотрудника', 'Staff Credentials')
@@ -106,50 +106,74 @@ export const ProfilePage: React.FC = () => {
 
           <div className="space-y-2.5 text-xs font-sans">
             <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-              <span className="text-[#667085]">{tr(lang, 'Учебное заведение:', 'Institution:')}</span>
+              <span className="text-[#667085] dark:text-[#94A3B8]">
+                {tr(lang, 'Учебное заведение:', 'Institution:')}
+              </span>
               <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
                 {lang === 'ru' ? UNIVERSITY_INFO.name : UNIVERSITY_INFO.nameEn}
               </span>
             </div>
             <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-              <span className="text-[#667085]">{tr(lang, 'Факультет:', 'Faculty:')}</span>
-              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{localizeText(profile?.faculty, lang)}</span>
+              <span className="text-[#667085] dark:text-[#94A3B8]">{tr(lang, 'Факультет:', 'Faculty:')}</span>
+              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                {localizeText(profile?.faculty, lang)}
+              </span>
             </div>
             <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-              <span className="text-[#667085]">{tr(lang, 'Направление:', 'Program:')}</span>
-              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">{localizeText(profile?.program, lang)}</span>
+              <span className="text-[#667085] dark:text-[#94A3B8]">{tr(lang, 'Направление:', 'Program:')}</span>
+              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                {localizeText(profile?.program, lang)}
+              </span>
             </div>
             {!isStaff ? (
               <>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">{tr(lang, 'Академическая группа:', 'Academic Group:')}</span>
-                  <span className="font-mono font-bold text-[#142D4E] dark:text-[#245A91]">{profile?.group}</span>
+                  <span className="text-[#667085] dark:text-[#94A3B8]">
+                    {tr(lang, 'Академическая группа:', 'Academic Group:')}
+                  </span>
+                  <span className="font-mono font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                    {profile?.group}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">{tr(lang, 'Форма обучения:', 'Study Mode:')}</span>
+                  <span className="text-[#667085] dark:text-[#94A3B8]">
+                    {tr(lang, 'Форма обучения:', 'Study Mode:')}
+                  </span>
                   <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
-                    {profile?.studyForm ? getStudyFormLabel(profile.studyForm, lang) : tr(lang, 'Очная', 'Full-time')}
+                    {profile?.studyForm
+                      ? getStudyFormLabel(profile.studyForm, lang)
+                      : tr(lang, 'Очная', 'Full-time')}
                   </span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-[#667085]">{tr(lang, 'Номер студенческого билета:', 'Student ID Number:')}</span>
-                  <span className="font-mono font-bold text-[#142D4E] dark:text-[#245A91]">{profile?.studentNumber}</span>
+                  <span className="text-[#667085] dark:text-[#94A3B8]">
+                    {tr(lang, 'Номер студенческого билета:', 'Student ID Number:')}
+                  </span>
+                  <span className="font-mono font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                    {profile?.studentNumber}
+                  </span>
                 </div>
               </>
             ) : (
               <>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">{tr(lang, 'Табельный номер:', 'Staff ID:')}</span>
-                  <span className="font-mono font-bold text-[#142D4E] dark:text-[#245A91]">ТАБ-0441</span>
+                  <span className="text-[#667085] dark:text-[#94A3B8]">
+                    {tr(lang, 'Табельный номер:', 'Staff ID:')}
+                  </span>
+                  <span className="font-mono font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                    ТАБ-0441
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[#DCE2EA]/50 dark:border-[#193150]">
-                  <span className="text-[#667085]">{tr(lang, 'Должность:', 'Position:')}</span>
+                  <span className="text-[#667085] dark:text-[#94A3B8]">{tr(lang, 'Должность:', 'Position:')}</span>
                   <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
                     {tr(lang, 'Зам. декана по УМР', 'Vice Dean for Academic Affairs')}
                   </span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-[#667085]">{tr(lang, 'Кабинет и часы приема:', 'Office & Hours:')}</span>
+                  <span className="text-[#667085] dark:text-[#94A3B8]">
+                    {tr(lang, 'Кабинет и часы приема:', 'Office & Hours:')}
+                  </span>
                   <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
                     {tr(lang, 'Каб. 312 • Пн-Пт 9-18', 'Rm 312 • Mon–Fri 9–18')}
                   </span>
@@ -162,17 +186,27 @@ export const ProfilePage: React.FC = () => {
         {/* Digital Identity & Security Certificate (GOST R 34.10) */}
         <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs space-y-4">
           <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
-            <ShieldCheck className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
-            <span>{tr(lang, 'Цифровой сертификат и безопасность', 'Digital Certificate & Security')}</span>
+            <ShieldCheck className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+            <span>
+              {tr(lang, 'Цифровой сертификат и безопасность', 'Digital Certificate & Security')}
+            </span>
           </h3>
 
           <div className="space-y-3 text-xs font-sans">
             <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-              <span className="text-[10px] uppercase font-mono text-[#667085] block">
-                {tr(lang, 'Статус электронного документооборота', 'Digital Document Flow (Illustrative)')}
+              <span className="text-[10px] uppercase font-mono text-[#667085] dark:text-[#94A3B8] block">
+                {tr(
+                  lang,
+                  'Статус электронного документооборота',
+                  'Digital Document Flow (Illustrative)'
+                )}
               </span>
-              <span className="font-mono font-semibold text-[#142D4E] dark:text-[#245A91]">
-                {tr(lang, 'Демонстрационный макет (без реальной ЭЦП)', 'Prototype Mockup (No Real E-Signature)')}
+              <span className="font-mono font-semibold text-[#142D4E] dark:text-[#93C5FD]">
+                {tr(
+                  lang,
+                  'Демонстрационный макет (без реальной ЭЦП)',
+                  'Prototype Mockup (No Real E-Signature)'
+                )}
               </span>
               <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
                 {tr(
@@ -184,18 +218,23 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-              <span className="text-[10px] uppercase font-mono text-[#667085] block">
-                {tr(lang, 'Аутентификация и шифрование паролей', 'Authentication & Password Hashing')}
+              <span className="text-[10px] uppercase font-mono text-[#667085] dark:text-[#94A3B8] block">
+                {tr(
+                  lang,
+                  'Аутентификация и шифрование паролей',
+                  'Authentication & Password Hashing'
+                )}
               </span>
               <span className="font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
                 {tr(lang, 'Argon2id + httpOnly JWT Cookie', 'Argon2id + httpOnly JWT Cookie')}
               </span>
-              <p className="text-[11px] text-[#667085] font-mono">
-                {tr(lang, 'Ролевой контроль (RBAC):', 'RBAC Scope:')} {(user?.role ?? 'student').toUpperCase()}
+              <p className="text-[11px] text-[#667085] dark:text-[#94A3B8] font-mono">
+                {tr(lang, 'Ролевой контроль (RBAC):', 'RBAC Scope:')}{' '}
+                {(user?.role ?? 'student').toUpperCase()}
               </p>
             </div>
 
-            <div className="flex items-center space-x-2 text-[11px] text-[#142D4E] dark:text-[#245A91]">
+            <div className="flex items-center space-x-2 text-[11px] text-[#142D4E] dark:text-[#93C5FD]">
               <Lock className="w-3.5 h-3.5" />
               <span>
                 {tr(

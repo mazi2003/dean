@@ -25,7 +25,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
   const defaultGreeting = tr(
     lang,
     `Здравствуйте, ${user?.fullName ? user.fullName.split(' ')[0] : 'студент'}! Я цифровой консультант деканата DemoTech University. Отвечаю на сервере с учетом только вашего профиля: расписания, задолженностей, сроков ПГАС и статуса заявлений. Чем могу помочь?`,
-    `Hello, ${user?.fullName ? user.fullName.split(' ')[0] : 'Student'}! I am the Digital Dean's Office Assistant at DemoTech University. Answers are generated server-side using only your own profile: schedule, arrears, PGAS deadlines, and request statuses. How can I help you?`,
+    `Hello, ${user?.fullName ? user.fullName.split(' ')[0] : 'Student'}! I am the Digital Dean's Office Assistant at DemoTech University. Answers are generated server-side using only your own profile: schedule, arrears, PGAS deadlines, and request statuses. How can I help you?`
   );
   const [messages, setMessages] = useState<Message[]>(() => [
     {
@@ -41,19 +41,20 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
 
   if (!isOpen) return null;
 
-  const quickPrompts = lang === 'ru'
-    ? [
-        'Когда у меня пересдача по статистике?',
-        'Как заказать электронную справку?',
-        'Критерии повышенной стипендии (ПГАС)?',
-        'Часы приема и контакты деканата?',
-      ]
-    : [
-        'When is my Statistics retake exam?',
-        'How to request a certificate preview?',
-        'Enhanced Merit Scholarship (PGAS) criteria?',
-        "Dean's Office hours and contacts?",
-      ];
+  const quickPrompts =
+    lang === 'ru'
+      ? [
+          'Когда у меня пересдача по статистике?',
+          'Как заказать электронную справку?',
+          'Критерии повышенной стипендии (ПГАС)?',
+          'Часы приема и контакты деканата?',
+        ]
+      : [
+          'When is my Statistics retake exam?',
+          'How to request a certificate preview?',
+          'Enhanced Merit Scholarship (PGAS) criteria?',
+          "Dean's Office hours and contacts?",
+        ];
 
   const handleSend = async (textToSend?: string) => {
     const text = textToSend || input;
@@ -65,14 +66,14 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setLoading(true);
 
     try {
       const { answer, source } = await api.askAssistant(text, lang);
       setLastSource(source);
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           sender: 'assistant',
@@ -81,14 +82,14 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
         },
       ]);
     } catch {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           sender: 'assistant',
           text: tr(
             lang,
             'В данный момент информационная база деканата обновляется. Пожалуйста, обратитесь в деканат (каб. 312) или повторите запрос через несколько минут.',
-            "The Dean's Office knowledge base is currently updating. Please visit Room 312 or try again in a few minutes.",
+            "The Dean's Office knowledge base is currently updating. Please visit Room 312 or try again in a few minutes."
           ),
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
@@ -99,7 +100,12 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={tr(lang, 'Консультант деканата', "Dean's Office AI Advisor")}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs animate-fade-in"
+    >
       <div className="relative w-full max-w-lg h-[620px] max-h-[92vh] bg-white dark:bg-[#112238] rounded-xl shadow-2xl overflow-hidden border border-[#245A91]/40 flex flex-col">
         {/* Academic Header */}
         <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between border-b border-[#245A91]/30 shadow-xs">
@@ -117,7 +123,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                   ? tr(
                       lang,
                       `Контекст: гр. ${profile.group} • Факультет МО`,
-                      `Context: Group ${profile.group} • Faculty of IR`,
+                      `Context: Group ${profile.group} • Faculty of IR`
                     )
                   : 'DemoTech University'}
               </p>
@@ -126,7 +132,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-[#FFFFFF]/75 hover:text-white hover:bg-[#0E1F36] transition-colors cursor-pointer"
+            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md text-[#FFFFFF]/75 hover:text-white hover:bg-[#0E1F36] transition-colors cursor-pointer"
             aria-label={tr(lang, 'Закрыть', 'Close')}
           >
             <X className="w-5 h-5" />
@@ -175,10 +181,12 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                       : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B]'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{idx === 0 && !isUser ? defaultGreeting : m.text}</p>
+                  <p className="whitespace-pre-wrap">
+                    {idx === 0 && !isUser ? defaultGreeting : m.text}
+                  </p>
                   <span
                     className={`block text-[10px] mt-1 font-mono text-right ${
-                      isUser ? 'text-[#245A91]' : 'text-[#667085]'
+                      isUser ? 'text-[#245A91] dark:text-[#93C5FD]' : 'text-[#667085] dark:text-[#94A3B8]'
                     }`}
                   >
                     {m.time}
@@ -189,13 +197,13 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
           })}
 
           {loading && (
-            <div className="flex items-center space-x-2 text-xs text-[#667085] p-2">
+            <div className="flex items-center space-x-2 text-xs text-[#667085] dark:text-[#94A3B8] p-2">
               <Sparkles className="w-4 h-4 text-[#245A91] animate-spin" />
               <span>
                 {tr(
                   lang,
                   'Консультант обращается к регламентам деканата...',
-                  "Advisor is checking Dean's Office regulations...",
+                  "Advisor is checking Dean's Office regulations..."
                 )}
               </span>
             </div>
@@ -209,7 +217,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
               {tr(
                 lang,
                 'Обработка на сервере (только данные вашей сессии)',
-                'Processed server-side using only your session data',
+                'Processed server-side using only your session data'
               )}
             </span>
             {lastSource && (
@@ -219,7 +227,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
             )}
           </div>
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
@@ -228,20 +236,21 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
             <input
               type="text"
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={(e) => setInput(e.target.value)}
               placeholder={tr(
                 lang,
                 'Задайте вопрос по учебе, справкам или сессии...',
-                'Ask a question about studies, certificates, or exams...',
+                'Ask a question about studies, certificates, or exams...'
               )}
               className="flex-1 bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3.5 py-2.5 text-xs text-[#0F1D30] dark:text-[#FFFFFF] placeholder-[#667085]/60 focus:outline-none focus:ring-2 focus:ring-[#142D4E] dark:focus:ring-[#245A91]"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="px-4 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-sans font-semibold text-xs border border-[#245A91]/40 flex items-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs"
+              aria-label={tr(lang, 'Отправить сообщение', 'Send message')}
+              className="min-w-[44px] min-h-[44px] px-4 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-sans font-semibold text-xs border border-[#245A91]/40 flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5 text-[#245A91]" />
+              <Send className="w-3.5 h-3.5 text-[#93C5FD]" />
               <span className="hidden sm:inline">{tr(lang, 'Отправить', 'Send')}</span>
             </button>
           </form>

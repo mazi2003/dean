@@ -144,7 +144,12 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
   if (!isOpen || !user) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={tr(lang, 'Электронный студенческий билет', 'Digital Student ID')}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in"
+    >
       {/* ─────────────────────────────────────────────────────────────
           BIG QR CODE SCANNER VIEW (TRIGGERED ON QR CLICK)
           ───────────────────────────────────────────────────────────── */}
@@ -169,7 +174,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
 
             <button
               onClick={() => setIsQrExpanded(false)}
-              className="p-1 rounded-full bg-[#142D4E]/10 hover:bg-[#142D4E]/20 text-[#142D4E] dark:text-[#FFFFFF] transition-colors cursor-pointer"
+              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-[#142D4E]/10 hover:bg-[#142D4E]/20 text-[#142D4E] dark:text-[#FFFFFF] transition-colors cursor-pointer"
               aria-label={tr(lang, 'Закрыть сканер', 'Close scanner view')}
             >
               <X className="w-4 h-4" />
@@ -238,9 +243,14 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             <div className="flex items-center space-x-1.5 text-[#667085] dark:text-[#94A3B8]">
               <RefreshCw className="w-3 h-3 text-[#245A91] dark:text-[#93C5FD] animate-spin" />
               <span>
-                OTP: <strong className="text-[#142D4E] dark:text-[#FFFFFF]">{totpToken || '849-210'}</strong>
+                OTP:{' '}
+                <strong className="text-[#142D4E] dark:text-[#FFFFFF]">
+                  {totpToken || '849-210'}
+                </strong>
               </span>
-              <span className="text-[10px] text-[#245A91] dark:text-[#93C5FD]">({tokenSecondsLeft}s)</span>
+              <span className="text-[10px] text-[#245A91] dark:text-[#93C5FD]">
+                ({tokenSecondsLeft}s)
+              </span>
             </div>
           </div>
 
@@ -250,14 +260,18 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-sans font-semibold flex items-center justify-center space-x-2 animate-bounce">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>
-                  {tr(lang, 'Турникет № 1 разблокирован! Проход разрешен.', 'Turnstile #1 unlocked! Access granted.')}
+                  {tr(
+                    lang,
+                    'Турникет № 1 разблокирован! Проход разрешен.',
+                    'Turnstile #1 unlocked! Access granted.'
+                  )}
                 </span>
               </div>
             ) : (
               <button
                 onClick={handleQrScanSimulate}
                 disabled={isScanning}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/50 flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md active:scale-98 disabled:opacity-50"
+                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/50 flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md active:scale-98 disabled:opacity-50"
               >
                 <Scan className="w-4 h-4 text-[#93C5FD]" />
                 <span>
@@ -268,11 +282,11 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               </button>
             )}
 
-            <p className="text-[10px] text-[#667085] font-sans">
+            <p className="text-[10px] text-[#667085] dark:text-[#94A3B8] font-sans">
               {tr(
                 lang,
                 'Поднесите экран к оптическому считывателю турникета на дистанцию 10-15 см.',
-                'Hold your screen 10–15 cm in front of the turnstile optical reader.',
+                'Hold your screen 10–15 cm in front of the turnstile optical reader.'
               )}
             </p>
           </div>
@@ -285,7 +299,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-3.5 right-3.5 z-30 p-1.5 rounded-full bg-[#0E1F36]/80 hover:bg-[#0E1F36] text-[#FFFFFF] border border-[#245A91]/40 hover:border-[#245A91] transition-colors shadow-sm cursor-pointer"
+            className="absolute top-3.5 right-3.5 z-30 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-[#0E1F36]/80 hover:bg-[#0E1F36] text-[#FFFFFF] border border-[#245A91]/40 hover:border-[#245A91] transition-colors shadow-sm cursor-pointer"
             aria-label={tr(lang, 'Закрыть', 'Close')}
           >
             <X className="w-4 h-4" />
@@ -299,28 +313,36 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             </div>
 
             {/* Top Gold Bar with generous right padding to avoid close button overlap */}
-            <div className="flex items-center justify-between mb-5 relative z-10 border-b border-[#245A91]/30 pb-3 pr-10">
+            <div className="flex items-center justify-between mb-4 relative z-10 border-b border-[#245A91]/30 pb-3 pr-10">
               <div className="flex items-center space-x-2.5">
-                <div className="w-9 h-9 rounded-lg bg-[#0E1F36] border border-[#245A91]/60 flex items-center justify-center p-1 shadow-inner">
-                  <UniversityEmblem size={26} />
+                <div className="w-10 h-10 rounded-lg bg-[#0E1F36] border border-[#245A91]/60 flex items-center justify-center p-1 shadow-inner flex-shrink-0">
+                  <UniversityEmblem size={28} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-xs uppercase tracking-wider text-[#FFFFFF]">
+                  <div className="text-[9px] font-mono tracking-widest text-[#93C5FD] uppercase">
+                    {lang === 'ru'
+                      ? 'МИНОБРНАУКИ РОССИИ • ГОСАККРЕДИТАЦИЯ'
+                      : 'STATE ACCREDITED UNIVERSITY'}
+                  </div>
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-[#FFFFFF]">
                     {UNIVERSITY_INFO.name}
                   </h3>
-                  <p className="text-[10px] text-[#93C5FD] font-mono tracking-wide">
-                    {lang === 'ru' ? 'Студенческий билет' : 'Digital Student ID'}
+                  <p className="text-[10px] text-[#CBD5E1] font-mono tracking-wide">
+                    {lang === 'ru' ? 'Студенческий билет № ' : 'Student ID No. '}
+                    <span className="font-bold text-[#FFFFFF]">
+                      {profile?.studentNumber || '2024-БИ-0412'}
+                    </span>
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-1 px-2 py-0.5 rounded bg-[#0E1F36] border border-[#245A91]/30 text-[#93C5FD] text-[10px] font-mono">
+              <div className="flex items-center space-x-1 px-2 py-0.5 rounded bg-[#0E1F36] border border-[#245A91]/40 text-[#93C5FD] text-[10px] font-mono flex-shrink-0">
                 <Wifi className="w-3.5 h-3.5 rotate-90 text-[#93C5FD]" />
                 <span>NFC</span>
               </div>
             </div>
 
             {/* Student Photo & Dossier */}
-            <div className="flex space-x-4 items-center mb-5 relative z-10">
+            <div className="flex space-x-4 items-center mb-4 relative z-10">
               <div className="relative flex-shrink-0">
                 <img
                   src={resolveAvatarSrc(profile?.avatarUrl, user.fullName)}
@@ -333,31 +355,45 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               </div>
 
               <div className="flex-1 space-y-1">
-                <h2 className="font-bold text-base text-[#FFFFFF] leading-snug">
-                  {user.fullName}
-                </h2>
+                <h2 className="font-bold text-base text-[#FFFFFF] leading-snug">{user.fullName}</h2>
                 <p className="text-[11px] font-sans text-[#93C5FD] font-medium">
                   {profile?.group} • {tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}
                 </p>
-                <p className="text-[10px] text-[#FFFFFF]/80 line-clamp-1 font-sans">
+                <p className="text-[10px] text-[#FFFFFF]/85 line-clamp-1 font-sans">
                   {localizeText(profile?.program, lang)}
                 </p>
-                <div className="pt-1 flex items-center space-x-2 text-[10px] font-mono">
+                <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
                   <span className="px-2 py-0.5 rounded bg-[#0E1F36] border border-[#245A91]/40 text-[#93C5FD]">
-                    № {profile?.studentNumber}
-                  </span>
-                  <span className="text-[#FFFFFF]/75 font-sans">
                     {getStudyFormLabel(profile?.studyForm || 'Бюджет', lang)}
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-semibold text-[9px]">
+                    {lang === 'ru' ? 'АКТИВЕН ДО 31.08.2026' : 'VALID TO 31.08.2026'}
                   </span>
                 </div>
               </div>
+            </div>
+
+            {/* Official Order Citation Strip */}
+            <div className="mb-4 relative z-10 px-2.5 py-1.5 rounded-lg bg-[#0E1F36]/80 border border-[#245A91]/30 flex items-center justify-between text-[9px] font-mono text-[#CBD5E1]">
+              <span className="text-[#93C5FD] font-medium">
+                {lang === 'ru' ? 'Основание выдачи:' : 'Matriculation Order:'}
+              </span>
+              <span>
+                {lang === 'ru'
+                  ? 'Приказ № 841-СТ от 25.08.2024 г.'
+                  : 'Decree No. 841-ST of 25.08.2024'}
+              </span>
             </div>
 
             {/* Interactive Dynamic QR Verification Code (Click to Enlarge) */}
             <div
               onClick={() => setIsQrExpanded(true)}
               className="bg-[#0E1F36] hover:bg-[#1C3B65] rounded-xl p-3 flex items-center justify-between border border-[#60A5FA]/40 hover:border-[#93C5FD] transition-all cursor-pointer group shadow-sm relative z-10"
-              title={lang === 'ru' ? 'Нажмите, чтобы открыть QR-код на весь экран для турникета' : 'Click to enlarge QR for scanner'}
+              title={
+                lang === 'ru'
+                  ? 'Нажмите, чтобы открыть QR-код на весь экран для турникета'
+                  : 'Click to enlarge QR for scanner'
+              }
             >
               <div className="space-y-0.5">
                 <div className="flex items-center space-x-1.5">
@@ -373,7 +409,8 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   VALID • {currentTime ? 'ACTIVE' : 'ONLINE'}
                 </p>
                 <p className="text-[9px] text-[#FFFFFF]/60 font-mono">
-                  CRC32: {profile?.studentNumber?.replace(/[^0-9]/g, '') || '84920'} • {lang === 'ru' ? 'Нажмите для считывания' : 'Tap to scan'}
+                  CRC32: {profile?.studentNumber?.replace(/[^0-9]/g, '') || '84920'} •{' '}
+                  {lang === 'ru' ? 'Нажмите для считывания' : 'Tap to scan'}
                 </p>
               </div>
 
@@ -395,7 +432,13 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             {/* Security Chip Notice */}
             <div className="mt-3 text-center text-[10px] font-mono text-[#93C5FD] flex items-center justify-center space-x-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#93C5FD]" />
-              <span>{tr(lang, 'Иллюстрация: симуляция NFC / QR-пропуска (демо)', 'Illustrative: NFC / QR pass simulation (demo)')}</span>
+              <span>
+                {tr(
+                  lang,
+                  'Иллюстрация: симуляция NFC / QR-пропуска (демо)',
+                  'Illustrative: NFC / QR pass simulation (demo)'
+                )}
+              </span>
             </div>
           </div>
 
@@ -405,25 +448,33 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               <div className="p-2.5 rounded-lg bg-[#142D4E]/10 border border-[#142D4E]/30 text-[#142D4E] dark:text-[#60A5FA] text-xs font-sans font-semibold flex items-center justify-center space-x-2 animate-bounce">
                 <CheckCircle2 className="w-4 h-4 text-[#142D4E] dark:text-[#60A5FA]" />
                 <span>
-                  {tr(lang, 'Проход через турникет разрешен! Приятного дня.', 'Turnstile access granted! Have a great day.')}
+                  {tr(
+                    lang,
+                    'Проход через турникет разрешен! Приятного дня.',
+                    'Turnstile access granted! Have a great day.'
+                  )}
                 </span>
               </div>
             ) : (
               <button
                 onClick={handleNfcSimulate}
                 disabled={isNfcTapping}
-                className="w-full py-2.5 px-4 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#60A5FA]/40 flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                className="w-full min-h-[44px] py-2.5 px-4 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#60A5FA]/40 flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-xs disabled:opacity-50"
               >
                 <Wifi className={`w-4 h-4 text-[#93C5FD] ${isNfcTapping ? 'animate-ping' : ''}`} />
                 <span>
                   {isNfcTapping
                     ? tr(lang, 'Симуляция считывания...', 'Simulating NFC read...')
-                    : tr(lang, 'Приложить к турникету (Симуляция NFC)', 'Tap at Turnstile (NFC Simulation)')}
+                    : tr(
+                        lang,
+                        'Приложить к турникету (Симуляция NFC)',
+                        'Tap at Turnstile (NFC Simulation)'
+                      )}
                 </span>
               </button>
             )}
 
-            <p className="text-[10px] text-[#667085] font-sans">
+            <p className="text-[10px] text-[#667085] dark:text-[#94A3B8] font-sans">
               {localizeText(UNIVERSITY_INFO.faculty, lang)}
             </p>
           </div>

@@ -12,7 +12,10 @@
     "postinstall": "prisma generate --schema=prisma/schema.prisma",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src tests vitest.config.mts scripts/vercel-db-sync.mjs",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\" \"scripts/**/*.mjs\" vitest.config.mts",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"scripts/**/*.mjs\" vitest.config.mts"
   },
   "keywords": [],
   "author": "",
@@ -27,19 +30,24 @@
     "argon2": "^0.45.2",
     "dotenv": "^18.0.10",
     "fastify": "^5.12.8",
-    "fastify-plugin": "^6.0.1",
     "jsonwebtoken": "^9.0.3",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.6",
     "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "^5.1.0",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
     "prisma": "^6.19.3",
     "supertest": "^7.3.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.73.0",
     "vitest": "^5.1.0"
   }
 }

@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
                 <h4 className="font-bold text-sm text-[#0F1D30] dark:text-[#FFFFFF] tracking-tight uppercase leading-none">
                   DemoTech
                 </h4>
-                <p className="text-[10px] text-[#245A91] font-sans uppercase tracking-widest mt-1">
+                <p className="text-[10px] text-[#142D4E] dark:text-[#93C5FD] font-sans uppercase tracking-widest mt-1">
                   University
                 </p>
               </div>
@@ -58,33 +58,43 @@ export const Footer: React.FC = () => {
 
           {/* Column 2: Academic Faculties & Schools */}
           <div className="space-y-3">
-            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
+            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#93C5FD] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
               {lang === 'ru' ? 'Факультеты и институты' : 'Faculties & Schools'}
             </h5>
             <ul className="text-xs space-y-2 font-sans">
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                {lang === 'ru' ? 'Факультет международных отношений' : 'School of International Relations'}
+                {lang === 'ru'
+                  ? 'Факультет международных отношений'
+                  : 'School of International Relations'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                {lang === 'ru' ? 'Институт компьютерных наук и ИИ' : 'Institute of Computer Science & AI'}
+                {lang === 'ru'
+                  ? 'Институт компьютерных наук и ИИ'
+                  : 'Institute of Computer Science & AI'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                {lang === 'ru' ? 'Школа мировой экономики и финансов' : 'School of World Economy & Finance'}
+                {lang === 'ru'
+                  ? 'Школа мировой экономики и финансов'
+                  : 'School of World Economy & Finance'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                {lang === 'ru' ? 'Академический совет и аспирантура' : 'Academic Senate & Graduate School'}
+                {lang === 'ru'
+                  ? 'Академический совет и аспирантура'
+                  : 'Academic Senate & Graduate School'}
               </li>
             </ul>
           </div>
 
           {/* Column 3: Student & Registrar Services */}
           <div className="space-y-3">
-            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
+            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#93C5FD] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
               {lang === 'ru' ? 'Службы деканата' : 'Student & Registrar Services'}
             </h5>
             <ul className="text-xs space-y-2 font-sans">
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                {lang === 'ru' ? 'Электронные справки (демо-макет)' : 'Digital Certificates (Demo Preview)'}
+                {lang === 'ru'
+                  ? 'Электронные справки (демо-макет)'
+                  : 'Digital Certificates (Demo Preview)'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
                 {lang === 'ru' ? 'Академические ведомости и БРС' : 'Academic Records & Rating'}
@@ -93,14 +103,16 @@ export const Footer: React.FC = () => {
                 {lang === 'ru' ? 'Стипендиальный комитет (ПГАС)' : 'Merit Scholarship Committee'}
               </li>
               <li className="hover:text-[#142D4E] dark:hover:text-[#FFFFFF] transition-colors cursor-pointer">
-                {lang === 'ru' ? 'Центр академической мобильности (ECTS)' : 'Academic Mobility Office (ECTS)'}
+                {lang === 'ru'
+                  ? 'Центр академической мобильности (ECTS)'
+                  : 'Academic Mobility Office (ECTS)'}
               </li>
             </ul>
           </div>
 
           {/* Column 4: Institutional Contacts & Registry Hours */}
           <div className="space-y-3">
-            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#245A91] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
+            <h5 className="font-semibold text-xs uppercase tracking-widest text-[#142D4E] dark:text-[#93C5FD] border-b border-[#DCE2EA] dark:border-[#193150] pb-2">
               {lang === 'ru' ? 'Контакты канцелярии' : 'Registry & Office Hours'}
             </h5>
             <div className="text-xs font-sans space-y-2">
@@ -116,9 +128,13 @@ export const Footer: React.FC = () => {
                 <Phone className="w-3.5 h-3.5 text-[#245A91]" />
                 <span className="font-mono text-[11px]">+7 (495) 000-00-00</span>
               </div>
-              <div className="pt-2 flex items-center space-x-2 text-[11px] text-[#142D4E] dark:text-[#245A91] font-semibold">
+              <div className="pt-2 flex items-center space-x-2 text-[11px] text-[#142D4E] dark:text-[#93C5FD] font-semibold">
                 <ShieldCheck className="w-4 h-4 text-[#245A91]" />
-                <span>{lang === 'ru' ? 'Иллюстративный макет ЭЦП (демо)' : 'Illustrative Digital Seal (Demo)'}</span>
+                <span>
+                  {lang === 'ru'
+                    ? 'Иллюстративный макет ЭЦП (демо)'
+                    : 'Illustrative Digital Seal (Demo)'}
+                </span>
               </div>
             </div>
           </div>
@@ -144,7 +160,9 @@ export const Footer: React.FC = () => {
             <span>•</span>
             <span className="flex items-center">
               <ShieldCheck className="w-3.5 h-3.5 mr-1 text-[#142D4E] dark:text-[#60A5FA]" />
-              {lang === 'ru' ? 'Изоляция персональных данных: сессионный контроль' : 'Student data isolation verified'}
+              {lang === 'ru'
+                ? 'Изоляция персональных данных: сессионный контроль'
+                : 'Student data isolation verified'}
             </span>
             <span>•</span>
             <span className="font-mono">Veritas • Scientia • Innovatio</span>

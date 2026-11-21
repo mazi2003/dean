@@ -8,6 +8,7 @@ import {
   Clock,
   Filter,
   Megaphone,
+  type LucideIcon,
 } from 'lucide-react';
 import { Notification, NotificationKind } from '../types';
 import { api } from '../services/api';
@@ -63,11 +64,11 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
     await refreshUnreadCount();
   };
 
-  const kindConfig: Record<NotificationKind, { label: string; icon: any; color: string }> = {
+  const kindConfig: Record<NotificationKind, { label: string; icon: LucideIcon; color: string }> = {
     announcement: {
       label: getNotificationKindLabel('announcement', lang),
       icon: Megaphone,
-      color: 'bg-[#142D4E]/15 text-[#142D4E] dark:text-[#245A91] border-[#142D4E]/30',
+      color: 'bg-[#142D4E]/15 text-[#142D4E] dark:text-[#93C5FD] border-[#142D4E]/30',
     },
     deadline: {
       label: getNotificationKindLabel('deadline', lang),
@@ -77,21 +78,21 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
     schedule_change: {
       label: getNotificationKindLabel('schedule_change', lang),
       icon: Calendar,
-      color: 'bg-[#245A91]/20 text-[#142D4E] dark:text-[#245A91] border-[#245A91]/40',
+      color: 'bg-[#245A91]/20 text-[#142D4E] dark:text-[#93C5FD] border-[#245A91]/40',
     },
     request_update: {
       label: getNotificationKindLabel('request_update', lang),
       icon: FileText,
-      color: 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#245A91] border-[#142D4E]/25',
+      color: 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#93C5FD] border-[#142D4E]/25',
     },
   };
 
-  const filteredNotifs = notifications.filter(n => {
+  const filteredNotifs = notifications.filter((n) => {
     if (selectedKind === 'all') return true;
     return n.kind === selectedKind;
   });
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   if (loading) {
     return (
@@ -109,8 +110,10 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
           ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#245A91] font-semibold mb-1">
-            <span>{tr(lang, 'Официальный вестник университета', 'Official University Gazette')}</span>
+          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold mb-1">
+            <span>
+              {tr(lang, 'Официальный вестник университета', 'Official University Gazette')}
+            </span>
             <span>•</span>
             <span>{tr(lang, 'Канцелярия ректората', 'Rectorate Chancellery')}</span>
           </div>
@@ -129,10 +132,12 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllRead}
-            className="px-3.5 py-1.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#142D4E] dark:text-[#245A91] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium flex items-center space-x-1.5 self-start sm:self-center transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#142D4E] dark:text-[#93C5FD] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium flex items-center space-x-1.5 self-start sm:self-center transition-colors cursor-pointer"
           >
             <CheckCheck className="w-4 h-4 text-[#245A91]" />
-            <span>{tr(lang, `Прочитать все (${unreadCount})`, `Mark all read (${unreadCount})`)}</span>
+            <span>
+              {tr(lang, `Прочитать все (${unreadCount})`, `Mark all read (${unreadCount})`)}
+            </span>
           </button>
         )}
       </div>
@@ -141,14 +146,14 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
           2. CATEGORY FILTERS
           ───────────────────────────────────────────────────────────── */}
       <div className="flex items-center space-x-2 overflow-x-auto text-xs pb-1 font-sans">
-        <Filter className="w-3.5 h-3.5 text-[#667085] mr-1 flex-shrink-0" />
+        <Filter className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8] mr-1 flex-shrink-0" />
         {[
           { id: 'all', label: tr(lang, 'Все публикации', 'All Notices') },
           { id: 'announcement', label: tr(lang, 'Приказы и распоряжения', 'Decrees & Bulletins') },
           { id: 'deadline', label: tr(lang, 'Академические дедлайны', 'Academic Deadlines') },
           { id: 'schedule_change', label: tr(lang, 'Изменения расписания', 'Schedule Changes') },
           { id: 'request_update', label: tr(lang, 'Статусы заявлений', 'Petition Updates') },
-        ].map(cat => (
+        ].map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedKind(cat.id)}
@@ -168,8 +173,8 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
           ───────────────────────────────────────────────────────────── */}
       <div className="space-y-3">
         {filteredNotifs.length === 0 ? (
-          <div className="p-10 text-center bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] text-xs text-[#667085] space-y-2">
-            <Bell className="w-8 h-8 text-[#667085] mx-auto opacity-50" />
+          <div className="p-10 text-center bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] text-xs text-[#667085] dark:text-[#94A3B8] space-y-2">
+            <Bell className="w-8 h-8 text-[#667085] dark:text-[#94A3B8] mx-auto opacity-50" />
             <p className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
               {tr(lang, 'В этой категории нет уведомлений', 'No notifications in this category')}
             </p>
@@ -182,7 +187,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
             </p>
           </div>
         ) : (
-          filteredNotifs.map(n => {
+          filteredNotifs.map((n) => {
             const cfg = kindConfig[n.kind] || kindConfig.announcement;
             const Icon = cfg.icon;
             const isUrgent = n.priority === 'urgent' || n.priority === 'high';
@@ -204,7 +209,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
                     className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 border ${
                       isUrgent
                         ? 'bg-[#C63740] text-white border-[#C63740]'
-                        : 'bg-[#142D4E] text-[#245A91] border-[#245A91]/40'
+                        : 'bg-[#142D4E] text-[#93C5FD] border-[#245A91]/40'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -212,7 +217,9 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
 
                   <div className="space-y-1.5 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border font-semibold ${cfg.color}`}>
+                      <span
+                        className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border font-semibold ${cfg.color}`}
+                      >
                         {cfg.label}
                       </span>
                       {isUrgent && (
@@ -221,9 +228,15 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
                         </span>
                       )}
                       {!n.read && (
-                        <span className="w-2 h-2 rounded-full bg-[#142D4E] dark:bg-[#245A91]" />
+                        <span className="w-2 h-2 rounded-full bg-[#142D4E] dark:bg-[#60A5FA]" />
                       )}
-                      <span className="text-[11px] font-mono text-[#667085]">
+                      <span
+                        className={`text-[11px] font-mono ${
+                          !n.read && isUrgent
+                            ? 'text-rose-950 dark:text-rose-200 font-medium'
+                            : 'text-[#475467] dark:text-[#CBD5E1]'
+                        }`}
+                      >
                         {n.createdAt}
                       </span>
                     </div>
@@ -241,11 +254,11 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
                 <div className="flex items-center space-x-2 self-end sm:self-center">
                   {!n.read && (
                     <button
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
                         handleMarkRead(n.id);
                       }}
-                      className="px-2.5 py-1 rounded bg-[#142D4E] text-[#FFFFFF] text-[11px] font-sans hover:bg-[#0E1F36] cursor-pointer"
+                      className="px-3 py-1.5 min-h-[44px] rounded-lg bg-[#142D4E] text-[#FFFFFF] text-[11px] font-sans font-medium hover:bg-[#0E1F36] transition-colors cursor-pointer flex items-center justify-center shadow-xs"
                     >
                       {tr(lang, 'Отметить прочитанным', 'Mark as read')}
                     </button>

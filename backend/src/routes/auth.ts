@@ -20,7 +20,9 @@ function isCookieSecure(): boolean {
 export async function authRoutes(app: FastifyInstance) {
   // POST /api/v1/auth/login
   app.post('/auth/login', {
-    config: { rateLimit: { max: Number(process.env.LOGIN_RATE_LIMIT_MAX || 10), timeWindow: '15 minutes' } },
+    config: {
+      rateLimit: { max: Number(process.env.LOGIN_RATE_LIMIT_MAX || 10), timeWindow: '15 minutes' },
+    },
     handler: async (request, reply) => {
       const parsed = LoginSchema.safeParse(request.body);
       if (!parsed.success) {
@@ -41,13 +43,15 @@ export async function authRoutes(app: FastifyInstance) {
       const valid = await verifyPassword(hashToVerify, password);
 
       if (!user || !valid) {
-        return reply.code(401).send({ code: 'UNAUTHORIZED', message: 'Неверный адрес электронной почты или пароль' });
+        return reply
+          .code(401)
+          .send({ code: 'UNAUTHORIZED', message: 'Неверный адрес электронной почты или пароль' });
       }
 
       const token = jwt.sign(
         { sub: user.id, email: user.email, role: user.role },
         getJwtSigningKey(),
-        { expiresIn: '24h' }
+        { algorithm: 'HS256', expiresIn: '24h' }
       );
 
       reply.setCookie('dean_session', token, {
@@ -69,7 +73,12 @@ export async function authRoutes(app: FastifyInstance) {
 
   // POST /api/v1/auth/logout
   app.post('/auth/logout', async (_request, reply) => {
-    reply.clearCookie('dean_session', { path: '/' });
+    reply.clearCookie('dean_session', {
+      path: '/',
+      httpOnly: true,
+      secure: isCookieSecure(),
+      sameSite: 'lax',
+    });
     return reply.code(204).send();
   });
 

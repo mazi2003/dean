@@ -34,7 +34,9 @@ function main() {
   const distDir = path.join(backendDir, 'dist');
   if (fs.existsSync(distDir)) {
     fs.rmSync(distDir, { recursive: true, force: true });
-    console.log('[vercel-db-sync] Removed backend/dist so @vercel/backends uses native Rolldown bundle.');
+    console.log(
+      '[vercel-db-sync] Removed backend/dist so @vercel/backends uses native Rolldown bundle.'
+    );
   }
 
   // Ensure Prisma client (with rhel-openssl-3.0.x binaryTarget) is generated before NFT tracing
@@ -88,7 +90,11 @@ function main() {
       stdio: 'inherit',
     });
 
-    if (process.env.SEED_STUDENT_PASSWORD && process.env.SEED_STAFF_PASSWORD && fs.existsSync(seedPath)) {
+    if (
+      process.env.SEED_STUDENT_PASSWORD &&
+      process.env.SEED_STAFF_PASSWORD &&
+      fs.existsSync(seedPath)
+    ) {
       const tsNodeCli = require.resolve('ts-node/dist/bin.js', { paths: [backendDir] });
       console.log('[vercel-db-sync] Running idempotent database seed...');
       execFileSync(

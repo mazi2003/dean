@@ -5,7 +5,10 @@ import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
 
 const NotifQuerySchema = z.object({
-  unread: z.enum(['true', 'false']).optional().transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
+  unread: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
   kind: z.enum(['announcement', 'deadline', 'request_update', 'schedule_change']).optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
@@ -20,7 +23,11 @@ export async function notificationsRoutes(app: FastifyInstance) {
     handler: async (request, reply) => {
       const parsed = NotifQuerySchema.safeParse(request.query);
       if (!parsed.success) {
-        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid query', details: parsed.error.flatten() });
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid query',
+          details: parsed.error.flatten(),
+        });
       }
 
       const userId = request.user!.sub;
@@ -85,7 +92,10 @@ export async function notificationsRoutes(app: FastifyInstance) {
     preHandler: [authenticate],
     handler: async (request, reply) => {
       const userId = request.user!.sub;
-      await prisma.notification.updateMany({ where: { userId, read: false }, data: { read: true } });
+      await prisma.notification.updateMany({
+        where: { userId, read: false },
+        data: { read: true },
+      });
       return reply.code(204).send();
     },
   });

@@ -4,9 +4,18 @@ import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
 
 const ScheduleQuerySchema = z.object({
-  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  to: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   group: z.string().min(1).max(50).optional(),
 });
 
@@ -90,7 +99,11 @@ export async function scheduleRoutes(app: FastifyInstance) {
     handler: async (request, reply) => {
       const parsed = ScheduleQuerySchema.safeParse(request.query);
       if (!parsed.success) {
-        return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Invalid query params', details: parsed.error.flatten() });
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid query params',
+          details: parsed.error.flatten(),
+        });
       }
 
       const userId = request.user!.sub;
@@ -116,8 +129,20 @@ export async function scheduleRoutes(app: FastifyInstance) {
       const now = new Date();
       const dayOfWeek = now.getUTCDay();
       const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + diffToMon));
-      const sunday = new Date(Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate() + 6, 23, 59, 59, 999));
+      const monday = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + diffToMon)
+      );
+      const sunday = new Date(
+        Date.UTC(
+          monday.getUTCFullYear(),
+          monday.getUTCMonth(),
+          monday.getUTCDate() + 6,
+          23,
+          59,
+          59,
+          999
+        )
+      );
 
       const fromStr = parsed.data.date ?? parsed.data.from;
       const toStr = parsed.data.date ?? parsed.data.to;
@@ -151,8 +176,12 @@ export async function scheduleRoutes(app: FastifyInstance) {
       if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
 
       const now = new Date();
-      const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
-      const todayEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+      const todayStart = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0)
+      );
+      const todayEnd = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999)
+      );
 
       const todayEntries = await prisma.scheduleEntry.findMany({
         where: { groupId: sp.groupId, date: { gte: todayStart, lte: todayEnd } },
@@ -177,13 +206,25 @@ export async function scheduleRoutes(app: FastifyInstance) {
     },
   });
 
+  const ExamsQuerySchema = z.object({
+    group: z.string().min(1).max(50).optional(),
+  });
+
   // GET /api/v1/exams (student: own group only; staff: all or ?group=)
   app.get('/exams', {
     preHandler: [authenticate],
     handler: async (request, reply) => {
+      const parsedQuery = ExamsQuerySchema.safeParse(request.query);
+      if (!parsedQuery.success) {
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid query params',
+          details: parsedQuery.error.flatten(),
+        });
+      }
       const userId = request.user!.sub;
       if (request.user!.role === 'staff') {
-        const groupQuery = (request.query as { group?: string })?.group;
+        const groupQuery = parsedQuery.data.group;
         const where: { group?: { code: string } } = {};
         if (groupQuery && groupQuery !== 'all') {
           where.group = { code: groupQuery };

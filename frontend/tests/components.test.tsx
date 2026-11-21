@@ -92,7 +92,10 @@ function installApiFetchMock(persona: keyof typeof TEST_PROFILES | null) {
       });
 
     if (url.endsWith('/auth/login') && method === 'POST') {
-      return json({ code: 'UNAUTHORIZED', message: 'Неверный адрес электронной почты или пароль' }, 401);
+      return json(
+        { code: 'UNAUTHORIZED', message: 'Неверный адрес электронной почты или пароль' },
+        401
+      );
     }
 
     if (url.endsWith('/profile')) {
@@ -217,9 +220,27 @@ function installApiFetchMock(persona: keyof typeof TEST_PROFILES | null) {
           description: 'Подтверждение статуса студента',
           slaDays: 2,
           fields: [
-            { name: 'purpose', label: 'Место предъявления', type: 'text', required: true, placeholder: 'Например: Пенсионный фонд РФ' },
-            { name: 'copies', label: 'Количество экземпляров', type: 'number', required: true, placeholder: '1' },
-            { name: 'delivery', label: 'Форма получения', type: 'select', required: true, options: ['Электронный макет (PDF, демо)', 'Бумажная в деканате'] },
+            {
+              name: 'purpose',
+              label: 'Место предъявления',
+              type: 'text',
+              required: true,
+              placeholder: 'Например: Пенсионный фонд РФ',
+            },
+            {
+              name: 'copies',
+              label: 'Количество экземпляров',
+              type: 'number',
+              required: true,
+              placeholder: '1',
+            },
+            {
+              name: 'delivery',
+              label: 'Форма получения',
+              type: 'select',
+              required: true,
+              options: ['Электронный макет (PDF, демо)', 'Бумажная в деканате'],
+            },
           ],
         },
       ]);
@@ -238,7 +259,14 @@ function installApiFetchMock(persona: keyof typeof TEST_PROFILES | null) {
         expectedDate: '2026-11-20',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        history: [{ id: 'h-1', status: 'submitted', createdAt: new Date().toISOString(), authorName: 'Лина Окафор' }],
+        history: [
+          {
+            id: 'h-1',
+            status: 'submitted',
+            createdAt: new Date().toISOString(),
+            authorName: 'Лина Окафор',
+          },
+        ],
       };
       requestsStore.unshift(created);
       return json(created, 201);
@@ -327,13 +355,17 @@ describe('Frontend Component & Accessibility Suite', () => {
     );
 
     expect(
-      screen.getByText(/Конкурсный концепт\. Не является официальным сервисом университета\. Все данные и имена вымышлены\./i)
+      screen.getByText(
+        /Конкурсный концепт\. Не является официальным сервисом университета\. Все данные и имена вымышлены\./i
+      )
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('SwitchLang'));
 
     expect(
-      screen.getByText(/Competition concept, not an official university service\. Fictional data\./i)
+      screen.getByText(
+        /Competition concept, not an official university service\. Fictional data\./i
+      )
     ).toBeInTheDocument();
   });
 

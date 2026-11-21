@@ -2,17 +2,24 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
 
-export function computePointsAndGpa(grades: Array<{ points: number | null; grade: number | null }>) {
+export function computePointsAndGpa(
+  grades: Array<{ points: number | null; grade: number | null }>
+) {
   const pointItems = grades.filter((g) => g.points !== null);
-  const averageScore = pointItems.length > 0
-    ? Math.round((pointItems.reduce((s, g) => s + (g.points ?? 0), 0) / pointItems.length) * 10) / 10
-    : 0;
+  const averageScore =
+    pointItems.length > 0
+      ? Math.round((pointItems.reduce((s, g) => s + (g.points ?? 0), 0) / pointItems.length) * 10) /
+        10
+      : 0;
 
   // 5-point Russian GPA scale matching frontend UI (e.g. 4.8, 3.4, 4.2)
   const gradedItems = grades.filter((g) => g.grade !== null);
-  const gpa = gradedItems.length > 0
-    ? Math.round((gradedItems.reduce((s, g) => s + (g.grade ?? 0), 0) / gradedItems.length) * 100) / 100
-    : 0;
+  const gpa =
+    gradedItems.length > 0
+      ? Math.round(
+          (gradedItems.reduce((s, g) => s + (g.grade ?? 0), 0) / gradedItems.length) * 100
+        ) / 100
+      : 0;
 
   return { averageScore, gpa };
 }

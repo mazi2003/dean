@@ -10,6 +10,8 @@ interface AuthContextType {
   logout: () => Promise<void>;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  accessibilityMode: boolean;
+  toggleAccessibilityMode: () => void;
   lang: 'ru' | 'en';
   toggleLang: () => void;
   unreadCount: number;
@@ -26,9 +28,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const saved = localStorage.getItem('dean_theme');
       if (saved === 'dark' || saved === 'light') return saved;
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
     } catch {
       return 'light';
+    }
+  });
+  const [accessibilityMode, setAccessibilityMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('dean_accessibility') === 'true';
+    } catch {
+      return false;
     }
   });
   const [lang, setLang] = useState<'ru' | 'en'>(() => {
@@ -64,11 +75,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [theme]);
 
+  useEffect(() => {
+    try {
+      if (accessibilityMode) {
+        document.documentElement.classList.add('accessibility-mode');
+      } else {
+        document.documentElement.classList.remove('accessibility-mode');
+      }
+      localStorage.setItem('dean_accessibility', String(accessibilityMode));
+    } catch {
+      // ignore
+    }
+  }, [accessibilityMode]);
+
   const refreshUnreadCount = useCallback(async () => {
     try {
       if (user) {
         const notifs = await api.getNotifications();
-        setUnreadCount(notifs.filter(n => !n.read).length);
+        setUnreadCount(notifs.filter((n) => !n.read).length);
       }
     } catch {
       // ignore
@@ -101,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     (async () => {
       try {
         const notifs = await api.getNotifications();
-        if (!cancelled) setUnreadCount(notifs.filter(n => !n.read).length);
+        if (!cancelled) setUnreadCount(notifs.filter((n) => !n.read).length);
       } catch {
         // ignore
       }
@@ -124,11 +148,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const toggleTheme = () => {
-    setTheme(t => (t === 'light' ? 'dark' : 'light'));
+    setTheme((t) => (t === 'light' ? 'dark' : 'light'));
+  };
+
+  const toggleAccessibilityMode = () => {
+    setAccessibilityMode((a) => !a);
   };
 
   const toggleLang = () => {
-    setLang(l => (l === 'ru' ? 'en' : 'ru'));
+    setLang((l) => (l === 'ru' ? 'en' : 'ru'));
   };
 
   return (
@@ -141,6 +169,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         theme,
         toggleTheme,
+        accessibilityMode,
+        toggleAccessibilityMode,
         lang,
         toggleLang,
         unreadCount,
