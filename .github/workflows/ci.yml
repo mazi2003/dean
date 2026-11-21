@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Typecheck, Lint, Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Database dependencies & verify schema
+        working-directory: database
+        run: |
+          npm ci
+          npm run db:generate
+          npm run typecheck
+          npm run lint
+
+      - name: Install Backend dependencies, test & build
+        working-directory: backend
+        run: |
+          npm ci
+          npm run typecheck
+          npm run lint
+          npm test
+          npm run build:tsc
+
+      - name: Install Frontend dependencies, test & build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run typecheck
+          npm run lint
+          npm test
+          npm run build

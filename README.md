@@ -32,8 +32,8 @@
 
 ## 🛠️ Технологический стек и безопасность
 
-- **Frontend**: React 19, Vite 8, TypeScript, Tailwind CSS v4, Lucide React, QRCode, PWA + Service Worker (работает только с реальным API через cookie-сессию; в `localStorage` сохраняются только настройки темы и языка `dean_theme`/`dean_lang`).
-- **Backend**: Node.js 20, Fastify v5, Zod v4, Argon2id, JSON Web Tokens (`@fastify/jwt`), Helmet, CORS, Rate Limiting, `trustProxy`.
+- **Frontend**: React 19, Vite 8 (Rolldown code splitting), TypeScript, Tailwind CSS v4, Lucide React, QRCode (lazy-loaded), self-hosted Inter WOFF2 (Cyrillic & Latin subsets), PWA + Service Worker v2 (Cache-First `/assets/*`, Network-First HTML, API pass-through; работает только с реальным API через cookie-сессию; в `localStorage` сохраняются только настройки темы и языка `dean_theme`/`dean_lang`).
+- **Backend**: Node.js 20, Fastify v5, `@fastify/compress` (Brotli + Gzip, Vercel Edge delegation), Zod v4, Argon2id, JSON Web Tokens, Helmet, CORS, Rate Limiting, `Cache-Control: private, no-store` security hook, `trustProxy`.
 - **Database**: PostgreSQL 16, Prisma ORM v6.19 (миграции и идемпотентный сид с относительным окном расписания).
 - **QA**: Vitest, Testing Library, Supertest, Playwright (1280×800 и 360×740), `@axe-core/playwright`, oxlint, Docker + Caddy.
 - **Безопасность**:
@@ -113,7 +113,7 @@ cd e2e && npx playwright test
 ├── deploy/               # Скрипты автоматического развертывания на VPS, бэкапа и healthcheck
 ├── scripts/              # Локальный полный стек без Docker (embedded-postgres + API + Web)
 ├── e2e/                  # Сквозные тесты Playwright (Desktop/Mobile, WCAG Axe, RBAC/IDOR, аудит бандла)
-├── docs/                 # Документация для жюри: submission.md/.pdf, architecture.md, process-log.md, видео и скриншоты
+├── docs/                 # Документация для жюри: submission.md/.pdf, architecture.md, process-log.md, performance-baseline.md, performance-optimization-guide.md, performance-report.md, видео и скриншоты
 ├── prompts/              # Промпты мультиагентной разработки
 └── AGENTS.md             # Правила безопасности и архитектурные ограничения
 ```

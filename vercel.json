@@ -35,12 +35,6 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]
-    },
-    {
-      "source": "/theme-init.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
-      ]
     }
   ],
   "services": {

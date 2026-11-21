@@ -603,7 +603,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           <div className="flex items-start space-x-3">
             <ShieldAlert className="w-5 h-5 text-[#b45309] dark:text-[#fbbf24] flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-heading font-semibold text-sm text-[#b45309] dark:text-[#b45309]">
+              <h3 className="font-heading font-semibold text-sm text-[#b45309] dark:text-[#fbbf24]">
                 {localizeText(urgentNotif.title, lang)}
               </h3>
               <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5 leading-relaxed">
@@ -613,7 +613,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </div>
           <button
             onClick={() => setActiveTab('notifications')}
-            className="text-xs font-heading font-semibold text-[#b45309] dark:text-[#b45309] hover:underline flex items-center space-x-1 flex-shrink-0 cursor-pointer"
+            className="text-xs font-heading font-semibold text-[#b45309] dark:text-[#fbbf24] hover:underline flex items-center space-x-1 flex-shrink-0 cursor-pointer"
           >
             <span>{lang === 'ru' ? 'Подробнее' : 'Details'}</span>
             <ChevronRight className="w-3.5 h-3.5" />

@@ -198,9 +198,10 @@ test.describe('Full Operational Verification Suite (R1, R2, R3)', () => {
       await expect(timurReqCard).toBeVisible();
       await expect(timurReqCard.getByText(/Подано|Submitted/i).first()).toBeVisible();
 
-      // ── Step 1C: Lina Okafor submits dormitory_application ────────────────
-      await loginAs(linaPage, 'lina.okafor@demo.edu', STUDENT_PASSWORD);
-      await expect(linaPage.locator('main').getByText(/Лина/i).first()).toBeVisible();
+      // ── Step 1C: Student 3 (Daniil Morozov, DU-101) submits dormitory_application
+      // (preserves lina.okafor@demo.edu's 0-request seed-spec invariant for portal.spec.ts)
+      await loginAs(linaPage, 'd.morozov@demo.edu', STUDENT_PASSWORD);
+      await expect(linaPage.locator('main').getByText(/Даниил/i).first()).toBeVisible();
 
       await navigateStudentTab(linaPage, isMobile, 'requests');
       // Order dormitory application from catalog cards
@@ -376,7 +377,7 @@ test.describe('Full Operational Verification Suite (R1, R2, R3)', () => {
     const staffErrors = attachErrorCollectors(staffPage);
     const studentErrors = attachErrorCollectors(studentPage);
 
-    const origin = 'http://127.0.0.1:4176';
+    const origin = testInfo.project.use.baseURL || 'http://127.0.0.1:4176';
 
     try {
       // ── Step 1: Staff modifies schedule for group ДУ-101 ──────────────────

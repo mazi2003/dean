@@ -1,0 +1,86 @@
+{
+  "desktop": {
+    "login": {
+      "ttfb": 14,
+      "fcp": 312,
+      "lcp": 348,
+      "cls": 0.0002,
+      "tbt": 0,
+      "inp": 16
+    },
+    "dashboard": {
+      "ttfb": 18,
+      "fcp": 340,
+      "lcp": 624,
+      "cls": 0.0041,
+      "tbt": 42,
+      "inp": 48
+    },
+    "profile": {
+      "ttfb": 10,
+      "fcp": 296,
+      "lcp": 540,
+      "cls": 0.0035,
+      "tbt": 28,
+      "inp": 56
+    },
+    "schedule": {
+      "ttfb": 11,
+      "fcp": 324,
+      "lcp": 592,
+      "cls": 0.0048,
+      "tbt": 35,
+      "inp": 64
+    },
+    "staff_students": {
+      "ttfb": 12,
+      "fcp": 336,
+      "lcp": 612,
+      "cls": 0.0184,
+      "tbt": 48,
+      "inp": 48
+    }
+  },
+  "mobile": {
+    "login": {
+      "ttfb": 154,
+      "fcp": 1340,
+      "lcp": 1980,
+      "cls": 0.0004,
+      "tbt": 64,
+      "inp": 40
+    },
+    "dashboard": {
+      "ttfb": 158,
+      "fcp": 1620,
+      "lcp": 2390,
+      "cls": 0.0012,
+      "tbt": 245,
+      "inp": 136
+    },
+    "profile": {
+      "ttfb": 152,
+      "fcp": 1580,
+      "lcp": 2280,
+      "cls": 0.0011,
+      "tbt": 210,
+      "inp": 144
+    },
+    "schedule": {
+      "ttfb": 155,
+      "fcp": 1640,
+      "lcp": 2410,
+      "cls": 0.0015,
+      "tbt": 238,
+      "inp": 152
+    },
+    "staff_students": {
+      "ttfb": 156,
+      "fcp": 1590,
+      "lcp": 2340,
+      "cls": 0.0312,
+      "tbt": 260,
+      "inp": 128
+    }
+  }
+}

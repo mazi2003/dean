@@ -51,7 +51,7 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
       {/* Collision Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 rounded-xl bg-[#f97316] text-white flex items-center justify-center flex-shrink-0 shadow-xs mt-0.5">
+          <div className="w-8 h-8 rounded-xl bg-[#c2410c] text-white flex items-center justify-center flex-shrink-0 shadow-xs mt-0.5">
             <AlertTriangle className="w-4 h-4 text-white" />
           </div>
           <div>
@@ -63,7 +63,7 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
                   '⚡ Schedule Collision Detected'
                 )}
               </span>
-              <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#f97316] text-white">
+              <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#c2410c] text-white">
                 {tr(lang, 'НАКЛАДКА СЛОТА', 'SLOT OVERLAP')}
               </span>
             </div>

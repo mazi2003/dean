@@ -18,6 +18,8 @@ const resolveBrowserChannel = (): 'chrome' | 'msedge' | undefined => {
 };
 
 const browserChannel = resolveBrowserChannel();
+const frontendPort = process.env.LOCAL_FRONTEND_PORT || '4176';
+const baseURL = `http://127.0.0.1:${frontendPort}`;
 
 export default defineConfig({
   testDir: './tests',
@@ -28,7 +30,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   reporter: [['list']],
   use: {
-    baseURL: 'http://127.0.0.1:4176',
+    baseURL,
     ...(browserChannel ? { channel: browserChannel } : {}),
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
@@ -51,7 +53,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'node ../scripts/local-stack.mjs',
-    url: 'http://127.0.0.1:4176',
+    url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,
   },
