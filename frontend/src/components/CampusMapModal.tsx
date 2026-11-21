@@ -5,12 +5,15 @@ import {
   Navigation,
   Compass,
   Layers,
-  CheckCircle2,
-  Coffee,
   Users,
   Monitor,
   Wind,
   Footprints,
+  ArrowUpDown,
+  ArrowUpRight,
+  ArrowDownRight,
+  ArrowRight,
+  Clock,
 } from 'lucide-react';
 import { tr } from '../utils/i18n';
 
@@ -20,6 +23,7 @@ interface RoomData {
   nameRu: string;
   nameEn: string;
   floor: number;
+  category: 'entrance' | 'elevator' | 'room';
   wingRu: string;
   wingEn: string;
   capacity: number;
@@ -29,6 +33,7 @@ interface RoomData {
   amenitiesEn: string[];
   walkTimeRu: string;
   walkTimeEn: string;
+  // SVG bounding box coordinates (viewBox 0 0 800 420)
   x: number;
   y: number;
   w: number;
@@ -36,15 +41,60 @@ interface RoomData {
   door: { x: number; y: number };
 }
 
-// Master Directory of Campus Rooms across 3 Floors
+// Master Directory of Campus Rooms & Entrances across 3 Floors
 const CAMPUS_ROOMS: RoomData[] = [
   // ── FLOOR 1 ────────────────────────────────────────────────────────
+  {
+    id: 'turnstiles',
+    code: 'Главный вход / Турникеты',
+    nameRu: 'Главный вход и турникетный пропускной комплекс кампуса',
+    nameEn: 'Campus Main Entrance & NFC Turnstile Hub',
+    floor: 1,
+    category: 'entrance',
+    wingRu: 'Центральный вестибюль • 1 этаж',
+    wingEn: 'Central Vestibule • Floor 1',
+    capacity: 500,
+    equipmentRu: ['Турникеты с NFC и оптическим QR', 'Служба безопасности', 'Бюро пропусков'],
+    equipmentEn: ['NFC & Optical QR Turnstiles', 'Campus Security', 'Pass Issuance Desk'],
+    amenitiesRu: ['Главный гардероб (10 м)', 'Инфокиоск (5 м)', 'Банкоматы (15 м)'],
+    amenitiesEn: ['Main Cloakroom (10 m)', 'Info Kiosk (5 m)', 'ATMs (15 m)'],
+    walkTimeRu: '0 сек (Точка входа)',
+    walkTimeEn: '0 sec (Entry Point)',
+    x: 340,
+    y: 310,
+    w: 120,
+    h: 55,
+    door: { x: 400, y: 310 },
+  },
+  {
+    id: 'elevator-1',
+    code: 'Центральный лифт (1 эт.)',
+    nameRu: 'Центральный лифтовой холл и лестница №1 (1 этаж)',
+    nameEn: 'Central Elevator Hub & Stairwell #1 (Floor 1)',
+    floor: 1,
+    category: 'elevator',
+    wingRu: 'Центральный атриум • 1 этаж',
+    wingEn: 'Central Atrium • Floor 1',
+    capacity: 60,
+    equipmentRu: ['3х скоростных лифта', 'Лестница №1', 'Навигационная стела'],
+    equipmentEn: ['3x Express Elevators', 'Stairwell #1', 'Directory Board'],
+    amenitiesRu: ['Турникеты (20 м)', 'Кафетерий (15 м)', 'Санузлы (30 м)'],
+    amenitiesEn: ['Turnstiles (20 m)', 'Cafeteria (15 m)', 'Restrooms (30 m)'],
+    walkTimeRu: '20 сек от турникетов',
+    walkTimeEn: '20 sec from turnstiles',
+    x: 375,
+    y: 195,
+    w: 50,
+    h: 40,
+    door: { x: 400, y: 215 },
+  },
   {
     id: 'hall-b',
     code: 'Конференц-зал Б',
     nameRu: 'Конференц-зал им. академика Сахарова',
     nameEn: 'Conference Hall B (Sakharov Hall)',
     floor: 1,
+    category: 'room',
     wingRu: 'Центральный атриум • 1 этаж',
     wingEn: 'Central Atrium • Floor 1',
     capacity: 220,
@@ -66,6 +116,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Большая поточная лекционная аудитория',
     nameEn: 'Grand Lecture Auditorium 101',
     floor: 1,
+    category: 'room',
     wingRu: 'Западное крыло • 1 этаж',
     wingEn: 'West Wing • Floor 1',
     capacity: 150,
@@ -87,6 +138,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Аудитория макроэкономического моделирования',
     nameEn: 'Macroeconomic Modeling Room 102',
     floor: 1,
+    category: 'room',
     wingRu: 'Восточное крыло • 1 этаж',
     wingEn: 'East Wing • Floor 1',
     capacity: 60,
@@ -108,6 +160,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Студенческий коворкинг и кофейня «Квант»',
     nameEn: 'Student Coworking & Coffee Hub "Quant"',
     floor: 1,
+    category: 'room',
     wingRu: 'Восточное крыло • 1 этаж',
     wingEn: 'East Wing • Floor 1',
     capacity: 90,
@@ -126,11 +179,34 @@ const CAMPUS_ROOMS: RoomData[] = [
 
   // ── FLOOR 2 ────────────────────────────────────────────────────────
   {
+    id: 'elevator-2',
+    code: 'Центральный лифт (2 эт.)',
+    nameRu: 'Центральный лифтовой холл и лестница №1 (2 этаж)',
+    nameEn: 'Central Elevator Hub & Stairwell #1 (Floor 2)',
+    floor: 2,
+    category: 'elevator',
+    wingRu: 'Центральный атриум • 2 этаж',
+    wingEn: 'Central Atrium • Floor 2',
+    capacity: 60,
+    equipmentRu: ['3х скоростных лифта', 'Лестница №1', 'Навигационная панель'],
+    equipmentEn: ['3x Express Elevators', 'Stairwell #1', 'Directory Board'],
+    amenitiesRu: ['Комп-Класс 1 (15 м)', 'Лаб-2 (25 м)', 'Принт-зона (10 м)'],
+    amenitiesEn: ['Computing Lab 1 (15 m)', 'Lab 2 (25 m)', 'Printing Hub (10 m)'],
+    walkTimeRu: '15 сек от лифта',
+    walkTimeEn: '15 sec from elevator',
+    x: 375,
+    y: 195,
+    w: 50,
+    h: 40,
+    door: { x: 400, y: 215 },
+  },
+  {
     id: 'comp-1',
     code: 'Комп-Класс 1',
     nameRu: 'Лаборатория вычислительных систем и Big Data',
     nameEn: 'Computing Systems & Big Data Lab 1',
     floor: 2,
+    category: 'room',
     wingRu: 'Западное крыло • 2 этаж',
     wingEn: 'West Wing • Floor 2',
     capacity: 32,
@@ -152,6 +228,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Лаборатория сетевой безопасности и DevOps',
     nameEn: 'Cybersecurity & Cloud Systems Lab 3',
     floor: 2,
+    category: 'room',
     wingRu: 'Западное крыло • 2 этаж',
     wingEn: 'West Wing • Floor 2',
     capacity: 28,
@@ -173,6 +250,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Лаборатория искусственного интеллекта и робототехники',
     nameEn: 'AI & Autonomous Robotics Laboratory 2',
     floor: 2,
+    category: 'room',
     wingRu: 'Восточное крыло • 2 этаж',
     wingEn: 'East Wing • Floor 2',
     capacity: 25,
@@ -194,6 +272,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Мультимедийный лингафонный кабинет',
     nameEn: 'Multimedia Language Center 4',
     floor: 2,
+    category: 'room',
     wingRu: 'Восточное крыло • 2 этаж',
     wingEn: 'East Wing • Floor 2',
     capacity: 24,
@@ -212,11 +291,34 @@ const CAMPUS_ROOMS: RoomData[] = [
 
   // ── FLOOR 3 ────────────────────────────────────────────────────────
   {
+    id: 'elevator-3',
+    code: 'Центральный лифт (3 эт.)',
+    nameRu: 'Центральный лифтовой холл и лестница №1 (3 этаж)',
+    nameEn: 'Central Elevator Hub & Stairwell #1 (Floor 3)',
+    floor: 3,
+    category: 'elevator',
+    wingRu: 'Центральный атриум • 3 этаж',
+    wingEn: 'Central Atrium • Floor 3',
+    capacity: 60,
+    equipmentRu: ['3х скоростных лифта', 'Лестница №1', 'Навигационная стела'],
+    equipmentEn: ['3x Express Elevators', 'Stairwell #1', 'Directory Board'],
+    amenitiesRu: ['Деканат ауд. 312 (10 м)', 'Ауд. А-314 (15 м)', 'Зона кофе (15 м)'],
+    amenitiesEn: ["Dean's Office 312 (10 m)", 'Room A-314 (15 m)', 'Coffee Point (15 m)'],
+    walkTimeRu: '10 сек от лифта',
+    walkTimeEn: '10 sec from elevator',
+    x: 375,
+    y: 195,
+    w: 50,
+    h: 40,
+    door: { x: 400, y: 215 },
+  },
+  {
     id: 'room-312',
     code: '312',
     nameRu: 'Единый деканат факультета международных отношений',
     nameEn: "Faculty Dean's Office & Student Advisory Center (Room 312)",
     floor: 3,
+    category: 'room',
     wingRu: 'Центральный блок • 3 этаж',
     wingEn: 'Central Hub • Floor 3',
     capacity: 20,
@@ -238,6 +340,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Лаборатория прикладной математики и анализа данных (Пересдачи)',
     nameEn: 'Applied Mathematics & Data Analysis Lab (Retake Center)',
     floor: 3,
+    category: 'room',
     wingRu: 'Западное крыло • 3 этаж',
     wingEn: 'West Wing • Floor 3',
     capacity: 45,
@@ -259,6 +362,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Семинарская аудитория дипломатического анализа',
     nameEn: 'Diplomatic Analysis Seminar Room 310',
     floor: 3,
+    category: 'room',
     wingRu: 'Западное крыло • 3 этаж',
     wingEn: 'West Wing • Floor 3',
     capacity: 35,
@@ -280,6 +384,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Аудитория мировых финансовых рынков',
     nameEn: 'Global Financial Markets Auditorium 301',
     floor: 3,
+    category: 'room',
     wingRu: 'Восточное крыло • 3 этаж',
     wingEn: 'East Wing • Floor 3',
     capacity: 70,
@@ -301,6 +406,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     nameRu: 'Кафедра международного права и политологии',
     nameEn: 'Department of International Law & Political Studies',
     floor: 3,
+    category: 'room',
     wingRu: 'Восточное крыло • 3 этаж',
     wingEn: 'East Wing • Floor 3',
     capacity: 25,
@@ -331,7 +437,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 }) => {
   const { lang } = useAuth();
 
-  // Find matching room or default to A-314
+  // Find matching destination room or default to A-314
   const targetRoom = useMemo(() => {
     if (!initialRoomCode) return CAMPUS_ROOMS.find((r) => r.code === 'А-314') || CAMPUS_ROOMS[0];
     const cleaned = initialRoomCode.toLowerCase().replace(/ауд\.?|комн\.?|каб\.?|\s+/g, '');
@@ -342,15 +448,31 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
     return found || CAMPUS_ROOMS.find((r) => r.code === 'А-314') || CAMPUS_ROOMS[0];
   }, [initialRoomCode]);
 
+  // Origin point state (defaults to main entrance / turnstiles)
+  const [originId, setOriginId] = useState<string>('turnstiles');
+  // Destination point state
+  const [destinationId, setDestinationId] = useState<string>(targetRoom.id);
+  // Manual floor override if user explicitly clicks floor tab
   const [selectedFloorOverride, setSelectedFloorOverride] = useState<number | null>(null);
-  const [selectedRoomOverride, setSelectedRoomOverride] = useState<RoomData | null>(null);
 
-  const selectedFloor = selectedFloorOverride ?? targetRoom.floor;
-  const selectedRoom = selectedRoomOverride ?? targetRoom;
+  const originLocation = useMemo(
+    () => CAMPUS_ROOMS.find((r) => r.id === originId) || CAMPUS_ROOMS[0],
+    [originId]
+  );
+
+  const destLocation = useMemo(
+    () => CAMPUS_ROOMS.find((r) => r.id === destinationId) || targetRoom,
+    [destinationId, targetRoom]
+  );
+
+  // Active Floor shown on SVG (defaults to destination floor)
+  const selectedFloor = selectedFloorOverride ?? destLocation.floor;
+
+  // Floor difference between origin and destination
+  const floorDiff = destLocation.floor - originLocation.floor;
 
   const handleClose = useCallback(() => {
     setSelectedFloorOverride(null);
-    setSelectedRoomOverride(null);
     onClose();
   }, [onClose]);
 
@@ -363,71 +485,353 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleClose]);
 
+  const handleSwap = () => {
+    const temp = originId;
+    setOriginId(destinationId);
+    setDestinationId(temp);
+    setSelectedFloorOverride(null);
+  };
+
   if (!isOpen) return null;
 
-  // Filter rooms for the current floor
-  const floorRooms = CAMPUS_ROOMS.filter((r) => r.floor === selectedFloor);
+  // Rooms visible on current floor SVG
+  const floorRooms = CAMPUS_ROOMS.filter(
+    (r) => r.floor === selectedFloor && r.category === 'room'
+  );
 
-  // Wayfinding route coordinates from the central elevator / stairs (x: 400, y: 215) to door
-  const startPoint = { x: 400, y: 215 };
-  const endPoint = selectedRoom.door;
-  // Wayfinding path through central corridor (y: 215)
-  const routePathD = `M ${startPoint.x} ${startPoint.y} L ${endPoint.x} ${startPoint.y} L ${endPoint.x} ${endPoint.y}`;
+  // ── DYNAMIC SVG ROUTE PATH CALCULATION ──────────────────────────────
+  let routePathD = '';
+  const centralElevatorPoint = { x: 400, y: 215 };
+
+  if (originLocation.floor === destLocation.floor) {
+    // Single-floor route between origin door and destination door
+    if (selectedFloor === destLocation.floor) {
+      const p1 = originLocation.door;
+      const p2 = destLocation.door;
+      routePathD = `M ${p1.x} ${p1.y} L ${p1.x} 215 L ${p2.x} 215 L ${p2.x} ${p2.y}`;
+    }
+  } else {
+    // Multi-floor route with vertical elevator/stairs transition
+    if (selectedFloor === originLocation.floor) {
+      // Stage 1: Origin door -> Elevator
+      const p1 = originLocation.door;
+      routePathD = `M ${p1.x} ${p1.y} L ${p1.x} 215 L ${centralElevatorPoint.x} 215`;
+    } else if (selectedFloor === destLocation.floor) {
+      // Stage 2: Elevator -> Destination door
+      const p2 = destLocation.door;
+      routePathD = `M ${centralElevatorPoint.x} 215 L ${p2.x} 215 L ${p2.x} ${p2.y}`;
+    } else {
+      // Intermediate floor: through central hub
+      routePathD = `M 390 215 L 410 215`;
+    }
+  }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="campus-map-title"
     >
-      <div className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] w-full max-w-5xl max-h-[94vh] flex flex-col shadow-2xl overflow-hidden">
         {/* ─────────────────────────────────────────────────────────────
-            MODAL HEADER: Institutional Title & Floor Tabs
+            1. MODAL HEADER: Title, Academic Seal & Close
             ───────────────────────────────────────────────────────────── */}
-        <div className="p-4 sm:p-6 border-b border-[#e2e4e8] dark:border-[#273142] bg-[#f6f6f9] dark:bg-[#121620] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center space-x-3">
+        <div className="p-4 sm:p-5 border-b border-[#e2e4e8] dark:border-[#273142] bg-[#f6f6f9] dark:bg-[#121620] flex items-center justify-between gap-3">
+          <div className="flex items-center space-x-3 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-[#161821] text-[#45d320] flex items-center justify-center shadow-xs flex-shrink-0">
               <Navigation className="w-5 h-5 text-[#45d320]" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center space-x-2">
                 <h2
                   id="campus-map-title"
-                  className="font-heading font-bold text-base sm:text-lg text-[#161821] dark:text-white"
+                  className="font-heading font-bold text-base sm:text-lg text-[#161821] dark:text-white truncate"
                 >
                   {tr(
                     lang,
-                    'Интерактивная карта кампуса • Навигатор аудиторий',
-                    'Interactive Campus Map • Indoor Wayfinding'
+                    'Интерактивная карта кампуса и навигация (Wayfinding)',
+                    'Interactive Campus Map & Indoor Wayfinding'
                   )}
                 </h2>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#166534] text-white">
-                  ГОСТ / 3D
+                <span className="hidden sm:inline-block text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#166534] text-white">
+                  3D Маршрутизация
                 </span>
               </div>
-              <p className="text-xs text-[#475569] dark:text-[#94a3b8] font-sans">
+              <p className="text-xs text-[#475569] dark:text-[#94a3b8] font-sans truncate">
                 {tr(
                   lang,
-                  'Главный учебный корпус • Международный научно-технологический университет «ДемоТех»',
-                  'Main Academic Complex • DemoTech University of Science & Technology'
+                  'Главный учебный корпус • Построение маршрутов, переходы между этажами и лестницы',
+                  'Main Academic Building • Smart Routing, Floor Transitions & Stairs Guide'
                 )}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2 self-end sm:self-auto">
-            {/* Floor Switcher */}
-            <div className="flex items-center bg-white dark:bg-[#171c26] p-1 rounded-full border border-[#e2e4e8] dark:border-[#273142] shadow-xs">
+          <button
+            onClick={handleClose}
+            className="p-2 min-w-[44px] min-h-[44px] rounded-full text-[#475569] dark:text-[#94a3b8] hover:bg-[#ebeef3] dark:hover:bg-[#273142] transition-colors cursor-pointer flex items-center justify-center flex-shrink-0"
+            aria-label={lang === 'ru' ? 'Закрыть карту' : 'Close map'}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            2. ROUTE PLANNER CONTROLS: Origin & Destination Dropdowns
+            ───────────────────────────────────────────────────────────── */}
+        <div className="p-4 sm:p-5 bg-white dark:bg-[#151a24] border-b border-[#e2e4e8] dark:border-[#273142] space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+            {/* Origin Dropdown */}
+            <div className="md:col-span-5 space-y-1">
+              <label className="text-[11px] font-heading font-semibold text-[#166534] dark:text-[#45d320] flex items-center space-x-1.5 uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-[#166534] dark:bg-[#45d320]" />
+                <span>{tr(lang, 'Откуда (Точка отправления / Вход)', 'From (Starting Point / Entrance)')}</span>
+              </label>
+              <select
+                value={originId}
+                onChange={(e) => {
+                  setOriginId(e.target.value);
+                  setSelectedFloorOverride(null);
+                }}
+                className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#161821] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#33b712] cursor-pointer"
+              >
+                <optgroup label={lang === 'ru' ? 'Входы и турникеты' : 'Entrances & Gateways'}>
+                  {CAMPUS_ROOMS.filter((r) => r.category === 'entrance').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🏛️ {r.code} ({r.floor} {lang === 'ru' ? 'этаж' : 'F'})
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={lang === 'ru' ? 'Лифтовые узлы и лестницы' : 'Elevator Hubs & Stairs'}>
+                  {CAMPUS_ROOMS.filter((r) => r.category === 'elevator').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🛗 {r.code} ({r.floor} {lang === 'ru' ? 'этаж' : 'F'})
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={lang === 'ru' ? 'Аудитории и лаборатории (1 этаж)' : 'Floor 1 Rooms'}>
+                  {CAMPUS_ROOMS.filter((r) => r.floor === 1 && r.category === 'room').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}>
+                  {CAMPUS_ROOMS.filter((r) => r.floor === 2 && r.category === 'room').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={lang === 'ru' ? 'Аудитории и деканат (3 этаж)' : 'Floor 3 Rooms'}>
+                  {CAMPUS_ROOMS.filter((r) => r.floor === 3 && r.category === 'room').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+
+            {/* Swap Button */}
+            <div className="md:col-span-2 flex justify-center">
+              <button
+                type="button"
+                onClick={handleSwap}
+                className="min-w-[44px] min-h-[44px] p-2.5 rounded-full bg-[#f6f6f9] dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#273142] text-[#161821] dark:text-white border border-[#e2e4e8] dark:border-[#273142] transition-transform hover:scale-110 active:scale-95 flex items-center justify-center cursor-pointer shadow-xs"
+                title={tr(lang, 'Поменять местами старт и финиш', 'Swap origin and destination')}
+                aria-label="Swap route direction"
+              >
+                <ArrowUpDown className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+              </button>
+            </div>
+
+            {/* Destination Dropdown */}
+            <div className="md:col-span-5 space-y-1">
+              <label className="text-[11px] font-heading font-semibold text-[#be123c] dark:text-[#fecdd3] flex items-center space-x-1.5 uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-[#be123c] dark:text-[#fecdd3]" />
+                <span>{tr(lang, 'Куда (Точка назначения / Аудитория)', 'To (Destination Room)')}</span>
+              </label>
+              <select
+                value={destinationId}
+                onChange={(e) => {
+                  setDestinationId(e.target.value);
+                  setSelectedFloorOverride(null);
+                }}
+                className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#161821] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#be123c] cursor-pointer"
+              >
+                <optgroup label={lang === 'ru' ? 'Аудитории и деканат (3 этаж)' : 'Floor 3 Rooms'}>
+                  {CAMPUS_ROOMS.filter((r) => r.floor === 3 && r.category === 'room').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}>
+                  {CAMPUS_ROOMS.filter((r) => r.floor === 2 && r.category === 'room').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={lang === 'ru' ? 'Аудитории и залы (1 этаж)' : 'Floor 1 Rooms'}>
+                  {CAMPUS_ROOMS.filter((r) => r.floor === 1 && r.category === 'room').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label={lang === 'ru' ? 'Входы и лифты' : 'Hubs & Entrances'}>
+                  {CAMPUS_ROOMS.filter((r) => r.category !== 'room').map((r) => (
+                    <option key={r.id} value={r.id}>
+                      📍 {r.code} ({r.floor} {lang === 'ru' ? 'этаж' : 'F'})
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          {/* ─────────────────────────────────────────────────────────────
+              VERTICAL TRANSITION BANNER: Stairs / Elevator Up or Down
+              ───────────────────────────────────────────────────────────── */}
+          <div
+            className={`p-3 sm:p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs ${
+              floorDiff > 0
+                ? 'bg-gradient-to-r from-[#fffbeb] via-[#fef3c7]/60 to-[#ecfdf5] dark:from-[#3a280c] dark:via-[#2b1f0c] dark:to-[#162f1c] border-[#f59e0b]'
+                : floorDiff < 0
+                  ? 'bg-gradient-to-r from-[#eff6ff] via-[#e0f2fe]/60 to-[#f0fdf4] dark:from-[#0c233a] dark:via-[#0e1d2c] dark:to-[#162f1c] border-[#38bdf8]'
+                  : 'bg-[#ebfbee] dark:bg-[#16351d] border-[#33b712]/40'
+            }`}
+          >
+            <div className="flex items-start sm:items-center space-x-3">
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-xs ${
+                  floorDiff > 0
+                    ? 'bg-[#d97706] text-white animate-bounce'
+                    : floorDiff < 0
+                      ? 'bg-[#0284c7] text-white animate-bounce'
+                      : 'bg-[#166534] dark:bg-[#45d320] text-white'
+                }`}
+              >
+                {floorDiff > 0 ? (
+                  <ArrowUpRight className="w-5 h-5 text-white" />
+                ) : floorDiff < 0 ? (
+                  <ArrowDownRight className="w-5 h-5 text-white" />
+                ) : (
+                  <Footprints className="w-5 h-5 text-white" />
+                )}
+              </div>
+
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-heading font-bold text-xs sm:text-sm text-[#161821] dark:text-white">
+                    {floorDiff > 0
+                      ? tr(
+                          lang,
+                          `🔺 ТРЕБУЕТСЯ ПОДЪЕМ: +${floorDiff} ЭТАЖА (С ${originLocation.floor} НА ${destLocation.floor} ЭТАЖ)`,
+                          `🔺 ASCENT REQUIRED: +${floorDiff} FLOOR(S) (FROM FLOOR ${originLocation.floor} TO ${destLocation.floor})`
+                        )
+                      : floorDiff < 0
+                        ? tr(
+                            lang,
+                            `🔻 ТРЕБУЕТСЯ СПУСК: -${Math.abs(floorDiff)} ЭТАЖА (С ${originLocation.floor} НА ${destLocation.floor} ЭТАЖ)`,
+                            `🔻 DESCENT REQUIRED: -${Math.abs(floorDiff)} FLOOR(S) (FROM FLOOR ${originLocation.floor} TO ${destLocation.floor})`
+                          )
+                        : tr(
+                            lang,
+                            `➡️ МАРШРУТ НА ${destLocation.floor}-М ЭТАЖЕ (БЕЗ СМЕНЫ УРОВНЯ)`,
+                            `➡️ DIRECT ROUTE ON FLOOR ${destLocation.floor} (SAME LEVEL)`
+                          )}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
+                    {floorDiff !== 0
+                      ? tr(lang, 'ЛЕСТНИЦА / ЛИФТ', 'STAIRS / ELEVATOR')
+                      : tr(lang, 'БЕЗ ЛЕСТНИЦ', 'NO STAIRS')}
+                  </span>
+                </div>
+
+                <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5 leading-relaxed">
+                  {floorDiff > 0
+                    ? tr(
+                        lang,
+                        `Пройдите к центральному лифтовому холлу или лестнице №1 в центральном атриуме. Поднимитесь на ${destLocation.floor}-й этаж и поверните в коридор к ${destLocation.code}. Время перехода: ~1 мин 20 сек.`,
+                        `Walk to the central elevator hub or Stairwell #1 in the main atrium. Ascend to Floor ${destLocation.floor} and follow the corridor to ${destLocation.code}. Estimated time: ~1 min 20 sec.`
+                      )
+                    : floorDiff < 0
+                      ? tr(
+                          lang,
+                          `Пройдите к центральному лифту или южной лестнице. Спуститесь на ${Math.abs(floorDiff)} этаж(а) до ${destLocation.floor}-го этажа и следуйте по коридору к ${destLocation.code}.`,
+                          `Walk to the central elevator or south staircase. Descend ${Math.abs(floorDiff)} floor(s) to Floor ${destLocation.floor} and follow the corridor to ${destLocation.code}.`
+                        )
+                      : tr(
+                          lang,
+                          `Подъем и спуск по лестнице не требуются. Следуйте напрямую по центральному коридору ${destLocation.floor}-го этажа. Расстояние: ~40 метров.`,
+                          `No stairs or elevator required. Walk directly along the central corridor of Floor ${destLocation.floor}. Distance: ~40 meters.`
+                        )}
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Multi-Stage Floor Jumper */}
+            {floorDiff !== 0 && (
+              <div className="flex items-center space-x-1.5 self-end sm:self-auto flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setSelectedFloorOverride(originLocation.floor)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors cursor-pointer border ${
+                    selectedFloor === originLocation.floor
+                      ? 'bg-[#161821] text-white border-[#161821]'
+                      : 'bg-white dark:bg-[#121620] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#273142]'
+                  }`}
+                >
+                  Старт ({originLocation.floor} эт.)
+                </button>
+                <ArrowRight className="w-3.5 h-3.5 text-[#94a3b8]" />
+                <button
+                  type="button"
+                  onClick={() => setSelectedFloorOverride(destLocation.floor)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors cursor-pointer border ${
+                    selectedFloor === destLocation.floor
+                      ? 'bg-[#161821] text-white border-[#161821]'
+                      : 'bg-white dark:bg-[#121620] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#273142]'
+                  }`}
+                >
+                  Финиш ({destLocation.floor} эт.)
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+            3. INTERACTIVE SVG MAP DISPLAY
+            ───────────────────────────────────────────────────────────── */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-xs font-mono text-[#475569] dark:text-[#94a3b8]">
+              <Compass className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+              <span className="font-bold text-[#161821] dark:text-white uppercase tracking-wider">
+                {lang === 'ru' ? `Просмотр: ${selectedFloor} этаж` : `View: Floor ${selectedFloor}`}
+              </span>
+              <span>•</span>
+              <span>
+                {selectedFloor === destLocation.floor
+                  ? tr(lang, 'Секция прибытия', 'Arrival Sector')
+                  : selectedFloor === originLocation.floor
+                    ? tr(lang, 'Секция отправления', 'Departure Sector')
+                    : tr(lang, 'Промежуточный уровень', 'Intermediate Level')}
+              </span>
+            </div>
+
+            {/* Floor Switcher Tabs */}
+            <div className="flex items-center bg-[#f6f6f9] dark:bg-[#121620] p-1 rounded-full border border-[#e2e4e8] dark:border-[#273142] shadow-xs">
               {[1, 2, 3].map((floor) => (
                 <button
                   key={floor}
-                  onClick={() => {
-                    setSelectedFloorOverride(floor);
-                    const firstInFloor = CAMPUS_ROOMS.find((r) => r.floor === floor);
-                    if (firstInFloor) setSelectedRoomOverride(firstInFloor);
-                  }}
-                  className={`px-3 py-1.5 min-h-[36px] rounded-full text-xs font-heading font-semibold transition-all cursor-pointer flex items-center space-x-1 ${
+                  onClick={() => setSelectedFloorOverride(floor)}
+                  className={`px-3 py-1 min-h-[32px] rounded-full text-xs font-heading font-semibold transition-all cursor-pointer flex items-center space-x-1 ${
                     selectedFloor === floor
                       ? 'bg-[#161821] text-white dark:bg-[#33b712] dark:text-white shadow-xs'
                       : 'text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-white'
@@ -440,77 +844,18 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 </button>
               ))}
             </div>
-
-            {/* Close Button */}
-            <button
-              onClick={handleClose}
-              className="p-2 min-w-[44px] min-h-[44px] rounded-full text-[#475569] dark:text-[#94a3b8] hover:bg-[#ebeef3] dark:hover:bg-[#273142] transition-colors cursor-pointer flex items-center justify-center"
-              aria-label={lang === 'ru' ? 'Закрыть карту' : 'Close map'}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* ─────────────────────────────────────────────────────────────
-            MODAL BODY: Interactive Architectural Floor Plan SVG
-            ───────────────────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-          {/* Active Target Banner */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-[#ebfbee] dark:bg-[#16351d] border border-[#33b712]/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-3 h-3 rounded-full bg-[#33b712] animate-ping" />
-              <div>
-                <span className="font-heading font-bold text-[#166534] dark:text-[#45d320] text-sm">
-                  {selectedRoom.code} • {lang === 'ru' ? selectedRoom.nameRu : selectedRoom.nameEn}
-                </span>
-                <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans">
-                  {lang === 'ru' ? selectedRoom.wingRu : selectedRoom.wingEn} •{' '}
-                  <span className="font-semibold text-[#166534] dark:text-[#45d320]">
-                    {lang === 'ru' ? selectedRoom.walkTimeRu : selectedRoom.walkTimeEn}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white dark:bg-[#171c26] text-[#166534] dark:text-[#45d320] border border-[#33b712]/30 font-bold">
-                Вместимость: {selectedRoom.capacity} чел.
-              </span>
-            </div>
           </div>
 
-          {/* SVG Floor Plan Container */}
+          {/* SVG Map Container */}
           <div className="relative bg-[#f8fafc] dark:bg-[#0f121a] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-2 sm:p-4 overflow-hidden shadow-inner">
-            <div className="flex items-center justify-between pb-2 px-2 text-[11px] font-mono text-[#475569] dark:text-[#94a3b8]">
-              <div className="flex items-center space-x-2">
-                <Compass className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-                <span className="uppercase tracking-wider">
-                  {lang === 'ru' ? `План ${selectedFloor}-го этажа` : `Floor ${selectedFloor} Layout`} • Главный корпус
-                </span>
-              </div>
-              <div className="flex items-center space-x-3 text-[10px]">
-                <span className="flex items-center space-x-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-[#33b712]" />
-                  <span>{lang === 'ru' ? 'Выбранная аудитория' : 'Selected Room'}</span>
-                </span>
-                <span className="flex items-center space-x-1">
-                  <span className="w-4 h-0.5 border-t-2 border-dashed border-[#166534] dark:border-[#45d320]" />
-                  <span>{lang === 'ru' ? 'Пеший маршрут' : 'Walking Route'}</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Architectural SVG Map */}
             <div className="w-full aspect-[800/420] min-h-[260px] select-none">
               <svg
                 viewBox="0 0 800 420"
                 className="w-full h-full font-sans"
                 style={{ shapeRendering: 'geometricPrecision' }}
               >
-                {/* Background Grid Pattern */}
                 <defs>
-                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
                     <path
                       d="M 20 0 L 0 0 0 20"
                       fill="none"
@@ -519,15 +864,15 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                       className="text-[#e2e4e8]/40 dark:text-[#273142]/40"
                     />
                   </pattern>
-                  <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <linearGradient id="routeGradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#166534" />
                     <stop offset="100%" stopColor="#45d320" />
                   </linearGradient>
                 </defs>
 
-                <rect width="800" height="420" fill="url(#grid)" />
+                <rect width="800" height="420" fill="url(#gridPattern)" />
 
-                {/* Building Outer Perimeter Walls */}
+                {/* Outer Wall Boundary */}
                 <rect
                   x="40"
                   y="40"
@@ -540,7 +885,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   className="text-[#94a3b8] dark:text-[#334155]"
                 />
 
-                {/* Central Hallway / Corridor */}
+                {/* Central Horizontal Corridor */}
                 <rect
                   x="50"
                   y="200"
@@ -550,7 +895,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   className="text-[#e2e4e8]/60 dark:text-[#171c26]/80"
                 />
 
-                {/* Vertical Connector Hub */}
+                {/* Vertical Central Hub */}
                 <rect
                   x="370"
                   y="50"
@@ -560,7 +905,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   className="text-[#e2e4e8]/40 dark:text-[#171c26]/60"
                 />
 
-                {/* Central Elevator & Stairs Hub (Origin of Wayfinding) */}
+                {/* Central Elevator & Stairwell Hub */}
                 <g transform="translate(375, 195)">
                   <rect
                     x="0"
@@ -569,12 +914,13 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     height="40"
                     rx="8"
                     fill="#161821"
-                    stroke="#33b712"
-                    strokeWidth="1.5"
+                    stroke={floorDiff !== 0 ? '#f59e0b' : '#33b712'}
+                    strokeWidth={floorDiff !== 0 ? '2.5' : '1.5'}
+                    className={floorDiff !== 0 ? 'animate-pulse' : ''}
                   />
                   <text
                     x="25"
-                    y="18"
+                    y="17"
                     textAnchor="middle"
                     fill="#45d320"
                     fontSize="9"
@@ -585,17 +931,54 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   </text>
                   <text
                     x="25"
-                    y="30"
+                    y="29"
                     textAnchor="middle"
                     fill="#ffffff"
                     fontSize="7"
                     fontFamily="sans-serif"
                   >
-                    СТАРТ
+                    {floorDiff > 0 ? '▲ ВВЕРХ' : floorDiff < 0 ? '▼ ВНИЗ' : 'УЗЕЛ'}
                   </text>
                 </g>
 
-                {/* Static Facilities / Icons on Current Floor */}
+                {/* Turnstile Gateway Block (Visible on Floor 1) */}
+                {selectedFloor === 1 && (
+                  <g transform="translate(340, 310)">
+                    <rect
+                      x="0"
+                      y="0"
+                      width="120"
+                      height="55"
+                      rx="8"
+                      fill="#161821"
+                      stroke="#33b712"
+                      strokeWidth="2"
+                    />
+                    <text
+                      x="60"
+                      y="24"
+                      textAnchor="middle"
+                      fill="#45d320"
+                      fontSize="9"
+                      fontWeight="bold"
+                      fontFamily="monospace"
+                    >
+                      ГЛАВНЫЙ ВХОД
+                    </text>
+                    <text
+                      x="60"
+                      y="38"
+                      textAnchor="middle"
+                      fill="#ffffff"
+                      fontSize="7"
+                      fontFamily="sans-serif"
+                    >
+                      ТУРНИКЕТЫ СКУД
+                    </text>
+                  </g>
+                )}
+
+                {/* Restrooms & Water Fountains */}
                 <g transform="translate(330, 203)">
                   <rect x="0" y="0" width="30" height="24" rx="4" fill="#64748b" opacity="0.3" />
                   <text x="15" y="16" textAnchor="middle" fill="currentColor" fontSize="8" fontWeight="bold">
@@ -609,24 +992,29 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   </text>
                 </g>
 
-                {/* Render Rooms for Selected Floor */}
+                {/* Render Classrooms on current floor */}
                 {floorRooms.map((room) => {
-                  const isSelected = selectedRoom.id === room.id;
+                  const isDestination = destLocation.id === room.id;
+                  const isOrigin = originLocation.id === room.id;
                   return (
                     <g
                       key={room.id}
-                      onClick={() => setSelectedRoomOverride(room)}
+                      onClick={() => {
+                        setDestinationId(room.id);
+                        setSelectedFloorOverride(null);
+                      }}
                       className="cursor-pointer transition-all duration-200 group"
                       tabIndex={0}
                       role="button"
                       aria-label={`${room.code}: ${room.nameRu}`}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
-                          setSelectedRoomOverride(room);
+                          setDestinationId(room.id);
+                          setSelectedFloorOverride(null);
                         }
                       }}
                     >
-                      {/* Room Block */}
+                      {/* Room Rect */}
                       <rect
                         x={room.x}
                         y={room.y}
@@ -634,38 +1022,44 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                         height={room.h}
                         rx="12"
                         className={`transition-all duration-300 ${
-                          isSelected
-                            ? 'fill-[#33b712]/20 dark:fill-[#33b712]/30 stroke-[#33b712] stroke-[3px] filter drop-shadow-md'
-                            : 'fill-white dark:fill-[#1e2533] stroke-[#cbd5e1] dark:stroke-[#334155] stroke-[1.5px] hover:stroke-[#33b712]/70 hover:fill-[#f1f5f9] dark:hover:fill-[#273142]'
+                          isDestination
+                            ? 'fill-[#be123c]/20 dark:fill-[#be123c]/30 stroke-[#be123c] stroke-[3px] filter drop-shadow-md'
+                            : isOrigin
+                              ? 'fill-[#33b712]/20 dark:fill-[#33b712]/30 stroke-[#33b712] stroke-[3px] filter drop-shadow-md'
+                              : 'fill-white dark:fill-[#1e2533] stroke-[#cbd5e1] dark:stroke-[#334155] stroke-[1.5px] hover:stroke-[#33b712]/70 hover:fill-[#f1f5f9] dark:hover:fill-[#273142]'
                         }`}
                       />
 
-                      {/* Door Indicator */}
+                      {/* Door */}
                       <circle
                         cx={room.door.x}
                         cy={room.door.y}
-                        r={isSelected ? 5 : 3.5}
+                        r={isDestination || isOrigin ? 5 : 3.5}
                         className={
-                          isSelected
-                            ? 'fill-[#166534] dark:fill-[#45d320] stroke-white stroke-2'
-                            : 'fill-[#94a3b8] dark:fill-[#475569]'
+                          isDestination
+                            ? 'fill-[#be123c] stroke-white stroke-2'
+                            : isOrigin
+                              ? 'fill-[#166534] dark:fill-[#45d320] stroke-white stroke-2'
+                              : 'fill-[#94a3b8] dark:fill-[#475569]'
                         }
                       />
 
-                      {/* Room Code Header */}
+                      {/* Code */}
                       <text
                         x={room.x + 16}
                         y={room.y + 28}
                         className={`font-mono text-sm font-bold ${
-                          isSelected
-                            ? 'fill-[#166534] dark:fill-[#45d320]'
-                            : 'fill-[#161821] dark:fill-white'
+                          isDestination
+                            ? 'fill-[#be123c] dark:fill-[#fecdd3]'
+                            : isOrigin
+                              ? 'fill-[#166534] dark:fill-[#45d320]'
+                              : 'fill-[#161821] dark:fill-white'
                         }`}
                       >
                         {room.code}
                       </text>
 
-                      {/* Room Formal Name Label */}
+                      {/* Name */}
                       <text
                         x={room.x + 16}
                         y={room.y + 48}
@@ -676,7 +1070,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                           : room.nameEn.slice(0, 32) + (room.nameEn.length > 32 ? '…' : '')}
                       </text>
 
-                      {/* Capacity tag in Room */}
+                      {/* Info */}
                       <text
                         x={room.x + 16}
                         y={room.y + 68}
@@ -685,58 +1079,104 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                         {room.capacity} мест • {selectedFloor} эт.
                       </text>
 
-                      {/* Animated Beacon Pin when Selected */}
-                      {isSelected && (
+                      {/* Beacon Marker */}
+                      {isDestination && (
+                        <g transform={`translate(${room.x + room.w - 36}, ${room.y + 14})`}>
+                          <circle cx="12" cy="12" r="14" fill="#be123c" opacity="0.3" className="animate-ping" />
+                          <circle cx="12" cy="12" r="10" fill="#be123c" />
+                          <text x="12" y="15" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
+                            B
+                          </text>
+                        </g>
+                      )}
+
+                      {isOrigin && !isDestination && (
                         <g transform={`translate(${room.x + room.w - 36}, ${room.y + 14})`}>
                           <circle cx="12" cy="12" r="14" fill="#33b712" opacity="0.3" className="animate-ping" />
                           <circle cx="12" cy="12" r="10" fill="#166534" />
-                          <circle cx="12" cy="12" r="4" fill="#ffffff" />
+                          <text x="12" y="15" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
+                            A
+                          </text>
                         </g>
                       )}
                     </g>
                   );
                 })}
 
-                {/* Animated Walking Route Path Line */}
-                <path
-                  d={routePathD}
-                  fill="none"
-                  stroke="url(#routeGradient)"
-                  strokeWidth="3.5"
-                  strokeDasharray="6,4"
-                  strokeLinecap="round"
-                  className="animate-dash"
-                  style={{
-                    animation: 'dashAnimation 1.5s linear infinite',
-                  }}
-                />
-
-                {/* Destination Flag Icon at Door */}
-                <circle
-                  cx={endPoint.x}
-                  cy={endPoint.y}
-                  r="6"
-                  fill="#be123c"
-                  stroke="#ffffff"
-                  strokeWidth="2"
-                  className="animate-bounce"
-                />
+                {/* Animated Route Path */}
+                {routePathD && (
+                  <path
+                    d={routePathD}
+                    fill="none"
+                    stroke="url(#routeGradientLine)"
+                    strokeWidth="4"
+                    strokeDasharray="6,4"
+                    strokeLinecap="round"
+                    style={{
+                      animation: 'dashAnimation 1.5s linear infinite',
+                    }}
+                  />
+                )}
               </svg>
             </div>
           </div>
 
           {/* ─────────────────────────────────────────────────────────────
-              ROOM DOSSIER: Equipment, Amenities & Direct Wayfinding Guide
+              4. STEP-BY-STEP ITINERARY & EQUIPMENT
               ───────────────────────────────────────────────────────────── */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Equipment Card */}
+            {/* Step-by-Step Route Checklist */}
+            <div className="p-4 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-2.5">
+              <div className="flex items-center space-x-2 text-xs font-heading font-semibold text-[#161821] dark:text-white">
+                <Footprints className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+                <span>{tr(lang, 'Маршрут шаг за шагом', 'Step-by-Step Itinerary')}</span>
+              </div>
+              <ol className="text-xs text-[#475569] dark:text-[#cbd5e1] space-y-2 font-sans">
+                <li className="flex items-start space-x-2">
+                  <span className="w-5 h-5 rounded-full bg-[#166534] text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">
+                    1
+                  </span>
+                  <span>
+                    <strong>{originLocation.code}</strong> ({originLocation.floor} эт.) — старт движения.
+                  </span>
+                </li>
+
+                {floorDiff !== 0 && (
+                  <li className="flex items-start space-x-2">
+                    <span
+                      className={`w-5 h-5 rounded-full text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5 ${
+                        floorDiff > 0 ? 'bg-[#d97706]' : 'bg-[#0284c7]'
+                      }`}
+                    >
+                      2
+                    </span>
+                    <span>
+                      {floorDiff > 0
+                        ? `Подъем на ${floorDiff} этаж(а) на лифте или лестнице №1 в атриуме.`
+                        : `Спуск на ${Math.abs(floorDiff)} этаж(а) по лестнице или на лифте.`}
+                    </span>
+                  </li>
+                )}
+
+                <li className="flex items-start space-x-2">
+                  <span className="w-5 h-5 rounded-full bg-[#be123c] text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">
+                    {floorDiff !== 0 ? 3 : 2}
+                  </span>
+                  <span>
+                    Прибытие в <strong>{destLocation.code}</strong> ({destLocation.floor} эт., {lang === 'ru' ? destLocation.wingRu : destLocation.wingEn}).
+                  </span>
+                </li>
+              </ol>
+            </div>
+
+            {/* Destination Equipment */}
             <div className="p-4 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-2">
               <div className="flex items-center space-x-2 text-xs font-heading font-semibold text-[#161821] dark:text-white">
                 <Monitor className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>{tr(lang, 'Оснащение аудитории', 'Room Facilities')}</span>
               </div>
               <ul className="text-xs text-[#475569] dark:text-[#cbd5e1] space-y-1 font-sans">
-                {(lang === 'ru' ? selectedRoom.equipmentRu : selectedRoom.equipmentEn).map(
+                {(lang === 'ru' ? destLocation.equipmentRu : destLocation.equipmentEn).map(
                   (eq, idx) => (
                     <li key={idx} className="flex items-center space-x-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#166534] dark:bg-[#45d320]" />
@@ -747,43 +1187,33 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
               </ul>
             </div>
 
-            {/* Nearby Amenities Card */}
-            <div className="p-4 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-2">
-              <div className="flex items-center space-x-2 text-xs font-heading font-semibold text-[#161821] dark:text-white">
-                <Coffee className="w-4 h-4 text-[#b45309] dark:text-[#fbbf24]" />
-                <span>{tr(lang, 'Ближайшие сервисы', 'Nearby Amenities')}</span>
-              </div>
-              <ul className="text-xs text-[#475569] dark:text-[#cbd5e1] space-y-1 font-sans">
-                {(lang === 'ru' ? selectedRoom.amenitiesRu : selectedRoom.amenitiesEn).map(
-                  (am, idx) => (
-                    <li key={idx} className="flex items-center space-x-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
-                      <span>{am}</span>
-                    </li>
-                  )
-                )}
-              </ul>
-            </div>
-
-            {/* Quick Wayfinding Summary Card */}
+            {/* Travel Time & Direct Stats */}
             <div className="p-4 rounded-2xl bg-[#161821] text-white border border-[#33b712]/40 space-y-2 flex flex-col justify-between">
               <div>
                 <div className="flex items-center space-x-2 text-xs font-heading font-semibold text-[#45d320]">
-                  <Footprints className="w-4 h-4 text-[#45d320]" />
-                  <span>{tr(lang, 'Маршрут построен', 'Route Ready')}</span>
+                  <Clock className="w-4 h-4 text-[#45d320]" />
+                  <span>{tr(lang, 'Расчетное время в пути', 'Estimated Transit Time')}</span>
                 </div>
-                <p className="text-xs text-white/80 font-sans mt-1 leading-relaxed">
+                <div className="mt-2 flex items-baseline space-x-2">
+                  <span className="text-2xl font-mono font-bold text-white">
+                    {floorDiff === 0 ? '~45 сек' : `~1 мин ${Math.abs(floorDiff) * 20} сек`}
+                  </span>
+                  <span className="text-xs text-[#45d320] font-mono">
+                    {floorDiff === 0 ? 'пешком' : 'лифт / ступени'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-white/70 font-sans mt-1">
                   {lang === 'ru'
-                    ? `Следуйте по центральному коридору ${selectedFloor}-го этажа. Путь занимает ${selectedRoom.walkTimeRu}.`
-                    : `Follow the central corridor on Floor ${selectedFloor}. Walking distance is ${selectedRoom.walkTimeEn}.`}
+                    ? `Маршрут построен: ${originLocation.code} → ${destLocation.code}`
+                    : `Route active: ${originLocation.code} → ${destLocation.code}`}
                 </p>
               </div>
 
               <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-[#45d320]">
-                <span>{selectedRoom.code} • ДОСТУПНО</span>
+                <span>{destLocation.code} • ДОСТУПНО</span>
                 <span className="flex items-center space-x-1">
-                  <Wind className="w-3.5 h-3.5" />
-                  <span>Климат-контроль</span>
+                  <Wind className="w-3 h-3" />
+                  <span>Климат</span>
                 </span>
               </div>
             </div>
@@ -791,7 +1221,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
         </div>
 
         {/* ─────────────────────────────────────────────────────────────
-            MODAL FOOTER: Close & Return to Timetable
+            5. FOOTER
             ───────────────────────────────────────────────────────────── */}
         <div className="p-4 sm:p-5 border-t border-[#e2e4e8] dark:border-[#273142] bg-[#f6f6f9] dark:bg-[#121620] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans flex items-center space-x-2">
@@ -799,8 +1229,8 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
             <span>
               {tr(
                 lang,
-                'Карта обновлена по регламенту осенне-весенней сессии 2026 г.',
-                'Map synchronized with Spring 2026 Academic Timetable.'
+                'Навигатор кампуса синхронизирован с расписанием весенней сессии 2026 г.',
+                'Campus wayfinding is synchronized with the Spring 2026 timetable.'
               )}
             </span>
           </div>

@@ -350,7 +350,7 @@ export async function staffRoutes(app: FastifyInstance) {
       }
       try {
         await prisma.announcement.delete({ where: { id } });
-      } catch (err: unknown) {
+      } catch {
         return reply.code(404).send({ error: 'Announcement not found' });
       }
       return reply.code(200).send({ ok: true });

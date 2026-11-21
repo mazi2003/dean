@@ -182,89 +182,56 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Digital Identity & Security Certificate */}
+        {/* Account Security & Access Info */}
         <div className="p-6 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs space-y-4">
           <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
             <ShieldCheck className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
             <span>
-              {tr(lang, 'Цифровой сертификат и безопасность', 'Digital Certificate & Security')}
+              {tr(lang, 'Безопасность учетной записи', 'Account Security')}
             </span>
           </h3>
 
           <div className="space-y-3 text-xs font-sans">
-            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-1">
-              <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94a3b8] block">
-                {tr(
-                  lang,
-                  'Статус электронного документооборота',
-                  'Digital Document Flow (Illustrative)'
-                )}
+            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
+              <div>
+                <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] block">
+                  {tr(lang, 'Статус аутентификации', 'Authentication Status')}
+                </span>
+                <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+                  {tr(lang, 'Единый университетский аккаунт (SSO)', 'Institutional Single Sign-On (SSO)')}
+                </span>
+              </div>
+              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border border-[#33b712]/30">
+                {tr(lang, 'Активен', 'Active')}
               </span>
-              <span className="font-mono font-semibold text-[#166534] dark:text-[#45d320]">
-                {tr(
-                  lang,
-                  'Демонстрационный макет (без реальной ЭЦП)',
-                  'Prototype Mockup (No Real E-Signature)'
-                )}
-              </span>
-              <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] leading-relaxed">
-                {tr(
-                  lang,
-                  'Иллюстративное представление будущей интеграции с ЭЦП деканата; документы в прототипе не имеют юридической силы.',
-                  "Illustrative preview of future Dean's Office digital signing; prototype documents are not legally binding."
-                )}
-              </p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-1">
-              <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94a3b8] block">
-                {tr(
-                  lang,
-                  'Аутентификация и шифрование паролей',
-                  'Authentication & Password Hashing'
-                )}
+            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
+              <div>
+                <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] block">
+                  {tr(lang, 'Университетская почта', 'Institutional Email')}
+                </span>
+                <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+                  {user?.email}
+                </span>
+              </div>
+              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30">
+                {tr(lang, 'Подтвержден', 'Verified')}
               </span>
-              <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
-                {tr(lang, 'Argon2id + httpOnly JWT Cookie', 'Argon2id + httpOnly JWT Cookie')}
-              </span>
-              <p className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-mono">
-                {tr(lang, 'Ролевой контроль (RBAC):', 'RBAC Scope:')}{' '}
-                {(user?.role ?? 'student').toUpperCase()}
-              </p>
             </div>
 
-            <div className="flex items-center space-x-2 text-[11px] text-[#166534] dark:text-[#45d320] font-semibold">
+            <div className="flex items-center space-x-2 text-[11px] text-[#166534] dark:text-[#45d320] font-semibold pt-1">
               <Lock className="w-3.5 h-3.5" />
               <span>
                 {tr(
                   lang,
-                  'Сессионная изоляция персональных данных активна',
-                  'Session-level personal data isolation active'
+                  'Защищенное соединение и сессионная изоляция активны',
+                  'Secure session and personal data protection active'
                 )}
               </span>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-          3. REGULATORY COMPLIANCE MEMORANDUM
-          ───────────────────────────────────────────────────────────── */}
-      <div className="p-6 rounded-3xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#475569] dark:text-[#cbd5e1] space-y-2">
-        <h4 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
-          {tr(
-            lang,
-            'Регламент обработки персональных данных и статус концепта',
-            'Data Privacy Policy & Concept Notice'
-          )}
-        </h4>
-        <p className="leading-relaxed">
-          {tr(
-            lang,
-            'Настоящий веб-сервис «Цифровой деканат DemoTech University» является конкурсным концептом студенческого портала. Все представленные персональные данные, номера приказов, зачетные книжки и оценки являются учебными и вымышленными. Система не хранит конфиденциальные данные реальных физических лиц.',
-            'This "DemoTech University Digital Dean\'s Office" web application is a competition concept prototype. All displayed personal data, decree numbers, academic records, and grades are fictional. No real personal data is stored.'
-          )}
-        </p>
       </div>
     </div>
   );

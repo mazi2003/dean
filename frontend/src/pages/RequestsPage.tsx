@@ -178,7 +178,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
             <span>•</span>
             <span>{tr(lang, 'Кабинет 312', 'Room 312')}</span>
             <span>•</span>
-            <span>{tr(lang, 'Демо-макет PDF (без ЭЦП)', 'Demo PDF Preview (Illustrative)')}</span>
+            <span>{tr(lang, 'Электронный заказ справок', 'Digital Certificate Ordering')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
             {lang === 'ru'

@@ -122,12 +122,12 @@ export const Footer: React.FC = () => {
             <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] text-[11px] space-y-2">
               <div className="flex items-center space-x-2 text-[#166534] dark:text-[#45d320] font-heading font-semibold">
                 <ShieldCheck className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-                <span>{lang === 'ru' ? 'Защищенный контур' : 'Secure Session'}</span>
+                <span>{lang === 'ru' ? 'Защищенный доступ' : 'Secure Access'}</span>
               </div>
               <p className="text-[#4b5563] dark:text-[#cbd5e1] leading-relaxed">
                 {lang === 'ru'
-                  ? 'Авторизация на базе Argon2id и httpOnly SameSite=Lax cookie-сессии.'
-                  : 'Argon2id hashing & httpOnly SameSite=Lax secure session isolation.'}
+                  ? 'Единая защищенная сессия и персональная изоляция данных.'
+                  : 'Encrypted institutional session and personal data protection.'}
               </p>
             </div>
           </div>

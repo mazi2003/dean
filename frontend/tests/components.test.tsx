@@ -616,6 +616,11 @@ describe('Frontend Component & Accessibility Suite', () => {
     expect(screen.getByText(/Интерактивная карта кампуса/i)).toBeInTheDocument();
     expect(screen.getAllByText(/А-314/i).length).toBeGreaterThanOrEqual(1);
 
+    // Verify route calculation and stairs/ascent guidance (Floor 1 turnstiles -> Floor 3 A-314)
+    expect(screen.getByText(/ТРЕБУЕТСЯ ПОДЪЕМ/i)).toBeInTheDocument();
+    expect(screen.getByText(/Откуда \(Точка отправления \/ Вход\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Куда \(Точка назначения \/ Аудитория\)/i)).toBeInTheDocument();
+
     // Switch to Floor 1
     const floor1Btn = screen.getByRole('button', { name: /1 этаж/i });
     fireEvent.click(floor1Btn);

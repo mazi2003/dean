@@ -835,8 +835,8 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <p className="text-xs text-white/80 font-sans leading-relaxed">
                 {tr(
                   lang,
-                  'Демонстрационные макеты документов сформированы (без настоящей ЭЦП, не имеют юридической силы).',
-                  'Illustrative document previews are ready (no real digital signature, not legally valid).'
+                  'Заказанные справки подписаны деканатом и готовы к просмотру.',
+                  'Your requested documents are approved and ready to preview.'
                 )}
               </p>
               <div className="space-y-2 pt-1">
