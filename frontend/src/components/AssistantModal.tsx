@@ -104,21 +104,21 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
       role="dialog"
       aria-modal="true"
       aria-label={tr(lang, 'Консультант деканата', "Dean's Office AI Advisor")}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
     >
-      <div className="relative w-full max-w-lg h-[620px] max-h-[92vh] bg-white dark:bg-[#112238] rounded-xl shadow-2xl overflow-hidden border border-[#245A91]/40 flex flex-col">
-        {/* Academic Header */}
-        <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between border-b border-[#245A91]/30 shadow-xs">
+      <div className="relative w-full max-w-lg h-[620px] max-h-[92vh] bg-white dark:bg-[#171c26] rounded-3xl shadow-2xl overflow-hidden border border-[#e2e4e8] dark:border-[#273142] flex flex-col">
+        {/* Academic Header (Innopolis Style) */}
+        <div className="p-4 bg-[#161821] text-white flex items-center justify-between border-b border-white/10 shadow-xs">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg bg-[#0E1F36] border border-[#245A91]/60 flex items-center justify-center p-1 shadow-inner">
-              <UniversityEmblem size={28} />
+            <div className="w-10 h-10 rounded-2xl bg-[#11141c] border border-[#33b712]/50 flex items-center justify-center p-1.5 shadow-inner">
+              <UniversityEmblem size={26} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm flex items-center space-x-2 text-[#FFFFFF]">
+              <h3 className="font-heading font-semibold text-sm flex items-center space-x-2 text-white">
                 <span>{tr(lang, 'Консультант деканата', "Dean's Office AI Advisor")}</span>
-                <span className="w-2 h-2 rounded-full bg-[#93C5FD] inline-block animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[#33b712] inline-block animate-pulse" />
               </h3>
-              <p className="text-[10px] text-[#93C5FD] font-mono">
+              <p className="text-[10px] text-[#45d320] font-mono">
                 {profile?.group
                   ? tr(
                       lang,
@@ -132,23 +132,23 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
 
           <button
             onClick={onClose}
-            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md text-[#FFFFFF]/75 hover:text-white hover:bg-[#0E1F36] transition-colors cursor-pointer"
+            className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
             aria-label={tr(lang, 'Закрыть', 'Close')}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Quick Question Chips */}
-        <div className="p-3 bg-[#F8FAFC] dark:bg-[#0E1B2D] border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-1.5 overflow-x-auto text-[11px] font-sans">
-          <span className="text-[#667085] dark:text-[#94A3B8] font-medium whitespace-nowrap pl-1">
+        {/* Quick Question Chips (Innopolis Pill Badges) */}
+        <div className="p-3 bg-[#f6f6f9] dark:bg-[#121620] border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2 overflow-x-auto text-[11px] font-sans">
+          <span className="text-[#475569] dark:text-[#94a3b8] font-heading font-medium whitespace-nowrap pl-1">
             {tr(lang, 'Частые вопросы:', 'Quick questions:')}
           </span>
           {quickPrompts.map((q, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(q)}
-              className="px-2.5 py-1 rounded-md bg-white dark:bg-[#162A45] hover:bg-[#EDF2F7] text-[#142D4E] dark:text-[#93C5FD] border border-[#DCE2EA] dark:border-[#1E395B] whitespace-nowrap transition-colors flex-shrink-0 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-white dark:bg-[#171c26] hover:bg-[#ebfbee] dark:hover:bg-[#1e2d24] text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:text-[#45d320] border border-[#e2e4e8] dark:border-[#273142] whitespace-nowrap transition-colors flex-shrink-0 cursor-pointer font-heading shadow-2xs"
             >
               {q}
             </button>
@@ -165,20 +165,20 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                 className={`flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}
               >
                 {!isUser ? (
-                  <div className="w-7 h-7 rounded-md bg-[#142D4E] text-[#245A91] flex items-center justify-center flex-shrink-0 border border-[#245A91]/40">
-                    <UniversityEmblem size={18} />
+                  <div className="w-8 h-8 rounded-full bg-[#161821] text-[#45d320] flex items-center justify-center flex-shrink-0 border border-[#33b712]/40 shadow-xs">
+                    <UniversityEmblem size={20} />
                   </div>
                 ) : (
-                  <div className="w-7 h-7 rounded-md bg-[#F8FAFC] dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B] flex items-center justify-center flex-shrink-0 text-[#0F1D30] dark:text-[#FFFFFF]">
+                  <div className="w-8 h-8 rounded-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-center flex-shrink-0 text-[#161821] dark:text-[#ffffff] shadow-xs">
                     <User className="w-4 h-4" />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[82%] p-3.5 rounded-xl leading-relaxed ${
+                  className={`max-w-[82%] p-3.5 rounded-2xl leading-relaxed ${
                     isUser
-                      ? 'bg-[#142D4E] text-[#FFFFFF]'
-                      : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B]'
+                      ? 'bg-[#161821] text-white shadow-xs'
+                      : 'bg-[#f6f6f9] dark:bg-[#121620] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142]'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">
@@ -186,7 +186,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                   </p>
                   <span
                     className={`block text-[10px] mt-1 font-mono text-right ${
-                      isUser ? 'text-[#245A91] dark:text-[#93C5FD]' : 'text-[#667085] dark:text-[#94A3B8]'
+                      isUser ? 'text-[#45d320]' : 'text-[#475569] dark:text-[#94a3b8]'
                     }`}
                   >
                     {m.time}
@@ -197,8 +197,8 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
           })}
 
           {loading && (
-            <div className="flex items-center space-x-2 text-xs text-[#667085] dark:text-[#94A3B8] p-2">
-              <Sparkles className="w-4 h-4 text-[#245A91] animate-spin" />
+            <div className="flex items-center space-x-2 text-xs text-[#475569] dark:text-[#94a3b8] p-2">
+              <Sparkles className="w-4 h-4 text-[#166534] dark:text-[#45d320] animate-spin" />
               <span>
                 {tr(
                   lang,
@@ -211,8 +211,8 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 bg-white dark:bg-[#112238] border-t border-[#DCE2EA] dark:border-[#193150] space-y-1.5">
-          <div className="flex items-center justify-between text-[10px] text-[#667085] dark:text-[#94A3B8] px-1">
+        <div className="p-3.5 bg-white dark:bg-[#171c26] border-t border-[#e2e4e8] dark:border-[#273142] space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-[#475569] dark:text-[#94a3b8] px-2 font-mono">
             <span>
               {tr(
                 lang,
@@ -221,7 +221,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
               )}
             </span>
             {lastSource && (
-              <span className="font-mono text-[#142D4E] dark:text-[#93C5FD]">
+              <span className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
                 {lastSource === 'llm' ? 'LLM' : tr(lang, 'Движок правил', 'Rules Engine')}
               </span>
             )}
@@ -242,15 +242,15 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                 'Задайте вопрос по учебе, справкам или сессии...',
                 'Ask a question about studies, certificates, or exams...'
               )}
-              className="flex-1 bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3.5 py-2.5 text-xs text-[#0F1D30] dark:text-[#FFFFFF] placeholder-[#667085]/60 focus:outline-none focus:ring-2 focus:ring-[#142D4E] dark:focus:ring-[#245A91]"
+              className="flex-1 bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-xs text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:outline-none focus:ring-2 focus:ring-[#33b712]"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
               aria-label={tr(lang, 'Отправить сообщение', 'Send message')}
-              className="min-w-[44px] min-h-[44px] px-4 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-sans font-semibold text-xs border border-[#245A91]/40 flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
+              className="min-w-[44px] min-h-[44px] px-5 py-2.5 rounded-full btn-innopolis-primary text-white font-heading font-semibold text-xs flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5 text-[#93C5FD]" />
+              <Send className="w-3.5 h-3.5 text-white" />
               <span className="hidden sm:inline">{tr(lang, 'Отправить', 'Send')}</span>
             </button>
           </form>

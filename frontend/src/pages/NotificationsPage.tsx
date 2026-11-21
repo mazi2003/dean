@@ -68,22 +68,22 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
     announcement: {
       label: getNotificationKindLabel('announcement', lang),
       icon: Megaphone,
-      color: 'bg-[#142D4E]/15 text-[#142D4E] dark:text-[#93C5FD] border-[#142D4E]/30',
+      color: 'bg-[#ebfbee] dark:bg-[#16351d] text-[#166534] dark:text-[#45d320] border-[#33b712]/30',
     },
     deadline: {
       label: getNotificationKindLabel('deadline', lang),
       icon: Clock,
-      color: 'bg-[#C63740]/15 text-[#C63740] dark:text-[#F06A73] border-[#C63740]/30',
+      color: 'bg-[#fff2f5] dark:bg-[#38161f] text-[#be123c] dark:text-[#fecdd3] border-[#ff4d8b]/30',
     },
     schedule_change: {
       label: getNotificationKindLabel('schedule_change', lang),
       icon: Calendar,
-      color: 'bg-[#245A91]/20 text-[#142D4E] dark:text-[#93C5FD] border-[#245A91]/40',
+      color: 'bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border-[#3598fe]/30',
     },
     request_update: {
       label: getNotificationKindLabel('request_update', lang),
       icon: FileText,
-      color: 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#93C5FD] border-[#142D4E]/25',
+      color: 'bg-[#f4ebfc] dark:bg-[#251b3b] text-[#6d28d9] dark:text-[#c4b5fd] border-[#8b5cf6]/30',
     },
   };
 
@@ -97,8 +97,8 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
   if (loading) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-4 animate-pulse">
-        <div className="h-28 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
-        <div className="h-96 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
+        <div className="h-28 bg-white/60 dark:bg-[#171c26]/60 rounded-3xl" />
+        <div className="h-96 bg-white/60 dark:bg-[#171c26]/60 rounded-3xl" />
       </div>
     );
   }
@@ -108,19 +108,19 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER & ACTIONS
           ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold mb-1">
+          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#166534] dark:text-[#45d320] font-semibold mb-1">
             <span>
               {tr(lang, 'Официальный вестник университета', 'Official University Gazette')}
             </span>
             <span>•</span>
             <span>{tr(lang, 'Канцелярия ректората', 'Rectorate Chancellery')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+          <h1 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
             {lang === 'ru' ? 'Вестник и распоряжения ректората' : 'University Gazettes & Decrees'}
           </h1>
-          <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
+          <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5">
             {tr(
               lang,
               'Приказы по личному составу, изменения учебного плана, расписание сессии и стипендии',
@@ -132,9 +132,9 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllRead}
-            className="px-3.5 py-1.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#142D4E] dark:text-[#93C5FD] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium flex items-center space-x-1.5 self-start sm:self-center transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-full bg-white dark:bg-[#171c26] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] text-xs font-heading font-semibold flex items-center space-x-2 self-start sm:self-center transition-colors cursor-pointer shadow-2xs"
           >
-            <CheckCheck className="w-4 h-4 text-[#245A91]" />
+            <CheckCheck className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
             <span>
               {tr(lang, `Прочитать все (${unreadCount})`, `Mark all read (${unreadCount})`)}
             </span>
@@ -143,10 +143,10 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. CATEGORY FILTERS
+          2. CATEGORY FILTERS (Innopolis Pill Controls)
           ───────────────────────────────────────────────────────────── */}
       <div className="flex items-center space-x-2 overflow-x-auto text-xs pb-1 font-sans">
-        <Filter className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8] mr-1 flex-shrink-0" />
+        <Filter className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8] mr-1 flex-shrink-0" />
         {[
           { id: 'all', label: tr(lang, 'Все публикации', 'All Notices') },
           { id: 'announcement', label: tr(lang, 'Приказы и распоряжения', 'Decrees & Bulletins') },
@@ -157,10 +157,10 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
           <button
             key={cat.id}
             onClick={() => setSelectedKind(cat.id)}
-            className={`px-3 py-1 rounded-lg border text-xs whitespace-nowrap transition-colors cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full border text-xs font-heading font-medium whitespace-nowrap transition-all cursor-pointer ${
               selectedKind === cat.id
-                ? 'bg-[#142D4E] text-[#FFFFFF] border-[#142D4E] font-semibold'
-                : 'bg-white dark:bg-[#112238] text-[#475467] dark:text-[#CBD5E1] border-[#DCE2EA] dark:border-[#1E395B]'
+                ? 'bg-[#161821] dark:bg-white text-white dark:text-[#161821] border-[#161821] font-semibold shadow-xs'
+                : 'bg-white dark:bg-[#171c26] text-[#4b5563] dark:text-[#cbd5e1] border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712]'
             }`}
           >
             {cat.label}
@@ -169,13 +169,13 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. NOTIFICATIONS LIST (Editorial Journal)
+          3. NOTIFICATIONS LIST (Innopolis Cards)
           ───────────────────────────────────────────────────────────── */}
       <div className="space-y-3">
         {filteredNotifs.length === 0 ? (
-          <div className="p-10 text-center bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] text-xs text-[#667085] dark:text-[#94A3B8] space-y-2">
-            <Bell className="w-8 h-8 text-[#667085] dark:text-[#94A3B8] mx-auto opacity-50" />
-            <p className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+          <div className="p-10 text-center bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] text-xs text-[#475569] dark:text-[#94a3b8] space-y-2">
+            <Bell className="w-8 h-8 text-[#475569] dark:text-[#94a3b8] mx-auto opacity-50" />
+            <p className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
               {tr(lang, 'В этой категории нет уведомлений', 'No notifications in this category')}
             </p>
             <p>
@@ -196,20 +196,20 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
               <div
                 key={n.id}
                 onClick={() => !n.read && handleMarkRead(n.id)}
-                className={`p-4 sm:p-5 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 cursor-pointer ${
+                className={`p-5 rounded-3xl border transition-all flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 cursor-pointer ${
                   !n.read
                     ? isUrgent
-                      ? 'bg-[#C63740]/10 dark:bg-[#C63740]/20 border-[#C63740]/40 shadow-xs'
-                      : 'bg-[#F8FAFC] dark:bg-[#162A45] border-[#245A91]/40 shadow-xs'
-                    : 'bg-white dark:bg-[#112238] border-[#DCE2EA] dark:border-[#1E395B]'
+                      ? 'bg-[#fff9e6] dark:bg-[#2c2210] border-[#ffeeba] dark:border-[#523e1b] shadow-xs'
+                      : 'bg-[#ebfbee] dark:bg-[#1e2d24] border-[#33b712]/30 shadow-xs'
+                    : 'bg-white dark:bg-[#171c26] border-[#e2e4e8] dark:border-[#273142]'
                 }`}
               >
                 <div className="flex items-start space-x-3.5 flex-1">
                   <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 border ${
+                    className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 mt-0.5 border ${
                       isUrgent
-                        ? 'bg-[#C63740] text-white border-[#C63740]'
-                        : 'bg-[#142D4E] text-[#93C5FD] border-[#245A91]/40'
+                        ? 'bg-[#be123c] text-white border-[#ff4d8b]'
+                        : 'bg-[#161821] text-[#45d320] border-[#33b712]/40'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -218,34 +218,28 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
                   <div className="space-y-1.5 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border font-semibold ${cfg.color}`}
+                        className={`text-[10px] font-heading font-semibold uppercase px-2.5 py-0.5 rounded-full border ${cfg.color}`}
                       >
                         {cfg.label}
                       </span>
                       {isUrgent && (
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
+                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
                           {tr(lang, 'ВАЖНОЕ РАСПОРЯЖЕНИЕ', 'URGENT NOTICE')}
                         </span>
                       )}
                       {!n.read && (
-                        <span className="w-2 h-2 rounded-full bg-[#142D4E] dark:bg-[#60A5FA]" />
+                        <span className="w-2 h-2 rounded-full bg-[#33b712]" />
                       )}
-                      <span
-                        className={`text-[11px] font-mono ${
-                          !n.read && isUrgent
-                            ? 'text-rose-950 dark:text-rose-200 font-medium'
-                            : 'text-[#475467] dark:text-[#CBD5E1]'
-                        }`}
-                      >
+                      <span className="text-[11px] font-mono text-[#475569] dark:text-[#94a3b8]">
                         {n.createdAt}
                       </span>
                     </div>
 
-                    <h3 className="font-semibold text-sm sm:text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+                    <h3 className="font-heading font-semibold text-sm sm:text-base text-[#161821] dark:text-[#ffffff]">
                       {n.title}
                     </h3>
 
-                    <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans leading-relaxed">
+                    <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans leading-relaxed">
                       {n.message}
                     </p>
                   </div>
@@ -258,7 +252,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
                         e.stopPropagation();
                         handleMarkRead(n.id);
                       }}
-                      className="px-3 py-1.5 min-h-[44px] rounded-lg bg-[#142D4E] text-[#FFFFFF] text-[11px] font-sans font-medium hover:bg-[#0E1F36] transition-colors cursor-pointer flex items-center justify-center shadow-xs"
+                      className="px-4 py-2 min-h-[44px] rounded-full bg-[#161821] text-white text-[11px] font-heading font-semibold hover:bg-[#262a38] transition-colors cursor-pointer flex items-center justify-center shadow-xs"
                     >
                       {tr(lang, 'Отметить прочитанным', 'Mark as read')}
                     </button>

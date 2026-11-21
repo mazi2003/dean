@@ -14,8 +14,6 @@ import {
   ArrowUpRight,
   ShieldAlert,
   Inbox,
-  Megaphone,
-  ShieldCheck,
   Building,
   CalendarDays,
   FileBadge,
@@ -91,7 +89,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
     loadData();
   }, [user, isStaff, userGroup]);
 
-  // Today date formatted without impure render-time call warning
+  // Today date formatted
   const [todayDateObj] = useState(() => new Date());
   const todayStr = new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
     weekday: 'long',
@@ -102,18 +100,18 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
   if (loading) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-5 animate-pulse">
-        <div className="h-44 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="lg:col-span-2 h-80 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
-          <div className="h-80 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
+      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6 animate-pulse">
+        <div className="h-44 bg-white/60 dark:bg-[#171c26]/60 rounded-3xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-80 bg-white/60 dark:bg-[#171c26]/60 rounded-3xl" />
+          <div className="h-80 bg-white/60 dark:bg-[#171c26]/60 rounded-3xl" />
         </div>
       </div>
     );
   }
 
   // ─────────────────────────────────────────────────────────────
-  // STAFF COMMAND CENTER VIEW
+  // STAFF COMMAND CENTER VIEW (Innopolis Design System)
   // ─────────────────────────────────────────────────────────────
   if (isStaff) {
     const newRequestsCount = requests.filter((r) => r.status === 'submitted').length;
@@ -123,15 +121,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
         {/* Masthead */}
-        <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-6 sm:p-8 shadow-xs relative overflow-hidden">
-          <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-5 dark:opacity-10 pointer-events-none">
+        <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 sm:p-8 shadow-xs relative overflow-hidden">
+          <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-5 pointer-events-none">
             <UniversityEmblem size={220} variant="full" />
           </div>
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#667085] dark:text-[#94A3B8]">
-                <span className="font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold">
+              <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
+                <span className="font-mono text-[#166534] dark:text-[#45d320] font-semibold">
                   {tr(lang, 'Деканат Факультета МО', "Dean's Office, School of IR")}
                 </span>
                 <span>•</span>
@@ -140,171 +138,149 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 <span className="capitalize">{todayStr}</span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
                 {lang === 'ru'
                   ? `Добрый день, ${user?.fullName || 'Мария Волкова'}!`
                   : `Welcome, ${user?.fullName || 'Maria Volkova'}!`}
               </h1>
 
-              <p className="text-xs sm:text-sm text-[#475467] dark:text-[#CBD5E1] font-sans max-w-2xl">
+              <p className="text-xs sm:text-sm text-[#4b5563] dark:text-[#cbd5e1] font-sans max-w-2xl">
                 {tr(
                   lang,
-                  'Заместитель декана по учебно-методической работе • Факультет международных отношений',
-                  'Vice Dean for Academic Affairs • School of International Relations'
+                  'Единая диспетчерская панель сотрудника деканата: обработка входящих заявлений студентов, списки групп, расписание и экзаменационные сессии.',
+                  "Staff Command Center: processing student inquiries, managing cohorts, schedule dispatch, and examination sessions."
                 )}
               </p>
             </div>
 
-            {/* Quick Digital Signature status badge */}
-            <div className="flex items-center space-x-3 bg-[#F8FAFC] dark:bg-[#0E1B2D] p-3.5 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] self-start">
-              <div className="w-10 h-10 rounded-md bg-[#142D4E] text-[#93C5FD] flex items-center justify-center flex-shrink-0">
-                <ShieldCheck className="w-5 h-5" />
+            {/* Status pills */}
+            <div className="flex items-center space-x-3 bg-[#f6f6f9] dark:bg-[#121620] p-4 rounded-2xl border border-[#e2e4e8] dark:border-[#273142] self-start">
+              <div className="w-10 h-10 rounded-full bg-[#161821] text-[#45d320] flex items-center justify-center flex-shrink-0">
+                <Inbox className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-sans uppercase tracking-wider text-[#667085] dark:text-[#94A3B8]">
-                  {tr(lang, 'Макет ЭЦП деканата (демо)', 'Digital Seal Preview (Demo)')}
+                <p className="text-[10px] font-heading uppercase tracking-wider text-[#475569] dark:text-[#94a3b8]">
+                  {lang === 'ru' ? 'Входящие заявления' : 'Active Inquiries'}
                 </p>
-                <span className="font-mono text-xs font-bold text-[#142D4E] dark:text-[#93C5FD] block">
-                  {tr(lang, 'Иллюстративный режим', 'Illustrative Mode')}
-                </span>
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] font-mono">
-                  {tr(lang, 'Прототип документооборота', 'Prototype Workflow')}
-                </span>
+                <div className="flex items-baseline space-x-1.5">
+                  <span className="font-mono text-xl font-bold text-[#161821] dark:text-[#ffffff]">
+                    {requests.length}
+                  </span>
+                  <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-mono font-bold">
+                    ({newRequestsCount} {lang === 'ru' ? 'новых' : 'new'})
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Quick Action Buttons for Staff */}
-          <div className="mt-6 pt-5 border-t border-[#DCE2EA] dark:border-[#193150] flex flex-wrap gap-2.5 text-xs font-sans">
+          {/* Quick Staff Navigation */}
+          <div className="mt-6 pt-5 border-t border-[#e2e4e8] dark:border-[#273142] flex flex-wrap gap-2.5 text-xs">
             <button
               onClick={() => setActiveTab('staff_requests')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full btn-innopolis-primary text-xs font-heading cursor-pointer"
             >
-              <Inbox className="w-3.5 h-3.5 text-[#245A91]" />
-              <span>
-                {tr(
-                  lang,
-                  `Заявления студентов (${newRequestsCount} новых)`,
-                  `Student Requests (${newRequestsCount} new)`
-                )}
-              </span>
+              <Inbox className="w-3.5 h-3.5 text-white" />
+              <span>{tr(lang, 'Очередь заявлений', 'Inquiries Queue')}</span>
             </button>
             <button
               onClick={() => setActiveTab('staff_students')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
             >
-              <Users className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD]" />
-              <span>{tr(lang, 'Группы и студенты', 'Groups & Students')}</span>
+              <Users className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
+              <span>{tr(lang, 'Группы и личные дела', 'Groups & Dossiers')}</span>
             </button>
             <button
               onClick={() => setActiveTab('schedule')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
             >
-              <Calendar className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD]" />
-              <span>
-                {tr(lang, 'Диспетчер расписания и замен', 'Timetable & Changes Dispatcher')}
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab('staff_actions')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
-            >
-              <Megaphone className="w-3.5 h-3.5 text-[#245A91]" />
-              <span>{tr(lang, 'Опубликовать приказ', 'Publish Decree')}</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('profile')}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#245A91]" />
-              <span>{tr(lang, 'Служебный профиль и права', 'Staff Dossier & Permissions')}</span>
+              <Calendar className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
+              <span>{tr(lang, 'Диспетчер расписания', 'Timetable Dispatch')}</span>
             </button>
           </div>
         </section>
 
-        {/* 4 KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 4 Metric Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div
             onClick={() => setActiveTab('staff_requests')}
-            className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
+            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
-            <span className="text-[11px] font-sans text-[#667085] dark:text-[#94A3B8] uppercase tracking-wider block">
-              {tr(lang, 'Новые заявления', 'New Petitions')}
+            <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
+              {tr(lang, 'Новые заявления', 'New Inquiries')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#93C5FD]">
+              <span className="font-mono text-2xl font-bold text-[#be123c] dark:text-[#fecdd3]">
                 {newRequestsCount}
               </span>
-              <span className="text-xs text-[#667085] dark:text-[#94A3B8]">
-                {tr(lang, `из ${requests.length}`, `of ${requests.length}`)}
-              </span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'ожидают', 'pending')}</span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
-              {tr(lang, 'Ожидают первого рассмотрения', 'Awaiting initial review')}
+            <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
+              {tr(lang, 'Требуют первичной проверки', 'Initial check required')}
             </p>
           </div>
 
           <div
             onClick={() => setActiveTab('staff_requests')}
-            className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
+            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
-            <span className="text-[11px] font-sans text-[#667085] dark:text-[#94A3B8] uppercase tracking-wider block">
+            <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
               {tr(lang, 'В обработке', 'In Review')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#93C5FD]">
+              <span className="font-mono text-2xl font-bold text-[#0369a1] dark:text-[#38bdf8]">
                 {inReviewCount}
               </span>
-              <span className="text-xs text-[#667085] dark:text-[#94A3B8]">{tr(lang, 'заявлений', 'requests')}</span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'заявлений', 'requests')}</span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
+            <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Проверка данных инспектором', 'Inspector verification')}
             </p>
           </div>
 
           <div
             onClick={() => setActiveTab('staff_requests')}
-            className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
+            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
-            <span className="text-[11px] font-sans text-[#667085] dark:text-[#94A3B8] uppercase tracking-wider block">
+            <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
               {tr(lang, 'Готово к выдаче', 'Ready to Issue')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#93C5FD]">
+              <span className="font-mono text-2xl font-bold text-[#166534] dark:text-[#45d320]">
                 {readyCount}
               </span>
-              <span className="text-xs text-[#667085] dark:text-[#94A3B8]">{tr(lang, 'готовых', 'ready')}</span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'готовых', 'ready')}</span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
+            <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Макеты сформированы', 'Previews generated')}
             </p>
           </div>
 
           <div
             onClick={() => setActiveTab('schedule')}
-            className="p-4 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs cursor-pointer hover:border-[#142D4E] transition-all space-y-1"
+            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
-            <span className="text-[11px] font-sans text-[#667085] dark:text-[#94A3B8] uppercase tracking-wider block">
+            <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
               {tr(lang, 'Потоки в расписании', 'Active Streams')}
             </span>
             <div className="flex items-baseline space-x-2">
-              <span className="font-mono text-2xl font-bold text-[#142D4E] dark:text-[#93C5FD]">
+              <span className="font-mono text-2xl font-bold text-[#161821] dark:text-[#ffffff]">
                 2
               </span>
-              <span className="text-xs text-[#667085] dark:text-[#94A3B8]">{tr(lang, 'группы', 'groups')}</span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'группы', 'groups')}</span>
             </div>
-            <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1]">
+            <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'ДУ-101 и ДУ-205 под контролем', 'ДУ-101 & ДУ-205 monitored')}
             </p>
           </div>
         </div>
 
         {/* Recent student requests requiring review */}
-        <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 sm:p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
+        <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
             <div className="flex items-center space-x-2">
-              <Inbox className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
-              <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+              <Inbox className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+              <h3 className="font-heading font-semibold text-base text-[#161821] dark:text-[#ffffff]">
                 {tr(
                   lang,
                   'Очередь последних входящих заявлений студентов',
@@ -314,7 +290,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             </div>
             <button
               onClick={() => setActiveTab('staff_requests')}
-              className="text-xs font-sans font-semibold text-[#142D4E] dark:text-[#93C5FD] hover:underline flex items-center space-x-1 cursor-pointer"
+              className="text-xs font-heading font-semibold text-[#166534] dark:text-[#45d320] hover:underline flex items-center space-x-1 cursor-pointer"
             >
               <span>
                 {tr(
@@ -327,20 +303,20 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             </button>
           </div>
 
-          <div className="divide-y divide-[#DCE2EA] dark:divide-[#193150]">
+          <div className="divide-y divide-[#e2e4e8] dark:divide-[#273142]">
             {requests.slice(0, 5).map((req) => (
               <div
                 key={req.id}
-                className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                className="py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
               >
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                    <span className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
                       {localizeText(req.typeTitle, lang)}
                     </span>
-                    <span className="font-mono text-[11px] text-[#667085] dark:text-[#94A3B8]">№ {req.id}</span>
+                    <span className="font-mono text-[11px] text-[#475569] dark:text-[#94a3b8]">№ {req.id}</span>
                   </div>
-                  <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans">
+                  <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5">
                     {tr(lang, 'Студент:', 'Student:')}{' '}
                     <strong>{req.studentName || tr(lang, 'Студент', 'Student')}</strong> (
                     {req.studentGroup || 'ДУ-101'}) •{' '}
@@ -353,12 +329,12 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#142D4E] dark:text-[#93C5FD] border border-[#DCE2EA] dark:border-[#1E395B]">
+                  <span className="px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-[#f6f6f9] dark:bg-[#121620] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142]">
                     {getRequestStatusLabel(req.status, lang, 'staff')}
                   </span>
                   <button
                     onClick={() => setActiveTab('staff_requests')}
-                    className="px-2.5 py-1 rounded bg-[#142D4E] text-[#FFFFFF] text-xs font-sans font-medium hover:bg-[#0E1F36] cursor-pointer"
+                    className="px-3 py-1 rounded-full bg-[#161821] text-white text-xs font-heading font-medium hover:bg-[#262a38] cursor-pointer"
                   >
                     {tr(lang, 'Открыть', 'Open')}
                   </button>
@@ -372,7 +348,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   }
 
   // ─────────────────────────────────────────────────────────────
-  // STUDENT PORTAL VIEW (Oxford & ETH Zurich Editorial System)
+  // STUDENT PORTAL VIEW (Innopolis Design System)
   // ─────────────────────────────────────────────────────────────
   const todayClasses = schedule.slice(0, 3);
   const nextClass = todayClasses[0];
@@ -384,7 +360,6 @@ export const TodayPage: React.FC<TodayPageProps> = ({
     (n) => !n.read && (n.priority === 'urgent' || n.priority === 'high')
   );
 
-  // Exam session items (dynamic from state)
   const upcomingExams =
     exams.length > 0
       ? exams.map((e) => ({
@@ -445,19 +420,18 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* ─────────────────────────────────────────────────────────────
-          1. ACADEMIC INSTITUTIONAL MASTHEAD (Oxford Style)
+          1. ACADEMIC INSTITUTIONAL MASTHEAD (Innopolis Style)
           ───────────────────────────────────────────────────────────── */}
-      <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-6 sm:p-8 shadow-xs relative overflow-hidden">
-        {/* Subtle decorative watermark */}
-        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-5 dark:opacity-10 pointer-events-none">
+      <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 sm:p-8 shadow-xs relative overflow-hidden">
+        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-5 pointer-events-none">
           <UniversityEmblem size={220} variant="full" />
         </div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           <div className="space-y-2">
             {/* Academic metadata pill */}
-            <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#667085] dark:text-[#94A3B8]">
-              <span className="font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold">
+            <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
+              <span className="font-mono text-[#166534] dark:text-[#45d320] font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full">
                 {profile?.group}
               </span>
               <span>•</span>
@@ -466,35 +440,35 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <span className="capitalize">{todayStr}</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
               {lang === 'ru'
                 ? `С возвращением, ${user?.fullName.split(' ')[0]}!`
                 : `Welcome back, ${user?.fullName.split(' ')[0]}!`}
             </h1>
 
-            <p className="text-xs sm:text-sm text-[#475467] dark:text-[#CBD5E1] font-sans max-w-2xl">
+            <p className="text-xs sm:text-sm text-[#4b5563] dark:text-[#cbd5e1] font-sans max-w-2xl">
               {localizeText(profile?.program, lang)} • {localizeText(profile?.faculty, lang)} •{' '}
               {tr(lang, 'Форма:', 'Study mode:')} {getStudyFormLabel(profile?.studyForm, lang)}
             </p>
           </div>
 
           {/* Academic Standing Metric Box (ECTS + GPA) */}
-          <div className="flex items-center space-x-3 bg-[#F8FAFC] dark:bg-[#0E1B2D] p-3.5 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] self-start">
-            <div className="w-10 h-10 rounded-md bg-[#142D4E] text-[#93C5FD] flex items-center justify-center flex-shrink-0">
-              <GraduationCap className="w-5 h-5" />
+          <div className="flex items-center space-x-3 bg-[#f6f6f9] dark:bg-[#121620] p-4 rounded-3xl border border-[#e2e4e8] dark:border-[#273142] self-start shadow-xs">
+            <div className="w-11 h-11 rounded-2xl bg-[#161821] text-[#45d320] flex items-center justify-center flex-shrink-0">
+              <GraduationCap className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-sans uppercase tracking-wider text-[#667085] dark:text-[#94A3B8]">
+              <p className="text-[10px] font-heading uppercase tracking-wider text-[#475569] dark:text-[#94a3b8]">
                 {lang === 'ru' ? 'Академический статус' : 'Academic Standing'}
               </p>
               <div className="flex items-baseline space-x-1.5">
-                <span className="font-mono text-xl font-bold text-[#142D4E] dark:text-[#FFFFFF]">
+                <span className="font-mono text-xl font-bold text-[#161821] dark:text-[#ffffff]">
                   {profile?.gpa ? profile.gpa.toFixed(2) : '4.80'}
                 </span>
-                <span className="text-[11px] text-[#667085] dark:text-[#94A3B8] font-mono">
+                <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-mono">
                   / 5.0 GPA
                 </span>
-                <span className="text-[10px] text-[#245A91] dark:text-[#93C5FD] font-mono font-bold pl-1">
+                <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-mono font-bold pl-1">
                   (48 ECTS)
                 </span>
               </div>
@@ -502,107 +476,107 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </div>
         </div>
 
-        {/* Quick Institutional Action Buttons */}
-        <div className="mt-6 pt-5 border-t border-[#DCE2EA] dark:border-[#193150] flex flex-wrap gap-2.5 text-xs font-sans">
+        {/* Quick Action Pills (Innopolis Pill Controls) */}
+        <div className="mt-6 pt-5 border-t border-[#e2e4e8] dark:border-[#273142] flex flex-wrap gap-2.5 text-xs">
           <button
             onClick={() => setActiveTab('requests')}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full btn-innopolis-primary text-xs font-heading cursor-pointer"
           >
-            <FileText className="w-3.5 h-3.5 text-[#93C5FD]" />
+            <FileText className="w-3.5 h-3.5 text-white" />
             <span>{lang === 'ru' ? 'Заказать справку' : 'Request Certificate'}</span>
           </button>
           <button
             onClick={() => setActiveTab('schedule')}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
           >
-            <Calendar className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD]" />
+            <Calendar className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
             <span>{lang === 'ru' ? 'Расписание и сессия' : 'Timetable & Exams'}</span>
           </button>
           <button
             onClick={() => setActiveTab('grades')}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
           >
-            <BookOpen className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD]" />
+            <BookOpen className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
             <span>{lang === 'ru' ? 'Зачетная книжка и БРС' : 'Academic Records'}</span>
           </button>
           <button
             onClick={onOpenAssistant}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] hover:bg-[#d8f7e6] text-[#161821] dark:text-[#ffffff] border border-[#33b712]/30 font-heading font-semibold transition-colors cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#245A91]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
             <span>{lang === 'ru' ? 'Консультант деканата' : 'Ask Academic Copilot'}</span>
           </button>
         </div>
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. ACADEMIC CALENDAR & SEMESTER MILESTONES (Required)
+          2. ACADEMIC CALENDAR & SEMESTER MILESTONES
           ───────────────────────────────────────────────────────────── */}
-      <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
+      <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
           <div className="flex items-center space-x-2">
-            <CalendarDays className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
-            <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+            <CalendarDays className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+            <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
               {lang === 'ru'
                 ? 'Академический календарь: Весенний семестр 2026'
                 : 'Academic Calendar & Semester Milestones'}
             </h3>
           </div>
-          <span className="text-xs font-mono font-semibold text-[#142D4E] dark:text-[#93C5FD]">
+          <span className="text-xs font-mono font-semibold text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] px-3 py-1 rounded-full">
             {lang === 'ru'
               ? '8-я учебная неделя из 16 (50% семестра)'
               : 'Week 8 of 16 (50% Term Completed)'}
           </span>
         </div>
 
-        {/* Milestone Progress Steps */}
+        {/* Milestone Progress Steps (Pastel category accents) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-sans">
-          <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-            <span className="text-[10px] font-mono text-[#667085] dark:text-[#94A3B8] uppercase block">
+          <div className="p-3.5 rounded-2xl bg-[#ebfbee] dark:bg-[#1e2d24] border border-[#33b712]/30 space-y-1">
+            <span className="text-[10px] font-mono text-[#166534] dark:text-[#45d320] uppercase font-bold block">
               {tr(lang, '1 февраля 2026', 'Feb 1, 2026')}
             </span>
-            <div className="flex items-center space-x-1.5 font-semibold text-[#142D4E] dark:text-[#93C5FD]">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD] flex-shrink-0" />
+            <div className="flex items-center space-x-1.5 font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
               <span>{tr(lang, 'Старт семестра', 'Term Start')}</span>
             </div>
-            <p className="text-[10px] text-[#667085] dark:text-[#94A3B8]">
+            <p className="text-[10px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Учебный поток запущен', 'Academic term launched')}
             </p>
           </div>
 
-          <div className="p-3 rounded-lg bg-[#142D4E]/10 dark:bg-[#142D4E]/30 border border-[#142D4E]/30 dark:border-[#245A91]/40 space-y-1">
-            <span className="text-[10px] font-mono text-[#142D4E] dark:text-[#93C5FD] font-bold uppercase block">
+          <div className="p-3.5 rounded-2xl bg-[#e8f4fd] dark:bg-[#1a2838] border border-[#3598fe]/30 space-y-1">
+            <span className="text-[10px] font-mono text-[#0369a1] dark:text-[#38bdf8] font-bold uppercase block">
               {tr(lang, '10 – 24 ноября', 'Nov 10 – 24')}
             </span>
-            <div className="flex items-center space-x-1.5 font-bold text-[#142D4E] dark:text-[#93C5FD]">
-              <span className="w-2 h-2 rounded-full bg-[#142D4E] dark:bg-[#93C5FD] animate-pulse flex-shrink-0" />
+            <div className="flex items-center space-x-1.5 font-heading font-bold text-[#161821] dark:text-[#ffffff]">
+              <span className="w-2 h-2 rounded-full bg-[#3598fe] animate-pulse flex-shrink-0" />
               <span>{tr(lang, 'Промежуточный срез', 'Midterm Checkpoint')}</span>
             </div>
-            <p className="text-[10px] text-[#475467] dark:text-[#CBD5E1]">
+            <p className="text-[10px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Контрольные точки БРС', 'Rating control points')}
             </p>
           </div>
 
-          <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-            <span className="text-[10px] font-mono text-[#667085] dark:text-[#94A3B8] uppercase block">
+          <div className="p-3.5 rounded-2xl bg-[#fbf0eb] dark:bg-[#2b1f1a] border border-[#ff7675]/30 space-y-1">
+            <span className="text-[10px] font-mono text-[#c2410c] dark:text-[#fb923c] uppercase font-bold block">
               {tr(lang, '1 декабря 2026', 'Dec 1, 2026')}
             </span>
-            <div className="flex items-center space-x-1.5 font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+            <div className="flex items-center space-x-1.5 font-heading font-medium text-[#161821] dark:text-[#ffffff]">
               <span>{tr(lang, 'Зачетная неделя', 'Credit Week')}</span>
             </div>
-            <p className="text-[10px] text-[#667085] dark:text-[#94A3B8]">
+            <p className="text-[10px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Допуск к экзаменам', 'Exam admission')}
             </p>
           </div>
 
-          <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-1">
-            <span className="text-[10px] font-mono text-[#667085] dark:text-[#94A3B8] uppercase block">
+          <div className="p-3.5 rounded-2xl bg-[#f4ebfc] dark:bg-[#281b36] border border-[#8b5cf6]/30 space-y-1">
+            <span className="text-[10px] font-mono text-[#7c3aed] dark:text-[#c4b5fd] uppercase font-bold block">
               {tr(lang, '10 – 28 декабря', 'Dec 10 – 28')}
             </span>
-            <div className="flex items-center space-x-1.5 font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+            <div className="flex items-center space-x-1.5 font-heading font-medium text-[#161821] dark:text-[#ffffff]">
               <span>{tr(lang, 'Зимняя сессия', 'Winter Exam Session')}</span>
             </div>
-            <p className="text-[10px] text-[#667085] dark:text-[#94A3B8]">
+            <p className="text-[10px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Экзамены и защита', 'Finals & thesis defense')}
             </p>
           </div>
@@ -610,24 +584,24 @@ export const TodayPage: React.FC<TodayPageProps> = ({
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. URGENT ACADEMIC NOTICE (If present)
+          3. URGENT ACADEMIC NOTICE (Innopolis Warning Card)
           ───────────────────────────────────────────────────────────── */}
       {urgentNotif && (
-        <section className="bg-[#C63740]/10 dark:bg-[#C63740]/20 border-l-4 border-[#C63740] p-4 rounded-r-xl text-[#0F1D30] dark:text-[#FFFFFF] flex items-start justify-between gap-4">
+        <section className="bg-[#fff9e6] dark:bg-[#2c2210] border border-[#ffeeba] dark:border-[#523e1b] p-4 rounded-3xl text-[#161821] dark:text-[#ffffff] flex items-start justify-between gap-4 shadow-xs">
           <div className="flex items-start space-x-3">
-            <ShieldAlert className="w-5 h-5 text-[#C63740] flex-shrink-0 mt-0.5" />
+            <ShieldAlert className="w-5 h-5 text-[#b45309] dark:text-[#fbbf24] flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-sm text-[#991B1B] dark:text-[#F06A73]">
+              <h3 className="font-heading font-semibold text-sm text-[#b45309] dark:text-[#b45309]">
                 {urgentNotif.title}
               </h3>
-              <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5 leading-relaxed">
+              <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5 leading-relaxed">
                 {urgentNotif.message}
               </p>
             </div>
           </div>
           <button
             onClick={() => setActiveTab('notifications')}
-            className="text-xs font-sans font-semibold text-[#991B1B] dark:text-[#F06A73] hover:underline flex items-center space-x-1 flex-shrink-0 cursor-pointer"
+            className="text-xs font-heading font-semibold text-[#b45309] dark:text-[#b45309] hover:underline flex items-center space-x-1 flex-shrink-0 cursor-pointer"
           >
             <span>{lang === 'ru' ? 'Подробнее' : 'Details'}</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -636,48 +610,48 @@ export const TodayPage: React.FC<TodayPageProps> = ({
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          4. MAIN DASHBOARD EDITORIAL GRID (Left 2 cols: Classes & Exams / Right 1 col: Admin & Certificates)
+          4. MAIN DASHBOARD GRID
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Columns: Classes, Timetable & Examination Program */}
         <div className="lg:col-span-2 space-y-6">
           {/* Next Lecture Focal Card */}
           {nextClass ? (
-            <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 sm:p-6 shadow-xs relative">
-              <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
+            <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs relative">
+              <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
                 <div className="flex items-center space-x-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#142D4E] dark:bg-[#245A91] animate-pulse" />
-                  <span className="text-[11px] font-sans font-semibold uppercase tracking-widest text-[#142D4E] dark:text-[#93C5FD]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#33b712] animate-pulse" />
+                  <span className="text-[11px] font-heading font-semibold uppercase tracking-wider text-[#166534] dark:text-[#45d320]">
                     {lang === 'ru' ? 'Ближайшее занятие' : 'Next Upcoming Class'}
                   </span>
                 </div>
-                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#142D4E] dark:text-[#93C5FD] border border-[#DCE2EA] dark:border-[#1E395B]">
+                <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border border-[#33b712]/30">
                   {getScheduleTypeLabel(nextClass.type, lang)}
                 </span>
               </div>
 
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                 <div className="sm:col-span-2 space-y-1.5">
-                  <h3 className="text-lg sm:text-xl font-semibold text-[#0F1D30] dark:text-[#FFFFFF] leading-snug">
+                  <h3 className="text-lg sm:text-xl font-heading font-semibold text-[#161821] dark:text-[#ffffff] leading-snug">
                     {localizeText(nextClass.subject, lang)}
                   </h3>
-                  <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans">
+                  <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans">
                     {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
-                    <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">
+                    <strong className="text-[#161821] dark:text-[#ffffff]">
                       {nextClass.teacher}
                     </strong>
                   </p>
                 </div>
 
-                <div className="sm:border-l sm:border-[#DCE2EA] sm:dark:border-[#193150] sm:pl-4 space-y-2">
-                  <div className="flex items-center space-x-2 text-xs font-mono text-[#0F1D30] dark:text-[#FFFFFF]">
-                    <Clock className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+                <div className="sm:border-l sm:border-[#e2e4e8] sm:dark:border-[#273142] sm:pl-4 space-y-2">
+                  <div className="flex items-center space-x-2 text-xs font-mono text-[#161821] dark:text-[#ffffff]">
+                    <Clock className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                     <span className="font-bold text-sm">
                       {nextClass.start} – {nextClass.end}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2 text-xs font-sans text-[#475467] dark:text-[#CBD5E1]">
-                    <MapPin className="w-4 h-4 text-[#C63740]" />
+                  <div className="flex items-center space-x-2 text-xs font-sans text-[#4b5563] dark:text-[#cbd5e1]">
+                    <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3]" />
                     <span>
                       {tr(lang, 'Аудитория', 'Room')} <strong>{nextClass.room}</strong>
                     </span>
@@ -686,23 +660,23 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               </div>
             </section>
           ) : (
-            <div className="p-6 bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] text-center text-xs text-[#667085] dark:text-[#94A3B8]">
+            <div className="p-6 bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] text-center text-xs text-[#475569] dark:text-[#94a3b8]">
               {lang === 'ru'
                 ? 'Сегодня нет запланированных занятий.'
                 : 'No lectures scheduled for today.'}
             </div>
           )}
 
-          {/* Today's Full Schedule Table (ETH Zurich Modernist Grid) */}
-          <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 sm:p-6 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150] mb-4">
-              <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+          {/* Today's Full Schedule Table */}
+          <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142] mb-4">
+              <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>{lang === 'ru' ? 'Расписание на сегодня' : "Today's Classes"}</span>
               </h3>
               <button
                 onClick={() => setActiveTab('schedule')}
-                className="text-xs font-sans text-[#142D4E] dark:text-[#93C5FD] hover:underline font-semibold cursor-pointer"
+                className="text-xs font-heading text-[#166534] dark:text-[#45d320] hover:underline font-semibold cursor-pointer"
               >
                 {lang === 'ru' ? 'Вся неделя и сессия →' : 'Full Timetable →'}
               </button>
@@ -712,20 +686,20 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               {todayClasses.map((item, idx) => (
                 <div
                   key={item.id}
-                  className="p-3.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] flex items-center justify-between text-xs"
+                  className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between text-xs hover:border-[#33b712]/50 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="font-mono text-[#142D4E] dark:text-[#93C5FD] font-bold text-[11px] w-6">
+                    <span className="font-mono text-[#166534] dark:text-[#45d320] font-bold text-[11px] w-6">
                       {idx + 1}
                     </span>
-                    <span className="font-mono text-[#667085] dark:text-[#94A3B8] text-[11px] w-24">
+                    <span className="font-mono text-[#475569] dark:text-[#94a3b8] text-[11px] w-24">
                       {item.start}–{item.end}
                     </span>
                     <div>
-                      <h4 className="font-semibold text-xs text-[#0F1D30] dark:text-[#FFFFFF]">
+                      <h4 className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff]">
                         {localizeText(item.subject, lang)}
                       </h4>
-                      <p className="text-[11px] text-[#667085] dark:text-[#94A3B8] font-sans">
+                      <p className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
                         {item.teacher} •{' '}
                         <span className="uppercase font-mono">
                           {getScheduleTypeLabel(item.type, lang)}
@@ -733,8 +707,8 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-1 font-mono font-bold text-[#142D4E] dark:text-[#93C5FD]">
-                    <MapPin className="w-3.5 h-3.5 text-[#C63740]" />
+                  <div className="flex items-center space-x-1 font-mono font-bold text-[#161821] dark:text-[#ffffff]">
+                    <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3]" />
                     <span>{item.room}</span>
                   </div>
                 </div>
@@ -743,19 +717,19 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </section>
 
           {/* ─────────────────────────────────────────────────────────────
-              EXAMINATION PROGRAM & UPCOMING ASSESSMENTS (Required)
+              EXAMINATION PROGRAM & UPCOMING ASSESSMENTS
               ───────────────────────────────────────────────────────────── */}
-          <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 sm:p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
+          <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
               <div className="flex items-center space-x-2">
-                <FileBadge className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
-                <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                <FileBadge className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+                <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
                   {lang === 'ru'
                     ? 'Программа промежуточной аттестации и сессии'
                     : 'Upcoming Examination Program'}
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-[#667085] dark:text-[#94A3B8]">
+              <span className="text-[11px] font-mono text-[#475569] dark:text-[#94a3b8]">
                 {lang === 'ru' ? 'Зимняя сессия 2026' : 'Winter Session 2026'}
               </span>
             </div>
@@ -764,37 +738,37 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               {upcomingExams.map((ex, i) => (
                 <div
                   key={i}
-                  className={`p-3.5 rounded-lg border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs ${
+                  className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs ${
                     ex.isDebt
-                      ? 'bg-[#C63740]/5 dark:bg-[#C63740]/15 border-[#C63740]/30'
-                      : 'bg-[#F8FAFC] dark:bg-[#0E1B2D] border-[#DCE2EA] dark:border-[#1E395B]'
+                      ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15 border-[#ff4d8b]/30'
+                      : 'bg-[#f6f6f9] dark:bg-[#121620] border-[#e2e4e8] dark:border-[#273142]'
                   }`}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#142D4E] text-[#FFFFFF]">
+                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
                         {ex.code}
                       </span>
-                      <h4 className="font-semibold text-xs sm:text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                      <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#161821] dark:text-[#ffffff]">
                         {localizeText(ex.subject, lang)}
                       </h4>
                       {ex.status === 'date_changed' && (
-                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white">
                           {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
                         </span>
                       )}
                       {ex.status === 'room_changed' && (
-                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white">
                           {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
                         </span>
                       )}
                       {ex.isDebt && (
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
+                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
                           {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1] font-sans">
+                    <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans">
                       {ex.teacher} • {tr(lang, 'Формат:', 'Format:')}{' '}
                       <strong>{localizeText(ex.type, lang)}</strong> ({ex.credits} ECTS)
                     </p>
@@ -802,10 +776,10 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
                   <div className="flex items-center space-x-4 font-mono text-xs flex-shrink-0">
                     <div className="text-left sm:text-right">
-                      <span className="font-bold text-[#142D4E] dark:text-[#93C5FD] block">
+                      <span className="font-bold text-[#166534] dark:text-[#45d320] block">
                         {ex.date}
                       </span>
-                      <span className="text-[#667085] dark:text-[#94A3B8] text-[11px]">
+                      <span className="text-[#475569] dark:text-[#94a3b8] text-[11px]">
                         {tr(lang, 'в', 'at')} {ex.time} • {ex.room}
                       </span>
                     </div>
@@ -820,14 +794,14 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         <div className="space-y-6">
           {/* Digital Signature Certificates Ready for Download */}
           {readyRequests.length > 0 && (
-            <section className="bg-[#142D4E] text-[#FFFFFF] rounded-xl p-5 shadow-xs border border-[#245A91]/40 space-y-3">
+            <section className="bg-[#161821] text-white rounded-3xl p-6 shadow-sm border border-[#33b712]/40 space-y-3.5">
               <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-[#245A91]" />
-                <h3 className="font-semibold text-sm text-[#FFFFFF]">
+                <CheckCircle2 className="w-4 h-4 text-[#45d320]" />
+                <h3 className="font-heading font-semibold text-sm text-white">
                   {lang === 'ru' ? 'Готовые официальные справки' : 'Issued Certified Documents'}
                 </h3>
               </div>
-              <p className="text-xs text-[#FFFFFF]/80 font-sans leading-relaxed">
+              <p className="text-xs text-white/80 font-sans leading-relaxed">
                 {tr(
                   lang,
                   'Демонстрационные макеты документов сформированы (без настоящей ЭЦП, не имеют юридической силы).',
@@ -839,15 +813,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   <div
                     key={r.id}
                     onClick={() => onPreviewCert(r)}
-                    className="p-3 rounded-lg bg-[#0E1F36] border border-[#245A91]/30 hover:border-[#245A91] cursor-pointer transition-all flex items-center justify-between"
+                    className="p-3.5 rounded-2xl bg-white/10 border border-white/10 hover:border-[#33b712] cursor-pointer transition-all flex items-center justify-between"
                   >
                     <div>
-                      <span className="font-semibold text-xs text-[#F8FAFC] block">
+                      <span className="font-heading font-semibold text-xs text-white block">
                         {localizeText(r.typeTitle, lang)}
                       </span>
-                      <span className="text-[10px] font-mono text-[#245A91]">№ {r.id}</span>
+                      <span className="text-[10px] font-mono text-[#45d320]">№ {r.id}</span>
                     </div>
-                    <span className="text-[11px] font-sans font-semibold text-[#245A91] flex items-center space-x-1">
+                    <span className="text-[11px] font-heading font-semibold text-[#45d320] flex items-center space-x-1">
                       <span>{tr(lang, 'Открыть PDF', 'Open PDF')}</span>
                       <ArrowUpRight className="w-3 h-3" />
                     </span>
@@ -858,22 +832,22 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           )}
 
           {/* Active Applications in Progress */}
-          <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
-              <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+          <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-3.5">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
+              <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] flex items-center space-x-2">
+                <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>{lang === 'ru' ? 'Заявления на рассмотрении' : 'Active Petitions'}</span>
               </h3>
               <button
                 onClick={() => setActiveTab('requests')}
-                className="text-xs font-sans text-[#142D4E] dark:text-[#93C5FD] hover:underline font-semibold cursor-pointer"
+                className="text-xs font-heading text-[#166534] dark:text-[#45d320] hover:underline font-semibold cursor-pointer"
               >
                 {tr(lang, `Все (${requests.length}) →`, `All (${requests.length}) →`)}
               </button>
             </div>
 
             {activeRequests.length === 0 ? (
-              <p className="text-xs text-[#667085] dark:text-[#94A3B8] py-3 text-center">
+              <p className="text-xs text-[#475569] dark:text-[#94a3b8] py-3 text-center">
                 {tr(
                   lang,
                   'Нет активных заявлений в обработке.',
@@ -886,17 +860,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   <div
                     key={r.id}
                     onClick={() => setActiveTab('requests')}
-                    className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] hover:border-[#142D4E]/40 cursor-pointer transition-all space-y-1.5"
+                    className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712]/50 cursor-pointer transition-all space-y-1.5"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-xs text-[#0F1D30] dark:text-[#FFFFFF]">
+                      <span className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff]">
                         {localizeText(r.typeTitle, lang)}
                       </span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#245A91]/20 text-[#142D4E] dark:text-[#93C5FD] border border-[#245A91]/30 font-semibold">
+                      <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30 font-semibold">
                         {getRequestStatusLabel(r.status, lang, 'staff')}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-[#667085] dark:text-[#94A3B8] font-mono">
+                    <div className="flex items-center justify-between text-[11px] text-[#475569] dark:text-[#94a3b8] font-mono">
                       <span>
                         {tr(lang, `Срок: до ${r.expectedDate}`, `Due: ${r.expectedDate}`)}
                       </span>
@@ -909,11 +883,11 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           </section>
 
           {/* ─────────────────────────────────────────────────────────────
-              ADMINISTRATIVE SERVICES DIRECTORY (Required)
+              ADMINISTRATIVE SERVICES DIRECTORY
               ───────────────────────────────────────────────────────────── */}
-          <section className="bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] p-5 shadow-xs space-y-3">
-            <h3 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF] pb-2 border-b border-[#DCE2EA] dark:border-[#193150] flex items-center space-x-2">
-              <Building className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+          <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-3.5">
+            <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
+              <Building className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
               <span>
                 {lang === 'ru' ? 'Службы и сервисы университета' : 'University Services Directory'}
               </span>
@@ -922,15 +896,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <div className="space-y-2 text-xs font-sans">
               <div
                 onClick={() => setActiveTab('requests')}
-                className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] hover:border-[#142D4E] transition-colors cursor-pointer flex items-center justify-between"
+                className="p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between"
               >
-                <div className="flex items-center space-x-2.5">
-                  <FileText className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+                <div className="flex items-center space-x-3">
+                  <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                   <div>
-                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">
+                    <span className="font-heading font-medium text-[#161821] dark:text-[#ffffff] block">
                       {tr(lang, 'Канцелярия деканата', "Dean's Registry")}
                     </span>
-                    <span className="text-[10px] text-[#667085] dark:text-[#94A3B8]">
+                    <span className="text-[10px] text-[#475569] dark:text-[#94a3b8]">
                       {tr(
                         lang,
                         'Каб. 312 • Справки, выписки, приказы',
@@ -939,20 +913,20 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8]" />
               </div>
 
               <div
                 onClick={onOpenAssistant}
-                className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] hover:border-[#142D4E] transition-colors cursor-pointer flex items-center justify-between"
+                className="p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between"
               >
-                <div className="flex items-center space-x-2.5">
-                  <Sparkles className="w-4 h-4 text-[#245A91]" />
+                <div className="flex items-center space-x-3">
+                  <Sparkles className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                   <div>
-                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">
+                    <span className="font-heading font-medium text-[#161821] dark:text-[#ffffff] block">
                       {tr(lang, 'Цифровой консультант', 'Academic Copilot')}
                     </span>
-                    <span className="text-[10px] text-[#667085] dark:text-[#94A3B8]">
+                    <span className="text-[10px] text-[#475569] dark:text-[#94a3b8]">
                       {tr(
                         lang,
                         'ИИ-помощник по регламентам вуза',
@@ -961,20 +935,20 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8]" />
               </div>
 
               <div
                 onClick={onOpenCard}
-                className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] hover:border-[#142D4E] transition-colors cursor-pointer flex items-center justify-between"
+                className="p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between"
               >
-                <div className="flex items-center space-x-2.5">
-                  <IdCard className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+                <div className="flex items-center space-x-3">
+                  <IdCard className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                   <div>
-                    <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF] block">
+                    <span className="font-heading font-medium text-[#161821] dark:text-[#ffffff] block">
                       {tr(lang, 'Студенческий пропуск', 'Digital Student Pass')}
                     </span>
-                    <span className="text-[10px] text-[#667085] dark:text-[#94A3B8]">
+                    <span className="text-[10px] text-[#475569] dark:text-[#94a3b8]">
                       {tr(
                         lang,
                         'Турникеты, кампус, библиотека',
@@ -983,7 +957,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8]" />
               </div>
             </div>
           </section>

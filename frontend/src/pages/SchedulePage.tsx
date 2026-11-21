@@ -358,8 +358,8 @@ export const SchedulePage: React.FC = () => {
   if (loading && schedule.length === 0) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-4 animate-pulse">
-        <div className="h-28 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
-        <div className="h-96 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
+        <div className="h-28 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
+        <div className="h-96 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
       </div>
     );
   }
@@ -368,9 +368,9 @@ export const SchedulePage: React.FC = () => {
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* Feedback banner */}
       {feedbackMsg && (
-        <div className="p-4 rounded-xl bg-[#142D4E] text-[#FFFFFF] border border-[#245A91]/50 flex items-center justify-between shadow-md animate-fade-in text-xs font-sans">
+        <div className="p-4 rounded-xl bg-[#161821] text-[#FFFFFF] border border-[#33b712]/50 flex items-center justify-between shadow-md animate-fade-in text-xs font-sans">
           <div className="flex items-center space-x-2">
-            <CheckCircle className="w-5 h-5 text-[#245A91] flex-shrink-0" />
+            <CheckCircle className="w-5 h-5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
             <span>{feedbackMsg}</span>
           </div>
           <button
@@ -384,25 +384,25 @@ export const SchedulePage: React.FC = () => {
 
       {/* Staff Dispatcher Mode Notice Banner */}
       {isStaff && (
-        <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-[#142D4E]/15 via-[#142D4E]/10 to-[#F8FAFC] dark:to-[#112238] border border-[#142D4E]/30 dark:border-[#1E395B] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-[#161821]/15 via-[#161821]/10 to-[#f6f6f9] dark:to-[#171c26] border border-[#161821]/30 dark:border-[#273142] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 rounded-lg bg-[#142D4E] text-[#245A91] flex items-center justify-center flex-shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-lg bg-[#161821] text-[#45d320] flex items-center justify-center flex-shrink-0 shadow-xs">
               <Shield className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-sm text-[#142D4E] dark:text-[#93C5FD]">
+                <h3 className="font-semibold text-sm text-[#161821] dark:text-[#45d320]">
                   {tr(
                     lang,
                     'Служебный режим диспетчера деканата: Управление расписанием',
                     "Dean's Office Dispatcher Mode: Timetable Management"
                   )}
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#245A91]/20 text-[#142D4E] dark:text-[#93C5FD] border border-[#245A91]/40">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#33b712]/20 text-[#161821] dark:text-[#45d320] border border-[#33b712]/40">
                   {tr(lang, 'ПРАВА ДЕКАНАТА', 'DEAN AUTHORITY')}
                 </span>
               </div>
-              <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5 leading-relaxed">
+              <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans mt-0.5 leading-relaxed">
                 {tr(
                   lang,
                   'Вы можете переносить время занятий, заменять аудитории и отменять пары. При сохранении система автоматически отправит push-уведомление группе.',
@@ -413,8 +413,8 @@ export const SchedulePage: React.FC = () => {
           </div>
 
           {/* Group Selector for Staff */}
-          <div className="flex items-center space-x-2 bg-white dark:bg-[#0E1B2D] p-1.5 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] self-start sm:self-center">
-            <label htmlFor="staff-group-select" className="text-xs font-sans font-semibold text-[#667085] dark:text-[#94A3B8] pl-1.5">
+          <div className="flex items-center space-x-2 bg-white dark:bg-[#121620] p-1.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142] self-start sm:self-center">
+            <label htmlFor="staff-group-select" className="text-xs font-sans font-semibold text-[#475569] dark:text-[#94A3B8] pl-1.5">
               {tr(lang, 'Группа:', 'Group:')}
             </label>
             <select
@@ -422,7 +422,7 @@ export const SchedulePage: React.FC = () => {
               aria-label={tr(lang, 'Группа:', 'Group:')}
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="bg-transparent text-xs font-mono font-bold text-[#142D4E] dark:text-[#93C5FD] focus:outline-none cursor-pointer pr-2"
+              className="bg-transparent text-xs font-mono font-bold text-[#161821] dark:text-[#45d320] focus:outline-none cursor-pointer pr-2"
             >
               <option value="ДУ-101">
                 {tr(lang, 'ДУ-101 (2 курс, МО)', 'ДУ-101 (Year 2, IR)')}
@@ -438,16 +438,16 @@ export const SchedulePage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER & DUAL MODE SELECTOR (Classes vs Exam Session)
           ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold mb-1">
+          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#161821] dark:text-[#45d320] font-semibold mb-1">
             <span>
               {tr(lang, `Академическая группа: ${activeGroup}`, `Academic Group: ${activeGroup}`)}
             </span>
             <span>•</span>
             <span>{tr(lang, 'Осенний семестр 2026/2027', 'Fall Term 2026/2027')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161821] dark:text-[#FFFFFF]">
             {activeSubTab === 'classes'
               ? lang === 'ru'
                 ? 'Академическое расписание'
@@ -456,7 +456,7 @@ export const SchedulePage: React.FC = () => {
                 ? 'Программа экзаменационной сессии'
                 : 'Examination Session'}
           </h1>
-          <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
+          <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans mt-0.5">
             {tr(
               lang,
               'Учебные занятия, поточные лекции, семинары и экзаменационные комиссии',
@@ -468,13 +468,13 @@ export const SchedulePage: React.FC = () => {
         {/* View Switchers */}
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Main SubTab Toggle (Classes vs Exams) */}
-          <div className="flex items-center bg-[#F8FAFC] dark:bg-[#0E1B2D] rounded-lg p-1 border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium">
+          <div className="flex items-center bg-[#f6f6f9] dark:bg-[#121620] rounded-lg p-1 border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans font-medium">
             <button
               onClick={() => setActiveSubTab('classes')}
               className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
                 activeSubTab === 'classes'
-                  ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
-                  : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30]'
+                  ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
+                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821]'
               }`}
             >
               {lang === 'ru' ? 'Занятия' : 'Classes'}
@@ -483,8 +483,8 @@ export const SchedulePage: React.FC = () => {
               onClick={() => setActiveSubTab('exams')}
               className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
                 activeSubTab === 'exams'
-                  ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
-                  : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30]'
+                  ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
+                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821]'
               }`}
             >
               {lang === 'ru' ? 'Экзамены и сессия' : 'Exams & Session'}
@@ -494,13 +494,13 @@ export const SchedulePage: React.FC = () => {
           {activeSubTab === 'classes' && (
             <>
               {/* Day vs Week Mode Toggle */}
-              <div className="flex items-center bg-[#F8FAFC] dark:bg-[#0E1B2D] rounded-lg p-1 border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium">
+              <div className="flex items-center bg-[#f6f6f9] dark:bg-[#121620] rounded-lg p-1 border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans font-medium">
                 <button
                   onClick={() => setViewMode('day')}
                   className={`px-2.5 py-1.5 rounded-md transition-all cursor-pointer ${
                     viewMode === 'day'
-                      ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
-                      : 'text-[#475467] dark:text-[#CBD5E1]'
+                      ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
+                      : 'text-[#475569] dark:text-[#CBD5E1]'
                   }`}
                 >
                   {lang === 'ru' ? 'День' : 'Day'}
@@ -509,8 +509,8 @@ export const SchedulePage: React.FC = () => {
                   onClick={() => setViewMode('week')}
                   className={`px-2.5 py-1.5 rounded-md transition-all cursor-pointer ${
                     viewMode === 'week'
-                      ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
-                      : 'text-[#475467] dark:text-[#CBD5E1]'
+                      ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
+                      : 'text-[#475569] dark:text-[#CBD5E1]'
                   }`}
                 >
                   {lang === 'ru' ? 'Вся неделя' : 'Week'}
@@ -525,9 +525,9 @@ export const SchedulePage: React.FC = () => {
                   'Экспорт в персональный календарь (.ics)',
                   'Export to personal calendar (.ics)'
                 )}
-                className="p-2 sm:px-3 sm:py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors flex items-center space-x-1.5 text-xs font-sans font-medium cursor-pointer"
+                className="p-2 sm:px-3 sm:py-2 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors flex items-center space-x-1.5 text-xs font-sans font-medium cursor-pointer"
               >
-                <Download className="w-4 h-4 text-[#245A91]" />
+                <Download className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span className="hidden sm:inline">{tr(lang, 'Экспорт .ICS', 'Export .ICS')}</span>
               </button>
             </>
@@ -551,8 +551,8 @@ export const SchedulePage: React.FC = () => {
                     onClick={() => setSelectedDay(day.num)}
                     className={`py-3 px-1 rounded-xl text-center border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#142D4E] text-[#FFFFFF] border-[#142D4E] shadow-sm ring-1 ring-[#245A91]/40'
-                        : 'bg-white dark:bg-[#112238] text-[#475467] dark:text-[#CBD5E1] hover:bg-[#F8FAFC] dark:hover:bg-[#162A45] border-[#DCE2EA] dark:border-[#1E395B]'
+                        ? 'bg-[#161821] text-[#FFFFFF] border-[#161821] shadow-sm ring-1 ring-[#33b712]/40'
+                        : 'bg-white dark:bg-[#171c26] text-[#475569] dark:text-[#CBD5E1] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] border-[#e2e4e8] dark:border-[#273142]'
                     }`}
                   >
                     <span className="block text-[10px] font-mono tracking-wider opacity-80 uppercase">
@@ -569,7 +569,7 @@ export const SchedulePage: React.FC = () => {
 
           {/* Class Type Filter Tabs */}
           <div className="flex items-center space-x-1.5 overflow-x-auto text-xs pb-1 font-sans">
-            <Filter className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8] mr-1 flex-shrink-0" />
+            <Filter className="w-3.5 h-3.5 text-[#475569] dark:text-[#94A3B8] mr-1 flex-shrink-0" />
             {[
               { id: 'all', label: tr(lang, 'Все форматы', 'All Formats') },
               { id: 'lecture', label: tr(lang, 'Лекции', 'Lectures') },
@@ -581,8 +581,8 @@ export const SchedulePage: React.FC = () => {
                 onClick={() => setFilterType(f.id)}
                 className={`px-3 py-1 rounded-lg border text-xs whitespace-nowrap transition-colors cursor-pointer ${
                   filterType === f.id
-                    ? 'bg-[#142D4E] text-[#FFFFFF] border-[#142D4E] font-semibold'
-                    : 'bg-white dark:bg-[#112238] text-[#475467] dark:text-[#CBD5E1] border-[#DCE2EA] dark:border-[#1E395B]'
+                    ? 'bg-[#161821] text-[#FFFFFF] border-[#161821] font-semibold'
+                    : 'bg-white dark:bg-[#171c26] text-[#475569] dark:text-[#CBD5E1] border-[#e2e4e8] dark:border-[#273142]'
                 }`}
               >
                 {f.label}
@@ -593,9 +593,9 @@ export const SchedulePage: React.FC = () => {
           {/* Timetable List (ETH Modernist Grid) */}
           <div className="space-y-3">
             {filteredSchedule.length === 0 ? (
-              <div className="p-8 text-center bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] space-y-2">
-                <CalendarIcon className="w-8 h-8 text-[#667085] dark:text-[#94A3B8] mx-auto opacity-50" />
-                <p className="text-sm font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
+              <div className="p-8 text-center bg-white dark:bg-[#171c26] rounded-xl border border-[#e2e4e8] dark:border-[#273142] space-y-2">
+                <CalendarIcon className="w-8 h-8 text-[#475569] dark:text-[#94A3B8] mx-auto opacity-50" />
+                <p className="text-sm font-semibold text-[#161821] dark:text-[#FFFFFF]">
                   {filterType !== 'all'
                     ? tr(
                         lang,
@@ -604,7 +604,7 @@ export const SchedulePage: React.FC = () => {
                       )
                     : tr(lang, 'В этот день занятий нет', 'No classes scheduled for this day')}
                 </p>
-                <p className="text-xs text-[#667085] dark:text-[#94A3B8]">
+                <p className="text-xs text-[#475569] dark:text-[#94A3B8]">
                   {filterType !== 'all'
                     ? tr(
                         lang,
@@ -620,7 +620,7 @@ export const SchedulePage: React.FC = () => {
                 {filterType !== 'all' && (
                   <button
                     onClick={() => setFilterType('all')}
-                    className="mt-1 px-3 py-1 rounded-lg bg-[#142D4E] text-[#FFFFFF] text-xs font-medium hover:bg-[#0E1F36] cursor-pointer"
+                    className="mt-1 px-3 py-1 rounded-lg bg-[#161821] text-[#FFFFFF] text-xs font-medium hover:bg-[#11141c] cursor-pointer"
                   >
                     {tr(lang, 'Показать все форматы', 'Show All Formats')}
                   </button>
@@ -638,19 +638,19 @@ export const SchedulePage: React.FC = () => {
                     key={item.id}
                     className={`p-4 sm:p-5 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${
                       isCanceled
-                        ? 'bg-[#C63740]/5 dark:bg-[#C63740]/15 border-[#C63740]/30'
+                        ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15 border-[#ff4d8b]/30'
                         : isMoved || isRoomChanged
-                          ? 'bg-[#245A91]/10 dark:bg-[#245A91]/15 border-[#245A91]/40'
-                          : 'bg-white dark:bg-[#112238] border-[#DCE2EA] dark:border-[#1E395B] shadow-xs'
+                          ? 'bg-[#33b712]/10 dark:bg-[#33b712]/15 border-[#33b712]/40'
+                          : 'bg-white dark:bg-[#171c26] border-[#e2e4e8] dark:border-[#273142] shadow-xs'
                     }`}
                   >
                     <div className="flex items-start space-x-3.5">
                       {/* Period Badge */}
-                      <div className="w-10 h-10 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] flex flex-col items-center justify-center flex-shrink-0 text-center">
-                        <span className="font-mono text-xs font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                      <div className="w-10 h-10 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex flex-col items-center justify-center flex-shrink-0 text-center">
+                        <span className="font-mono text-xs font-bold text-[#161821] dark:text-[#45d320]">
                           {idx + 1}
                         </span>
-                        <span className="text-[8px] font-sans uppercase text-[#667085] dark:text-[#94A3B8]">
+                        <span className="text-[8px] font-sans uppercase text-[#475569] dark:text-[#94A3B8]">
                           {tr(lang, 'пара', 'slot')}
                         </span>
                       </div>
@@ -658,66 +658,66 @@ export const SchedulePage: React.FC = () => {
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
                           {viewMode === 'week' && dayInfo && (
-                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#142D4E] text-[#FFFFFF]">
+                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#161821] text-[#FFFFFF]">
                               {dayInfo.short}
                             </span>
                           )}
-                          <span className="text-xs font-mono font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                          <span className="text-xs font-mono font-bold text-[#161821] dark:text-[#45d320]">
                             {item.start} – {item.end}
                           </span>
-                          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] dark:text-[#94A3B8] border border-[#DCE2EA] dark:border-[#1E395B]">
+                          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] border border-[#e2e4e8] dark:border-[#273142]">
                             {getScheduleTypeLabel(item.type, lang)}
                           </span>
                           {isCanceled && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
                               {getScheduleStatusLabel('cancelled', lang)}
                             </span>
                           )}
                           {isMoved && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
                               {getScheduleStatusLabel('moved', lang)}
                             </span>
                           )}
                           {isRoomChanged && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
                               {getScheduleStatusLabel('room_changed', lang)}
                             </span>
                           )}
                         </div>
 
                         <h3
-                          className={`font-semibold text-base ${isCanceled ? 'line-through text-[#667085] dark:text-[#94A3B8]' : 'text-[#0F1D30] dark:text-[#FFFFFF]'}`}
+                          className={`font-semibold text-base ${isCanceled ? 'line-through text-[#475569] dark:text-[#94A3B8]' : 'text-[#161821] dark:text-[#FFFFFF]'}`}
                         >
                           {localizeText(item.subject, lang)}
                         </h3>
 
-                        <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans">
+                        <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans">
                           {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
-                          <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">
+                          <strong className="text-[#161821] dark:text-[#FFFFFF]">
                             {item.teacher}
                           </strong>
                         </p>
 
                         {item.changeNote && (
-                          <p className="text-xs font-mono text-[#991B1B] dark:text-[#F06A73] font-medium pt-0.5">
+                          <p className="text-xs font-mono text-[#be123c] dark:text-[#fecdd3] font-medium pt-0.5">
                             {tr(lang, 'Примечание деканата:', "Dean's note:")} {item.changeNote}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between sm:justify-end space-x-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#DCE2EA] dark:border-[#193150]">
-                      <div className="flex items-center space-x-1.5 font-mono text-xs font-bold text-[#142D4E] dark:text-[#93C5FD]">
-                        <MapPin className="w-4 h-4 text-[#C63740]" />
+                    <div className="flex items-center justify-between sm:justify-end space-x-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#e2e4e8] dark:border-[#273142]">
+                      <div className="flex items-center space-x-1.5 font-mono text-xs font-bold text-[#161821] dark:text-[#45d320]">
+                        <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3]" />
                         <span>{item.room}</span>
                       </div>
 
                       {isStaff && (
                         <button
                           onClick={() => handleOpenEdit(item)}
-                          className="px-2.5 py-1 rounded-md bg-[#142D4E] text-[#FFFFFF] text-xs font-sans font-medium hover:bg-[#0E1F36] flex items-center space-x-1 cursor-pointer"
+                          className="px-2.5 py-1 rounded-md bg-[#161821] text-[#FFFFFF] text-xs font-sans font-medium hover:bg-[#11141c] flex items-center space-x-1 cursor-pointer"
                         >
-                          <Edit3 className="w-3.5 h-3.5 text-[#245A91]" />
+                          <Edit3 className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
                           <span>{tr(lang, 'Изменить', 'Edit')}</span>
                         </button>
                       )}
@@ -736,10 +736,10 @@ export const SchedulePage: React.FC = () => {
       {activeSubTab === 'exams' && (
         <div className="space-y-4">
           {/* Dean's Session Control Bar */}
-          <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-xs font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                <span className="font-mono text-xs font-bold text-[#161821] dark:text-[#45d320]">
                   {tr(
                     lang,
                     'Зимняя промежуточная аттестация 2026/2027',
@@ -747,11 +747,11 @@ export const SchedulePage: React.FC = () => {
                   )}
                 </span>
                 <span>•</span>
-                <span className="text-xs text-[#667085] dark:text-[#94A3B8]">
+                <span className="text-xs text-[#475569] dark:text-[#94A3B8]">
                   {tr(lang, `Группа ${activeGroup}`, `Group ${activeGroup}`)}
                 </span>
               </div>
-              <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+              <h3 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
                 {isStaff
                   ? tr(
                       lang,
@@ -760,7 +760,7 @@ export const SchedulePage: React.FC = () => {
                     )
                   : tr(lang, 'График экзаменов и консультаций', 'Exam & Consultation Timetable')}
               </h3>
-              <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans max-w-2xl">
+              <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans max-w-2xl">
                 {isStaff
                   ? tr(
                       lang,
@@ -778,9 +778,9 @@ export const SchedulePage: React.FC = () => {
             {isStaff && (
               <button
                 onClick={handleAddNewExam}
-                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs transition-colors cursor-pointer self-start sm:self-auto flex-shrink-0"
+                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 shadow-xs transition-colors cursor-pointer self-start sm:self-auto flex-shrink-0"
               >
-                <Plus className="w-4 h-4 text-[#245A91]" />
+                <Plus className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>{tr(lang, 'Назначить экзамен / пересдачу', 'Schedule Exam / Retake')}</span>
               </button>
             )}
@@ -789,7 +789,7 @@ export const SchedulePage: React.FC = () => {
           {/* Exam Cards List */}
           <div className="space-y-3">
             {exams.length === 0 ? (
-              <div className="p-12 text-center text-xs font-sans text-[#667085] dark:text-[#94A3B8] bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B]">
+              <div className="p-12 text-center text-xs font-sans text-[#475569] dark:text-[#94A3B8] bg-white dark:bg-[#171c26] rounded-xl border border-[#e2e4e8] dark:border-[#273142]">
                 {tr(
                   lang,
                   `Для группы ${activeGroup} экзамены пока не назначены.`,
@@ -808,31 +808,31 @@ export const SchedulePage: React.FC = () => {
                     key={ex.id}
                     className={`p-5 rounded-xl border shadow-xs space-y-3.5 transition-all ${
                       isCancelled
-                        ? 'bg-[#C63740]/5 dark:bg-[#C63740]/15 border-[#C63740]/40'
+                        ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15 border-[#ff4d8b]/40'
                         : isDateChanged || isPostponed
-                          ? 'bg-[#245A91]/10 dark:bg-[#245A91]/15 border-[#245A91]/60'
+                          ? 'bg-[#33b712]/10 dark:bg-[#33b712]/15 border-[#33b712]/60'
                           : isRoomChanged
                             ? 'bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900/60'
                             : ex.isDebt
                               ? 'bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60'
-                              : 'bg-white dark:bg-[#112238] border-[#DCE2EA] dark:border-[#1E395B]'
+                              : 'bg-white dark:bg-[#171c26] border-[#e2e4e8] dark:border-[#273142]'
                     }`}
                   >
                     {/* Header Row */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#DCE2EA] dark:border-[#193150] pb-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#e2e4e8] dark:border-[#273142] pb-2.5">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#142D4E] text-[#FFFFFF]">
+                        <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#161821] text-[#FFFFFF]">
                           {ex.code}
                         </span>
                         <h4
-                          className={`font-semibold text-base ${isCancelled ? 'line-through text-[#667085] dark:text-[#94A3B8]' : 'text-[#0F1D30] dark:text-[#FFFFFF]'}`}
+                          className={`font-semibold text-base ${isCancelled ? 'line-through text-[#475569] dark:text-[#94A3B8]' : 'text-[#161821] dark:text-[#FFFFFF]'}`}
                         >
                           {localizeText(ex.subject, lang)}
                         </h4>
 
                         {/* Status Badges */}
                         {isDateChanged && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#245A91] text-[#FFFFFF]">
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
                             {getExamStatusLabel('date_changed', lang)}
                           </span>
                         )}
@@ -847,27 +847,27 @@ export const SchedulePage: React.FC = () => {
                           </span>
                         )}
                         {isCancelled && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
                             {getExamStatusLabel('cancelled', lang)}
                           </span>
                         )}
                         {ex.isDebt && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#C63740] text-white">
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
                             {tr(lang, 'КОМИССИОННАЯ ПЕРЕСДАЧА', 'COMMITTEE RETAKE')}
                           </span>
                         )}
                       </div>
 
                       <div className="flex items-center space-x-3 self-end sm:self-auto">
-                        <span className="text-xs font-mono font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                        <span className="text-xs font-mono font-bold text-[#161821] dark:text-[#45d320]">
                           {ex.credits} ECTS
                         </span>
                         {isStaff && (
                           <button
                             onClick={() => handleOpenEditExam(ex)}
-                            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold transition-colors cursor-pointer shadow-xs"
+                            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold transition-colors cursor-pointer shadow-xs"
                           >
-                            <Edit3 className="w-3.5 h-3.5 text-[#245A91]" />
+                            <Edit3 className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
                             <span>{tr(lang, 'Изменить дату / комиссию', 'Edit Date / Board')}</span>
                           </button>
                         )}
@@ -877,48 +877,48 @@ export const SchedulePage: React.FC = () => {
                     {/* Information Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-sans">
                       <div>
-                        <span className="text-[10px] uppercase font-mono text-[#667085] dark:text-[#94A3B8] block">
+                        <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94A3B8] block">
                           {tr(lang, 'Формат аттестации', 'Assessment Format')}
                         </span>
-                        <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                        <span className="font-medium text-[#161821] dark:text-[#FFFFFF]">
                           {localizeText(ex.format, lang)}
                         </span>
-                        <p className="text-[11px] text-[#667085] dark:text-[#94A3B8] mt-0.5">
+                        <p className="text-[11px] text-[#475569] dark:text-[#94A3B8] mt-0.5">
                           {tr(lang, 'Экзаменатор:', 'Examiner:')}{' '}
-                          <strong className="text-[#0F1D30] dark:text-[#FFFFFF]">
+                          <strong className="text-[#161821] dark:text-[#FFFFFF]">
                             {ex.examiner}
                           </strong>
                         </p>
                         {ex.commissionMembers && (
-                          <p className="text-[10px] text-[#667085] dark:text-[#94A3B8] mt-0.5">
+                          <p className="text-[10px] text-[#475569] dark:text-[#94A3B8] mt-0.5">
                             {tr(lang, 'Комиссия:', 'Board:')} {ex.commissionMembers}
                           </p>
                         )}
                       </div>
 
                       <div>
-                        <span className="text-[10px] uppercase font-mono text-[#667085] dark:text-[#94A3B8] block">
+                        <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94A3B8] block">
                           {tr(lang, 'Дата и время экзамена', 'Exam Date & Time')}
                         </span>
                         <span
-                          className={`font-bold text-sm block ${isDateChanged ? 'text-[#245A91]' : 'text-[#142D4E] dark:text-[#FFFFFF]'}`}
+                          className={`font-bold text-sm block ${isDateChanged ? 'text-[#166534] dark:text-[#45d320]' : 'text-[#161821] dark:text-[#FFFFFF]'}`}
                         >
                           {ex.date}
                         </span>
-                        <p className="text-[11px] text-[#475467] dark:text-[#CBD5E1] font-mono mt-0.5">
+                        <p className="text-[11px] text-[#475569] dark:text-[#CBD5E1] font-mono mt-0.5">
                           {tr(lang, 'Время:', 'Time:')} {ex.time}
                         </p>
                       </div>
 
                       <div>
-                        <span className="text-[10px] uppercase font-mono text-[#667085] dark:text-[#94A3B8] block">
+                        <span className="text-[10px] uppercase font-mono text-[#475569] dark:text-[#94A3B8] block">
                           {tr(lang, 'Место и консультация', 'Location & Consultation')}
                         </span>
-                        <div className="flex items-center space-x-1 font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
-                          <MapPin className="w-3.5 h-3.5 text-[#C63740]" />
+                        <div className="flex items-center space-x-1 font-medium text-[#161821] dark:text-[#FFFFFF]">
+                          <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3]" />
                           <span>{ex.room}</span>
                         </div>
-                        <p className="text-[11px] text-[#667085] dark:text-[#94A3B8] mt-0.5">
+                        <p className="text-[11px] text-[#475569] dark:text-[#94A3B8] mt-0.5">
                           {tr(lang, 'Консультация:', 'Consultation:')} {ex.consultation}
                         </p>
                       </div>
@@ -926,7 +926,7 @@ export const SchedulePage: React.FC = () => {
 
                     {/* Dean's Official Change Note if present */}
                     {ex.changeNote && (
-                      <div className="p-2.5 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-mono text-[#142D4E] dark:text-[#93C5FD] flex items-center space-x-2">
+                      <div className="p-2.5 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-mono text-[#161821] dark:text-[#45d320] flex items-center space-x-2">
                         <Shield className="w-3.5 h-3.5 flex-shrink-0" />
                         <span>
                           {tr(lang, 'Основание деканата:', "Dean's notice:")} {ex.changeNote}
@@ -957,11 +957,11 @@ export const SchedulePage: React.FC = () => {
           ───────────────────────────────────────────────────────────── */}
       {editingEntry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="relative w-full max-w-lg bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
+          <div className="relative w-full max-w-lg bg-white dark:bg-[#171c26] rounded-xl border border-[#e2e4e8] dark:border-[#273142] shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
               <div className="flex items-center space-x-2">
-                <Edit3 className="w-5 h-5 text-[#142D4E] dark:text-[#93C5FD]" />
-                <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+                <Edit3 className="w-5 h-5 text-[#161821] dark:text-[#45d320]" />
+                <h3 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
                   {tr(lang, 'Управление занятием:', 'Manage Class:')}{' '}
                   {localizeText(editingEntry.subject, lang)}
                 </h3>
@@ -969,7 +969,7 @@ export const SchedulePage: React.FC = () => {
               <button
                 onClick={() => setEditingEntry(null)}
                 aria-label={tr(lang, 'Закрыть', 'Close')}
-                className="text-[#667085] dark:text-[#94A3B8] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] p-1 cursor-pointer"
+                className="text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -977,7 +977,7 @@ export const SchedulePage: React.FC = () => {
 
             <form onSubmit={handleSaveScheduleChange} className="space-y-4 text-xs font-sans">
               <div>
-                <label htmlFor="edit-class-status-select" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
+                <label htmlFor="edit-class-status-select" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
                   {tr(lang, 'Статус проведения занятия:', 'Class Status:')}
                 </label>
                 <select
@@ -985,7 +985,7 @@ export const SchedulePage: React.FC = () => {
                   aria-label={tr(lang, 'Статус проведения занятия:', 'Class Status:')}
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as ScheduleStatus)}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2.5 text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2.5 text-xs text-[#161821] dark:text-[#FFFFFF]"
                 >
                   <option value="normal">
                     {tr(lang, 'Штатное проведение (по расписанию)', 'Regular schedule')}
@@ -1002,7 +1002,7 @@ export const SchedulePage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="edit-class-start-input" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
+                  <label htmlFor="edit-class-start-input" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
                     {tr(lang, 'Время начала:', 'Start time:')}
                   </label>
                   <input
@@ -1011,11 +1011,11 @@ export const SchedulePage: React.FC = () => {
                     type="time"
                     value={editStart}
                     onChange={(e) => setEditStart(e.target.value)}
-                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2 font-mono text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 font-mono text-xs text-[#161821] dark:text-[#FFFFFF]"
                   />
                 </div>
                 <div>
-                  <label htmlFor="edit-class-end-input" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
+                  <label htmlFor="edit-class-end-input" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
                     {tr(lang, 'Время окончания:', 'End time:')}
                   </label>
                   <input
@@ -1024,13 +1024,13 @@ export const SchedulePage: React.FC = () => {
                     type="time"
                     value={editEnd}
                     onChange={(e) => setEditEnd(e.target.value)}
-                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2 font-mono text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 font-mono text-xs text-[#161821] dark:text-[#FFFFFF]"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="edit-class-room-input" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
+                <label htmlFor="edit-class-room-input" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
                   {tr(lang, 'Аудитория:', 'Room:')}
                 </label>
                 <input
@@ -1044,12 +1044,12 @@ export const SchedulePage: React.FC = () => {
                     'Например: Ауд. 312, Дистанционно (Zoom)',
                     'e.g. Room 312, Online (Zoom)'
                   )}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2 text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 text-xs text-[#161821] dark:text-[#FFFFFF]"
                 />
               </div>
 
               <div>
-                <label htmlFor="edit-class-note-textarea" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1">
+                <label htmlFor="edit-class-note-textarea" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
                   {tr(lang, 'Официальное примечание деканата:', "Official Dean's Office Note:")}
                 </label>
                 <textarea
@@ -1063,7 +1063,7 @@ export const SchedulePage: React.FC = () => {
                     'Причина замены, ссылка на онлайн-конференцию или указания старосте...',
                     'Reason for change, online meeting link, or instructions...'
                   )}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg p-2 text-xs text-[#0F1D30] dark:text-[#FFFFFF]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg p-2 text-xs text-[#161821] dark:text-[#FFFFFF]"
                 />
               </div>
 
@@ -1073,11 +1073,11 @@ export const SchedulePage: React.FC = () => {
                   id="notifyCheck"
                   checked={notifyGroup}
                   onChange={(e) => setNotifyGroup(e.target.checked)}
-                  className="rounded border-[#DCE2EA] text-[#142D4E] focus:ring-[#142D4E]"
+                  className="rounded border-[#e2e4e8] text-[#161821] focus:ring-[#161821]"
                 />
                 <label
                   htmlFor="notifyCheck"
-                  className="text-xs text-[#0F1D30] dark:text-[#FFFFFF] cursor-pointer"
+                  className="text-xs text-[#161821] dark:text-[#FFFFFF] cursor-pointer"
                 >
                   {tr(
                     lang,
@@ -1087,12 +1087,12 @@ export const SchedulePage: React.FC = () => {
                 </label>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-[#DCE2EA] dark:border-[#193150]">
+              <div className="flex items-center justify-between pt-3 border-t border-[#e2e4e8] dark:border-[#273142]">
                 <button
                   type="button"
                   onClick={handleResetToNormal}
                   disabled={saving}
-                  className="px-3 py-1.5 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] hover:bg-[#F8FAFC] dark:hover:bg-[#162A45] text-xs font-sans text-[#667085] dark:text-[#94A3B8] cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] text-xs font-sans text-[#475569] dark:text-[#94A3B8] cursor-pointer"
                 >
                   {tr(lang, 'Сбросить в штатное', 'Restore Regular')}
                 </button>
@@ -1100,14 +1100,14 @@ export const SchedulePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setEditingEntry(null)}
-                    className="px-3 py-1.5 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] hover:bg-[#F8FAFC] dark:hover:bg-[#162A45] text-xs font-sans text-[#667085] dark:text-[#94A3B8] cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] text-xs font-sans text-[#475569] dark:text-[#94A3B8] cursor-pointer"
                   >
                     {tr(lang, 'Отмена', 'Cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-4 py-1.5 rounded-lg bg-[#142D4E] text-[#FFFFFF] text-xs font-sans font-semibold hover:bg-[#0E1F36] cursor-pointer"
+                    className="px-4 py-1.5 rounded-lg bg-[#161821] text-[#FFFFFF] text-xs font-sans font-semibold hover:bg-[#11141c] cursor-pointer"
                   >
                     {saving
                       ? tr(lang, 'Сохранение...', 'Saving...')

@@ -1,9 +1,9 @@
 const AVATAR_PALETTES: ReadonlyArray<readonly [string, string, string]> = [
-  ['#142D4E', '#245A91', '#93C5FD'],
-  ['#0E1F36', '#1C3B65', '#60A5FA'],
-  ['#1E3A5F', '#2B5B84', '#BFDBFE'],
-  ['#4A1C24', '#8E2E28', '#FCA5A5'],
-  ['#163A34', '#245A52', '#99F6E4'],
+  ['#161821', '#33b712', '#63ec41'],
+  ['#11141c', '#27960d', '#45d320'],
+  ['#161821', '#3598fe', '#99d6ff'],
+  ['#161821', '#ff7675', '#febda4'],
+  ['#161821', '#8b5cf6', '#e1d2fe'],
 ];
 
 function extractInitials(fullName?: string): string {

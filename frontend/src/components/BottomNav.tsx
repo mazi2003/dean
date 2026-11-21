@@ -39,8 +39,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
   const tabs = isStaff ? staffTabs : studentTabs;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 dark:bg-[#0E1B2D]/95 backdrop-blur-md border-t border-[#DCE2EA] dark:border-[#193150] pb-safe transition-colors select-none">
-      <div className="flex items-center justify-around h-16 px-0.5 sm:px-1 max-w-lg mx-auto">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#171c26]/95 backdrop-blur-md border-t border-[#e2e4e8] dark:border-[#273142] pb-safe transition-colors select-none shadow-lg">
+      <div className="flex items-center justify-around h-16 px-1 max-w-lg mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -48,19 +48,19 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center justify-center flex-1 py-1 h-full min-w-[48px] min-h-[48px] px-0.5 rounded-lg transition-colors relative cursor-pointer ${
+              className={`flex flex-col items-center justify-center flex-1 py-1 h-full min-w-[48px] min-h-[48px] px-1 rounded-2xl transition-all relative cursor-pointer ${
                 isActive
-                  ? 'text-[#142D4E] dark:text-[#93C5FD] font-semibold'
-                  : 'text-[#667085] dark:text-[#94A3B8] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
+                  ? 'text-[#166534] dark:text-[#45d320] font-semibold'
+                  : 'text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-[#ffffff]'
               }`}
             >
               <div className="relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.2]' : 'stroke-[1.7]'}`} />
+                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.4] text-[#166534] dark:text-[#45d320]' : 'stroke-[1.8]'}`} />
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#142D4E] dark:bg-[#93C5FD]" />
+                  <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#33b712]" />
                 )}
               </div>
-              <span className="text-[9.5px] sm:text-[10px] font-sans mt-1 tracking-tight truncate max-w-full">
+              <span className="text-[10px] font-heading mt-1 tracking-tight truncate max-w-full">
                 {tab.label}
               </span>
             </button>

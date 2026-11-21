@@ -6,51 +6,66 @@
   --font-sans:
     'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;
+  --font-heading:
+    'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
   --font-mono:
     'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
 
-  --color-academic-green: #142d4e;
-  --color-academic-green-dark: #0e1f36;
-  --color-academic-green-light: #1c3b65;
+  /* Innopolis University Brand & Accent Tokens */
+  --color-innopolis-green: #33b712;
+  --color-innopolis-green-light: #63ec41;
+  --color-innopolis-green-dark: #27960d;
+  --color-innopolis-green-accent: #45d320;
+  --color-innopolis-dark: #161821;
+  --color-innopolis-canvas: #ebeef3;
+  --color-innopolis-panel: #f6f6f9;
+
+  /* Backward-compatible semantic color variables */
+  --color-academic-green: #33b712;
+  --color-academic-green-dark: #27960d;
+  --color-academic-green-light: #63ec41;
   --color-warm-ivory: #ffffff;
   --color-warm-ivory-light: #f8fafc;
-  --color-burgundy: #c63740;
-  --color-burgundy-light: #d9454e;
-  --color-charcoal: #0f1d30;
-  --color-charcoal-muted: #475467;
-  --color-antique-gold: #245a91;
-  --color-antique-gold-light: #3879bc;
+  --color-burgundy: #ff4d8b;
+  --color-burgundy-light: #ff7675;
+  --color-charcoal: #161821;
+  --color-charcoal-muted: #6b7280;
+  --color-antique-gold: #33b712;
+  --color-antique-gold-light: #63ec41;
   --color-pure-white: #ffffff;
 }
 
 @layer base {
   :root {
-    --bg-primary: #f2f4f7;
+    --bg-primary: #ebeef3;
     --bg-surface: #ffffff;
-    --bg-surface-subtle: #f8fafc;
-    --text-primary: #0f1d30;
-    --text-secondary: #475467;
-    --text-muted: #667085;
-    --border-subtle: #dce2ea;
-    --border-strong: #cbd5e1;
-    --accent-green: #142d4e;
-    --accent-gold: #245a91;
-    --accent-burgundy: #c63740;
+    --bg-surface-subtle: #f6f6f9;
+    --text-primary: #161821;
+    --text-secondary: #4b5563;
+    --text-muted: #8a8b90;
+    --border-subtle: #e2e4e8;
+    --border-strong: #dadae7;
+    --accent-green: #33b712;
+    --accent-green-light: #63ec41;
+    --accent-gold: #45d320;
+    --accent-burgundy: #ff4d8b;
   }
 
   .dark {
-    --bg-primary: #0b1524;
-    --bg-surface: #112238;
-    --bg-surface-subtle: #162a45;
+    --bg-primary: #0f121a;
+    --bg-surface: #171c26;
+    --bg-surface-subtle: #1e2533;
     --text-primary: #ffffff;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
-    --border-subtle: #1e395b;
-    --border-strong: #274c78;
-    --accent-green: #60a5fa;
-    --accent-gold: #93c5fd;
-    --accent-burgundy: #f06a73;
+    --border-subtle: #273142;
+    --border-strong: #334155;
+    --accent-green: #45d320;
+    --accent-green-light: #63ec41;
+    --accent-gold: #45d320;
+    --accent-burgundy: #ff7675;
   }
 
   * {
@@ -86,7 +101,12 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-sans);
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
   }
 
   /* Secondary font: JetBrains Mono exclusively for numerical & tabular data */
@@ -100,7 +120,47 @@
   }
 }
 
-/* Custom scrollbar */
+/* Innopolis UI Component Helpers */
+.btn-innopolis-primary {
+  background: radial-gradient(50% 50% at 50% 0%, #63ec41 0%, #33b712 100%);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(51, 183, 18, 0.28);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-innopolis-primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(51, 183, 18, 0.36);
+}
+.btn-innopolis-primary:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+.btn-innopolis-dark {
+  background-color: #161821;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+.btn-innopolis-dark:hover {
+  background-color: #262a38;
+}
+
+.card-innopolis {
+  background-color: var(--bg-surface);
+  border-radius: 1.75rem; /* 28px */
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Custom scrollbar with Innopolis green accent */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -109,11 +169,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(36, 90, 145, 0.3);
+  background: rgba(51, 183, 18, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(36, 90, 145, 0.6);
+  background: rgba(51, 183, 18, 0.65);
 }
 
 /* ГОСТ Р 52872-2019 / WCAG AAA High Contrast Accessibility Mode */
@@ -125,6 +185,6 @@ html.accessibility-mode button,
 html.accessibility-mode a,
 html.accessibility-mode input,
 html.accessibility-mode select {
-  outline: 2px solid #1d4ed8 !important;
+  outline: 2px solid #33b712 !important;
   outline-offset: 1px !important;
 }

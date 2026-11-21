@@ -267,35 +267,35 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
   const statusBadges: Record<RequestStatus, { label: string; color: string }> = {
     submitted: {
       label: getRequestStatusLabel('submitted', lang, 'staff'),
-      color: 'bg-[#142D4E]/10 text-[#142D4E] dark:text-[#60A5FA] border-[#142D4E]/25',
+      color: 'bg-[#161821]/10 text-[#161821] dark:text-[#45d320] border-[#161821]/25',
     },
     in_review: {
       label: getRequestStatusLabel('in_review', lang, 'staff'),
-      color: 'bg-[#142D4E]/20 text-[#142D4E] dark:text-[#60A5FA] border-[#142D4E]/35',
+      color: 'bg-[#161821]/20 text-[#161821] dark:text-[#45d320] border-[#161821]/35',
     },
     needs_info: {
       label: getRequestStatusLabel('needs_info', lang, 'staff'),
-      color: 'bg-[#C63740]/15 text-[#991B1B] dark:text-[#F06A73] border-[#C63740]/30',
+      color: 'bg-[#ff4d8b]/15 text-[#be123c] dark:text-[#fecdd3] border-[#ff4d8b]/30',
     },
     ready: {
       label: getRequestStatusLabel('ready', lang, 'staff'),
-      color: 'bg-[#142D4E] text-[#FFFFFF] border-[#60A5FA]/40',
+      color: 'bg-[#161821] text-[#FFFFFF] border-[#45d320]/40',
     },
     rejected: {
       label: getRequestStatusLabel('rejected', lang, 'staff'),
-      color: 'bg-[#C63740]/15 text-[#C63740] dark:text-[#FCA5A5] border-[#C63740]/30',
+      color: 'bg-[#ff4d8b]/15 text-[#be123c] dark:text-[#fecdd3] border-[#ff4d8b]/30',
     },
     cancelled: {
       label: getRequestStatusLabel('cancelled', lang, 'staff'),
-      color: 'bg-[#F8FAFC] dark:bg-[#0E1B2D] text-[#667085] dark:text-[#94A3B8] border-[#DCE2EA] dark:border-[#1E395B]',
+      color: 'bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] border-[#e2e4e8] dark:border-[#273142]',
     },
   };
 
   if (loading && requests.length === 0) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-4 animate-pulse">
-        <div className="h-28 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
-        <div className="h-80 bg-[#DCE2EA]/40 dark:bg-[#162A45] rounded-xl" />
+        <div className="h-28 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
+        <div className="h-80 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
       </div>
     );
   }
@@ -304,9 +304,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* Toast Feedback */}
       {feedback && (
-        <div className="p-4 rounded-xl bg-[#142D4E] text-[#FFFFFF] border border-[#245A91]/50 flex items-center justify-between shadow-md animate-fade-in text-xs font-sans">
+        <div className="p-4 rounded-xl bg-[#161821] text-[#FFFFFF] border border-[#33b712]/50 flex items-center justify-between shadow-md animate-fade-in text-xs font-sans">
           <div className="flex items-center space-x-2">
-            <CheckCircle className="w-5 h-5 text-[#245A91] flex-shrink-0" />
+            <CheckCircle className="w-5 h-5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
             <span>{feedback}</span>
           </div>
           <button
@@ -319,10 +319,10 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       )}
 
       {/* 1. Header & Section Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#DCE2EA] dark:border-[#193150]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e2e4e8] dark:border-[#273142]">
         <div>
-          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#142D4E] dark:text-[#93C5FD] font-semibold mb-1">
-            <ShieldCheck className="w-4 h-4 text-[#142D4E] dark:text-[#93C5FD]" />
+          <div className="inline-flex items-center space-x-2 text-xs font-mono text-[#161821] dark:text-[#45d320] font-semibold mb-1">
+            <ShieldCheck className="w-4 h-4 text-[#161821] dark:text-[#45d320]" />
             <span>
               {tr(
                 lang,
@@ -333,7 +333,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             <span>•</span>
             <span>{tr(lang, 'Мария Волкова', 'Maria Volkova')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F1D30] dark:text-[#FFFFFF]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161821] dark:text-[#FFFFFF]">
             {currentSection === 'requests'
               ? tr(lang, 'Заявления и документы студентов', 'Student Requests & Documents')
               : tr(
@@ -342,7 +342,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   "Dean's Office Announcements & Broadcasts"
                 )}
           </h1>
-          <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans mt-0.5">
+          <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans mt-0.5">
             {currentSection === 'requests'
               ? tr(
                   lang,
@@ -359,7 +359,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
         {/* Section Tabs */}
         <div className="flex items-center space-x-2">
-          <div className="flex items-center bg-[#F8FAFC] dark:bg-[#0E1B2D] p-1 rounded-lg border border-[#DCE2EA] dark:border-[#1E395B] text-xs font-sans font-medium">
+          <div className="flex items-center bg-[#f6f6f9] dark:bg-[#121620] p-1 rounded-lg border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans font-medium">
             <button
               onClick={() => {
                 setSectionOverride('requests');
@@ -367,8 +367,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               }}
               className={`px-3 py-1.5 rounded-md transition-all flex items-center space-x-1.5 cursor-pointer ${
                 currentSection === 'requests'
-                  ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
-                  : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
+                  ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
+                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821] dark:hover:text-[#FFFFFF]'
               }`}
             >
               <Inbox className="w-3.5 h-3.5" />
@@ -383,11 +383,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               }}
               className={`px-3 py-1.5 rounded-md transition-all flex items-center space-x-1.5 cursor-pointer ${
                 currentSection === 'announcements'
-                  ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold shadow-xs'
-                  : 'text-[#475467] dark:text-[#CBD5E1] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF]'
+                  ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
+                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821] dark:hover:text-[#FFFFFF]'
               }`}
             >
-              <Megaphone className="w-3.5 h-3.5 text-[#93C5FD]" />
+              <Megaphone className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
               <span>
                 {tr(lang, 'Объявления', 'Announcements')} ({announcements.length})
               </span>
@@ -398,9 +398,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             onClick={() => setIsAnnounceModalOpen(true)}
             aria-label={tr(lang, 'Создать объявление', 'New Announcement')}
             title={tr(lang, 'Создать объявление', 'New Announcement')}
-            className="px-3.5 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 transition-colors flex items-center space-x-1.5 shadow-xs cursor-pointer"
+            className="px-3.5 py-2 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 transition-colors flex items-center space-x-1.5 shadow-xs cursor-pointer"
           >
-            <Send className="w-3.5 h-3.5 text-[#93C5FD]" />
+            <Send className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
             <span className="hidden sm:inline">
               {tr(lang, 'Создать объявление', 'New Announcement')}
             </span>
@@ -412,11 +412,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       {currentSection === 'announcements' && (
         <div className="space-y-6">
           {/* Create Announcement Direct Card */}
-          <div className="rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
+          <div className="rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
               <div className="flex items-center space-x-2">
-                <Megaphone className="w-5 h-5 text-[#245A91]" />
-                <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+                <Megaphone className="w-5 h-5 text-[#166534] dark:text-[#45d320]" />
+                <h3 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
                   {tr(
                     lang,
                     'Опубликовать новое распоряжение или уведомление',
@@ -424,7 +424,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   )}
                 </h3>
               </div>
-              <span className="text-[11px] font-mono text-[#667085] dark:text-[#94A3B8]">
+              <span className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">
                 {tr(
                   lang,
                   'Доставка в личный кабинет студента и push',
@@ -435,7 +435,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
             {/* Quick Templates */}
             <div>
-              <span className="text-[11px] font-sans font-semibold uppercase tracking-wider text-[#667085] dark:text-[#94A3B8] block mb-2">
+              <span className="text-[11px] font-sans font-semibold uppercase tracking-wider text-[#475569] dark:text-[#94A3B8] block mb-2">
                 {tr(lang, 'Быстрые шаблоны деканата:', "Dean's Office Quick Templates:")}
               </span>
               <div className="flex flex-wrap gap-2 text-xs font-sans">
@@ -457,7 +457,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       'urgent'
                     )
                   }
-                  className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors"
+                  className="px-2.5 py-1.5 rounded-md bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors"
                 >
                   {tr(lang, '⚡ Сроки пересдач задолженностей', '⚡ Retake Examination Deadlines')}
                 </button>
@@ -479,7 +479,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       'high'
                     )
                   }
-                  className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors"
+                  className="px-2.5 py-1.5 rounded-md bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors"
                 >
                   {tr(lang, '📑 Прием заявлений на ПГАС', '📑 PGAS Scholarship Applications')}
                 </button>
@@ -501,7 +501,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       'normal'
                     )
                   }
-                  className="px-2.5 py-1.5 rounded-md bg-[#F8FAFC] dark:bg-[#0E1B2D] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors"
+                  className="px-2.5 py-1.5 rounded-md bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors"
                 >
                   {tr(lang, '📄 Готовность макетов справок', '📄 Certificate Previews Ready')}
                 </button>
@@ -515,7 +515,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Target Audience */}
                 <div>
-                  <label htmlFor="announce-target-select" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                  <label htmlFor="announce-target-select" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                     {tr(lang, 'Получатели (Аудитория)', 'Recipients (Audience)')}
                   </label>
                   <select
@@ -523,7 +523,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     aria-label={tr(lang, 'Получатели (Аудитория)', 'Recipients (Audience)')}
                     value={announceTarget}
                     onChange={(e) => setAnnounceTarget(e.target.value)}
-                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#161821]"
                   >
                     <option value="all">
                       {tr(lang, 'Все студенты (Все группы)', 'All Students (All Groups)')}
@@ -550,7 +550,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
                 {/* Notification Kind */}
                 <div>
-                  <label htmlFor="announce-kind-select" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                  <label htmlFor="announce-kind-select" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                     {tr(lang, 'Категория сообщения', 'Message Category')}
                   </label>
                   <select
@@ -558,7 +558,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     aria-label={tr(lang, 'Категория сообщения', 'Message Category')}
                     value={announceKind}
                     onChange={(e) => setAnnounceKind(e.target.value as NotificationKind)}
-                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#161821]"
                   >
                     <option value="announcement">
                       {tr(lang, '📢 Официальное объявление', '📢 Official Announcement')}
@@ -581,7 +581,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
                 {/* Priority */}
                 <div>
-                  <label htmlFor="announce-priority-select" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                  <label htmlFor="announce-priority-select" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                     {tr(lang, 'Приоритет', 'Priority')}
                   </label>
                   <select
@@ -591,7 +591,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     onChange={(e) =>
                       setAnnouncePriority(e.target.value as 'normal' | 'high' | 'urgent')
                     }
-                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#161821]"
                   >
                     <option value="normal">
                       {tr(lang, 'Обычное (В список уведомлений)', 'Normal (Notification Feed)')}
@@ -611,7 +611,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                <label className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                   {tr(lang, 'Заголовок объявления', 'Announcement Title')}
                 </label>
                 <input
@@ -624,12 +624,12 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     'Например: О графике проведения пересдач осенней сессии',
                     'e.g., Fall Semester Retake Examination Schedule'
                   )}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#161821]"
                 />
               </div>
 
               <div>
-                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                <label className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                   {tr(lang, 'Текст сообщения', 'Message Body')}
                 </label>
                 <textarea
@@ -642,7 +642,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     'Полный текст распоряжения с указанием дат, мест проведения и порядка действий для студентов...',
                     'Full text of the directive including dates, rooms, and required student actions...'
                   )}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#161821]"
                 />
               </div>
 
@@ -650,9 +650,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 <button
                   type="submit"
                   disabled={sendingAnnounce}
-                  className="px-5 py-2.5 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs flex items-center space-x-2 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 shadow-xs flex items-center space-x-2 disabled:opacity-50"
                 >
-                  <Send className="w-4 h-4 text-[#245A91]" />
+                  <Send className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                   <span>
                     {sendingAnnounce
                       ? tr(lang, 'Отправка...', 'Sending...')
@@ -664,11 +664,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
           </div>
 
           {/* History of published announcements */}
-          <div className="rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#DCE2EA] dark:border-[#193150]">
+          <div className="rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
               <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-[#142D4E] dark:text-[#245A91]" />
-                <h3 className="font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#0F1D30] dark:text-[#FFFFFF]">
+                <Clock className="w-4 h-4 text-[#161821] dark:text-[#45d320]" />
+                <h3 className="font-sans font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#161821] dark:text-[#FFFFFF]">
                   {tr(
                     lang,
                     'Журнал опубликованных распоряжений деканата',
@@ -680,7 +680,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             </div>
 
             {announcements.length === 0 ? (
-              <p className="text-xs text-[#667085] dark:text-[#94A3B8] text-center py-6">
+              <p className="text-xs text-[#475569] dark:text-[#94A3B8] text-center py-6">
                 {tr(
                   lang,
                   'Ранее опубликованных объявлений не найдено.',
@@ -688,7 +688,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 )}
               </p>
             ) : (
-              <div className="divide-y divide-[#DCE2EA] dark:divide-[#193150]">
+              <div className="divide-y divide-[#e2e4e8] dark:divide-[#273142]">
                 {announcements.map((ann) => {
                   const dateStr = new Date(ann.createdAt).toLocaleString(
                     lang === 'ru' ? 'ru-RU' : 'en-US',
@@ -707,10 +707,10 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           <span
                             className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
                               ann.priority === 'urgent'
-                                ? 'bg-[#C63740] text-[#FFFFFF]'
+                                ? 'bg-[#be123c] text-white'
                                 : ann.priority === 'high'
-                                  ? 'bg-[#245A91] text-[#FFFFFF]'
-                                  : 'bg-[#142D4E]/15 dark:bg-[#245A91]/25 text-[#142D4E] dark:text-[#93C5FD]'
+                                  ? 'bg-[#166534] text-white'
+                                  : 'bg-[#161821]/15 dark:bg-[#33b712]/25 text-[#161821] dark:text-[#45d320]'
                             }`}
                           >
                             {ann.priority === 'urgent'
@@ -719,27 +719,27 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                                 ? tr(lang, 'Важно', 'Important')
                                 : tr(lang, 'Обычное', 'Normal')}
                           </span>
-                          <span className="text-xs font-mono font-semibold text-[#142D4E] dark:text-[#93C5FD]">
+                          <span className="text-xs font-mono font-semibold text-[#161821] dark:text-[#45d320]">
                             {tr(lang, 'Целевая группа', 'Target Group')}:{' '}
                             {ann.targetGroup === 'all'
                               ? tr(lang, 'Все студенты', 'All Students')
                               : ann.targetGroup}
                           </span>
                         </div>
-                        <span className="text-[11px] font-mono text-[#667085] dark:text-[#94A3B8]">{dateStr}</span>
+                        <span className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">{dateStr}</span>
                       </div>
 
-                      <h4 className="font-semibold text-sm text-[#0F1D30] dark:text-[#FFFFFF]">
+                      <h4 className="font-semibold text-sm text-[#161821] dark:text-[#FFFFFF]">
                         {ann.title}
                       </h4>
 
-                      <p className="text-xs text-[#475467] dark:text-[#CBD5E1] font-sans leading-relaxed">
+                      <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans leading-relaxed">
                         {ann.body}
                       </p>
 
                       <div className="flex items-center justify-between pt-1">
-                        <div className="flex items-center space-x-2 text-[11px] text-[#667085] dark:text-[#94A3B8]">
-                          <Users className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#245A91]" />
+                        <div className="flex items-center space-x-2 text-[11px] text-[#475569] dark:text-[#94A3B8]">
+                          <Users className="w-3.5 h-3.5 text-[#161821] dark:text-[#45d320]" />
                           <span>
                             {tr(lang, 'Доставлено получателям', 'Delivered to recipients')} (
                             {ann.recipientCount || tr(lang, 'Все студенты', 'All Students')})
@@ -749,14 +749,14 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                         <button
                           type="button"
                           onClick={() => handleDeleteAnnouncement(ann.id, ann.title)}
-                          className="inline-flex items-center space-x-1 px-2.5 py-1 rounded text-[11px] font-sans font-medium text-[#C63740] dark:text-[#FCA5A5] hover:bg-[#C63740]/10 border border-[#C63740]/30 hover:border-[#C63740] transition-colors cursor-pointer"
+                          className="inline-flex items-center space-x-1 px-2.5 py-1 rounded text-[11px] font-sans font-medium text-[#be123c] dark:text-[#fecdd3] hover:bg-[#ff4d8b]/10 border border-[#ff4d8b]/30 hover:border-[#ff4d8b] transition-colors cursor-pointer"
                           title={tr(
                             lang,
                             'Отозвать распоряжение и удалить из журнала',
                             'Revoke directive and remove from log'
                           )}
                         >
-                          <Trash2 className="w-3 h-3 text-[#C63740] dark:text-[#FCA5A5]" />
+                          <Trash2 className="w-3 h-3 text-[#be123c] dark:text-[#fecdd3]" />
                           <span>{tr(lang, 'Отозвать / Удалить', 'Revoke / Delete')}</span>
                         </button>
                       </div>
@@ -774,7 +774,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
         <div className="space-y-6">
           {/* Filter Bar */}
           <div className="flex flex-wrap items-center gap-2 text-xs pb-1 font-sans">
-            <Filter className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8] mr-1 flex-shrink-0" />
+            <Filter className="w-3.5 h-3.5 text-[#475569] dark:text-[#94A3B8] mr-1 flex-shrink-0" />
             {[
               {
                 id: 'all',
@@ -822,8 +822,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 onClick={() => setFilter(t.id)}
                 className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all font-medium ${
                   filter === t.id
-                    ? 'bg-[#142D4E] text-[#FFFFFF] font-semibold'
-                    : 'bg-white dark:bg-[#112238] text-[#475467] dark:text-[#CBD5E1] border border-[#DCE2EA] dark:border-[#1E395B] hover:bg-[#F8FAFC]'
+                    ? 'bg-[#161821] text-[#FFFFFF] font-semibold'
+                    : 'bg-white dark:bg-[#171c26] text-[#475569] dark:text-[#CBD5E1] border border-[#e2e4e8] dark:border-[#273142] hover:bg-[#f6f6f9]'
                 }`}
               >
                 {t.label}
@@ -833,12 +833,12 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
           {/* Requests Queue List */}
           {filtered.length === 0 ? (
-            <div className="p-12 text-center rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B]">
-              <FileCheck className="w-10 h-10 text-[#245A91] mx-auto mb-2 opacity-60" />
-              <p className="text-sm font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
+            <div className="p-12 text-center rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142]">
+              <FileCheck className="w-10 h-10 text-[#166534] dark:text-[#45d320] mx-auto mb-2 opacity-60" />
+              <p className="text-sm font-semibold text-[#161821] dark:text-[#FFFFFF]">
                 {tr(lang, 'Нет заявлений в выбранной очереди', 'No requests in the selected queue')}
               </p>
-              <p className="text-xs text-[#667085] dark:text-[#94A3B8] mt-1 font-sans">
+              <p className="text-xs text-[#475569] dark:text-[#94A3B8] mt-1 font-sans">
                 {tr(
                   lang,
                   'Все поступившие обращения студентов обработаны.',
@@ -865,7 +865,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                 return (
                   <div
                     key={req.id}
-                    className="p-5 rounded-xl bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] shadow-xs flex flex-col gap-3 hover:border-[#142D4E]/40 transition-all"
+                    className="p-5 rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs flex flex-col gap-3 hover:border-[#161821]/40 transition-all"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
@@ -875,9 +875,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           >
                             {badge.label}
                           </span>
-                          <span className="font-mono text-xs text-[#667085] dark:text-[#94A3B8]">№ {req.id}</span>
+                          <span className="font-mono text-xs text-[#475569] dark:text-[#94A3B8]">№ {req.id}</span>
                         </div>
-                        <h3 className="font-semibold text-base text-[#0F1D30] dark:text-[#FFFFFF]">
+                        <h3 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
                           {localizeText(req.typeTitle, lang)}
                         </h3>
                       </div>
@@ -889,31 +889,31 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                             setNewStatus(req.status);
                             setComment('');
                           }}
-                          className="px-3.5 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 shadow-xs flex items-center space-x-1.5 transition-colors"
+                          className="px-3.5 py-2 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 shadow-xs flex items-center space-x-1.5 transition-colors"
                         >
-                          <FileCheck className="w-3.5 h-3.5 text-[#93C5FD]" />
+                          <FileCheck className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
                           <span>{tr(lang, 'Изменить статус', 'Update Status')}</span>
                         </button>
                       </div>
                     </div>
 
                     {/* Student Info Box */}
-                    <div className="p-3 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] flex flex-wrap items-center justify-between text-xs font-sans gap-2">
+                    <div className="p-3 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex flex-wrap items-center justify-between text-xs font-sans gap-2">
                       <div className="flex items-center space-x-2">
-                        <User className="w-3.5 h-3.5 text-[#142D4E] dark:text-[#93C5FD]" />
-                        <span className="font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
+                        <User className="w-3.5 h-3.5 text-[#161821] dark:text-[#45d320]" />
+                        <span className="font-semibold text-[#161821] dark:text-[#FFFFFF]">
                           {req.studentName || tr(lang, 'Студент факультета', 'Faculty Student')}
                         </span>
-                        <span className="text-[#667085] dark:text-[#94A3B8]">({req.studentGroup || 'ДУ-101'})</span>
+                        <span className="text-[#475569] dark:text-[#94A3B8]">({req.studentGroup || 'ДУ-101'})</span>
                         <button
                           type="button"
                           onClick={() => handleOpenStudentDossier(req.studentId)}
-                          className="ml-2 px-2 py-0.5 rounded text-[10px] font-sans font-medium text-[#142D4E] dark:text-[#93C5FD] hover:bg-[#EDF2F7] dark:hover:bg-[#1E2923] border border-[#DCE2EA] dark:border-[#1E395B] transition-colors cursor-pointer"
+                          className="ml-2 px-2 py-0.5 rounded text-[10px] font-sans font-medium text-[#161821] dark:text-[#45d320] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] border border-[#e2e4e8] dark:border-[#273142] transition-colors cursor-pointer"
                         >
                           {tr(lang, 'Личное дело', 'Student Dossier')}
                         </button>
                       </div>
-                      <div className="text-[11px] font-mono text-[#667085] dark:text-[#94A3B8]">
+                      <div className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">
                         {tr(lang, 'Подано', 'Submitted')}: {dateStr} •{' '}
                         {tr(lang, 'Срок ответа: до', 'Due by')} {req.expectedDate}
                       </div>
@@ -923,9 +923,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     {req.data && Object.keys(req.data).length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-sans pt-1">
                         {Object.entries(req.data).map(([key, val]) => (
-                          <div key={key} className="text-[#475467] dark:text-[#CBD5E1]">
-                            <span className="text-[#667085] dark:text-[#94A3B8] capitalize">{key}: </span>
-                            <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                          <div key={key} className="text-[#475569] dark:text-[#CBD5E1]">
+                            <span className="text-[#475569] dark:text-[#94A3B8] capitalize">{key}: </span>
+                            <span className="font-medium text-[#161821] dark:text-[#FFFFFF]">
                               {String(val)}
                             </span>
                           </div>
@@ -943,13 +943,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       {/* 4. Status Change & Digital Signing Modal */}
       {selectedReq && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
-          <div className="w-full max-w-lg bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] shadow-2xl overflow-hidden">
-            <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between">
+          <div className="w-full max-w-lg bg-white dark:bg-[#171c26] rounded-xl border border-[#e2e4e8] dark:border-[#273142] shadow-2xl overflow-hidden">
+            <div className="p-4 bg-[#161821] text-[#FFFFFF] flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-sm text-[#FFFFFF]">
                   {tr(lang, 'Решение по заявлению №', 'Decision for Request #')} {selectedReq.id}
                 </h3>
-                <p className="text-xs text-[#93C5FD] font-sans">
+                <p className="text-xs text-[#166534] dark:text-[#45d320] font-sans">
                   {localizeText(selectedReq.typeTitle, lang)} • {selectedReq.studentName} (
                   {selectedReq.studentGroup})
                 </p>
@@ -967,7 +967,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               className="p-6 space-y-4 text-xs sm:text-sm font-sans"
             >
               <div>
-                <label htmlFor="status-modal-select" className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                <label htmlFor="status-modal-select" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                   {tr(lang, 'Установить новый статус:', 'Set new status:')}
                 </label>
                 <select
@@ -975,7 +975,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   aria-label={tr(lang, 'Установить новый статус:', 'Set new status:')}
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as RequestStatus)}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#161821]"
                 >
                   <option value="in_review">
                     {tr(
@@ -1005,7 +1005,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                <label className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                   {tr(
                     lang,
                     'Официальный комментарий деканата для студента:',
@@ -1021,22 +1021,22 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     'Например: Документ подготовлен и доступен для просмотра в личном кабинете (демо-макет).',
                     'e.g., Document has been prepared and is available for preview in your portal.'
                   )}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#142D4E]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#161821]"
                 />
               </div>
 
-              <div className="pt-3 border-t border-[#DCE2EA] dark:border-[#193150] flex items-center justify-end space-x-2">
+              <div className="pt-3 border-t border-[#e2e4e8] dark:border-[#273142] flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setSelectedReq(null)}
-                  className="px-4 py-2 text-xs font-sans text-[#667085] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#162A45] rounded-lg cursor-pointer"
+                  className="px-4 py-2 text-xs font-sans text-[#475569] dark:text-[#94A3B8] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] rounded-lg cursor-pointer"
                 >
                   {tr(lang, 'Отмена', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={updating}
-                  className="px-4 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 disabled:opacity-50"
                 >
                   {updating
                     ? tr(lang, 'Сохранение...', 'Saving...')
@@ -1051,13 +1051,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
       {/* 5. Separate Broadcast Announcement Modal */}
       {isAnnounceModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
-          <div className="w-full max-w-lg bg-white dark:bg-[#112238] rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] shadow-2xl overflow-hidden">
-            <div className="p-4 bg-[#142D4E] text-[#FFFFFF] flex items-center justify-between">
+          <div className="w-full max-w-lg bg-white dark:bg-[#171c26] rounded-xl border border-[#e2e4e8] dark:border-[#273142] shadow-2xl overflow-hidden">
+            <div className="p-4 bg-[#161821] text-[#FFFFFF] flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-sm text-[#FFFFFF]">
                   {tr(lang, 'Публикация официального распоряжения', 'Publish Official Directive')}
                 </h3>
-                <p className="text-xs text-[#245A91] font-sans">
+                <p className="text-xs text-[#166534] dark:text-[#45d320] font-sans">
                   {tr(
                     lang,
                     'Рассылка уведомления в личные кабинеты студентов',
@@ -1079,13 +1079,13 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             >
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                  <label className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                     {tr(lang, 'Получатели', 'Recipients')}
                   </label>
                   <select
                     value={announceTarget}
                     onChange={(e) => setAnnounceTarget(e.target.value)}
-                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF]"
                   >
                     <option value="all">{tr(lang, 'Все студенты', 'All Students')}</option>
                     <option value="ДУ-101">{tr(lang, 'Группа ДУ-101', 'Group ДУ-101')}</option>
@@ -1098,7 +1098,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                  <label className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                     {tr(lang, 'Приоритет', 'Priority')}
                   </label>
                   <select
@@ -1106,7 +1106,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     onChange={(e) =>
                       setAnnouncePriority(e.target.value as 'normal' | 'high' | 'urgent')
                     }
-                    className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
+                    className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF]"
                   >
                     <option value="normal">{tr(lang, 'Обычное', 'Normal')}</option>
                     <option value="high">{tr(lang, 'Важное', 'Important')}</option>
@@ -1116,7 +1116,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                <label className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                   {tr(lang, 'Заголовок объявления', 'Announcement Title')}
                 </label>
                 <input
@@ -1129,12 +1129,12 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     'Например: О графике проведения пересдач осенней сессии',
                     'e.g., Fall Semester Retake Examination Schedule'
                   )}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF]"
                 />
               </div>
 
               <div>
-                <label className="block font-medium text-[#0F1D30] dark:text-[#FFFFFF] mb-1.5">
+                <label className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1.5">
                   {tr(lang, 'Текст сообщения', 'Message Body')}
                 </label>
                 <textarea
@@ -1147,22 +1147,22 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     'Полный текст приказа с указанием дат, аудиторий и порядка действий...',
                     'Full text of the directive including dates, rooms, and required steps...'
                   )}
-                  className="w-full bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] rounded-lg px-3 py-2 text-[#0F1D30] dark:text-[#FFFFFF]"
+                  className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-lg px-3 py-2 text-[#161821] dark:text-[#FFFFFF]"
                 />
               </div>
 
-              <div className="pt-3 border-t border-[#DCE2EA] dark:border-[#193150] flex items-center justify-end space-x-2">
+              <div className="pt-3 border-t border-[#e2e4e8] dark:border-[#273142] flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsAnnounceModalOpen(false)}
-                  className="px-4 py-2 text-xs font-sans text-[#667085] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#162A45] rounded-lg cursor-pointer"
+                  className="px-4 py-2 text-xs font-sans text-[#475569] dark:text-[#94A3B8] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] rounded-lg cursor-pointer"
                 >
                   {tr(lang, 'Отмена', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={sendingAnnounce}
-                  className="px-4 py-2 rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#245A91]/40 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 disabled:opacity-50"
                 >
                   {sendingAnnounce
                     ? tr(lang, 'Отправка...', 'Sending...')

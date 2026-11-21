@@ -52,14 +52,14 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label={tr(lang, 'Досье студента', 'Student Dossier')}
-          className="bg-white dark:bg-[#112238] rounded-2xl max-w-4xl w-full border border-[#DCE2EA] dark:border-[#1E395B] shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]"
+          className="bg-white dark:bg-[#171c26] rounded-2xl max-w-4xl w-full border border-[#e2e4e8] dark:border-[#273142] shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]"
         >
           {/* Header */}
-          <div className="p-5 sm:p-6 bg-[#F8FAFC] dark:bg-[#0E1F36] border-b border-[#DCE2EA] dark:border-[#193150] relative">
+          <div className="p-5 sm:p-6 bg-[#f6f6f9] dark:bg-[#11141c] border-b border-[#e2e4e8] dark:border-[#273142] relative">
             <button
               onClick={onClose}
               aria-label={tr(lang, 'Закрыть', 'Close')}
-              className="absolute top-4 right-4 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-[#667085] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45] transition-colors cursor-pointer"
+              className="absolute top-4 right-4 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-[#FFFFFF] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -69,19 +69,19 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 <img
                   src={resolveAvatarSrc(profile.avatarUrl, profile.fullName)}
                   alt={profile.fullName}
-                  className="w-20 h-20 rounded-xl object-cover border-2 border-[#245A91] shadow-md"
+                  className="w-20 h-20 rounded-xl object-cover border-2 border-[#33b712] shadow-md"
                 />
-                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#142D4E] border-2 border-white dark:border-[#112238] flex items-center justify-center text-[10px] text-[#93C5FD]">
+                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#161821] border-2 border-white dark:border-[#171c26] flex items-center justify-center text-[10px] text-[#166534] dark:text-[#45d320]">
                   ✓
                 </span>
               </div>
 
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[#142D4E] text-[#93C5FD]">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[#161821] text-[#45d320]">
                     {tr(lang, 'ГРУППА', 'GROUP')} {profile.group}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-sans font-medium bg-[#EDF2F7] dark:bg-[#1E2923] text-[#0F1D30] dark:text-[#FFFFFF]">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-sans font-medium bg-[#ebeef3] dark:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF]">
                     {tr(lang, `${profile.year} курс`, `Year ${profile.year}`)}
                   </span>
                   <span
@@ -94,7 +94,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                     {getStudyFormLabel(profile.studyForm, lang)}
                   </span>
                   {profile.isStarosta && (
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-sans font-bold bg-[#245A91]/20 text-[#1D4876] dark:text-[#93C5FD] border border-[#245A91]/40">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-sans font-bold bg-[#33b712]/20 text-[#1D4876] dark:text-[#45d320] border border-[#33b712]/40">
                       {tr(lang, '★ Староста группы', '★ Group Rep')}
                     </span>
                   )}
@@ -109,10 +109,10 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                   )}
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-semibold text-[#142D4E] dark:text-[#FFFFFF]">
+                <h2 className="text-xl sm:text-2xl font-semibold text-[#161821] dark:text-[#FFFFFF]">
                   {profile.fullName}
                 </h2>
-                <p className="text-xs text-[#667085] dark:text-[#94A3B8] font-sans">
+                <p className="text-xs text-[#475569] dark:text-[#94A3B8] font-sans">
                   {localizeText(profile.program, lang)} • {tr(lang, 'Студ. билет:', 'Student ID:')}{' '}
                   <span className="font-mono font-semibold">{profile.studentNumber}</span>
                 </p>
@@ -120,39 +120,39 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
             </div>
 
             {/* Quick Metrics Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-[#DCE2EA] dark:border-[#193150] text-xs font-sans">
-              <div className="p-2.5 rounded-lg bg-white dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B]">
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block uppercase tracking-wider">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-[#e2e4e8] dark:border-[#273142] text-xs font-sans">
+              <div className="p-2.5 rounded-lg bg-white dark:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142]">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Средний балл (GPA)', 'Cumulative GPA')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#45d320]">
                   {profile.gpa.toFixed(2)}
                 </span>
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
                   {tr(lang, 'из 5.0', 'out of 5.0')}
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-white dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B]">
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block uppercase tracking-wider">
+              <div className="p-2.5 rounded-lg bg-white dark:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142]">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Рейтинг БРС', 'BRS Rating')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#45d320]">
                   {profile.averageScore}%
                 </span>
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
                   {tr(lang, 'текущая успеваемость', 'current standing')}
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-white dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B]">
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block uppercase tracking-wider">
+              <div className="p-2.5 rounded-lg bg-white dark:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142]">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Кредиты ECTS', 'ECTS Credits')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
+                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#FFFFFF]">
                   {gradesSummary.creditsEarned}
                 </span>
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
                   {tr(
                     lang,
                     `из ${gradesSummary.creditsRequired} за семестр`,
@@ -161,14 +161,14 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-white dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B]">
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block uppercase tracking-wider">
+              <div className="p-2.5 rounded-lg bg-white dark:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142]">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block uppercase tracking-wider">
                   {tr(lang, 'Заявления в деканат', 'Submitted Requests')}
                 </span>
-                <span className="font-mono text-lg font-bold text-[#0F1D30] dark:text-[#FFFFFF]">
+                <span className="font-mono text-lg font-bold text-[#161821] dark:text-[#FFFFFF]">
                   {requests.length}
                 </span>
-                <span className="text-[10px] text-[#667085] dark:text-[#94A3B8] block">
+                <span className="text-[10px] text-[#475569] dark:text-[#94A3B8] block">
                   {tr(lang, 'обращений подано', 'requests filed')}
                 </span>
               </div>
@@ -180,8 +180,8 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 onClick={() => setActiveTab('profile')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-colors cursor-pointer ${
                   activeTab === 'profile'
-                    ? 'bg-[#142D4E] text-[#FFFFFF]'
-                    : 'text-[#667085] dark:text-[#94A3B8] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45]'
+                    ? 'bg-[#161821] text-[#FFFFFF]'
+                    : 'text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533]'
                 }`}
               >
                 {tr(lang, 'Общие сведения и контакты', 'Overview & Contacts')}
@@ -190,8 +190,8 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 onClick={() => setActiveTab('grades')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-colors cursor-pointer flex items-center space-x-1.5 ${
                   activeTab === 'grades'
-                    ? 'bg-[#142D4E] text-[#FFFFFF]'
-                    : 'text-[#667085] dark:text-[#94A3B8] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45]'
+                    ? 'bg-[#161821] text-[#FFFFFF]'
+                    : 'text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533]'
                 }`}
               >
                 <span>{tr(lang, 'Успеваемость и зачетка', 'Grades & Record Book')}</span>
@@ -201,12 +201,12 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 onClick={() => setActiveTab('requests')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-colors cursor-pointer flex items-center space-x-1.5 ${
                   activeTab === 'requests'
-                    ? 'bg-[#142D4E] text-[#FFFFFF]'
-                    : 'text-[#667085] dark:text-[#94A3B8] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45]'
+                    ? 'bg-[#161821] text-[#FFFFFF]'
+                    : 'text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533]'
                 }`}
               >
                 <span>{tr(lang, 'Заявления и справки', 'Requests & Certificates')}</span>
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#DCE2EA] dark:bg-[#1E395B] font-mono">
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#e2e4e8] dark:bg-[#273142] font-mono">
                   {requests.length}
                 </span>
               </button>
@@ -220,37 +220,37 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Academic Standing */}
-                  <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-3">
-                    <h3 className="font-semibold text-xs uppercase tracking-wider text-[#142D4E] dark:text-[#93C5FD] flex items-center space-x-2">
+                  <div className="p-4 rounded-xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-3">
+                    <h3 className="font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#45d320] flex items-center space-x-2">
                       <GraduationCap className="w-4 h-4" />
                       <span>{tr(lang, 'Учебные реквизиты', 'Academic Record')}</span>
                     </h3>
                     <div className="space-y-2 text-xs font-sans">
                       <div>
-                        <span className="text-[#667085] dark:text-[#94A3B8] block text-[11px]">
+                        <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                           {tr(lang, 'Факультет:', 'Faculty:')}
                         </span>
-                        <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                        <span className="font-medium text-[#161821] dark:text-[#FFFFFF]">
                           {localizeText(profile.faculty, lang)}
                         </span>
                       </div>
                       <div>
-                        <span className="text-[#667085] dark:text-[#94A3B8] block text-[11px]">
+                        <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                           {tr(lang, 'Направление подготовки:', 'Academic Program:')}
                         </span>
-                        <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                        <span className="font-medium text-[#161821] dark:text-[#FFFFFF]">
                           {localizeText(profile.program, lang)}
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[11px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                             {tr(lang, 'Номер студбилета:', 'Student ID:')}
                           </span>
                           <span className="font-mono font-semibold">{profile.studentNumber}</span>
                         </div>
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[11px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                             {tr(lang, 'Номер зачетки:', 'Record Book No.:')}
                           </span>
                           <span className="font-mono font-semibold">
@@ -260,7 +260,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[11px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                             {tr(lang, 'Год зачисления:', 'Admission Year:')}
                           </span>
                           <span className="font-medium">
@@ -268,7 +268,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                           </span>
                         </div>
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[11px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[11px]">
                             {tr(lang, 'Форма финансирования:', 'Funding Type:')}
                           </span>
                           <span className="font-medium">
@@ -280,30 +280,30 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                   </div>
 
                   {/* Contact and Identity Information */}
-                  <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-3">
-                    <h3 className="font-semibold text-xs uppercase tracking-wider text-[#142D4E] dark:text-[#93C5FD] flex items-center space-x-2">
+                  <div className="p-4 rounded-xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-3">
+                    <h3 className="font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#45d320] flex items-center space-x-2">
                       <User className="w-4 h-4" />
                       <span>{tr(lang, 'Контакты и место жительства', 'Contacts & Residence')}</span>
                     </h3>
                     <div className="space-y-2.5 text-xs font-sans">
                       <div className="flex items-center space-x-2.5">
-                        <Mail className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8]" />
+                        <Mail className="w-3.5 h-3.5 text-[#475569] dark:text-[#94A3B8]" />
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[10px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[10px]">
                             {tr(lang, 'Корпоративный email:', 'University Email:')}
                           </span>
                           <a
                             href={`mailto:${profile.email}`}
-                            className="font-medium text-[#142D4E] dark:text-[#93C5FD] hover:underline"
+                            className="font-medium text-[#161821] dark:text-[#45d320] hover:underline"
                           >
                             {profile.email}
                           </a>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2.5">
-                        <Phone className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8]" />
+                        <Phone className="w-3.5 h-3.5 text-[#475569] dark:text-[#94A3B8]" />
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[10px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[10px]">
                             {tr(lang, 'Телефон для связи:', 'Contact Phone:')}
                           </span>
                           <span className="font-mono font-medium">
@@ -312,9 +312,9 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                         </div>
                       </div>
                       <div className="flex items-start space-x-2.5">
-                        <MapPin className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8] mt-0.5" />
+                        <MapPin className="w-3.5 h-3.5 text-[#475569] dark:text-[#94A3B8] mt-0.5" />
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[10px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[10px]">
                             {tr(lang, 'Место проживания:', 'Residence / Dormitory:')}
                           </span>
                           <span className="font-medium">
@@ -323,9 +323,9 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                         </div>
                       </div>
                       <div className="flex items-center space-x-2.5">
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#667085] dark:text-[#94A3B8]" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#475569] dark:text-[#94A3B8]" />
                         <div>
-                          <span className="text-[#667085] dark:text-[#94A3B8] block text-[10px]">
+                          <span className="text-[#475569] dark:text-[#94A3B8] block text-[10px]">
                             {tr(lang, 'СНИЛС:', 'Insurance ID (SNILS):')}
                           </span>
                           <span className="font-mono">{profile.snils || '184-293-841 02'}</span>
@@ -336,12 +336,12 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 </div>
 
                 {/* Admission decree record */}
-                <div className="p-3.5 rounded-xl bg-white dark:bg-[#162A45] border border-[#DCE2EA] dark:border-[#1E395B] flex items-center justify-between text-xs font-sans">
+                <div className="p-3.5 rounded-xl bg-white dark:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between text-xs font-sans">
                   <div>
-                    <span className="font-semibold text-[#142D4E] dark:text-[#93C5FD] block">
+                    <span className="font-semibold text-[#161821] dark:text-[#45d320] block">
                       {tr(lang, 'Приказ о зачислении № 412-СТ', 'Enrollment Decree No. 412-ST')}
                     </span>
-                    <span className="text-[#667085] dark:text-[#94A3B8] text-[11px]">
+                    <span className="text-[#475569] dark:text-[#94A3B8] text-[11px]">
                       {tr(
                         lang,
                         `Утвержден ректоратом 25.08.${profile.admissionYear}. Основание: результаты ЕГЭ / общий конкурс`,
@@ -380,31 +380,31 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 )}
 
                 {/* Exams List */}
-                <div className="rounded-xl border border-[#DCE2EA] dark:border-[#1E395B] overflow-hidden">
-                  <div className="bg-[#F8FAFC] dark:bg-[#111714] px-4 py-2.5 border-b border-[#DCE2EA] dark:border-[#1E395B] flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#142D4E] dark:text-[#93C5FD]">
+                <div className="rounded-xl border border-[#e2e4e8] dark:border-[#273142] overflow-hidden">
+                  <div className="bg-[#f6f6f9] dark:bg-[#111714] px-4 py-2.5 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#161821] dark:text-[#45d320]">
                       {tr(
                         lang,
                         'Экзаменационная ведомость — 3 семестр',
                         'Examination Grade Sheet — Semester 3'
                       )}
                     </span>
-                    <span className="text-[11px] font-mono text-[#667085] dark:text-[#94A3B8]">
+                    <span className="text-[11px] font-mono text-[#475569] dark:text-[#94A3B8]">
                       {gradesSummary.items.length} {tr(lang, 'дисциплин', 'courses')}
                     </span>
                   </div>
 
-                  <div className="divide-y divide-[#DCE2EA] dark:divide-[#1E395B] bg-white dark:bg-[#112238]">
+                  <div className="divide-y divide-[#e2e4e8] dark:divide-[#273142] bg-white dark:bg-[#171c26]">
                     {gradesSummary.items.map((item) => (
                       <div
                         key={item.id}
-                        className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-[#F8FAFC] dark:hover:bg-[#162A45]/40 transition-colors"
+                        className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533]/40 transition-colors"
                       >
                         <div className="space-y-0.5">
-                          <h4 className="text-xs font-semibold text-[#0F1D30] dark:text-[#FFFFFF]">
+                          <h4 className="text-xs font-semibold text-[#161821] dark:text-[#FFFFFF]">
                             {localizeText(item.subject, lang)}
                           </h4>
-                          <p className="text-[11px] text-[#667085] dark:text-[#94A3B8] font-sans">
+                          <p className="text-[11px] text-[#475569] dark:text-[#94A3B8] font-sans">
                             {item.teacher ||
                               tr(
                                 lang,
@@ -418,7 +418,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
 
                         <div className="flex items-center space-x-3 self-end sm:self-auto">
                           {item.points !== null && (
-                            <span className="text-xs font-mono font-bold text-[#142D4E] dark:text-[#93C5FD]">
+                            <span className="text-xs font-mono font-bold text-[#161821] dark:text-[#45d320]">
                               {item.points} {tr(lang, 'б.', 'pts')}
                             </span>
                           )}
@@ -465,7 +465,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
             {activeTab === 'requests' && (
               <div className="space-y-3">
                 {requests.length === 0 ? (
-                  <div className="p-8 text-center text-[#667085] dark:text-[#94A3B8] text-xs font-sans">
+                  <div className="p-8 text-center text-[#475569] dark:text-[#94A3B8] text-xs font-sans">
                     {tr(
                       lang,
                       'Студент еще не подавал заявлений в деканат.',
@@ -476,10 +476,10 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                   requests.map((req) => (
                     <div
                       key={req.id}
-                      className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#0E1B2D] border border-[#DCE2EA] dark:border-[#1E395B] space-y-2 text-xs font-sans"
+                      className="p-4 rounded-xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] space-y-2 text-xs font-sans"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-sm text-[#142D4E] dark:text-[#93C5FD]">
+                        <span className="font-semibold text-sm text-[#161821] dark:text-[#45d320]">
                           {localizeText(req.typeTitle, lang)}
                         </span>
                         <span
@@ -497,7 +497,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#667085] dark:text-[#94A3B8] font-mono">
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#475569] dark:text-[#94A3B8] font-mono">
                         <span>№ {req.id}</span>
                         <span>•</span>
                         <span>
@@ -513,11 +513,11 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                       </div>
 
                       {req.data && Object.keys(req.data).length > 0 && (
-                        <div className="p-2.5 rounded-lg bg-white dark:bg-[#112238] border border-[#DCE2EA] dark:border-[#1E395B] grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
+                        <div className="p-2.5 rounded-lg bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
                           {Object.entries(req.data).map(([k, v]) => (
                             <div key={k}>
-                              <span className="text-[#667085] dark:text-[#94A3B8] capitalize">{k}: </span>
-                              <span className="font-medium text-[#0F1D30] dark:text-[#FFFFFF]">
+                              <span className="text-[#475569] dark:text-[#94A3B8] capitalize">{k}: </span>
+                              <span className="font-medium text-[#161821] dark:text-[#FFFFFF]">
                                 {String(v)}
                               </span>
                             </div>
@@ -532,13 +532,13 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
           </div>
 
           {/* Action Footer for Staff */}
-          <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#111714] border-t border-[#DCE2EA] dark:border-[#193150] flex flex-wrap items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 bg-[#f6f6f9] dark:bg-[#111714] border-t border-[#e2e4e8] dark:border-[#273142] flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setShowTranscript(true)}
-                className="inline-flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-lg bg-white dark:bg-[#162A45] hover:bg-[#EDF2F7] dark:hover:bg-[#233029] text-[#142D4E] dark:text-[#93C5FD] text-xs font-semibold border border-[#DCE2EA] dark:border-[#1E395B] transition-colors cursor-pointer shadow-xs"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-lg bg-white dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#233029] text-[#161821] dark:text-[#45d320] text-xs font-semibold border border-[#e2e4e8] dark:border-[#273142] transition-colors cursor-pointer shadow-xs"
               >
-                <FileCheck className="w-4 h-4 text-[#245A91] dark:text-[#93C5FD]" />
+                <FileCheck className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>
                   {tr(lang, 'Сформировать выписку успеваемости', 'Generate Academic Transcript')}
                 </span>
@@ -551,9 +551,9 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                   }
                   onClose();
                 }}
-                className="inline-flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-lg bg-[#142D4E] hover:bg-[#0E1F36] text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-semibold transition-colors cursor-pointer shadow-xs"
               >
-                <Send className="w-4 h-4 text-[#93C5FD]" />
+                <Send className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>
                   {tr(lang, 'Отправить персональное уведомление', 'Send Direct Notification')}
                 </span>
@@ -562,7 +562,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
 
             <button
               onClick={onClose}
-              className="px-4 py-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-xs font-sans text-[#667085] dark:text-[#94A3B8] hover:text-[#0F1D30] dark:hover:text-[#FFFFFF] hover:bg-[#EDF2F7] dark:hover:bg-[#162A45] transition-colors cursor-pointer"
+              className="px-4 py-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-xs font-sans text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] transition-colors cursor-pointer"
             >
               {tr(lang, 'Закрыть', 'Close')}
             </button>
