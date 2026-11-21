@@ -12,6 +12,8 @@ import { RequestsPage } from '../src/pages/RequestsPage';
 import { SchedulePage } from '../src/pages/SchedulePage';
 import { ProfilePage } from '../src/pages/ProfilePage';
 import { TodayPage } from '../src/pages/TodayPage';
+import { CampusMapModal } from '../src/components/CampusMapModal';
+import { ScheduleCollisionAlert } from '../src/components/ScheduleCollisionAlert';
 import { normalizeScheduleType, localizeText } from '../src/utils/i18n';
 
 vi.mock('qrcode', () => ({
@@ -428,8 +430,9 @@ describe('Frontend Component & Accessibility Suite', () => {
     await waitFor(() => {
       expect(screen.getByText(/Академическая задолженность: Статистика/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/28 ноября 2026/i)).toBeInTheDocument();
-    expect(screen.getByText(/А-314/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/28 ноября 2026/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/А-314/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Обнаружен конфликт расписания/i)).toBeInTheDocument();
   });
 
   it('RequestsPage displays empty state for Lina and submits a new certificate request to API', async () => {
@@ -599,5 +602,71 @@ describe('Frontend Component & Accessibility Suite', () => {
 
     expect(localizeText('Дипломатический протокол', 'en')).toBe('Diplomatic Protocol');
     expect(localizeText('Дипломатический протокол', 'ru')).toBe('Дипломатический протокол');
+  });
+
+  it('CampusMapModal renders interactive SVG floor plan, switches floors, and highlights target room', async () => {
+    installApiFetchMock('timur');
+    const handleClose = vi.fn();
+    render(
+      <AuthProvider>
+        <CampusMapModal isOpen={true} onClose={handleClose} initialRoomCode="А-314" />
+      </AuthProvider>
+    );
+
+    expect(screen.getByText(/Интерактивная карта кампуса/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/А-314/i).length).toBeGreaterThanOrEqual(1);
+
+    // Switch to Floor 1
+    const floor1Btn = screen.getByRole('button', { name: /1 этаж/i });
+    fireEvent.click(floor1Btn);
+    expect(screen.getAllByText(/Конференц-зал Б/i).length).toBeGreaterThanOrEqual(1);
+
+    // Close modal
+    const closeBtn = screen.getByRole('button', { name: /Закрыть карту/i });
+    fireEvent.click(closeBtn);
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('ScheduleCollisionAlert displays collision warning, shows institutional policy, and expands memo', () => {
+    installApiFetchMock('timur');
+    const handleOpenMap = vi.fn();
+    render(
+      <AuthProvider>
+        <ScheduleCollisionAlert
+          retakeDate="28 ноября 2026 г."
+          retakeTime="14:00"
+          retakeSubject="Математическая статистика и анализ данных"
+          retakeRoom="А-314"
+          onOpenMap={handleOpenMap}
+        />
+      </AuthProvider>
+    );
+
+    expect(screen.getByText(/Обнаружен конфликт расписания/i)).toBeInTheDocument();
+    expect(screen.getByText(/Приоритет аттестации \(Level 1\)/i)).toBeInTheDocument();
+
+    // Expand memo
+    const memoToggle = screen.getByRole('button', { name: /Служебная записка деканата № 118-А/i });
+    fireEvent.click(memoToggle);
+    expect(screen.getByText(/РАСПОРЯЖЕНИЕ ДЕКАНАТА № 118-А-СТ/i)).toBeInTheDocument();
+
+    // Trigger map click
+    const mapBtn = screen.getByRole('button', { name: /Найти ауд\. А-314 на карте/i });
+    fireEvent.click(mapBtn);
+    expect(handleOpenMap).toHaveBeenCalledWith('А-314');
+  });
+
+  it('StudentCardModal renders Apple Wallet and Google Wallet export buttons and generates pass download', async () => {
+    installApiFetchMock('aigul');
+    render(
+      <AuthProvider>
+        <StudentCardModal isOpen={true} onClose={vi.fn()} />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTitle(/Добавить в Apple Wallet/i)).toBeInTheDocument();
+    });
+    expect(screen.getByTitle(/Сохранить в Google Wallet/i)).toBeInTheDocument();
   });
 });

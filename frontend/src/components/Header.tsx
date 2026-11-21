@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { UniversityEmblem } from './UniversityEmblem';
 import { resolveAvatarSrc } from '../utils/avatar';
+import { tr } from '../utils/i18n';
 
 interface HeaderProps {
   activeTab: string;

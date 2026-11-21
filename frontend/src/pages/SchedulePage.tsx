@@ -32,7 +32,11 @@ function getEntryDayOfWeek(item: ScheduleEntry): number {
   return dow === 0 ? 7 : dow;
 }
 
-export const SchedulePage: React.FC = () => {
+interface SchedulePageProps {
+  onOpenMap?: (room?: string) => void;
+}
+
+export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
   const { user, profile, lang } = useAuth();
   const isStaff = user?.role === 'staff';
 
@@ -707,10 +711,15 @@ export const SchedulePage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center justify-between sm:justify-end space-x-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#e2e4e8] dark:border-[#273142]">
-                      <div className="flex items-center space-x-1.5 font-mono text-xs font-bold text-[#161821] dark:text-[#45d320]">
-                        <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3]" />
-                        <span>{item.room}</span>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => onOpenMap?.(item.room)}
+                        className="flex items-center space-x-1.5 font-mono text-xs font-bold text-[#161821] dark:text-[#45d320] hover:text-[#166534] dark:hover:text-[#86efac] transition-colors cursor-pointer group"
+                        title={lang === 'ru' ? 'Найти аудиторию на карте кампуса' : 'Locate room on campus map'}
+                      >
+                        <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
+                        <span className="underline decoration-dotted underline-offset-2">{item.room}</span>
+                      </button>
 
                       {isStaff && (
                         <button

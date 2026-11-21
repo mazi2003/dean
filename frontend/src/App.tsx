@@ -7,6 +7,7 @@ import { Footer } from './components/Footer';
 import { StudentCardModal } from './components/StudentCardModal';
 import { AssistantModal } from './components/AssistantModal';
 import { CertificatePreviewModal } from './components/CertificatePreviewModal';
+import { CampusMapModal } from './components/CampusMapModal';
 import { UniversityEmblem } from './components/UniversityEmblem';
 
 import { LoginPage } from './pages/LoginPage';
@@ -31,6 +32,13 @@ const MainLayout: React.FC = () => {
   }, []);
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [mapRoomCode, setMapRoomCode] = useState<string | null>(null);
+
+  const handleOpenMap = useCallback((room?: string) => {
+    setMapRoomCode(room || null);
+    setIsMapOpen(true);
+  }, []);
   const [certToPreview, setCertToPreview] = useState<StudentRequest | null>(null);
   const [announcePrefill, setAnnouncePrefill] = useState<{
     group?: string;
@@ -143,10 +151,11 @@ const MainLayout: React.FC = () => {
               onOpenCard={() => setIsCardOpen(true)}
               onOpenAssistant={() => setIsAssistantOpen(true)}
               onPreviewCert={(req) => setCertToPreview(req)}
+              onOpenMap={handleOpenMap}
             />
           )}
-          {resolvedTab === 'schedule' && <SchedulePage />}
-          {resolvedTab === 'grades' && <GradesPage />}
+          {resolvedTab === 'schedule' && <SchedulePage onOpenMap={handleOpenMap} />}
+          {resolvedTab === 'grades' && <GradesPage onOpenMap={handleOpenMap} />}
           {resolvedTab === 'requests' && (
             <RequestsPage onPreviewCert={(req) => setCertToPreview(req)} />
           )}
@@ -180,6 +189,11 @@ const MainLayout: React.FC = () => {
       <StudentCardModal isOpen={isCardOpen} onClose={() => setIsCardOpen(false)} />
       <AssistantModal isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
       <CertificatePreviewModal request={certToPreview} onClose={() => setCertToPreview(null)} />
+      <CampusMapModal
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        initialRoomCode={mapRoomCode}
+      />
     </div>
   );
 };

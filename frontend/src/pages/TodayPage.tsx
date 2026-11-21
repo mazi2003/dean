@@ -748,65 +748,64 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
             <div className="space-y-2.5">
               {upcomingExams.map((ex, i) => (
-                <div
-                  key={i}
-                  className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs ${
-                    ex.isDebt
-                      ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15 border-[#ff4d8b]/30'
-                      : 'bg-[#f6f6f9] dark:bg-[#121620] border-[#e2e4e8] dark:border-[#273142]'
-                  }`}
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
-                        {ex.code}
-                      </span>
-                      <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#161821] dark:text-[#ffffff]">
-                        {localizeText(ex.subject, lang)}
-                      </h4>
-                      {ex.status === 'date_changed' && (
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white">
-                          {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
+                <div key={i} className="space-y-2">
+                  <div
+                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs ${
+                      ex.isDebt
+                        ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15 border-[#ff4d8b]/30'
+                        : 'bg-[#f6f6f9] dark:bg-[#121620] border-[#e2e4e8] dark:border-[#273142]'
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
+                          {ex.code}
                         </span>
-                      )}
-                      {ex.status === 'room_changed' && (
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white">
-                          {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
-                        </span>
-                      )}
-                      {ex.isDebt && (
-                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
-                          {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
-                        </span>
-                      )}
+                        <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#161821] dark:text-[#ffffff]">
+                          {localizeText(ex.subject, lang)}
+                        </h4>
+                        {ex.status === 'date_changed' && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white">
+                            {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
+                          </span>
+                        )}
+                        {ex.status === 'room_changed' && (
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white">
+                            {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
+                          </span>
+                        )}
+                        {ex.isDebt && (
+                          <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
+                            {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans">
+                        {ex.teacher} • {tr(lang, 'Формат:', 'Format:')}{' '}
+                        <strong>{localizeText(ex.type, lang)}</strong> ({ex.credits} ECTS)
+                      </p>
                     </div>
-                    <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans">
-                      {ex.teacher} • {tr(lang, 'Формат:', 'Format:')}{' '}
-                      <strong>{localizeText(ex.type, lang)}</strong> ({ex.credits} ECTS)
-                    </p>
+
+                    <div className="flex items-center space-x-4 font-mono text-xs flex-shrink-0">
+                      <div className="text-left sm:text-right">
+                        <span className="font-bold text-[#166534] dark:text-[#45d320] block">
+                          {ex.date}
+                        </span>
+                        <button
+                          onClick={() => onOpenMap?.(ex.room)}
+                          className="text-[#475569] dark:text-[#94a3b8] hover:text-[#166534] dark:hover:text-[#45d320] text-[11px] flex items-center sm:justify-end space-x-1 cursor-pointer group transition-colors"
+                          title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
+                        >
+                          <span>{tr(lang, 'в', 'at')} {ex.time} •</span>
+                          <MapPin className="w-3 h-3 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
+                          <span className="underline decoration-dotted underline-offset-2">{ex.room}</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center space-x-4 font-mono text-xs flex-shrink-0">
-                    <div className="text-left sm:text-right">
-                      <span className="font-bold text-[#166534] dark:text-[#45d320] block">
-                        {ex.date}
-                      </span>
-                      <button
-                        onClick={() => onOpenMap?.(ex.room)}
-                        className="text-[#475569] dark:text-[#94a3b8] hover:text-[#166534] dark:hover:text-[#45d320] text-[11px] flex items-center sm:justify-end space-x-1 cursor-pointer group transition-colors"
-                        title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
-                      >
-                        <span>{tr(lang, 'в', 'at')} {ex.time} •</span>
-                        <MapPin className="w-3 h-3 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
-                        <span className="underline decoration-dotted underline-offset-2">{ex.room}</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Schedule Collision Alert for Retakes */}
-                {ex.isDebt && (
-                  <div className="pt-1">
+                  {/* Schedule Collision Alert for Retakes */}
+                  {ex.isDebt && (
                     <ScheduleCollisionAlert
                       compact
                       retakeDate={ex.date}
@@ -815,10 +814,9 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                       retakeRoom={ex.room}
                       onOpenMap={onOpenMap}
                     />
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
             </div>
           </section>
         </div>

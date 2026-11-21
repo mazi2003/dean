@@ -4,8 +4,13 @@ import { AlertOctagon, FileCheck2, Award, BookOpen, Layers } from 'lucide-react'
 import { GradesSummary } from '../types';
 import { api } from '../services/api';
 import { tr, getAssessmentTypeLabel, getGradeDescription, localizeText } from '../utils/i18n';
+import { ScheduleCollisionAlert } from '../components/ScheduleCollisionAlert';
 
-export const GradesPage: React.FC = () => {
+interface GradesPageProps {
+  onOpenMap?: (room?: string) => void;
+}
+
+export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
   const { user, profile, lang } = useAuth();
   const [grades, setGrades] = useState<GradesSummary | null>(null);
   const [selectedSemester, setSelectedSemester] = useState<number>(3);
@@ -196,7 +201,25 @@ export const GradesPage: React.FC = () => {
                 <span>•</span>
                 <span>{tr(lang, 'Время: 14:00', 'Time: 14:00')}</span>
                 <span>•</span>
-                <span>{tr(lang, 'Аудитория: А-314', 'Room: А-314')}</span>
+                <button
+                  type="button"
+                  onClick={() => onOpenMap?.('А-314')}
+                  className="underline decoration-dotted underline-offset-2 hover:opacity-80 cursor-pointer text-left"
+                  title={tr(lang, 'Показать аудиторию на карте кампуса', 'Show room on campus map')}
+                >
+                  {tr(lang, 'Аудитория: А-314', 'Room: А-314')}
+                </button>
+              </div>
+
+              {/* Automatic Schedule Collision Detector */}
+              <div className="pt-2">
+                <ScheduleCollisionAlert
+                  retakeDate="28 ноября 2026 г."
+                  retakeTime="14:00"
+                  retakeSubject={failedSubject.subject}
+                  retakeRoom="А-314"
+                  onOpenMap={onOpenMap}
+                />
               </div>
             </div>
           </div>
