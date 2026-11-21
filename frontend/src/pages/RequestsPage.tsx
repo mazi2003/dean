@@ -374,7 +374,7 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                             {tr(lang, 'Служебные отметки инспектора:', "Inspector's Remarks:")}
                           </span>
                           <p className="text-[#4b5563] dark:text-[#cbd5e1] mt-1 leading-relaxed">
-                            {req.history?.[req.history.length - 1]?.comment ||
+                            {localizeText(req.history?.[req.history.length - 1]?.comment, lang) ||
                               tr(
                                 lang,
                                 'Заявление принято в работу канцелярией. Проводится верификация данных.',

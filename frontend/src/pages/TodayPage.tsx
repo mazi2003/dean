@@ -595,10 +595,10 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <ShieldAlert className="w-5 h-5 text-[#b45309] dark:text-[#fbbf24] flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-heading font-semibold text-sm text-[#b45309] dark:text-[#b45309]">
-                {urgentNotif.title}
+                {localizeText(urgentNotif.title, lang)}
               </h3>
               <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5 leading-relaxed">
-                {urgentNotif.message}
+                {localizeText(urgentNotif.message, lang)}
               </p>
             </div>
           </div>

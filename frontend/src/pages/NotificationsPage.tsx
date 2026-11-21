@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Notification, NotificationKind } from '../types';
 import { api } from '../services/api';
-import { tr, getNotificationKindLabel } from '../utils/i18n';
+import { tr, getNotificationKindLabel, localizeText, formatNotificationDate } from '../utils/i18n';
 
 interface NotificationsPageProps {
   setActiveTab?: (tab: string) => void;
@@ -231,16 +231,16 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = () => {
                         <span className="w-2 h-2 rounded-full bg-[#33b712]" />
                       )}
                       <span className="text-[11px] font-sans text-[#475569] dark:text-[#94a3b8]">
-                        {n.createdAt}
+                        {formatNotificationDate(n.createdAt, lang)}
                       </span>
                     </div>
 
                     <h3 className="font-heading font-semibold text-sm sm:text-base text-[#161821] dark:text-[#ffffff]">
-                      {n.title}
+                      {localizeText(n.title, lang)}
                     </h3>
 
                     <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans leading-relaxed">
-                      {n.message}
+                      {localizeText(n.message, lang)}
                     </p>
                   </div>
                 </div>

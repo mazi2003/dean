@@ -202,10 +202,151 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   'Заявление на академический отпуск': 'Academic Leave Application',
   'Оформление временного перерыва в обучении по медицинским или семейным обстоятельствам.':
     'Request for temporary leave of absence due to medical or family reasons.',
+  'Для подачи документов на международную стажировку': 'For international internship application',
+  'По месту требования': 'To Whom It May Concern',
+  'В визовый центр': 'To Visa Application Center',
+  'Двуязычный (RU/EN)': 'Bilingual (RU/EN)',
+
+  // Notifications: Titles & Bodies
+  'Справка об обучении в обработке': 'Enrollment Certificate in Processing',
+  'Ваше заявление передано на подпись в деканат.':
+    'Your application has been forwarded for signature at the Dean\'s Office.',
+  'Требуется уточнение по заявлению на общежитие':
+    'Clarification Required: Dormitory Housing Application',
+  'Пожалуйста, загрузите справку о доходах.':
+    'Please upload your family income statement.',
+  'Замена аудитории (Международное право)': 'Room Change: International Law',
+  'Семинар перенесен в ауд. Б-115.': 'Seminar relocated to Room B-115.',
+  'Прием заявок на ПГАС до 25 ноября': 'Merit Scholarship Applications Open until Nov 25',
+  'Подайте документы через раздел «Справки и заявления».':
+    'Submit supporting documents via the "Certificates & Petitions" tab.',
+  'Опубликован график зимней экзаменационной сессии':
+    'Winter Examination Schedule Published',
+  'Проверьте даты консультаций и экзаменов во вкладке «Расписание».':
+    'Check consultation and exam dates in the "Timetable" section.',
+  'Утверждено расписание зимней экзаменационной сессии':
+    'Winter Examination Schedule Approved',
+  'График экзаменов и предэкзаменационных консультаций доступен в личных кабинетах студентов.':
+    'Exam and consultation schedules are now available in student accounts.',
+  'Сроки ликвидации академических задолженностей':
+    'Academic Debt Clearance Deadlines',
+  'Внимание студентам! График комиссионных пересдач осеннего семестра утвержден. Пересдачи пройдут с 24 по 30 ноября. Пожалуйста, согласуйте допуск в деканате.':
+    'Attention students! The fall semester committee retake schedule is approved. Retakes will take place Nov 24–30. Please confirm admission at the Dean\'s Office.',
+  'Прием заявлений на повышенную стипендию (ПГАС)':
+    'Merit Scholarship (PGAS) Applications Open',
+  'Прием заявлений и подтверждающих документов на ПГАС открыт до 25 ноября. Подать заявление можно через раздел "Справки и заявления".':
+    'Applications and supporting documents for PGAS are open until Nov 25. Submit via "Certificates & Petitions".',
+  'Деканат Факультета международных отношений опубликовал график консультаций и экзаменов на декабрь 2026 года. Проверьте даты и аудитории в разделе «Расписание».':
+    'The Faculty Dean\'s Office has published the December 2026 exam and consultation schedule. Check dates and rooms in "Timetable".',
+  'Временное изменение аудиторий в корпусе Б':
+    'Temporary Room Relocations in Bldg B',
+  'В связи с плановой модернизацией мультимедийного оборудования часть семинаров группы ДУ-205 перенесена в аудитории главного корпуса. Следите за статусом пар в расписании.':
+    'Due to multimedia equipment modernization, select seminars for group DU-205 are relocated to the Main Bldg. Monitor timetable status.',
+  'График работы деканата в праздничные дни':
+    'Dean\'s Office Holiday Operating Hours',
+  'Информируем о режиме работы учебного офиса DemoTech University: в государственные праздничные дни прием очных заявлений не ведется, электронные заявки принимаются круглосуточно.':
+    'Notice on DemoTech University academic office hours: in-person desk is closed on public holidays; online requests are accepted 24/7.',
+  'Плановый профилактический медосмотр студентов':
+    'Annual Student Health Screening',
+  'До 30 ноября студентам 1–3 курсов необходимо пройти ежегодный флюорографический осмотр в университетской поликлинике (корпус Д, каб. 104).':
+    'Students of Years 1–3 must complete the annual chest X-ray screening at the university clinic (Bldg D, Rm 104) by Nov 30.',
+  'Конкурс на программы академической мобильности (весна 2027)':
+    'Academic Mobility Exchange Program (Spring 2027)',
+  'Открыт прием заявок на семестровый обмен для студентов 2 курса. Дедлайн подачи мотивационного письма и транскрипта — 1 декабря.':
+    'Semester exchange applications open for 2nd year students. Deadline for motivation letter and transcript is Dec 1.',
+  'Предзащита курсовых проектов магистратуры':
+    'Master\'s Coursework Project Pre-Defense',
+  'Студентам группы ДУ-301 необходимо загрузить черновики аналитических докладов куратору до 5 декабря для допуска к итоговой защите.':
+    'Group DU-301 students must upload draft reports to their advisor by Dec 5 for final defense clearance.',
+  'Адаптационный семинар и продление пропусков СКУД для 1 курса':
+    'Freshman Orientation & Campus Pass Extension',
+  'Для студентов группы ДУ-102 в аудитории 112 пройдет встреча с куратором по вопросам сессии и обновления электронных пропусков.':
+    'Group DU-102 meeting with mentor in Rm 112 regarding exam session and digital passes.',
+  'Заявка принята в обработку': 'Application Accepted for Processing',
+  'Ваша справка об обучении переведена в статус "В обработке". Срок готовности — до завтра.':
+    'Your enrollment certificate status is now "In Review". Ready by tomorrow.',
+  'Перенос аудитории на сегодня!': 'Classroom Relocated Today!',
+  'Пара "Международное публичное право" в 10:15 перенесена из А-101 в Б-115.':
+    'Class "International Public Law" at 10:15 relocated from A-101 to B-115.',
+  'Прием документов на повышенную стипендию':
+    'Merit Scholarship Applications Open',
+  'Деканат открыл прием заявлений на ПГАС за достижения в науке и учебе до 25 ноября включительно.':
+    'Dean\'s Office opened applications for enhanced merit scholarships until Nov 25.',
+  'Требуется уточнение по заявке на общежитие':
+    'Clarification Required for Dormitory Petition',
+  'Инспектор запросил скан справки о доходах семьи за 6 месяцев. Откройте заявку для отправки данных.':
+    'Inspector requested a 6-month family income statement. Open petition to submit document.',
+  'Назначена дата пересдачи по Статистике': 'Statistics Retake Date Scheduled',
+  'Комиссионная пересдача состоится 28 ноября в 14:00 в аудитории А-314. Явка обязательна!':
+    'Committee retake scheduled for Nov 28 at 14:00 in Rm A-314. Attendance is mandatory!',
+  'Транскрипт готов к получению': 'Transcript Ready for Download',
+  'Ваш двуязычный транскрипт сформирован (демо-макет) и доступен для скачивания.':
+    'Your bilingual transcript is generated and ready for download.',
+  'График зимней экзаменационной сессии': 'Winter Exam Session Schedule',
+  'Расписание экзаменов для 2 курса факультета МО утверждено и опубликовано в разделе "Успеваемость".':
+    'Exam timetable for 2nd year students is approved and published in the "Records" tab.',
+  'Флюорографический осмотр студентов': 'Annual Medical Screening',
+  'С 20 по 24 ноября в поликлинике университета проходит обязательный плановый медосмотр.':
+    'Mandatory scheduled health screening held at the university clinic Nov 20–24.',
+  'Отмена занятия во вторник': 'Class Cancelled on Tuesday',
+  'Семинар по Политической философии в 12:00 отменен (участие лектора в симпозиуме).':
+    'Political Philosophy seminar at 12:00 is cancelled (lecturer attending symposium).',
+  'Ваше заявление зарегистрировано и передано на рассмотрение в деканат.':
+    'Your application has been registered and forwarded to the Dean\'s Office for review.',
+
+  // Inspector Remarks & History Comments
+  'Заявление принято в работу канцелярией. Проводится верификация данных.':
+    'Petition accepted by the Registry. Data verification in progress.',
+  'Заявление принято инспектором деканата в обработку':
+    'Application accepted for processing by Dean\'s Office inspector',
+  'Пожалуйста, приложите справку о составе семьи и доходах':
+    'Please attach proof of family composition and income',
+  'Академический транскрипт сформирован и готов к выдаче':
+    'Academic transcript generated and ready for issuance',
+  'Принято в работу': 'Accepted into workflow',
+  'Заявка принята в работу инспектором деканата Волковой М.В. Формируется электронный макет справки.':
+    'Application accepted into workflow by Dean\'s Office inspector M.V. Volkova. Electronic certificate layout is in progress.',
+  'Необходимо прикрепить скан справки о доходах семьи за последние 6 месяцев для расчета баллов на заселение.':
+    'Please attach scanned family income statement for the last 6 months to compute housing points.',
+  'Электронный макет транскрипта сформирован (демонстрационная печать и QR-код). Доступен для просмотра и скачивания в личном кабинете.':
+    'Digital transcript layout generated. Available for viewing and download in your portal.',
 };
+
+export function formatNotificationDate(dateStr: string | undefined | null, lang: Lang): string {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return dateStr;
+  }
+}
 
 export function localizeText(text: string | undefined | null, lang: Lang): string {
   if (!text) return '';
   if (lang === 'ru') return text;
-  return RU_TO_EN_DICTIONARY[text] ?? text;
+  
+  const direct = RU_TO_EN_DICTIONARY[text];
+  if (direct) return direct;
+
+  if (text.startsWith('Заявление принято: ')) {
+    const sub = text.replace('Заявление принято: ', '');
+    return `Petition Registered: ${localizeText(sub, lang)}`;
+  }
+  if (text.startsWith('Статус заявления изменен: ')) {
+    const sub = text.replace('Статус заявления изменен: ', '');
+    return `Petition Status Updated: ${localizeText(sub, lang)}`;
+  }
+  if (text.startsWith('Утвержден экзамен: ')) {
+    const sub = text.replace('Утвержден экзамен: ', '');
+    return `Exam Confirmed: ${localizeText(sub, lang)}`;
+  }
+
+  return text;
 }

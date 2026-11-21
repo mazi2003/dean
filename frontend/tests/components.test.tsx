@@ -674,4 +674,14 @@ describe('Frontend Component & Accessibility Suite', () => {
     });
     expect(screen.getByTitle(/Сохранить в Google Wallet/i)).toBeInTheDocument();
   });
+
+  it('localizeText translates notifications and status updates to English correctly', () => {
+    expect(localizeText('Справка об обучении в обработке', 'en')).toBe('Enrollment Certificate in Processing');
+    expect(localizeText('Ваше заявление передано на подпись в деканат.', 'en')).toBe(
+      "Your application has been forwarded for signature at the Dean's Office."
+    );
+    expect(localizeText('Заявление принято: Справка об обучении', 'en')).toBe(
+      'Petition Registered: Enrollment Certificate'
+    );
+  });
 });

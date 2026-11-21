@@ -730,11 +730,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       </div>
 
                       <h4 className="font-semibold text-sm text-[#161821] dark:text-[#FFFFFF]">
-                        {ann.title}
+                        {localizeText(ann.title, lang)}
                       </h4>
 
                       <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans leading-relaxed">
-                        {ann.body}
+                        {localizeText(ann.body, lang)}
                       </p>
 
                       <div className="flex items-center justify-between pt-1">
