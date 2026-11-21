@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import {
   Users,
   Search,
@@ -14,8 +14,11 @@ import {
 } from 'lucide-react';
 import { AcademicGroup, StudentListItem, StudentDossier } from '../types';
 import { api } from '../services/api';
-import { StudentDossierModal } from '../components/StudentDossierModal';
 import { UniversityEmblem } from '../components/UniversityEmblem';
+
+const StudentDossierModal = lazy(() =>
+  import('../components/StudentDossierModal').then((m) => ({ default: m.StudentDossierModal }))
+);
 import { useAuth } from '../context/AuthContext';
 import { tr, getStudyFormLabel, localizeText, transliterateCyrillic } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
@@ -143,8 +146,8 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
 
   if (loading) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6 animate-pulse">
-        <div className="h-40 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
+      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto min-h-[85vh] space-y-6 animate-pulse">
+        <div className="h-44 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-28 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
@@ -787,16 +790,20 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
       {/* ─────────────────────────────────────────────────────────────
           5. MODALS INTEGRATION
           ───────────────────────────────────────────────────────────── */}
-      <StudentDossierModal
-        isOpen={isDossierOpen}
-        dossier={selectedDossier}
-        onClose={() => setIsDossierOpen(false)}
-        onSendMessage={(name, id, group) => {
-          if (onOpenAnnouncement) {
-            onOpenAnnouncement(group, id, name);
-          }
-        }}
-      />
+      {isDossierOpen && (
+        <Suspense fallback={null}>
+          <StudentDossierModal
+            isOpen={isDossierOpen}
+            dossier={selectedDossier}
+            onClose={() => setIsDossierOpen(false)}
+            onSendMessage={(name, id, group) => {
+              if (onOpenAnnouncement) {
+                onOpenAnnouncement(group, id, name);
+              }
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

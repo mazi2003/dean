@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Inbox,
@@ -23,8 +23,11 @@ import {
   StudentListItem,
 } from '../types';
 import { api } from '../services/api';
-import { StudentDossierModal } from '../components/StudentDossierModal';
 import { tr, getRequestStatusLabel, localizeText } from '../utils/i18n';
+
+const StudentDossierModal = lazy(() =>
+  import('../components/StudentDossierModal').then((m) => ({ default: m.StudentDossierModal }))
+);
 
 interface StaffDashboardPageProps {
   activeTab?: string;
@@ -293,9 +296,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
 
   if (loading && requests.length === 0) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-4 animate-pulse">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto min-h-[85vh] space-y-4 animate-pulse">
         <div className="h-28 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
-        <div className="h-80 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
+        <div className="h-96 bg-[#e2e4e8]/40 dark:bg-[#1e2533] rounded-xl" />
       </div>
     );
   }
@@ -1173,19 +1176,23 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
           </div>
         </div>
       )}
-      {/* Student Dossier Modal */}
-      <StudentDossierModal
-        isOpen={isDossierOpen}
-        dossier={selectedDossier}
-        onClose={() => setIsDossierOpen(false)}
-        onSendMessage={(name, id, group) => {
-          setIsAnnounceModalOpen(true);
-          setAnnounceTarget(id ? `user:${id}` : group || 'all');
-          setAnnounceTitle(
-            tr(lang, `Уведомление деканата для: ${name}`, `Dean's Office Notice for: ${name}`)
-          );
-        }}
-      />
+      {/* Student Dossier Modal (Lazy Loaded on Demand) */}
+      {isDossierOpen && (
+        <Suspense fallback={null}>
+          <StudentDossierModal
+            isOpen={isDossierOpen}
+            dossier={selectedDossier}
+            onClose={() => setIsDossierOpen(false)}
+            onSendMessage={(name, id, group) => {
+              setIsAnnounceModalOpen(true);
+              setAnnounceTarget(id ? `user:${id}` : group || 'all');
+              setAnnounceTitle(
+                tr(lang, `Уведомление деканата для: ${name}`, `Dean's Office Notice for: ${name}`)
+              );
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

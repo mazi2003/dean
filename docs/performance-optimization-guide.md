@@ -63,8 +63,8 @@ Within the Antigravity engineering environment, the following skills and subagen
 - **What it does:** Defers downloading, parsing, and evaluating JavaScript for routes and heavy interactive modals until the user actually navigates to or opens them.
 - **When to use it:** For every route beyond the entry shell, any authenticated-only layout/chrome when viewing the public login page, and heavy modals/widgets (QR generators, interactive maps, certificate previews, dossier viewers).
 - **How it is implemented in this repository:**
-  - `frontend/src/App.tsx` lazy-loads `LoginPage` and `AuthenticatedShell` separately so unauthenticated visitors never download `Header`, `Sidebar`, `BottomNav`, or any authenticated route.
-  - `frontend/src/components/AuthenticatedShell.tsx` lazy-loads all 8 authenticated pages (`TodayPage`, `SchedulePage`, `GradesPage`, `RequestsPage`, `NotificationsPage`, `ProfilePage`, `StaffDashboardPage`, `StaffStudentsPage`) and all 4 global modals (`StudentCardModal`, `AssistantModal`, `CertificatePreviewModal`, `CampusMapModal`) behind `<Suspense fallback={<PageSkeleton />}>`.
+  - `frontend/src/App.tsx` eagerly renders `LoginPage` (only ~14 KB raw, eliminating a Slow 4G waterfall hop on unauthenticated load) while lazy-loading `AuthenticatedShell` so unauthenticated visitors never download `Header`, `Sidebar`, `BottomNav`, or any authenticated route.
+  - `frontend/src/components/AuthenticatedShell.tsx` lazy-loads all 8 authenticated pages (`TodayPage`, `SchedulePage`, `GradesPage`, `RequestsPage`, `NotificationsPage`, `ProfilePage`, `StaffDashboardPage`, `StaffStudentsPage`) and all 4 global modals (`StudentCardModal`, `AssistantModal`, `CertificatePreviewModal`, `CampusMapModal`) behind `<Suspense fallback={<PageSkeleton />}>`; `StudentDossierModal` is likewise lazy-loaded inside `StaffDashboardPage` and `StaffStudentsPage`.
   - `frontend/src/components/StudentCardModal.tsx` dynamically imports `qrcode` (`import('qrcode')`) inside `useEffect` when opened, keeping `vendor-qr` completely off the initial critical path.
 - **How to interpret results:** Run `npm --prefix frontend run build` and verify that each page/modal produces its own chunk file in `frontend/dist/assets/` and that `frontend/dist/index.html` only `<link rel="modulepreload">`s core shell chunks (`rolldown-runtime`, `vendor-react`, `vendor-icons`, `index`).
 - **Preventing regressions:**
@@ -92,7 +92,7 @@ Within the Antigravity engineering environment, the following skills and subagen
   npm --prefix frontend run build
   ```
   Verify `vendor-qr-*.js` is NOT listed in `<link rel="modulepreload">` inside `frontend/dist/index.html`.
-- **How to interpret results:** Check the Vite build table for isolated chunks (`LoginPage-*.js`, `AuthenticatedShell-*.js`, `SchedulePage-*.js`, `vendor-qr-*.js`) and ensure `index-*.js` stays small (`< 30 KB` raw).
+- **How to interpret results:** Check the Vite build table for isolated chunks (`AuthenticatedShell-*.js`, `TodayPage-*.js`, `SchedulePage-*.js`, `StudentDossierModal-*.js`, `vendor-qr-*.js`) and ensure `index-*.js` stays small (`< 40 KB` raw).
 - **Preventing regressions:** Review PR diffs touching `frontend/src/App.tsx`, `frontend/src/components/AuthenticatedShell.tsx`, or `frontend/package.json` for accidental static imports of heavy dependencies.
 
 ### 2.2 Code Splitting (`build.rolldownOptions.output.codeSplitting`)
@@ -305,7 +305,7 @@ Within the Antigravity engineering environment, the following skills and subagen
   | Budget Category | Enforced Ceiling | Rationale |
   |---|---|---|
   | Public `/login` initial JS (raw) | $\le 300$ KB raw ($\le 95$ KB gzip / $\le 80$ KB Brotli) | Ensures fast Slow 4G mobile first load |
-  | Core entry app chunk (`index-*.js`) | $\le 30$ KB raw ($\le 10$ KB gzip) | Keeps entry router & auth shell lean |
+  | Core entry app chunk (`index-*.js`, incl. `LoginPage`) | $\le 40$ KB raw ($\le 12$ KB gzip) | Keeps entry router, auth shell & login screen lean with zero serial waterfall |
   | Initial CSS (`index-*.css`) | $\le 90$ KB raw ($\le 16$ KB gzip) | Fast render-blocking stylesheet parse |
   | Emitted font files (`dist/assets/*.woff2`) | $\le 8$ files (Cyrillic + Latin WOFF2 only) | Prevents unused script bloat |
   | Mobile Lab LCP (Landing/Login) | $\le 2,500$ ms | Core Web Vitals Good threshold |

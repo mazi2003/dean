@@ -137,7 +137,7 @@ export const AuthenticatedShell: React.FC = () => {
           onOpenAssistant={() => setIsAssistantOpen(true)}
         />
 
-        <main className="flex-1 min-w-0 pb-20 md:pb-8 overflow-x-hidden overflow-y-auto">
+        <main className="flex-1 min-w-0 min-h-[calc(100vh-4rem)] pb-20 md:pb-8 overflow-x-hidden overflow-y-auto">
           <Suspense fallback={<PageSkeleton />}>
             {resolvedTab === 'today' && (
               <TodayPage
