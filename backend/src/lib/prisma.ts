@@ -5,6 +5,7 @@ import { getServerlessFallbackPrisma } from './serverlessFallbackPrisma';
 const globalForPrisma = globalThis as unknown as {
   realPrisma?: PrismaClient | null;
   useFallbackOnly?: boolean;
+  checkedSeededUsers?: boolean;
 };
 
 function resolveConnectionUrl(): string | undefined {
@@ -64,11 +65,13 @@ function createModelWrapper(modelName: keyof PrismaClient, methods: string[]) {
 
           if (
             isVercelRuntime() &&
+            !globalForPrisma.checkedSeededUsers &&
             modelName === 'user' &&
             methodProp === 'findUnique' &&
             result === null
           ) {
             const totalUsers = await model.count();
+            globalForPrisma.checkedSeededUsers = true;
             if (totalUsers === 0) {
               globalForPrisma.useFallbackOnly = true;
               const fallback = await getServerlessFallbackPrisma();

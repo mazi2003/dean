@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import QRCode from 'qrcode';
 import { useAuth } from '../context/AuthContext';
 import {
   X,
@@ -28,6 +27,17 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
   const [isNfcTapping, setIsNfcTapping] = useState(false);
   const [turnstilePassed, setTurnstilePassed] = useState(false);
   const [walletExportState, setWalletExportState] = useState<'apple' | 'google' | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const handleExportWallet = (type: 'apple' | 'google') => {
     const studentId = profile?.studentNumber || '2024-БИ-0412';
@@ -114,9 +124,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
   const [isScanning, setIsScanning] = useState(false);
   const [scanSimulated, setScanSimulated] = useState(false);
 
-  // Generate real verifiable QR code data URL
+  // Generate real verifiable QR code data URL via dynamically imported qrcode
   useEffect(() => {
-    if (!profile && !user) return;
+    if (!isOpen || (!profile && !user)) return;
     const studentId = profile?.studentNumber || '2024-БИ-0412';
     const verifyPayload = JSON.stringify({
       uni: 'DemoTech University',
@@ -128,24 +138,29 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
       token: `SKUD-${studentId.replace(/[^0-9]/g, '') || '84920'}`,
     });
 
-    QRCode.toDataURL(
-      verifyPayload,
-      {
-        errorCorrectionLevel: 'H',
-        margin: 1,
-        color: {
-          dark: '#161821',
-          light: '#FFFFFF',
-        },
-        width: 320,
-      },
-      (err, url) => {
-        if (!err && url) {
+    let active = true;
+    import('qrcode')
+      .then(async (QRCodeModule) => {
+        const QRCode = QRCodeModule.default || QRCodeModule;
+        const url = await QRCode.toDataURL(verifyPayload, {
+          errorCorrectionLevel: 'H',
+          margin: 1,
+          color: {
+            dark: '#161821',
+            light: '#FFFFFF',
+          },
+          width: 320,
+        });
+        if (active && url) {
           setQrDataUrl(url);
         }
-      }
-    );
-  }, [user, profile]);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+    };
+  }, [isOpen, user, profile]);
 
   // Live anti-tamper clock and rotating TOTP code for scanner view
   useEffect(() => {
@@ -466,7 +481,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                       : 'STATE ACCREDITED UNIVERSITY'}
                   </div>
                   <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-white">
-                    {UNIVERSITY_INFO.name}
+                    {lang === 'ru' ? UNIVERSITY_INFO.name : UNIVERSITY_INFO.nameEn}
                   </h3>
                   <p className="text-[10px] text-white/80 font-sans tracking-wide">
                     {lang === 'ru' ? 'Студенческий билет № ' : 'Student ID No. '}

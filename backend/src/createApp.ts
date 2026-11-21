@@ -1,4 +1,6 @@
+import zlib from 'node:zlib';
 import Fastify, { FastifyError, FastifyInstance } from 'fastify';
+import compress from '@fastify/compress';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
@@ -68,6 +70,41 @@ export function configureApp(app: FastifyInstance): FastifyInstance {
     timeWindow: '1 minute',
   });
 
+  // Response compression (Brotli q=4 + Gzip level 6) when Fastify owns compression.
+  // On Vercel (VERCEL=1), Vercel Edge CDN already compresses at the edge — skipping
+  // redundant JS compression prevents double compression and reduces serverless CPU time.
+  const shouldCompress =
+    process.env.FASTIFY_COMPRESS === 'true' ||
+    (process.env.FASTIFY_COMPRESS !== 'false' && process.env.VERCEL !== '1');
+
+  if (shouldCompress) {
+    app.register(compress, {
+      global: true,
+      threshold: 1024,
+      encodings: ['br', 'gzip', 'deflate'],
+      brotliOptions: {
+        params: {
+          [zlib.constants.BROTLI_PARAM_QUALITY]: 4,
+        },
+      },
+      zlibOptions: {
+        level: 6,
+      },
+    });
+  }
+
+  // Default security Cache-Control policy: prevent accidental proxy/CDN caching of
+  // authenticated student/staff data unless a route explicitly sets a narrower policy.
+  app.addHook('onSend', async (_request, reply, payload) => {
+    if (!reply.hasHeader('cache-control')) {
+      reply.header('cache-control', 'private, no-store');
+      if (!reply.hasHeader('pragma')) {
+        reply.header('pragma', 'no-cache');
+      }
+    }
+    return payload;
+  });
+
   // Central error handler — registered BEFORE routes so child scopes inherit it cleanly
   app.setErrorHandler((error: FastifyError | unknown, _request, reply) => {
     const fastifyErr = (
@@ -108,6 +145,7 @@ export function configureApp(app: FastifyInstance): FastifyInstance {
 
   // Health check (no auth). Pass ?db=1 to verify PostgreSQL connectivity & seed state.
   app.get('/api/v1/health', async (req, reply) => {
+    reply.header('cache-control', 'no-cache, no-store, must-revalidate');
     const query = (req.query ?? {}) as { db?: string };
     const base = { status: 'ok', timestamp: new Date().toISOString() };
     if (query.db !== '1') {

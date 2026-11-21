@@ -111,7 +111,12 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={tr(lang, 'Редактирование экзамена', 'Edit Exam Schedule')}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs overflow-y-auto"
+    >
       <div className="bg-white dark:bg-[#171c26] rounded-2xl max-w-2xl w-full border border-[#e2e4e8] dark:border-[#273142] shadow-2xl overflow-hidden my-auto animate-scale-up">
         {/* Header */}
         <div className="p-5 sm:p-6 bg-[#f6f6f9] dark:bg-[#111714] border-b border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
@@ -411,7 +416,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
               id="notify-group-check"
               checked={notifyGroup}
               onChange={(e) => setNotifyGroup(e.target.checked)}
-              className="w-4 h-4 rounded text-[#161821] border-[#e2e4e8] cursor-pointer"
+              className="w-4 h-4 rounded text-[#33b712] border-[#e2e4e8] dark:border-[#273142] dark:bg-[#121620] cursor-pointer"
             />
           </div>
 
@@ -423,7 +428,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                   type="button"
                   onClick={handleReset}
                   disabled={saving}
-                  className="px-3 py-1.5 rounded-lg text-[11px] font-sans font-medium text-[#475569] dark:text-[#94A3B8] hover:text-[#be123c] dark:text-[#fecdd3] dark:hover:text-[#FCA5A5] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] transition-colors cursor-pointer flex items-center space-x-1"
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-sans font-medium text-[#475569] dark:text-[#94A3B8] hover:text-[#be123c] dark:hover:text-[#fecdd3] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] transition-colors cursor-pointer flex items-center space-x-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>

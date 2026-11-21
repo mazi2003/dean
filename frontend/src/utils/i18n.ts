@@ -310,7 +310,120 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
     'Please attach scanned family income statement for the last 6 months to compute housing points.',
   'Электронный макет транскрипта сформирован (демонстрационная печать и QR-код). Доступен для просмотра и скачивания в личном кабинете.':
     'Digital transcript layout generated. Available for viewing and download in your portal.',
+
+  // Additional Subjects
+  'Дипломатический протокол и этикет': 'Diplomatic Protocol & Etiquette',
+  'Статистика (Комиссионная пересдача)': 'Statistics (Faculty Committee Retake)',
+
+  // Request Catalog Titles & Descriptions
+  'Официальная справка о статусе обучающегося': 'Official student status confirmation',
+  'Воинский учет': 'Military Registration',
+  'Заявление на повышенную стипендию (ПГАС)': 'Merit Scholarship Application (PGAS)',
+  'Конкурс достижений': 'Merit Competition',
+  'Академический отпуск': 'Academic Leave',
+  'Временный перерыв в обучении': 'Temporary Study Break',
+  'Академическая справка (Транскрипт)': 'Academic Transcript',
+  'Выписка оценок и кредитов ECTS': 'Transcript of grades and ECTS credits',
+  'Заявление на предоставление общежития': 'Dormitory Housing Application',
+  'Заселение в студгородок': 'Campus Housing Accommodations',
+
+  // Rooms & Locations
+  'Ауд. А-204': 'Rm. A-204',
+  'Ауд. А-314': 'Rm. A-314',
+  'А-204': 'A-204',
+  'Б-115': 'B-115',
+  'Лингво-2': 'Linguo-2',
+  'Актовый зал 3': 'Assembly Hall 3',
+  'В-302': 'V-302',
+  'Спорткомплекс': 'Sports Complex',
+  'А-312': 'A-312',
+  'Компьютерный класс 4': 'Computer Lab 4',
+  'Б-208': 'B-208',
+  'В-114': 'V-114',
+  'Корпус В': 'Bldg V',
+  'Э-301': 'E-301',
+  'Комп-Класс 1': 'Computer Lab 1',
+  'Э-102': 'E-102',
+  'А-314': 'A-314',
+  'Лингво-4': 'Linguo-4',
+  'Э-204': 'E-204',
+  'Главный корпус, ауд. 312': 'Main Bldg, Rm 312',
+  'Конференц-зал Б': 'Conference Hall B',
+  'Лингво-класс 2': 'Linguo Lab 2',
+  'Ауд. 214': 'Rm 214',
+  'Компьютерный класс 208': 'Computer Lab 208',
+  'Ауд. Э-301': 'Rm E-301',
+  'Лаборатория 104': 'Lab 104',
+  'Зал Ученого совета': 'Academic Senate Hall',
+  'Ауд. 320': 'Rm 320',
+  'Ауд. 112': 'Rm 112',
+  'Ауд. 115': 'Rm 115',
+  'Лаб-3': 'Lab-3',
+
+  // Dates & Hours
+  '16 декабря 2026': 'Dec 16, 2026',
+  '28 декабря 2026': 'Dec 28, 2026',
+  '26 декабря в 15:00': 'Dec 26 at 15:00',
+  '28 ноября, 14:00': 'Nov 28, 14:00',
+  '28 ноября 2026 г.': 'Nov 28, 2026',
+  '28 ноября 2026': 'Nov 28, 2026',
+  '30 ноября 2026': 'Nov 30, 2026',
+  '1 декабря 2026': 'Dec 1, 2026',
+  '5 декабря 2026': 'Dec 5, 2026',
+  'Каб. 312 • Пн-Пт 9-18': 'Rm 312 • Mon–Fri 9–18',
+
+  // Institutional Names & Orders
+  'ДЕМОТЕХ УНИВЕРСИТЕТ': 'DEMOTECH UNIVERSITY',
+  'ДемоТех Университет': 'DemoTech University',
+  'Факультет международных отношений и цифровой дипломатии': 'Faculty of International Relations & Digital Diplomacy',
+  'Факультет международных отношений • Деканат': "Faculty of International Relations • Dean's Office",
+  'Единый деканат факультета международных отношений': "Unified Dean's Office of Faculty of International Relations",
+  'Кафедра международных отношений': 'Department of International Relations',
+  'Приказ № 841-СТ от 25.08.2024 г.': 'Decree No. 841-ST of Aug 25, 2024',
+  'Приказ № 841-СТ': 'Decree No. 841-ST',
+  'Основание выдачи:': 'Matriculation Order:',
+  'Студенческий билет № ': 'Student ID No. ',
+  'АКТИВЕН ДО 31.08.2026': 'VALID THRU 31.08.2026',
+  'МИНОБРНАУКИ РОССИИ • ГОСАККРЕДИТАЦИЯ': 'STATE ACCREDITED UNIVERSITY',
+
+  // Exam Formats
+  'Письменная работа + защита': 'Written Paper + Defense',
+  'Письменная работа + защита (4 ECTS)': 'Written Paper + Defense (4 ECTS)',
+  'Письменная работа': 'Written Exam',
+  'Устный экзамен': 'Oral Exam',
+  'Компьютерное тестирование': 'Computerized Testing',
+  'Комиссионный экзамен': 'Commission Examination',
+  'Зачет с оценкой': 'Graded Credit',
+  'Зачет': 'Credit',
+
+  // Request Reasons, Purposes & Form Values
+  'По месту работы родителей': "For parents' employment verification",
+  'Перевод в корпус №2 студгородка': 'Transfer to Dormitory Building No. 2',
+  'RU / EN (билингвальный макет)': 'RU / EN (Bilingual Layout)',
+  'Для предоставления в банк': 'For bank loan verification',
+  'Для визового центра': 'For visa processing centre',
+  'Для военкомата': 'For military enlistment office',
+  'Общежитие №2': 'Dormitory No. 2',
+  'Корпус №2': 'Building No. 2',
 };
+
+const CYRILLIC_TO_LATIN_MAP: Record<string, string> = {
+  А: 'A', Б: 'B', В: 'V', Г: 'G', Д: 'D', Е: 'E', Ё: 'Yo', Ж: 'Zh', З: 'Z', И: 'I',
+  Й: 'Y', К: 'K', Л: 'L', М: 'M', Н: 'N', О: 'O', П: 'P', Р: 'R', С: 'S', Т: 'T',
+  У: 'U', Ф: 'F', Х: 'Kh', Ц: 'Ts', Ч: 'Ch', Ш: 'Sh', Щ: 'Shch', Ъ: '', Ы: 'Y',
+  Ь: '', Э: 'E', Ю: 'Yu', Я: 'Ya',
+  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i',
+  й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't',
+  у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch', ъ: '', ы: 'y',
+  ь: '', э: 'e', ю: 'yu', я: 'ya',
+};
+
+export function transliterateCyrillic(str: string): string {
+  return str
+    .split('')
+    .map((char) => CYRILLIC_TO_LATIN_MAP[char] ?? char)
+    .join('');
+}
 
 export function formatNotificationDate(dateStr: string | undefined | null, lang: Lang): string {
   if (!dateStr) return '';
@@ -348,5 +461,41 @@ export function localizeText(text: string | undefined | null, lang: Lang): strin
     return `Exam Confirmed: ${localizeText(sub, lang)}`;
   }
 
-  return text;
+  let result = text;
+  let isTeacher = false;
+
+  // Teacher prefix localization
+  if (/^(?:проф\.|Проф\.)\s*/.test(result)) {
+    result = result.replace(/^(?:проф\.|Проф\.)\s*/, 'Prof. ');
+    isTeacher = true;
+  } else if (/^(?:доц\.|Доц\.)\s*/.test(result)) {
+    result = result.replace(/^(?:доц\.|Доц\.)\s*/, 'Assoc. Prof. ');
+    isTeacher = true;
+  } else if (/^(?:ст\.\s*преп\.|Ст\.\s*преп\.)\s*/.test(result)) {
+    result = result.replace(/^(?:ст\.\s*преп\.|Ст\.\s*преп\.)\s*/, 'Sr. Lect. ');
+    isTeacher = true;
+  } else if (/^(?:преп\.|Преп\.)\s*/.test(result)) {
+    result = result.replace(/^(?:преп\.|Преп\.)\s*/, 'Lect. ');
+    isTeacher = true;
+  } else if (/^(?:чл\.-корр\.|Чл\.-корр\.)\s*/.test(result)) {
+    result = result.replace(/^(?:чл\.-корр\.|Чл\.-корр\.)\s*/, 'Corr. Member ');
+    isTeacher = true;
+  } else if (/^(?:кафедра|Кафедра)\s*/.test(result)) {
+    result = result.replace(/^(?:кафедра|Кафедра)\s*/, 'Dept. ');
+    isTeacher = true;
+  }
+
+  // Room prefix localization
+  if (/^(?:ауд\.|Ауд\.)\s*/.test(result)) {
+    result = result.replace(/^(?:ауд\.|Ауд\.)\s*/, 'Rm. ');
+  } else if (/^(?:лаб-|Лаб-)/.test(result)) {
+    result = result.replace(/^(?:лаб-|Лаб-)/, 'Lab-');
+  }
+
+  // Transliterate teacher Cyrillic name to Latin
+  if (isTeacher || /[А-ЯЁ][а-яё]+\s+[А-ЯЁ]\s*\.\s*[А-ЯЁ]\s*\./.test(result)) {
+    result = transliterateCyrillic(result);
+  }
+
+  return result;
 }

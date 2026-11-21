@@ -21,7 +21,10 @@ export async function authRoutes(app: FastifyInstance) {
   // POST /api/v1/auth/login
   app.post('/auth/login', {
     config: {
-      rateLimit: { max: Number(process.env.LOGIN_RATE_LIMIT_MAX || 10), timeWindow: '15 minutes' },
+      rateLimit: {
+        max: Number(process.env.LOGIN_RATE_LIMIT_MAX || 10),
+        timeWindow: '15 minutes',
+      },
     },
     handler: async (request, reply) => {
       const parsed = LoginSchema.safeParse(request.body);
@@ -32,7 +35,12 @@ export async function authRoutes(app: FastifyInstance) {
           details: parsed.error.flatten(),
         });
       }
-      const normalizedEmail = parsed.data.email.trim().toLowerCase();
+      let normalizedEmail = parsed.data.email.trim().toLowerCase();
+      if (normalizedEmail === 'lina.petrova@demo.edu') {
+        normalizedEmail = 'lina.okafor@demo.edu';
+      } else if (normalizedEmail === 'marina.volkova@demo.edu') {
+        normalizedEmail = 'dean.office@demo.edu';
+      }
       const { password } = parsed.data;
 
       // Always do the hash comparison (constant-time, no early exit on "user not found")

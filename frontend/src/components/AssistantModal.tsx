@@ -39,6 +39,17 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
 
   const [lastSource, setLastSource] = useState<'llm' | 'rules' | null>(null);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const quickPrompts =

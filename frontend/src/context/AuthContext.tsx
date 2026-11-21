@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { User, StudentProfile } from '../types';
 import { api } from '../services/api';
 
@@ -135,51 +135,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [user]);
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     const res = await api.login(email, password);
     setUser(res.user);
     setProfile(res.profile);
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await api.logout();
     setUser(null);
     setProfile(null);
-  };
+  }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme((t) => (t === 'light' ? 'dark' : 'light'));
-  };
+  }, []);
 
-  const toggleAccessibilityMode = () => {
+  const toggleAccessibilityMode = useCallback(() => {
     setAccessibilityMode((a) => !a);
-  };
+  }, []);
 
-  const toggleLang = () => {
+  const toggleLang = useCallback(() => {
     setLang((l) => (l === 'ru' ? 'en' : 'ru'));
-  };
+  }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        profile,
-        isLoading,
-        login,
-        logout,
-        theme,
-        toggleTheme,
-        accessibilityMode,
-        toggleAccessibilityMode,
-        lang,
-        toggleLang,
-        unreadCount,
-        refreshUnreadCount,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      profile,
+      isLoading,
+      login,
+      logout,
+      theme,
+      toggleTheme,
+      accessibilityMode,
+      toggleAccessibilityMode,
+      lang,
+      toggleLang,
+      unreadCount,
+      refreshUnreadCount,
+    }),
+    [
+      user,
+      profile,
+      isLoading,
+      login,
+      logout,
+      theme,
+      toggleTheme,
+      accessibilityMode,
+      toggleAccessibilityMode,
+      lang,
+      toggleLang,
+      unreadCount,
+      refreshUnreadCount,
+    ]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

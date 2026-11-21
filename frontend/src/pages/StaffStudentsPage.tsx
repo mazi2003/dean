@@ -17,7 +17,7 @@ import { api } from '../services/api';
 import { StudentDossierModal } from '../components/StudentDossierModal';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 import { useAuth } from '../context/AuthContext';
-import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
+import { tr, getStudyFormLabel, localizeText, transliterateCyrillic } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
 
 interface StaffStudentsPageProps {
@@ -116,15 +116,30 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
     });
   }, [students, selectedGroup, statusFilter, searchQuery]);
 
-  // Aggregate stats
-  const totalStudents = students.length;
-  const budgetCount = students.filter((s) => s.studyForm === 'Бюджет').length;
-  const contractCount = students.filter((s) => s.studyForm === 'Контракт').length;
-  const withDebtsCount = students.filter((s) => s.debtCount > 0).length;
-  const avgGpa =
-    students.length > 0
-      ? (students.reduce((acc, s) => acc + s.gpa, 0) / students.length).toFixed(2)
-      : '4.35';
+  // Aggregate stats memoization
+  const { totalStudents, budgetCount, contractCount, withDebtsCount, avgGpa } = useMemo(() => {
+    const total = students.length;
+    let budget = 0;
+    let contract = 0;
+    let withDebts = 0;
+    let gpaSum = 0;
+
+    for (let i = 0; i < students.length; i++) {
+      const s = students[i];
+      if (s.studyForm === 'Бюджет') budget++;
+      else if (s.studyForm === 'Контракт') contract++;
+      if (s.debtCount > 0) withDebts++;
+      gpaSum += s.gpa;
+    }
+
+    return {
+      totalStudents: total,
+      budgetCount: budget,
+      contractCount: contract,
+      withDebtsCount: withDebts,
+      avgGpa: total > 0 ? (gpaSum / total).toFixed(2) : '4.35',
+    };
+  }, [students]);
 
   if (loading) {
     return (
@@ -361,7 +376,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       {localizeText(group.program, lang)}
                     </h3>
                     <p className="text-[11px] text-[#475569] dark:text-[#94A3B8] font-sans mt-0.5">
-                      {tr(lang, 'Куратор', 'Advisor')}: {group.curatorName}
+                      {tr(lang, 'Куратор', 'Advisor')}: {localizeText(group.curatorName, lang)}
                     </p>
                   </div>
 
@@ -414,7 +429,10 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       <div className="flex items-center space-x-1.5 text-[#161821] dark:text-[#45d320] font-semibold">
                         <UserCheck className="w-3.5 h-3.5" />
                         <span>
-                          {tr(lang, 'Староста', 'Group Rep')}: {group.starostaName}
+                          {tr(lang, 'Староста', 'Group Rep')}:{' '}
+                          {lang === 'en'
+                            ? transliterateCyrillic(group.starostaName)
+                            : group.starostaName}
                         </span>
                       </div>
                       <div className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-sans mt-0.5">

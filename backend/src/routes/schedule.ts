@@ -183,21 +183,22 @@ export async function scheduleRoutes(app: FastifyInstance) {
         Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999)
       );
 
-      const todayEntries = await prisma.scheduleEntry.findMany({
-        where: { groupId: sp.groupId, date: { gte: todayStart, lte: todayEnd } },
-        include: { subject: true, room: true, teacher: true, group: true },
-        orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
-      });
-
-      const nextEntry = await prisma.scheduleEntry.findFirst({
-        where: {
-          groupId: sp.groupId,
-          date: { gt: todayEnd },
-          status: { not: 'cancelled' },
-        },
-        include: { subject: true, room: true, teacher: true, group: true },
-        orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
-      });
+      const [todayEntries, nextEntry] = await Promise.all([
+        prisma.scheduleEntry.findMany({
+          where: { groupId: sp.groupId, date: { gte: todayStart, lte: todayEnd } },
+          include: { subject: true, room: true, teacher: true, group: true },
+          orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
+        }),
+        prisma.scheduleEntry.findFirst({
+          where: {
+            groupId: sp.groupId,
+            date: { gt: todayEnd },
+            status: { not: 'cancelled' },
+          },
+          include: { subject: true, room: true, teacher: true, group: true },
+          orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
+        }),
+      ]);
 
       return reply.send({
         today: todayEntries.map(formatEntry),

@@ -203,11 +203,11 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
                 <span>•</span>
                 <button
                   type="button"
-                  onClick={() => onOpenMap?.('А-314')}
+                  onClick={() => onOpenMap?.('A-314')}
                   className="underline decoration-dotted underline-offset-2 hover:opacity-80 cursor-pointer text-left"
                   title={tr(lang, 'Показать аудиторию на карте кампуса', 'Show room on campus map')}
                 >
-                  {tr(lang, 'Аудитория: А-314', 'Room: А-314')}
+                  {tr(lang, 'Аудитория: А-314', 'Room: A-314')}
                 </button>
               </div>
 

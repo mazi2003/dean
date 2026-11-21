@@ -224,7 +224,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-[#33b712] ring-2 ring-white dark:ring-[#171c26]" />
             </div>
 
-            <div className="min-w-0">
+            <div className="hidden sm:block min-w-0">
               <div className="flex items-center space-x-1.5 sm:space-x-2">
                 <span className="font-heading font-bold text-base sm:text-2xl tracking-tight text-[#161821] dark:text-[#ffffff] group-hover:text-[#166534] dark:text-[#45d320] transition-colors leading-none whitespace-nowrap">
                   DemoTech
@@ -296,7 +296,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center pl-0.5 sm:pl-1">
               <button
                 onClick={() => setActiveTab('profile')}
-                className="flex items-center space-x-2.5 p-1 pr-3 min-w-[44px] min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#273142] border border-[#e2e4e8] dark:border-[#273142] transition-all text-left cursor-pointer"
+                className="flex items-center justify-center lg:justify-start lg:space-x-2.5 p-1 lg:pr-3 min-w-[44px] min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#273142] border border-[#e2e4e8] dark:border-[#273142] transition-all text-left cursor-pointer"
                 title={`${user?.fullName} • ${isStaff ? (lang === 'ru' ? 'Деканат МО' : "Dean's Office") : profile?.group}`}
                 aria-label={user?.fullName}
               >

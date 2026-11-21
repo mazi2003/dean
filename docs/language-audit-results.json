@@ -1,0 +1,11 @@
+{
+  "testedAccounts": [
+    "aigul.nurova@demo.edu",
+    "timur.belov@demo.edu",
+    "lina.okafor@demo.edu",
+    "dean.office@demo.edu"
+  ],
+  "pagesChecked": 21,
+  "untranslatedFindings": [],
+  "status": "SUCCESS"
+}

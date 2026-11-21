@@ -689,9 +689,14 @@ export async function staffRoutes(app: FastifyInstance) {
         include: {
           program: { include: { faculty: true } },
           studentProfiles: {
-            include: {
-              user: true,
-              grades: true,
+            select: {
+              grades: {
+                select: {
+                  creditStatus: true,
+                  points: true,
+                  grade: true,
+                },
+              },
             },
           },
         },
@@ -745,9 +750,17 @@ export async function staffRoutes(app: FastifyInstance) {
     handler: async (_request, reply) => {
       const profiles = await prisma.studentProfile.findMany({
         include: {
-          user: true,
-          group: true,
-          grades: { include: { subject: true } },
+          user: { select: { fullName: true, email: true } },
+          group: { select: { code: true } },
+          grades: {
+            select: {
+              creditStatus: true,
+              points: true,
+              grade: true,
+              subjectId: true,
+              subject: { select: { name: true } },
+            },
+          },
         },
         orderBy: { studentNumber: 'asc' },
       });

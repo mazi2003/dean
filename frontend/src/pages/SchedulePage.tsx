@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Calendar as CalendarIcon,
@@ -131,19 +131,21 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
   const daysList = lang === 'ru' ? daysRu : daysEn;
 
-  const filteredSchedule = schedule
-    .filter((item) => {
-      const itemDay = getEntryDayOfWeek(item);
-      const dayMatch = viewMode === 'week' ? true : itemDay === selectedDay;
-      const normalizedType = normalizeScheduleType(item.type);
-      const typeMatch = filterType === 'all' ? true : normalizedType === filterType;
-      return dayMatch && typeMatch;
-    })
-    .sort((a, b) => {
-      const dayDiff = getEntryDayOfWeek(a) - getEntryDayOfWeek(b);
-      if (dayDiff !== 0) return dayDiff;
-      return a.start.localeCompare(b.start);
-    });
+  const filteredSchedule = useMemo(() => {
+    return schedule
+      .filter((item) => {
+        const itemDay = getEntryDayOfWeek(item);
+        const dayMatch = viewMode === 'week' ? true : itemDay === selectedDay;
+        const normalizedType = normalizeScheduleType(item.type);
+        const typeMatch = filterType === 'all' ? true : normalizedType === filterType;
+        return dayMatch && typeMatch;
+      })
+      .sort((a, b) => {
+        const dayDiff = getEntryDayOfWeek(a) - getEntryDayOfWeek(b);
+        if (dayDiff !== 0) return dayDiff;
+        return a.start.localeCompare(b.start);
+      });
+  }, [schedule, viewMode, selectedDay, filterType]);
 
   const handleExportIcs = () => {
     const dtStamp = new Date()
@@ -698,7 +700,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans">
                           {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
                           <strong className="text-[#161821] dark:text-[#FFFFFF]">
-                            {item.teacher}
+                            {localizeText(item.teacher, lang)}
                           </strong>
                         </p>
 
@@ -718,7 +720,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         title={lang === 'ru' ? 'Найти аудиторию на карте кампуса' : 'Locate room on campus map'}
                       >
                         <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
-                        <span className="underline decoration-dotted underline-offset-2">{item.room}</span>
+                        <span className="underline decoration-dotted underline-offset-2">{localizeText(item.room, lang)}</span>
                       </button>
 
                       {isStaff && (
@@ -895,7 +897,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         <p className="text-[11px] text-[#475569] dark:text-[#94A3B8] mt-0.5">
                           {tr(lang, 'Экзаменатор:', 'Examiner:')}{' '}
                           <strong className="text-[#161821] dark:text-[#FFFFFF]">
-                            {ex.examiner}
+                            {localizeText(ex.examiner, lang)}
                           </strong>
                         </p>
                         {ex.commissionMembers && (
@@ -912,7 +914,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         <span
                           className={`font-bold text-sm block ${isDateChanged ? 'text-[#166534] dark:text-[#45d320]' : 'text-[#161821] dark:text-[#FFFFFF]'}`}
                         >
-                          {ex.date}
+                          {localizeText(ex.date, lang)}
                         </span>
                         <p className="text-[11px] text-[#475569] dark:text-[#CBD5E1] font-sans mt-0.5">
                           {tr(lang, 'Время:', 'Time:')} {ex.time}
@@ -925,7 +927,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         </span>
                         <div className="flex items-center space-x-1 font-medium text-[#161821] dark:text-[#FFFFFF]">
                           <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3]" />
-                          <span>{ex.room}</span>
+                          <span>{localizeText(ex.room, lang)}</span>
                         </div>
                         <p className="text-[11px] text-[#475569] dark:text-[#94A3B8] mt-0.5">
                           {tr(lang, 'Консультация:', 'Consultation:')} {ex.consultation}
@@ -1082,7 +1084,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                   id="notifyCheck"
                   checked={notifyGroup}
                   onChange={(e) => setNotifyGroup(e.target.checked)}
-                  className="rounded border-[#e2e4e8] text-[#161821] focus:ring-[#161821]"
+                  className="rounded border-[#e2e4e8] dark:border-[#273142] dark:bg-[#121620] text-[#33b712] focus:ring-[#33b712]"
                 />
                 <label
                   htmlFor="notifyCheck"

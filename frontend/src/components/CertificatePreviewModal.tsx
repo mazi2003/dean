@@ -17,6 +17,18 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
 }) => {
   const { lang, profile } = useAuth();
   const [issuedTimestamp] = useState(() => Date.now());
+
+  React.useEffect(() => {
+    if (!request) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [request, onClose]);
+
   if (!request) return null;
 
   const issuedDate = new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US').format(

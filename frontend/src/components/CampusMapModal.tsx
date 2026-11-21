@@ -925,9 +925,9 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     fill="#45d320"
                     fontSize="9"
                     fontWeight="bold"
-                    fontFamily="monospace"
+                    fontFamily="Inter, sans-serif"
                   >
-                    ЛИФТ
+                    {lang === 'ru' ? 'ЛИФТ' : 'ELEVATOR'}
                   </text>
                   <text
                     x="25"
@@ -935,9 +935,13 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     textAnchor="middle"
                     fill="#ffffff"
                     fontSize="7"
-                    fontFamily="sans-serif"
+                    fontFamily="Inter, sans-serif"
                   >
-                    {floorDiff > 0 ? '▲ ВВЕРХ' : floorDiff < 0 ? '▼ ВНИЗ' : 'УЗЕЛ'}
+                    {floorDiff > 0
+                      ? (lang === 'ru' ? '▲ ВВЕРХ' : '▲ UP')
+                      : floorDiff < 0
+                      ? (lang === 'ru' ? '▼ ВНИЗ' : '▼ DOWN')
+                      : (lang === 'ru' ? 'УЗЕЛ' : 'HUB')}
                   </text>
                 </g>
 
@@ -961,9 +965,9 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                       fill="#45d320"
                       fontSize="9"
                       fontWeight="bold"
-                      fontFamily="monospace"
+                      fontFamily="Inter, sans-serif"
                     >
-                      ГЛАВНЫЙ ВХОД
+                      {lang === 'ru' ? 'ГЛАВНЫЙ ВХОД' : 'MAIN ENTRANCE'}
                     </text>
                     <text
                       x="60"
@@ -971,9 +975,9 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                       textAnchor="middle"
                       fill="#ffffff"
                       fontSize="7"
-                      fontFamily="sans-serif"
+                      fontFamily="Inter, sans-serif"
                     >
-                      ТУРНИКЕТЫ СКУД
+                      {lang === 'ru' ? 'ТУРНИКЕТЫ СКУД' : 'ACCESS / TURNSTILES'}
                     </text>
                   </g>
                 )}

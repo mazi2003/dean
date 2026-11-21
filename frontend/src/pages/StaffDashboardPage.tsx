@@ -267,11 +267,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
   const statusBadges: Record<RequestStatus, { label: string; color: string }> = {
     submitted: {
       label: getRequestStatusLabel('submitted', lang, 'staff'),
-      color: 'bg-[#161821]/10 text-[#161821] dark:text-[#45d320] border-[#161821]/25',
+      color: 'bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border-[#3598fe]/30',
     },
     in_review: {
       label: getRequestStatusLabel('in_review', lang, 'staff'),
-      color: 'bg-[#161821]/20 text-[#161821] dark:text-[#45d320] border-[#161821]/35',
+      color: 'bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border-[#3598fe]/30',
     },
     needs_info: {
       label: getRequestStatusLabel('needs_info', lang, 'staff'),
@@ -279,7 +279,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
     },
     ready: {
       label: getRequestStatusLabel('ready', lang, 'staff'),
-      color: 'bg-[#161821] text-[#FFFFFF] border-[#45d320]/40',
+      color: 'bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border-[#33b712]/30',
     },
     rejected: {
       label: getRequestStatusLabel('rejected', lang, 'staff'),
@@ -851,7 +851,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               {filtered.map((req) => {
                 const badge = statusBadges[req.status] || {
                   label: req.status,
-                  color: 'bg-slate-100 text-slate-800',
+                  color: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
                 };
                 const dateStr = new Date(req.createdAt).toLocaleDateString(
                   lang === 'ru' ? 'ru-RU' : 'en-US',
@@ -926,7 +926,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                           <div key={key} className="text-[#475569] dark:text-[#CBD5E1]">
                             <span className="text-[#475569] dark:text-[#94A3B8] capitalize">{key}: </span>
                             <span className="font-medium text-[#161821] dark:text-[#FFFFFF]">
-                              {String(val)}
+                              {localizeText(String(val), lang)}
                             </span>
                           </div>
                         ))}

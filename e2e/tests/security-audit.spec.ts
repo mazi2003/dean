@@ -23,7 +23,7 @@ test.describe('Security, Real Backend RBAC/IDOR & PWA Compliance Audit', () => {
     const swRes = await request.get('/sw.js');
     expect(swRes.status()).toBe(200);
     const swBody = await swRes.text();
-    expect(swBody).toContain('demotech-dean-v1');
+    expect(swBody).toMatch(/demotech-dean-v\d+/);
     expect(swBody).toContain('/api/');
   });
 

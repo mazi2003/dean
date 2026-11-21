@@ -116,6 +116,7 @@ export async function requestsRoutes(app: FastifyInstance) {
   app.get('/request-types', {
     preHandler: [authenticate],
     handler: async (_request, reply) => {
+      reply.header('cache-control', 'private, max-age=300, stale-while-revalidate=60');
       const types = await prisma.requestType.findMany({ orderBy: { code: 'asc' } });
       return reply.send(
         types.map((t) => ({
@@ -185,12 +186,13 @@ export async function requestsRoutes(app: FastifyInstance) {
       }
 
       const userId = request.user!.sub;
-      const sp = await prisma.studentProfile.findUnique({ where: { userId } });
+      const [sp, rt] = await Promise.all([
+        prisma.studentProfile.findUnique({ where: { userId } }),
+        prisma.requestType.findUnique({
+          where: { code: parsed.data.typeCode as RequestTypeCode },
+        }),
+      ]);
       if (!sp) return reply.code(404).send({ code: 'NOT_FOUND', message: 'Profile not found' });
-
-      const rt = await prisma.requestType.findUnique({
-        where: { code: parsed.data.typeCode as RequestTypeCode },
-      });
       if (!rt) {
         return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Unknown request type' });
       }

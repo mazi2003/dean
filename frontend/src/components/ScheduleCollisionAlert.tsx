@@ -71,7 +71,7 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
               {tr(
                 lang,
                 `Время повторной аттестации (${retakeDate}, ${retakeTime}) совпадает со слотом обязательного занятия учебной группы: «${conflictingClass.subjectRu}» (${conflictingClass.time}, ауд. ${conflictingClass.room}).`,
-                `Retake exam slot (${retakeDate}, ${retakeTime}) overlaps with scheduled group class: "${conflictingClass.subjectEn}" (${conflictingClass.time}, Room ${conflictingClass.room}).`
+                `Retake exam slot (${localizeText(retakeDate, lang)}, ${retakeTime}) overlaps with scheduled group class: "${conflictingClass.subjectEn}" (${conflictingClass.time}, Room ${localizeText(conflictingClass.room, lang)}).`
               )}
             </p>
           </div>
@@ -126,7 +126,7 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
             >
               <MapPin className="w-3.5 h-3.5 text-[#45d320]" />
               <span>
-                {tr(lang, `Найти ауд. ${retakeRoom} на карте кампуса`, `Locate Room ${retakeRoom} on Map`)}
+                {tr(lang, `Найти ауд. ${retakeRoom} на карте кампуса`, `Locate Room ${localizeText(retakeRoom, lang)} on Map`)}
               </span>
             </button>
           )}

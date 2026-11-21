@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Clock,
@@ -94,12 +94,88 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
   // Today date formatted
   const [todayDateObj] = useState(() => new Date());
-  const todayStr = new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(todayDateObj);
+  const todayStr = useMemo(
+    () =>
+      new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }).format(todayDateObj),
+    [lang, todayDateObj]
+  );
+
+  // Memoized student view array slices and aggregations
+  const todayClasses = useMemo(() => schedule.slice(0, 3), [schedule]);
+  const nextClass = todayClasses[0];
+  const activeRequests = useMemo(
+    () => requests.filter((r) => r.status === 'in_review' || r.status === 'needs_info'),
+    [requests]
+  );
+  const readyRequests = useMemo(() => requests.filter((r) => r.status === 'ready'), [requests]);
+  const urgentNotif = useMemo(
+    () => notifications.find((n) => !n.read && (n.priority === 'urgent' || n.priority === 'high')),
+    [notifications]
+  );
+
+  const upcomingExams = useMemo(() => {
+    if (exams.length > 0) {
+      return exams.map((e) => ({
+        code: e.code,
+        subject: e.subject,
+        type: e.format,
+        date: e.date,
+        time: e.time,
+        room: e.room,
+        teacher: e.examiner,
+        credits: e.credits,
+        status: e.status,
+        changeNote: e.changeNote,
+        isDebt: e.isDebt,
+      }));
+    }
+    return [
+      {
+        code: 'LAW-201',
+        subject: 'Международное публичное право',
+        type: 'Экзамен',
+        date: '12 декабря 2026',
+        time: '10:00',
+        room: 'Ауд. 312',
+        teacher: 'Проф. Воронов А.Н.',
+        credits: 5,
+        status: 'scheduled',
+        changeNote: null,
+        isDebt: false,
+      },
+      {
+        code: 'DIP-104',
+        subject: 'История дипломатических отношений',
+        type: 'Дифференцированный зачет',
+        date: '18 декабря 2026',
+        time: '12:30',
+        room: 'Конференц-зал Б',
+        teacher: 'Доц. Романова Е.В.',
+        credits: 4,
+        status: 'scheduled',
+        changeNote: null,
+        isDebt: false,
+      },
+      {
+        code: 'STAT-102',
+        subject: 'Математическая статистика и анализ данных',
+        type: 'Комиссионная пересдача',
+        date: '28 ноября 2026',
+        time: '14:00',
+        room: 'Ауд. А-314',
+        teacher: 'Проф. Соколов Д.М.',
+        credits: 3,
+        status: 'scheduled',
+        changeNote: null,
+        isDebt: profile?.studentNumber === 'СТ-2022-0082',
+      },
+    ];
+  }, [exams, profile?.studentNumber]);
 
   if (loading) {
     return (
@@ -353,73 +429,6 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   // ─────────────────────────────────────────────────────────────
   // STUDENT PORTAL VIEW (Modern Campus Design System)
   // ─────────────────────────────────────────────────────────────
-  const todayClasses = schedule.slice(0, 3);
-  const nextClass = todayClasses[0];
-  const activeRequests = requests.filter(
-    (r) => r.status === 'in_review' || r.status === 'needs_info'
-  );
-  const readyRequests = requests.filter((r) => r.status === 'ready');
-  const urgentNotif = notifications.find(
-    (n) => !n.read && (n.priority === 'urgent' || n.priority === 'high')
-  );
-
-  const upcomingExams =
-    exams.length > 0
-      ? exams.map((e) => ({
-          code: e.code,
-          subject: e.subject,
-          type: e.format,
-          date: e.date,
-          time: e.time,
-          room: e.room,
-          teacher: e.examiner,
-          credits: e.credits,
-          status: e.status,
-          changeNote: e.changeNote,
-          isDebt: e.isDebt,
-        }))
-      : [
-          {
-            code: 'LAW-201',
-            subject: 'Международное публичное право',
-            type: 'Экзамен',
-            date: '12 декабря 2026',
-            time: '10:00',
-            room: 'Ауд. 312',
-            teacher: 'Проф. Воронов А.Н.',
-            credits: 5,
-            status: 'scheduled',
-            changeNote: null,
-            isDebt: false,
-          },
-          {
-            code: 'DIP-104',
-            subject: 'История дипломатических отношений',
-            type: 'Дифференцированный зачет',
-            date: '18 декабря 2026',
-            time: '12:30',
-            room: 'Конференц-зал Б',
-            teacher: 'Доц. Романова Е.В.',
-            credits: 4,
-            status: 'scheduled',
-            changeNote: null,
-            isDebt: false,
-          },
-          {
-            code: 'STAT-102',
-            subject: 'Математическая статистика и анализ данных',
-            type: 'Комиссионная пересдача',
-            date: '28 ноября 2026',
-            time: '14:00',
-            room: 'Ауд. А-314',
-            teacher: 'Проф. Соколов Д.М.',
-            credits: 3,
-            status: 'scheduled',
-            changeNote: null,
-            isDebt: profile?.studentNumber === 'СТ-2022-0082',
-          },
-        ];
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* ─────────────────────────────────────────────────────────────
@@ -641,7 +650,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans">
                     {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
                     <strong className="text-[#161821] dark:text-[#ffffff]">
-                      {nextClass.teacher}
+                      {localizeText(nextClass.teacher, lang)}
                     </strong>
                   </p>
                 </div>
@@ -661,7 +670,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
                     <span>
                       {tr(lang, 'Аудитория', 'Room')}{' '}
-                      <strong className="underline decoration-dotted underline-offset-2">{nextClass.room}</strong>
+                      <strong className="underline decoration-dotted underline-offset-2">{localizeText(nextClass.room, lang)}</strong>
                     </span>
                   </button>
                 </div>
@@ -708,7 +717,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                         {localizeText(item.subject, lang)}
                       </h4>
                       <p className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
-                        {item.teacher} •{' '}
+                        {localizeText(item.teacher, lang)} •{' '}
                         <span className="uppercase font-sans">
                           {getScheduleTypeLabel(item.type, lang)}
                         </span>
@@ -721,7 +730,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
                   >
                     <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
-                    <span className="underline decoration-dotted underline-offset-2">{item.room}</span>
+                    <span className="underline decoration-dotted underline-offset-2">{localizeText(item.room, lang)}</span>
                   </button>
                 </div>
               ))}
@@ -781,7 +790,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                         )}
                       </div>
                       <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans">
-                        {ex.teacher} • {tr(lang, 'Формат:', 'Format:')}{' '}
+                        {localizeText(ex.teacher, lang)} • {tr(lang, 'Формат:', 'Format:')}{' '}
                         <strong>{localizeText(ex.type, lang)}</strong> ({ex.credits} ECTS)
                       </p>
                     </div>
@@ -789,7 +798,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     <div className="flex items-center space-x-4 font-sans text-xs flex-shrink-0">
                       <div className="text-left sm:text-right">
                         <span className="font-bold text-[#166534] dark:text-[#45d320] block">
-                          {ex.date}
+                          {localizeText(ex.date, lang)}
                         </span>
                         <button
                           onClick={() => onOpenMap?.(ex.room)}
@@ -798,7 +807,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                         >
                           <span>{tr(lang, 'в', 'at')} {ex.time} •</span>
                           <MapPin className="w-3 h-3 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
-                          <span className="underline decoration-dotted underline-offset-2">{ex.room}</span>
+                          <span className="underline decoration-dotted underline-offset-2">{localizeText(ex.room, lang)}</span>
                         </button>
                       </div>
                     </div>
