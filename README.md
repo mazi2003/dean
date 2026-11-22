@@ -141,7 +141,7 @@ cd e2e && npx playwright test
 ├── deploy/               # Скрипты автоматического развертывания на VPS (bootstrap-vps.sh, backup.sh, healthcheck.sh) и инструкции Vercel
 ├── scripts/              # Локальный полный стек без Docker (local-stack.mjs, generate-submission-pdf.mjs, measure-web-vitals.mjs, audit-responsive.mjs)
 ├── e2e/                  # Сквозные тесты Playwright (42 теста Desktop/Mobile, WCAG Axe, RBAC/IDOR, load-smoke.mjs) и e2e/README.md
-├── docs/                 # Документация для жюри: submission.md/.pdf, architecture.md, process-log.md, test-accounts.md, test-report.md, performance-report.md, видео и скриншоты
+├── docs/                 # Документация для жюри: submission.md/.pdf, architecture.md, process-log.md, test-accounts.md, test-report.md, performance-report.md
 ├── prompts/              # Промпты мультиагентной разработки (00-architect .. 05-docs-submission, survey-questions)
 ├── .github/workflows/    # CI-пайплайн GitHub Actions (ci.yml)
 ├── AGENTS.md             # Правила безопасности и архитектурные ограничения

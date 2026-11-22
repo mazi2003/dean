@@ -87,7 +87,9 @@ test.describe('Digital Dean Office E2E Journeys (Desktop & Mobile)', () => {
         expect(box!.height).toBeGreaterThanOrEqual(44);
         expect(box!.width).toBeGreaterThanOrEqual(44);
       }
-      await page.screenshot({ path: '../docs/screens/e2e_verified_mobile_360px.png', fullPage: false });
+      if (process.env.SAVE_SCREENS === '1') {
+        await page.screenshot({ path: '../docs/screens/e2e_verified_mobile_360px.png', fullPage: false });
+      }
     }
 
     // Navigate to Schedule
@@ -339,8 +341,8 @@ test.describe('Digital Dean Office E2E Journeys (Desktop & Mobile)', () => {
     await expect(page.getByText(/Академические группы/i).first()).toBeVisible();
     await expect(page.getByText(/Тимур Белов/i).first()).toBeVisible();
 
-    // Save verification screenshot on desktop
-    if (!isMobile) {
+    // Optional verification screenshot on desktop when SAVE_SCREENS=1
+    if (!isMobile && process.env.SAVE_SCREENS === '1') {
       await page.screenshot({ path: '../docs/screens/e2e_verified_staff_groups.png', fullPage: false });
     }
 

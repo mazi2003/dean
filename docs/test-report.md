@@ -53,10 +53,3 @@
 4. **Несоответствие версий Prisma (`database/`, `backend/`):** выровнены версии `prisma@^6.19.3` и `@prisma/client@^6.19.3`, добавлена обратная связь `Faculty.studentProfiles`, перегенерированы клиенты, добавлены non-root `Dockerfile` для `backend` и `frontend`.
 5. **Горизонтальный скролл и перекрытие `BottomNav` на 360px (`App.tsx`, `Header.tsx`, `StaffDashboardPage.tsx`):** отсутствие `min-w-0` у `<main>` и длинные непереносимые заголовки/фильтры приводили к расширению layout-вьюпорта > 360px. Добавлены `min-w-0`, обёртка фильтров `flex-wrap`, компактная адаптивная вёрстка шапки и `flex-shrink-0` на маркере семестра.
 6. **Контрастность WCAG AA и доступность PWA:** устранены заниженные цветовые пары (`#245A91` на тёмно-синем `#142D4E` заменено на `#93C5FD`/`#FFFFFF`), удалено ограничение зума `user-scalable=no` из `index.html`, добавлен офлайн Service Worker `public/sw.js` (с обходом `/api/*`), RFC 5545 поля `UID`/`DTSTAMP` в `.ics`-экспорте расписания и `matchScheduleType` в `i18n.ts`.
-
----
-
-## 4. Визуальные артефакты E2E
-
-- Desktop 1280×800 (АРМ деканата — группы и контингент): `docs/screens/e2e_verified_staff_groups.png`
-- Mobile 360×740 (Главная страница студента без горизонтального переполнения): `docs/screens/e2e_verified_mobile_360px.png`

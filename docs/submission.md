@@ -172,7 +172,7 @@ sequenceDiagram
   - **Frontend (`oxlint` + `ESLint` + `Vitest` + Testing Library):** **0 ошибок / 0 предупреждений** линтеров, **14 / 14** компонентных и `i18n`-тестов пройдено (включая полную локализацию ФИО студентов и сотрудников `RU ↔ EN`).
   - **E2E на реальном стеке (`Playwright` + `embedded-postgres` + Prisma + Fastify + Vite, Desktop 1280×800 и Mobile 360×740 + Axe WCAG + Security Audit):** **42 / 42** сквозных сценариев пройдено, подтверждены реальный вход по cookie `httpOnly`, сквозной заказ и обработка справок на 4 аккаунтах, перенос времени и аудиторий занятий, блокировка RBAC (`403`), IDOR (`404`), отсутствие Demo Switcher, отсутствие горизонтального переполнения на 360px, отсутствие JWT в `localStorage` и отсутствие секретов в production-бандле.
   - **Нагрузочный бенчмарк (100 VU, `e2e/load-smoke.mjs`):** **12 267 запросов** за 10.03 с (**1 222.7 RPS**, **0% ошибок**, **p50 73.86 мс**, **p95 155.03 мс**).
-- **Мобильная верстка:** Верифицирована скриншотами (`docs/screens/e2e_verified_mobile_360px.png`, `docs/screens/e2e_verified_staff_groups.png`, `docs/screens/operational-check/06-r3-mobile-360px.png`) на ширине **360px** (сенсорные зоны `BottomNav` ≥ 48px, отсутствие `user-scalable=no`).
+- **Мобильная верстка:** Верифицирована автотестами Playwright (`e2e/tests/accessibility-mobile.spec.ts`, `e2e/tests/operational-full-check.spec.ts`) на ширине **360px** (сенсорные зоны `BottomNav` ≥ 48px, отсутствие `user-scalable=no` и горизонтального скролла).
 - **Тестовые учетные записи (для жюри, с полной поддержкой RU / EN имен):**
   - `aigul.nurova@demo.edu` / `DemoStudent123!` — Айгуль Нурова / **Aigul Nurova** (Отличница, староста гр. ДУ-101, активная заявка на справку).
   - `timur.belov@demo.edu` / `DemoStudent123!` — Тимур Белов / **Timur Belov** (гр. ДУ-205, академическая задолженность по статистике, заявка с уточнением, готовый макет транскрипта PDF).
@@ -180,12 +180,3 @@ sequenceDiagram
   - `dean.office@demo.edu` / `DemoStaff123!` — Мария Волкова / **Maria Volkova** (Панель сотрудника деканата: согласование, группы, личные дела, экзамены, приказы).
   - Плюс **12 дополнительных студенческих аккаунтов** в группах `ДУ-101`, `ДУ-205`, `ДУ-301`, `ДУ-102` (единый пароль `DemoStudent123!`, полный список в `docs/test-accounts.md`).
 - **Реальный серверный контур и доступ из РФ без VPN:** Прототип развертывается как единый стек `PostgreSQL 16 + Prisma + Fastify API + React PWA + Caddy HTTPS` (`docker-compose.yml` + `deploy/bootstrap-vps.sh`) на VPS с доступом из России без VPN. Авторизация и изоляция данных студентов работают исключительно через сервер и БД; клиентский код не содержит заглушек аутентификации и `localStorage`-эмуляции API.
-
----
-
-## 9. Скриншоты интерфейса
-
-- `docs/screens/e2e_verified_mobile_360px.png` — мобильная адаптивность 360px
-- `docs/screens/e2e_verified_staff_groups.png` — панель сотрудника деканата (группы и студенты)
-- `docs/screens/big_qr_scanner.png` — полноэкранный QR-сканер студенческого пропуска
-- `docs/screens/notifications_and_staff_permissions.png` — рассылки деканата и уведомления

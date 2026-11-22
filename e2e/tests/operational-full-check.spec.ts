@@ -7,6 +7,7 @@ const STAFF_PASSWORD = process.env.SEED_STAFF_PASSWORD || 'DemoStaff123!';
 const SCREENS_DIR = path.resolve(process.cwd(), '../docs/screens/operational-check');
 
 async function saveScreen(page: Page, filename: string) {
+  if (process.env.SAVE_SCREENS !== '1') return;
   fs.mkdirSync(SCREENS_DIR, { recursive: true });
   await page.screenshot({ path: path.join(SCREENS_DIR, filename), fullPage: false });
 }
