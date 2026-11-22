@@ -30,7 +30,7 @@ Optional environment configuration (see [`.env.example`](./.env.example)):
 cp .env.example .env.local
 ```
 
-- `VITE_API_BASE_URL` — Defaults to `/api/v1` (proxied to `http://localhost:3000` in Vite dev server and via Nginx/Caddy/Vercel in production).
+- `VITE_API_URL` — Defaults to `/api/v1` (proxied to `http://localhost:3000` in Vite dev server and via Nginx/Caddy/Vercel in production). `VITE_API_BASE_URL` is also supported as a fallback.
 
 ---
 

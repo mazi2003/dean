@@ -206,8 +206,8 @@ export async function staffRoutes(app: FastifyInstance) {
         cancelled: 'Отменено',
       };
 
-      const [updated] = await prisma.$transaction([
-        prisma.request.update({
+      const updated = await prisma.$transaction(async (tx) => {
+        const reqUpdated = await tx.request.update({
           where: { id },
           data: {
             status: parsed.data.status as RequestStatus,
@@ -222,8 +222,8 @@ export async function staffRoutes(app: FastifyInstance) {
             },
           },
           include: requestInclude,
-        }),
-        prisma.notification.create({
+        });
+        await tx.notification.create({
           data: {
             userId: r.studentId,
             kind: 'request_update',
@@ -239,8 +239,9 @@ export async function staffRoutes(app: FastifyInstance) {
                   : 'normal',
             link: '/requests',
           },
-        }),
-      ]);
+        });
+        return reqUpdated;
+      });
 
       return reply.send(formatRequest(updated));
     },
@@ -307,34 +308,38 @@ export async function staffRoutes(app: FastifyInstance) {
         });
       }
 
-      const created = await prisma.announcement.create({
-        data: {
-          title,
-          body,
-          targetGroup: normalizedGroup,
-          targetUserId: targetUserId ?? null,
-          priority,
-          kind: kind as NotificationKind,
-          recipientCount: targets.length,
-          recipients: targets.map((t) => t.fullName) as Prisma.InputJsonValue,
-        },
-      });
-
       const link =
         kind === 'schedule_change' ? '/schedule' : kind === 'request_update' ? '/requests' : null;
 
-      if (targets.length > 0) {
-        await prisma.notification.createMany({
-          data: targets.map((u) => ({
-            userId: u.id,
-            kind: kind as NotificationKind,
+      const created = await prisma.$transaction(async (tx) => {
+        const ann = await tx.announcement.create({
+          data: {
             title,
             body,
+            targetGroup: normalizedGroup,
+            targetUserId: targetUserId ?? null,
             priority,
-            link,
-          })),
+            kind: kind as NotificationKind,
+            recipientCount: targets.length,
+            recipients: targets.map((t) => t.fullName) as Prisma.InputJsonValue,
+          },
         });
-      }
+
+        if (targets.length > 0) {
+          await tx.notification.createMany({
+            data: targets.map((u) => ({
+              userId: u.id,
+              kind: kind as NotificationKind,
+              title,
+              body,
+              priority,
+              link,
+            })),
+          });
+        }
+
+        return ann;
+      });
 
       return reply.code(201).send({ ok: true, id: created.id, count: targets.length });
     },
@@ -346,12 +351,16 @@ export async function staffRoutes(app: FastifyInstance) {
     handler: async (request, reply) => {
       const { id } = request.params;
       if (!UUID_REGEX.test(id)) {
-        return reply.code(404).send({ error: 'Announcement not found' });
+        return reply.code(404).send({ code: 'NOT_FOUND', message: 'Announcement not found' });
       }
       try {
         await prisma.announcement.delete({ where: { id } });
-      } catch {
-        return reply.code(404).send({ error: 'Announcement not found' });
+      } catch (err) {
+        const errObj = err as { code?: string; message?: string } | null;
+        if (errObj?.code === 'P2025' || errObj?.message === 'Not found') {
+          return reply.code(404).send({ code: 'NOT_FOUND', message: 'Announcement not found' });
+        }
+        throw err;
       }
       return reply.code(200).send({ ok: true });
     },
@@ -393,43 +402,45 @@ export async function staffRoutes(app: FastifyInstance) {
       if (start) updateData.startTime = start;
       if (end) updateData.endTime = end;
 
-      if (room) {
-        let roomRecord = await prisma.room.findFirst({ where: { code: room } });
-        if (!roomRecord) {
-          roomRecord = await prisma.room.create({ data: { code: room } });
+      await prisma.$transaction(async (tx) => {
+        if (room) {
+          let roomRecord = await tx.room.findFirst({ where: { code: room } });
+          if (!roomRecord) {
+            roomRecord = await tx.room.create({ data: { code: room } });
+          }
+          updateData.roomId = roomRecord.id;
         }
-        updateData.roomId = roomRecord.id;
-      }
 
-      await prisma.scheduleEntry.update({ where: { id: scheduleEntryId }, data: updateData });
+        await tx.scheduleEntry.update({ where: { id: scheduleEntryId }, data: updateData });
 
-      if (notifyGroup) {
-        const affectedUserIds = entry.group.studentProfiles.map((sp) => sp.userId);
-        const dateStr = entry.date.toISOString().split('T')[0];
-        const statusLabels: Record<string, string> = {
-          normal: 'Расписание подтверждено',
-          room_changed: `Замена аудитории на ${room || 'новую'}`,
-          moved: `Перенос времени на ${start || entry.startTime}-${end || entry.endTime}`,
-          cancelled: 'Занятие отменено',
-        };
-        const notifTitle = `Изменение в расписании: ${entry.subject.name}`;
-        const notifBody =
-          note ||
-          `Внимание, группа ${entry.group.code} (${dateStr})! По дисциплине "${entry.subject.name}" статус: ${statusLabels[status]}.`;
+        if (notifyGroup) {
+          const affectedUserIds = entry.group.studentProfiles.map((sp) => sp.userId);
+          const dateStr = entry.date.toISOString().split('T')[0];
+          const statusLabels: Record<string, string> = {
+            normal: 'Расписание подтверждено',
+            room_changed: `Замена аудитории на ${room || 'новую'}`,
+            moved: `Перенос времени на ${start || entry.startTime}-${end || entry.endTime}`,
+            cancelled: 'Занятие отменено',
+          };
+          const notifTitle = `Изменение в расписании: ${entry.subject.name}`;
+          const notifBody =
+            note ||
+            `Внимание, группа ${entry.group.code} (${dateStr})! По дисциплине "${entry.subject.name}" статус: ${statusLabels[status]}.`;
 
-        if (affectedUserIds.length > 0) {
-          await prisma.notification.createMany({
-            data: affectedUserIds.map((userId) => ({
-              userId,
-              kind: 'schedule_change' as const,
-              title: notifTitle,
-              body: notifBody,
-              priority: 'urgent',
-              link: '/schedule',
-            })),
-          });
+          if (affectedUserIds.length > 0) {
+            await tx.notification.createMany({
+              data: affectedUserIds.map((userId) => ({
+                userId,
+                kind: 'schedule_change' as const,
+                title: notifTitle,
+                body: notifBody,
+                priority: 'urgent',
+                link: '/schedule',
+              })),
+            });
+          }
         }
-      }
+      });
 
       return reply.send({ ok: true });
     },
@@ -485,6 +496,13 @@ export async function staffRoutes(app: FastifyInstance) {
         return reply.code(404).send({ code: 'NOT_FOUND', message: 'Group not found' });
       }
 
+      const existingCode = await prisma.exam.findFirst({ where: { code: d.code } });
+      if (existingCode) {
+        return reply
+          .code(409)
+          .send({ code: 'CONFLICT', message: 'Exam with this code already exists' });
+      }
+
       const rawDate = d.rawDate ?? new Date().toISOString().slice(0, 10);
       const snapshot = {
         date: d.date,
@@ -498,42 +516,57 @@ export async function staffRoutes(app: FastifyInstance) {
         changeNote: d.changeNote ?? null,
       };
 
-      const created = await prisma.exam.create({
-        data: {
-          code: d.code,
-          groupId: grp.id,
-          subject: d.subject,
-          format: d.format,
-          examiner: d.examiner,
-          commissionMembers: d.commissionMembers ?? null,
-          date: d.date,
-          rawDate,
-          time: d.time,
-          room: d.room,
-          consultation: d.consultation,
-          credits: d.credits,
-          status: d.status as ExamStatus,
-          changeNote: d.changeNote ?? null,
-          isDebt: d.isDebt,
-          originalSnapshot: snapshot as Prisma.InputJsonValue,
-        },
-        include: { group: true },
-      });
-
-      if (d.notifyGroup) {
-        const targetUserIds = grp.studentProfiles.map((sp) => sp.userId);
-        if (targetUserIds.length > 0) {
-          await prisma.notification.createMany({
-            data: targetUserIds.map((userId) => ({
-              userId,
-              kind: 'schedule_change' as const,
-              title: `Утвержден экзамен: ${d.subject}`,
-              body: `Внимание, группа ${grp.code}! В график сессии внесен экзамен по дисциплине «${d.subject}» на ${d.date} (${d.time}, ${d.room}). Экзаменатор: ${d.examiner}.`,
-              priority: 'high',
-              link: '/schedule',
-            })),
+      let created;
+      try {
+        created = await prisma.$transaction(async (tx) => {
+          const examRecord = await tx.exam.create({
+            data: {
+              code: d.code,
+              groupId: grp.id,
+              subject: d.subject,
+              format: d.format,
+              examiner: d.examiner,
+              commissionMembers: d.commissionMembers ?? null,
+              date: d.date,
+              rawDate,
+              time: d.time,
+              room: d.room,
+              consultation: d.consultation,
+              credits: d.credits,
+              status: d.status as ExamStatus,
+              changeNote: d.changeNote ?? null,
+              isDebt: d.isDebt,
+              originalSnapshot: snapshot as Prisma.InputJsonValue,
+            },
+            include: { group: true },
           });
+
+          if (d.notifyGroup) {
+            const targetUserIds = grp.studentProfiles.map((sp) => sp.userId);
+            if (targetUserIds.length > 0) {
+              await tx.notification.createMany({
+                data: targetUserIds.map((userId) => ({
+                  userId,
+                  kind: 'schedule_change' as const,
+                  title: `Утвержден экзамен: ${d.subject}`,
+                  body: `Внимание, группа ${grp.code}! В график сессии внесен экзамен по дисциплине «${d.subject}» на ${d.date} (${d.time}, ${d.room}). Экзаменатор: ${d.examiner}.`,
+                  priority: 'high',
+                  link: '/schedule',
+                })),
+              });
+            }
+          }
+
+          return examRecord;
+        });
+      } catch (err) {
+        const errObj = err as { code?: string } | null;
+        if (errObj?.code === 'P2002') {
+          return reply
+            .code(409)
+            .send({ code: 'CONFLICT', message: 'Exam with this code already exists' });
         }
+        throw err;
       }
 
       return reply.code(201).send(formatExam(created));
@@ -592,42 +625,46 @@ export async function staffRoutes(app: FastifyInstance) {
       if (changeNote !== undefined) updatePayload.changeNote = changeNote;
       updatePayload.status = (status ?? 'date_changed') as ExamStatus;
 
-      const updatedExam = await prisma.exam.update({
-        where: { id: existing.id },
-        data: updatePayload,
-        include: { group: true },
-      });
-
-      const resolvedGroupCode = targetGroup ?? existing.group.code;
-      const resolvedSubject = subject ?? existing.subject ?? 'Экзамен';
-      const targetUserIds: string[] = existing.group.studentProfiles.map((sp) => sp.userId);
-
-      if (notifyGroup && targetUserIds.length > 0) {
-        const statusMap: Record<string, string> = {
-          date_changed: 'Перенос даты экзамена',
-          room_changed: 'Замена аудитории экзамена',
-          postponed: 'Перенос экзамена на резервный день',
-          cancelled: 'Отмена экзамена',
-          scheduled: 'График экзамена подтвержден',
-        };
-        const finalStatus = updatedExam.status;
-        const title = `Изменение даты экзамена: ${resolvedSubject}`;
-        const noteText = updatedExam.changeNote
-          ? ` Примечание деканата: ${updatedExam.changeNote}.`
-          : '';
-        const notifBody = `Внимание, группа ${resolvedGroupCode}! По дисциплине «${resolvedSubject}» статус: ${statusMap[finalStatus] || 'Изменение'}. Новая дата: ${updatedExam.date ?? date ?? '—'}, время: ${updatedExam.time ?? time ?? '—'}, ауд.: ${updatedExam.room ?? room ?? '—'}.${noteText}`;
-
-        await prisma.notification.createMany({
-          data: targetUserIds.map((userId) => ({
-            userId,
-            kind: 'schedule_change' as const,
-            title,
-            body: notifBody,
-            priority: 'urgent',
-            link: '/schedule',
-          })),
+      const updatedExam = await prisma.$transaction(async (tx) => {
+        const examRecord = await tx.exam.update({
+          where: { id: existing.id },
+          data: updatePayload,
+          include: { group: true },
         });
-      }
+
+        const resolvedGroupCode = targetGroup ?? existing.group.code;
+        const resolvedSubject = subject ?? existing.subject ?? 'Экзамен';
+        const targetUserIds: string[] = existing.group.studentProfiles.map((sp) => sp.userId);
+
+        if (notifyGroup && targetUserIds.length > 0) {
+          const statusMap: Record<string, string> = {
+            date_changed: 'Перенос даты экзамена',
+            room_changed: 'Замена аудитории экзамена',
+            postponed: 'Перенос экзамена на резервный день',
+            cancelled: 'Отмена экзамена',
+            scheduled: 'График экзамена подтвержден',
+          };
+          const finalStatus = examRecord.status;
+          const title = `Изменение даты экзамена: ${resolvedSubject}`;
+          const noteText = examRecord.changeNote
+            ? ` Примечание деканата: ${examRecord.changeNote}.`
+            : '';
+          const notifBody = `Внимание, группа ${resolvedGroupCode}! По дисциплине «${resolvedSubject}» статус: ${statusMap[finalStatus] || 'Изменение'}. Новая дата: ${examRecord.date ?? date ?? '—'}, время: ${examRecord.time ?? time ?? '—'}, ауд.: ${examRecord.room ?? room ?? '—'}.${noteText}`;
+
+          await tx.notification.createMany({
+            data: targetUserIds.map((userId) => ({
+              userId,
+              kind: 'schedule_change' as const,
+              title,
+              body: notifBody,
+              priority: 'urgent',
+              link: '/schedule',
+            })),
+          });
+        }
+
+        return examRecord;
+      });
 
       return reply.send(formatExam(updatedExam));
     },

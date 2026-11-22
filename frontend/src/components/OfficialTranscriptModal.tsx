@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { X, Printer, ShieldCheck, FileText } from 'lucide-react';
 import { StudentDossier } from '../types';
+import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from './UniversityEmblem';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -33,6 +34,15 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
 
   const today = useMemo(() => getTodayFormatted(lang), [lang]);
 
+  React.useEffect(() => {
+    if (!dossier) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [dossier, onClose]);
+
   if (!dossier) return null;
   const { profile, gradesSummary } = dossier;
 
@@ -49,10 +59,10 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
         className="bg-white dark:bg-[#171c26] rounded-2xl max-w-3xl w-full border border-[#e2e4e8] dark:border-[#273142] shadow-2xl overflow-hidden my-auto"
       >
         {/* Modal Controls Header */}
-        <div className="px-5 py-3.5 bg-[#f6f6f9] dark:bg-[#111714] border-b border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-xs font-sans text-[#161821] dark:text-[#45d320] font-semibold">
-            <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-            <span>
+        <div className="px-4 sm:px-5 py-3.5 bg-[#f6f6f9] dark:bg-[#111714] border-b border-[#e2e4e8] dark:border-[#273142] flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center space-x-2 text-xs font-sans text-[#161821] dark:text-[#45d320] font-semibold min-w-0">
+            <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
+            <span className="truncate">
               {tr(
                 lang,
                 'Макет выписки из ведомости (иллюстрация)',
@@ -60,8 +70,9 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               )}
             </span>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 shrink-0">
             <button
+              type="button"
               onClick={handlePrint}
               className="inline-flex items-center space-x-1 px-3 py-1.5 min-h-[44px] rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-medium cursor-pointer transition-colors shadow-xs"
             >
@@ -69,6 +80,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
               <span>{tr(lang, 'Печать / PDF (макет)', 'Print / PDF (Preview)')}</span>
             </button>
             <button
+              type="button"
               onClick={onClose}
               aria-label={tr(lang, 'Закрыть', 'Close')}
               className="p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-[#FFFFFF] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] transition-colors cursor-pointer"
@@ -92,20 +104,22 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
           className="p-6 sm:p-10 space-y-6 bg-[#FFFFFF] dark:bg-[#121620] text-[#161821] dark:text-[#FFFFFF] print:p-0 print:bg-white print:text-black"
         >
           {/* Institutional Masthead */}
-          <div className="border-b-2 border-[#161821] dark:border-[#33b712]/40 pb-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="border-b-2 border-[#161821] dark:border-[#33b712]/40 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center space-x-4 min-w-0">
               <div className="w-14 h-14 rounded-lg bg-[#161821] text-[#45d320] flex items-center justify-center p-2 flex-shrink-0 shadow-md">
-                <UniversityEmblem size={44} variant="full" />
+                <UniversityEmblem size={44} variant="full" tone="dark" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <div className="text-[9px] font-sans tracking-wider text-[#475569] dark:text-[#94A3B8] uppercase">
-                  {lang === 'ru'
-                    ? 'МИНОБРНАУКИ РОССИИ • ЛИЦЕНЗИЯ № 2841 • АККРЕДИТАЦИЯ № 3105'
-                    : 'MINISTRY OF HIGHER EDUCATION • ACCREDITATION NO. 3105'}
+                  {tr(
+                    lang,
+                    'ДЕМОТЕХ УНИВЕРСИТЕТ • КОНКУРСНЫЙ КОНЦЕПТ',
+                    'DEMOTECH UNIVERSITY • COMPETITION CONCEPT'
+                  )}
                 </div>
-                <h2 className="font-bold text-base sm:text-lg tracking-tight text-[#161821] dark:text-[#45d320]">
+                <p className="font-bold text-base sm:text-lg tracking-tight text-[#161821] dark:text-[#45d320]">
                   {tr(lang, 'МНТУ «ДЕМОТЕХ УНИВЕРСИТЕТ»', 'DEMOTECH UNIVERSITY')}
-                </h2>
+                </p>
                 <p className="text-[11px] font-sans text-[#475569] dark:text-[#CBD5E1] uppercase tracking-wider">
                   {tr(
                     lang,
@@ -114,16 +128,13 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                   )}
                 </p>
                 <p className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-sans">
-                  {tr(
-                    lang,
-                    'г. Москва, Университетская наб., д. 1 • Тел.: +7 (495) 000-00-00',
-                    '1 Universitetskaya Emb., Moscow • Tel: +7 (495) 000-00-00'
-                  )}
+                  {lang === 'ru' ? UNIVERSITY_INFO.addressRu : UNIVERSITY_INFO.addressEn} •{' '}
+                  {tr(lang, 'Тел.:', 'Tel:')} {UNIVERSITY_INFO.deanOfficePhone}
                 </p>
               </div>
             </div>
 
-            <div className="text-right font-sans text-[11px] text-[#475569] dark:text-[#94A3B8] bg-[#f6f6f9] dark:bg-[#171c26] p-2.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142]">
+            <div className="text-left sm:text-right font-sans text-[11px] text-[#475569] dark:text-[#94A3B8] bg-[#f6f6f9] dark:bg-[#171c26] p-2.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142] shrink-0">
               <div>
                 {tr(lang, 'Исх. №', 'Ref. No.')}{' '}
                 <span className="font-bold text-[#161821] dark:text-[#45d320]">
@@ -139,13 +150,13 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
 
           {/* Document Title */}
           <div className="text-center space-y-1">
-            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wide text-[#161821] dark:text-[#FFFFFF]">
+            <h2 className="text-lg sm:text-xl font-bold uppercase tracking-wide text-[#161821] dark:text-[#FFFFFF]">
               {tr(
                 lang,
                 'Академическая справка — Выписка успеваемости',
                 'Official Academic Transcript'
               )}
-            </h1>
+            </h2>
             <p className="text-xs text-[#475569] dark:text-[#94A3B8] font-sans">
               {tr(
                 lang,
@@ -195,14 +206,18 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
             <h3 className="font-semibold text-xs uppercase tracking-wider text-[#475569] dark:text-[#94A3B8]">
               {tr(
                 lang,
-                'Результаты промежуточной аттестации (Семестр 3):',
-                'Midterm & Final Assessment Results (Semester 3):'
+                `Результаты промежуточной аттестации (Семестр ${gradesSummary.semester}):`,
+                `Midterm & Final Assessment Results (Semester ${gradesSummary.semester}):`
               )}
             </h3>
             <div
               tabIndex={0}
               role="region"
-              aria-label={tr(lang, 'Таблица академической успеваемости', 'Academic Transcript Table')}
+              aria-label={tr(
+                lang,
+                'Таблица академической успеваемости',
+                'Academic Transcript Table'
+              )}
               className="overflow-x-auto rounded-lg border border-[#e2e4e8] dark:border-[#273142] focus:outline-hidden focus:ring-1 focus:ring-[#33b712]"
             >
               <table className="w-full text-left text-xs font-sans">
@@ -221,7 +236,9 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                 <tbody className="divide-y divide-[#e2e4e8] dark:divide-[#273142] bg-white dark:bg-[#171c26]">
                   {gradesSummary.items.map((item, idx) => (
                     <tr key={item.id} className="hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533]/50">
-                      <td className="py-2 px-3 text-[#475569] dark:text-[#94A3B8] font-sans text-[11px]">{idx + 1}</td>
+                      <td className="py-2 px-3 text-[#475569] dark:text-[#94A3B8] font-sans text-[11px]">
+                        {idx + 1}
+                      </td>
                       <td className="py-2 px-3 font-medium text-[#161821] dark:text-[#FFFFFF]">
                         {localizeText(item.subject, lang)}
                       </td>
@@ -280,7 +297,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                 {tr(lang, 'Средний балл (GPA): ', 'Cumulative GPA: ')}
               </span>
               <span className="font-sans font-bold text-base text-[#161821] dark:text-[#45d320]">
-                {profile.gpa.toFixed(2)}
+                {(profile.gpa ?? gradesSummary.gpa ?? 0).toFixed(2)}
               </span>
               <span className="text-[#475569] dark:text-[#94A3B8] ml-2">
                 • {tr(lang, 'Средний рейтинг БРС: ', 'BRS Avg Score: ')}
@@ -312,7 +329,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div className="text-[10px] font-bold text-[#161821] dark:text-[#45d320] uppercase tracking-wider leading-tight">
-                  {tr(lang, 'ДОКУМЕНТ ПОДПИСАН ЭЛЕКТРОННОЙ ПОДПИСЬЮ', 'DOCUMENT DIGITALLY SIGNED')}
+                  {tr(lang, 'ИЛЛЮСТРАТИВНЫЙ ШТАМП (ДЕМО)', 'ILLUSTRATIVE SEAL (DEMO ONLY)')}
                 </div>
               </div>
               <div className="space-y-0.5 text-[9px] font-sans text-[#475569] dark:text-[#CBD5E1]">

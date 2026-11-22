@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "dev": "ts-node src/server.ts",
     "start": "node dist/server.js",
-    "postinstall": "prisma generate --schema=prisma/schema.prisma",
+    "postinstall": "node -e \"try{const cli=require.resolve('prisma/build/index.js');require('child_process').execFileSync(process.execPath,[cli,'generate','--schema=prisma/schema.prisma'],{stdio:'inherit'})}catch(e){if(e&&e.code==='MODULE_NOT_FOUND')process.exit(0);throw e}\"",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

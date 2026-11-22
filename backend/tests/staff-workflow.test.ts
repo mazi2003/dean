@@ -237,4 +237,229 @@ describe('Staff Role-Based Access Control & Dean Office Workflows', () => {
     const missingDossier = await staff.get('/api/v1/staff/students/not-a-uuid/dossier');
     expect(missingDossier.status).toBe(404);
   });
+
+  it('Staff GET /api/v1/profile returns administrative staff profile without passwordHash', async () => {
+    const staff = await loginAs('dean.office@demo.edu', 'DemoStaff123!');
+    const res = await staff.get('/api/v1/profile');
+    expect(res.status).toBe(200);
+    expect(res.body.role).toBe('staff');
+    expect(res.body.group).toBe('ДЕКАНАТ-МО');
+    expect(res.body.studentNumber).toBe('ТАБ-0441');
+    expect(res.body.passwordHash).toBeUndefined();
+  });
+
+  it('Staff exams CRUD: GET ?group=, POST /staff/exams (201/404/409/422), and POST /staff/exams/:id/reset', async () => {
+    const staff = await loginAs('dean.office@demo.edu', 'DemoStaff123!');
+    const aigul = await loginAs('aigul.nurova@demo.edu', 'DemoStudent123!');
+    const timur = await loginAs('timur.belov@demo.edu', 'DemoStudent123!');
+
+    const listAll = await staff.get('/api/v1/staff/exams');
+    expect(listAll.status).toBe(200);
+    expect(listAll.body.length).toBeGreaterThanOrEqual(1);
+
+    const badCreate = await staff.post('/api/v1/staff/exams').send({ code: '' });
+    expect(badCreate.status).toBe(422);
+
+    const missingGroup = await staff.post('/api/v1/staff/exams').send({
+      code: 'NEW-404',
+      groupId: 'UNKNOWN-999',
+      subject: 'Test',
+      format: 'Oral',
+      examiner: 'Prof. X',
+      date: '20 декабря 2026',
+      time: '10:00',
+      room: '101',
+    });
+    expect(missingGroup.status).toBe(404);
+
+    const created = await staff.post('/api/v1/staff/exams').send({
+      code: 'NEW-101',
+      groupId: 'DU-101',
+      subject: 'Теория международных договоров',
+      format: 'Устный экзамен',
+      examiner: 'Проф. Лебедев Д.В.',
+      date: '29 декабря 2026',
+      rawDate: '2026-12-29',
+      time: '10:00 – 13:00',
+      room: 'Ауд. А-204',
+      notifyGroup: true,
+    });
+    expect(created.status).toBe(201);
+    expect(created.body.code).toBe('NEW-101');
+    expect(created.body.groupId).toBe('DU-101');
+
+    // Duplicate exam code returns 409 Conflict
+    const duplicate = await staff.post('/api/v1/staff/exams').send({
+      code: 'NEW-101',
+      groupId: 'DU-101',
+      subject: 'Дубликат',
+      format: 'Устный',
+      examiner: 'Проф. Лебедев Д.В.',
+      date: '30 декабря 2026',
+      time: '10:00',
+      room: '101',
+    });
+    expect(duplicate.status).toBe(409);
+
+    const du101Exams = await staff.get('/api/v1/staff/exams?group=DU-101');
+    expect(du101Exams.status).toBe(200);
+    expect(du101Exams.body.some((e: { code: string }) => e.code === 'NEW-101')).toBe(true);
+
+    // DU-101 student receives notification; DU-205 student does not
+    const aNotifs = await aigul.get('/api/v1/notifications');
+    expect(
+      aNotifs.body.items.some((n: { title: string }) =>
+        n.title.includes('Теория международных договоров')
+      )
+    ).toBe(true);
+    const tNotifs = await timur.get('/api/v1/notifications');
+    expect(
+      tNotifs.body.items.some((n: { title: string }) =>
+        n.title.includes('Теория международных договоров')
+      )
+    ).toBe(false);
+
+    // Mutate LAW-201 then reset to originalSnapshot
+    const mutateRes = await staff.post('/api/v1/staff/exam-changes').send({
+      examId: 'LAW-201',
+      room: 'Ауд. В-999',
+      status: 'room_changed',
+      changeNote: 'Временный перенос',
+      notifyGroup: false,
+    });
+    expect(mutateRes.status).toBe(200);
+    expect(mutateRes.body.room).toBe('Ауд. В-999');
+
+    const resetRes = await staff.post('/api/v1/staff/exams/LAW-201/reset');
+    expect(resetRes.status).toBe(200);
+    expect(resetRes.body.room).toBe('Ауд. 312');
+    expect(resetRes.body.date).toBe('12 декабря 2026');
+    expect(resetRes.body.status).toBe('scheduled');
+    expect(resetRes.body.changeNote).toBeNull();
+
+    const missingReset = await staff.post('/api/v1/staff/exams/DOES-NOT-EXIST/reset');
+    expect(missingReset.status).toBe(404);
+  });
+
+  it('Staff GET /api/v1/schedule handles ?group=all, unknown group, specific group, and default', async () => {
+    const staff = await loginAs('dean.office@demo.edu', 'DemoStaff123!');
+
+    const allRes = await staff.get('/api/v1/schedule?group=all');
+    expect(allRes.status).toBe(200);
+    const allGroups = new Set(allRes.body.map((e: { groupId: string }) => e.groupId));
+    expect(allGroups.has('DU-101')).toBe(true);
+    expect(allGroups.has('DU-205')).toBe(true);
+
+    const unknownRes = await staff.get('/api/v1/schedule?group=UNKNOWN-999');
+    expect(unknownRes.status).toBe(200);
+    expect(unknownRes.body).toEqual([]);
+
+    const du205Res = await staff.get('/api/v1/schedule?group=DU-205');
+    expect(du205Res.status).toBe(200);
+    expect(du205Res.body.length).toBeGreaterThan(0);
+    expect(du205Res.body.every((e: { groupId: string }) => e.groupId === 'DU-205')).toBe(true);
+
+    const defaultRes = await staff.get('/api/v1/schedule');
+    expect(defaultRes.status).toBe(200);
+    expect(defaultRes.body.every((e: { groupId: string }) => e.groupId === 'DU-101')).toBe(true);
+  });
+
+  it('Staff error envelopes, status transitions (needs_info -> in_review -> rejected), targeted announcements & 404 checks', async () => {
+    const staff = await loginAs('dean.office@demo.edu', 'DemoStaff123!');
+    const lina = await loginAs('lina.okafor@demo.edu', 'DemoStudent123!');
+    const timur = await loginAs('timur.belov@demo.edu', 'DemoStudent123!');
+
+    // DELETE /staff/announcements/:id returns standard { code: 'NOT_FOUND', message }
+    const badUuidDel = await staff.delete('/api/v1/staff/announcements/not-a-uuid');
+    expect(badUuidDel.status).toBe(404);
+    expect(badUuidDel.body).toEqual({ code: 'NOT_FOUND', message: 'Announcement not found' });
+
+    const missingUuidDel = await staff.delete(
+      '/api/v1/staff/announcements/99999999-9999-4999-8999-999999999999'
+    );
+    expect(missingUuidDel.status).toBe(404);
+    expect(missingUuidDel.body).toEqual({ code: 'NOT_FOUND', message: 'Announcement not found' });
+
+    // 404 on unknown scheduleEntry, exam, and request
+    expect(
+      (
+        await staff.post('/api/v1/staff/schedule-changes').send({
+          scheduleEntryId: '99999999-9999-4999-8999-999999999999',
+          status: 'cancelled',
+        })
+      ).status
+    ).toBe(404);
+    expect(
+      (
+        await staff.post('/api/v1/staff/exam-changes').send({
+          examId: 'UNKNOWN-EXAM',
+          status: 'cancelled',
+        })
+      ).status
+    ).toBe(404);
+    expect(
+      (
+        await staff
+          .post('/api/v1/staff/requests/99999999-9999-4999-8999-999999999999/status')
+          .send({ status: 'in_review' })
+      ).status
+    ).toBe(404);
+
+    // Transition Timur's needs_info request: needs_info -> in_review -> rejected
+    const toInReview = await staff
+      .post(`/api/v1/staff/requests/${ids.timurReqNeedsInfoId}/status`)
+      .send({ status: 'in_review', comment: 'Документы получены' });
+    expect(toInReview.status).toBe(200);
+    expect(toInReview.body.status).toBe('in_review');
+
+    const toRejected = await staff
+      .post(`/api/v1/staff/requests/${ids.timurReqNeedsInfoId}/status`)
+      .send({ status: 'rejected', comment: 'Неполный пакет документов' });
+    expect(toRejected.status).toBe(200);
+    expect(toRejected.body.status).toBe('rejected');
+
+    // Targeted user announcement reaches only Lina
+    const userAnn = await staff.post('/api/v1/staff/announcements').send({
+      title: 'Личное приглашение на встречу',
+      body: 'Подойдите в каб. 201',
+      targetUserId: ids.linaUserId,
+    });
+    expect(userAnn.status).toBe(201);
+    expect(userAnn.body.count).toBe(1);
+
+    // Global announcement reaches all 3 students
+    const globalAnn = await staff.post('/api/v1/staff/announcements').send({
+      title: 'Общефакультетское объявление',
+      body: 'День открытых дверей',
+      group: null,
+    });
+    expect(globalAnn.status).toBe(201);
+    expect(globalAnn.body.count).toBe(3);
+
+    const lNotifs = await lina.get('/api/v1/notifications');
+    expect(
+      lNotifs.body.items.some((n: { title: string }) => n.title === 'Личное приглашение на встречу')
+    ).toBe(true);
+    const tNotifs = await timur.get('/api/v1/notifications');
+    expect(
+      tNotifs.body.items.some((n: { title: string }) => n.title === 'Личное приглашение на встречу')
+    ).toBe(false);
+
+    // Schedule changes: moved & cancelled
+    const movedRes = await staff.post('/api/v1/staff/schedule-changes').send({
+      scheduleEntryId: ids.du101ScheduleId,
+      status: 'moved',
+      start: '09:00',
+      end: '10:35',
+      notifyGroup: false,
+    });
+    expect(movedRes.status).toBe(200);
+
+    const cancelSchRes = await staff.post('/api/v1/staff/schedule-changes').send({
+      scheduleEntryId: ids.du101ScheduleId,
+      status: 'cancelled',
+      notifyGroup: false,
+    });
+    expect(cancelSchRes.status).toBe(200);
+  });
 });

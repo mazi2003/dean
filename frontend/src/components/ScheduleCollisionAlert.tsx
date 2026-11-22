@@ -10,35 +10,41 @@ import {
 } from 'lucide-react';
 import { tr, localizeText, localizePersonName } from '../utils/i18n';
 
+export interface ConflictingClassInfo {
+  subject: string;
+  time: string;
+  room: string;
+  teacher?: string;
+}
+
 interface ScheduleCollisionAlertProps {
-  retakeDate?: string;
-  retakeTime?: string;
-  retakeSubject?: string;
+  retakeDate: string;
+  retakeTime: string;
+  retakeSubject: string;
   retakeRoom?: string;
+  conflictingClass?: ConflictingClassInfo | null;
   onOpenMap?: (room: string) => void;
   compact?: boolean;
 }
 
 export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
-  retakeDate = '28 ноября 2026 г.',
-  retakeTime = '14:00',
-  retakeSubject = 'Математическая статистика и анализ данных',
-  retakeRoom = 'А-314',
+  retakeDate,
+  retakeTime,
+  retakeSubject,
+  retakeRoom,
+  conflictingClass,
   onOpenMap,
   compact = false,
 }) => {
   const { lang, profile } = useAuth();
   const [showDirectiveModal, setShowDirectiveModal] = useState(false);
 
-  // Conflicting scheduled class for Timur's group (ДУ-205) on that slot
-  const conflictingClass = {
-    subjectRu: 'Консультация перед пересдачей: Статистика',
-    subjectEn: 'Pre-Retake Consultation & Seminar: Statistics',
-    time: '14:00 – 15:35',
-    room: 'А-314',
-    teacherRu: 'доц. Ковалев С.А.',
-    teacherEn: 'Assoc. Prof. Kovalev S.A.',
-  };
+  const conflictSubjectRu = conflictingClass?.subject || retakeSubject;
+  const conflictSubjectEn = localizeText(conflictSubjectRu, 'en');
+  const conflictTime = conflictingClass?.time || retakeTime;
+  const conflictRoom = conflictingClass?.room || retakeRoom || '';
+  const conflictTeacherRu = conflictingClass?.teacher || '';
+  const conflictTeacherEn = conflictTeacherRu ? localizeText(conflictTeacherRu, 'en') : '';
 
   return (
     <div
@@ -68,11 +74,17 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
               </span>
             </div>
             <p className="text-xs text-[#7c2d12] dark:text-[#fdba74] font-sans mt-0.5 leading-relaxed">
-              {tr(
-                lang,
-                `Время повторной аттестации (${retakeDate}, ${retakeTime}) совпадает со слотом обязательного занятия учебной группы: «${conflictingClass.subjectRu}» (${conflictingClass.time}, ауд. ${conflictingClass.room}).`,
-                `Retake exam slot (${localizeText(retakeDate, lang)}, ${retakeTime}) overlaps with scheduled group class: "${conflictingClass.subjectEn}" (${conflictingClass.time}, Room ${localizeText(conflictingClass.room, lang)}).`
-              )}
+              {conflictingClass
+                ? tr(
+                    lang,
+                    `Время повторной аттестации (${retakeDate}, ${retakeTime}) совпадает со слотом обязательного занятия учебной группы: «${conflictSubjectRu}» (${conflictTime}${conflictRoom ? `, ауд. ${conflictRoom}` : ''}).`,
+                    `Retake exam slot (${localizeText(retakeDate, lang)}, ${retakeTime}) overlaps with scheduled group class: "${conflictSubjectEn}" (${conflictTime}${conflictRoom ? `, Room ${localizeText(conflictRoom, lang)}` : ''}).`
+                  )
+                : tr(
+                    lang,
+                    `Время повторной аттестации по дисциплине «${retakeSubject}» (${retakeDate}, ${retakeTime}) пересекается с учебным расписанием.`,
+                    `Retake exam slot for "${localizeText(retakeSubject, lang)}" (${localizeText(retakeDate, lang)}, ${retakeTime}) overlaps with the regular timetable.`
+                  )}
             </p>
           </div>
         </div>
@@ -102,8 +114,9 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
         <div className="pt-2 flex flex-wrap items-center gap-2">
           {/* Dean's Directive Toggle Button */}
           <button
+            type="button"
             onClick={() => setShowDirectiveModal(!showDirectiveModal)}
-            className="px-3 py-1.5 rounded-lg bg-[#fef3c7] dark:bg-[#451a03] text-[#92400e] dark:text-[#fde68a] hover:bg-[#fde68a] text-[11px] font-heading font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
+            className="px-3 py-1.5 min-h-[44px] rounded-lg bg-[#fef3c7] dark:bg-[#451a03] text-[#92400e] dark:text-[#fde68a] hover:bg-[#fde68a] dark:hover:bg-[#78350f] text-[11px] font-heading font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
           >
             <FileCheck2 className="w-3.5 h-3.5" />
             <span>
@@ -119,14 +132,19 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
           </button>
 
           {/* Interactive Room Wayfinding Button */}
-          {onOpenMap && (
+          {onOpenMap && retakeRoom && (
             <button
+              type="button"
               onClick={() => onOpenMap(retakeRoom)}
-              className="px-3 py-1.5 rounded-lg bg-[#161821] text-white hover:bg-[#11141c] text-[11px] font-heading font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
+              className="px-3 py-1.5 min-h-[44px] rounded-lg bg-[#161821] text-white hover:bg-[#11141c] text-[11px] font-heading font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
             >
               <MapPin className="w-3.5 h-3.5 text-[#45d320]" />
               <span>
-                {tr(lang, `Найти ауд. ${retakeRoom} на карте кампуса`, `Locate Room ${localizeText(retakeRoom, lang)} on Map`)}
+                {tr(
+                  lang,
+                  `Найти ауд. ${retakeRoom} на карте кампуса`,
+                  `Locate Room ${localizeText(retakeRoom, lang)} on Map`
+                )}
               </span>
             </button>
           )}
@@ -136,15 +154,15 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
       {/* Expanded Dean's Directive Details */}
       {showDirectiveModal && (
         <div className="p-4 rounded-xl bg-white dark:bg-[#11141c] border border-[#f97316]/30 text-xs font-sans space-y-2 animate-fade-in shadow-xs">
-          <div className="flex items-center justify-between border-b border-[#e2e4e8] dark:border-[#273142] pb-2 text-[10px] text-[#475569] dark:text-[#94a3b8]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e2e4e8] dark:border-[#273142] pb-2 text-[10px] text-[#475569] dark:text-[#94a3b8]">
             <span>РАСПОРЯЖЕНИЕ ДЕКАНАТА № 118-А-СТ</span>
-            <span>20.11.2026 г.</span>
+            <span>{localizeText(retakeDate, lang)}</span>
           </div>
           <p className="text-[11px] font-sans text-[#161821] dark:text-white leading-relaxed">
             {tr(
               lang,
-              `«Об освобождении студента гр. ${profile?.group || 'ДУ-205'} ${profile?.fullName || 'Белова Т.М.'} от аудиторных занятий 28.11.2026 г. с 14:00 до 16:00 в связи с участием в работе аттестационной комиссии по дисциплине «${localizeText(retakeSubject, lang)}». Преподавателю ${conflictingClass.teacherRu} засчитать причину отсутствия уважительной.»`,
-              `"Excused absence directive for student ${localizePersonName(profile?.fullName, 'en') || 'Timur Belov'} (group ${profile?.group || 'DU-205'}) on 28.11.2026 from 14:00 to 16:00 due to commission re-examination in "${localizeText(retakeSubject, lang)}". Academic sanctions shall not apply."`
+              `«Об освобождении студента${profile?.group ? ` гр. ${profile.group}` : ''} ${profile?.fullName || ''} от аудиторных занятий (${retakeDate}, ${retakeTime}) в связи с участием в работе аттестационной комиссии по дисциплине «${localizeText(retakeSubject, lang)}».${conflictTeacherRu ? ` Преподавателю ${conflictTeacherRu} засчитать причину отсутствия уважительной.` : ''}»`,
+              `"Excused absence directive for student ${localizePersonName(profile?.fullName, 'en') || ''}${profile?.group ? ` (group ${profile.group})` : ''} on ${localizeText(retakeDate, 'en')} at ${retakeTime} due to commission re-examination in "${localizeText(retakeSubject, 'en')}".${conflictTeacherEn ? ` Instructor ${conflictTeacherEn} shall record an excused absence.` : ''} Academic sanctions shall not apply."`
             )}
           </p>
           <div className="flex items-center justify-between text-[10px] text-[#166534] dark:text-[#45d320] font-semibold pt-1">

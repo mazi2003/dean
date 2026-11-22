@@ -67,12 +67,16 @@ components:
       properties:
         id: { type: string }
         date: { type: string, format: date }
+        dayOfWeek: { type: integer, minimum: 1, maximum: 7 }
         start: { type: string, example: '08:30' }
         end: { type: string, example: '10:05' }
+        startTime: { type: string, example: '08:30' }
+        endTime: { type: string, example: '10:05' }
         subject: { type: string }
         type: { type: string, enum: [lecture, seminar, lab, exam] }
         room: { type: string }
         teacher: { type: string }
+        groupId: { type: string }
         status: { type: string, enum: [normal, room_changed, moved, cancelled] }
         changeNote: { type: string, nullable: true }
     Grade:
@@ -87,6 +91,9 @@ components:
         grade: { type: integer, enum: [2, 3, 4, 5], nullable: true }
         creditStatus: { type: string, enum: [earned, in_progress, failed] }
         examDate: { type: string, format: date, nullable: true }
+        retakeDate: { type: string, format: date, nullable: true }
+        teacher: { type: string, nullable: true }
+        semester: { type: integer }
     GradesSummary:
       type: object
       properties:
@@ -122,9 +129,12 @@ components:
     StatusEvent:
       type: object
       properties:
+        id: { type: string, format: uuid }
         status: { $ref: '#/components/schemas/RequestStatus' }
         at: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
         comment: { type: string, nullable: true }
+        authorName: { type: string }
     CreateRequest:
       type: object
       required: [typeCode, data]
@@ -135,13 +145,19 @@ components:
       type: object
       properties:
         id: { type: string, format: uuid }
+        studentId: { type: string, format: uuid }
+        studentName: { type: string }
+        studentGroup: { type: string }
         typeCode: { type: string }
         typeTitle: { type: string }
+        slaDays: { type: integer }
         status: { $ref: '#/components/schemas/RequestStatus' }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         expectedBy: { type: string, format: date, nullable: true }
+        expectedDate: { type: string, format: date, nullable: true }
         data: { type: object }
+        digitalDocAvailable: { type: boolean }
         history: { type: array, items: { $ref: '#/components/schemas/StatusEvent' } }
         student: { $ref: '#/components/schemas/User' }
     NotificationKind: { type: string, enum: [announcement, deadline, request_update, schedule_change] }
@@ -186,6 +202,74 @@ components:
         page: { type: integer }
         pageSize: { type: integer }
         total: { type: integer }
+    StaffAnnouncement:
+      type: object
+      required: [id, title, body, targetGroup, priority, kind, createdAt, recipientCount]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        body: { type: string }
+        targetGroup: { type: string }
+        priority: { type: string, enum: [normal, high, urgent] }
+        kind: { $ref: '#/components/schemas/NotificationKind' }
+        createdAt: { type: string, format: date-time }
+        recipientCount: { type: integer }
+        recipients: { type: array, items: { type: string } }
+    AcademicGroup:
+      type: object
+      required: [id, code, program, faculty, year, courseNumber, studentsCount, budgetCount, contractCount, averageGpa, debtCount]
+      properties:
+        id: { type: string }
+        code: { type: string }
+        program: { type: string }
+        faculty: { type: string }
+        year: { type: integer }
+        courseNumber: { type: integer }
+        studentsCount: { type: integer }
+        budgetCount: { type: integer }
+        contractCount: { type: integer }
+        curatorName: { type: string }
+        curatorContact: { type: string }
+        starostaName: { type: string }
+        starostaEmail: { type: string }
+        starostaPhone: { type: string }
+        averageGpa: { type: number }
+        debtCount: { type: integer }
+    StudentListItem:
+      type: object
+      required: [id, fullName, email, phone, group, year, studentNumber, studyForm, gpa, averageScore, debtCount, debtSubjects, isStarosta, status]
+      properties:
+        id: { type: string, format: uuid }
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+        group: { type: string }
+        year: { type: integer }
+        studentNumber: { type: string }
+        studyForm: { type: string, enum: [Бюджет, Контракт] }
+        gpa: { type: number }
+        averageScore: { type: number }
+        debtCount: { type: integer }
+        debtSubjects: { type: array, items: { type: string } }
+        isStarosta: { type: boolean }
+        status: { type: string, enum: [active, academic_leave, expelled] }
+    StudentDossier:
+      type: object
+      required: [profile, gradesSummary, requests]
+      properties:
+        profile:
+          allOf:
+            - $ref: '#/components/schemas/StudentListItem'
+            - type: object
+              properties:
+                faculty: { type: string }
+                program: { type: string }
+                admissionYear: { type: integer }
+                recordBookNumber: { type: string }
+                dormitoryInfo: { type: string }
+                snils: { type: string }
+        gradesSummary: { $ref: '#/components/schemas/GradesSummary' }
+        requests: { type: array, items: { $ref: '#/components/schemas/Request' } }
 paths:
   /health:
     get:
@@ -226,6 +310,7 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/Validation' }
         '429': { description: Too many attempts }
   /auth/logout:
     post:
@@ -245,7 +330,7 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
   /schedule:
     get:
-      summary: Schedule for a date range or specific day (students get own group; staff may filter by group)
+      summary: Schedule for a date range or specific day (students get own group; staff may pass ?group=CODE, ?group=all for all groups, or omit ?group to default to first group; unknown ?group returns [])
       parameters:
         - { name: from, in: query, schema: { type: string, format: date } }
         - { name: to, in: query, schema: { type: string, format: date } }
@@ -254,11 +339,15 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/ScheduleEntry' } } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Validation' }
   /schedule/today:
     get:
-      summary: Own classes today plus next upcoming class
+      summary: Own classes today plus next upcoming uncancelled class (earliest remaining class later today, else first uncancelled future-day entry, or null)
       responses:
-        '200': { description: OK, content: { application/json: { schema: { type: object, properties: { today: { type: array, items: { $ref: '#/components/schemas/ScheduleEntry' } }, next: { $ref: '#/components/schemas/ScheduleEntry' } } } } } }
+        '200': { description: OK, content: { application/json: { schema: { type: object, properties: { today: { type: array, items: { $ref: '#/components/schemas/ScheduleEntry' } }, next: { allOf: [ { $ref: '#/components/schemas/ScheduleEntry' } ], nullable: true } } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
   /exams:
     get:
       summary: Exams schedule (students get own group; staff may filter by ?group=)
@@ -267,6 +356,8 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/ExamEntry' } } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Validation' }
   /grades:
     get:
       summary: Own grades and credits (optional semester)
@@ -275,11 +366,14 @@ paths:
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GradesSummary' } } } }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Validation' }
   /request-types:
     get:
       summary: Available request types and form fields
       responses:
         '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/RequestType' } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
   /requests:
     get:
       summary: Own requests (newest first)
@@ -289,11 +383,16 @@ paths:
         - { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
       responses:
         '200': { description: OK, content: { application/json: { schema: { allOf: [ { $ref: '#/components/schemas/Page' }, { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Request' } } } } ] } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/Validation' }
     post:
       summary: Create request (student only)
       requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateRequest' } } } }
       responses:
         '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Request' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/Validation' }
   /requests/{id}:
     get:
@@ -301,6 +400,7 @@ paths:
       parameters: [ { name: id, in: path, required: true, schema: { type: string, format: uuid } } ]
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Request' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
   /requests/{id}/cancel:
     post:
@@ -308,6 +408,7 @@ paths:
       parameters: [ { name: id, in: path, required: true, schema: { type: string, format: uuid } } ]
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Request' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: Not cancellable in current status }
   /notifications:
@@ -320,23 +421,31 @@ paths:
         - { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
       responses:
         '200': { description: OK, content: { application/json: { schema: { allOf: [ { $ref: '#/components/schemas/Page' }, { type: object, properties: { unreadCount: {type: integer}, items: { type: array, items: { $ref: '#/components/schemas/Notification' } } } } ] } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/Validation' }
   /notifications/{id}/read:
     post:
       summary: Mark own notification read
       parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
       responses:
         '204': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
   /notifications/read-all:
     post:
       summary: Mark all own notifications read
-      responses: { '204': { description: OK } }
+      responses:
+        '204': { description: OK }
+        '401': { $ref: '#/components/responses/Unauthorized' }
   /assistant/ask:
     post:
       summary: Server-side Academic Advisor (deterministic rules engine by default + optional server-side OpenAI-compatible LLM); answers only from caller's own data.
       requestBody: { required: true, content: { application/json: { schema: { type: object, required: [question], properties: { question: { type: string, maxLength: 500 }, lang: { type: string, enum: [ru, en] } } } } } }
       responses:
         '200': { description: OK, content: { application/json: { schema: { type: object, properties: { answer: { type: string }, source: { type: string, enum: [rules, llm] } } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/Validation' }
+        '429': { description: Too many requests }
   /staff/requests:
     get:
       summary: Staff only. All requests with filters.
@@ -346,7 +455,9 @@ paths:
         - { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
       responses:
         '200': { description: OK, content: { application/json: { schema: { allOf: [ { $ref: '#/components/schemas/Page' }, { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Request' } } } } ] } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/Validation' }
   /staff/requests/{id}/status:
     post:
       summary: Staff only. Change status (valid transitions only); creates notification for the student.
@@ -354,41 +465,54 @@ paths:
       requestBody: { required: true, content: { application/json: { schema: { type: object, required: [status], properties: { status: { $ref: '#/components/schemas/RequestStatus' }, comment: { type: string } } } } } }
       responses:
         '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Request' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
         '409': { description: Invalid transition }
+        '422': { $ref: '#/components/responses/Validation' }
   /staff/announcements:
     get:
       summary: Staff only. List published announcements journal.
       responses:
-        '200': { description: OK, content: { application/json: { schema: { type: array, items: { type: object, properties: { id: {type: string}, title: {type: string}, body: {type: string}, targetGroup: {type: string, nullable: true}, createdAt: {type: string, format: date-time} } } } } } }
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/StaffAnnouncement' } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
     post:
       summary: Staff only. Post announcement to all students, one group, or one user.
-      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [title, body], properties: { title: {type: string}, body: {type: string}, group: {type: string, nullable: true}, targetUserId: {type: string, nullable: true}, priority: {type: string, enum: [normal, high, urgent]}, kind: {type: string} } } } } }
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [title, body], properties: { title: {type: string}, body: {type: string}, group: {type: string, nullable: true}, targetUserId: {type: string, format: uuid, nullable: true}, priority: {type: string, enum: [normal, high, urgent]}, kind: { $ref: '#/components/schemas/NotificationKind' } } } } } }
       responses:
-        '201': { description: Created }
+        '201': { description: Created, content: { application/json: { schema: { type: object, required: [ok, id, count], properties: { ok: { type: boolean }, id: { type: string, format: uuid }, count: { type: integer } } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/Validation' }
   /staff/announcements/{id}:
     delete:
       summary: Staff only. Revoke/delete a published announcement.
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
+      parameters: [ { name: id, in: path, required: true, schema: { type: string, format: uuid } } ]
       responses:
-        '200': { description: Deleted }
+        '200': { description: Deleted, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
   /staff/schedule-changes:
     post:
       summary: Staff only. Change room/time/cancel/restore a class; optionally notifies the affected group.
-      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [scheduleEntryId, status], properties: { scheduleEntryId: {type: string}, status: {type: string, enum: [normal, room_changed, moved, cancelled]}, room: {type: string}, start: {type: string}, end: {type: string}, note: {type: string}, notifyGroup: {type: boolean} } } } } }
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [scheduleEntryId, status], properties: { scheduleEntryId: {type: string, format: uuid}, status: {type: string, enum: [normal, room_changed, moved, cancelled]}, room: {type: string}, start: {type: string}, end: {type: string}, note: {type: string}, notifyGroup: {type: boolean} } } } } }
       responses:
-        '200': { description: OK }
+        '200': { description: OK, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Validation' }
   /staff/exams:
     get:
       summary: Staff only. List exam session schedule (optional ?group=CODE).
       parameters: [ { name: group, in: query, schema: { type: string } } ]
       responses:
         '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/ExamEntry' } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/Validation' }
     post:
       summary: Staff only. Create a new exam entry and optionally notify the group.
       requestBody:
@@ -417,15 +541,18 @@ paths:
                 notifyGroup: { type: boolean, default: true }
       responses:
         '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/ExamEntry' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Duplicate exam code }
         '422': { $ref: '#/components/responses/Validation' }
   /staff/exams/{id}/reset:
     post:
       summary: Staff only. Restore an exam entry to its original seeded snapshot.
       parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
       responses:
-        '200': { description: OK }
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ExamEntry' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
   /staff/exam-changes:
@@ -441,42 +568,52 @@ paths:
               properties:
                 examId: { type: string }
                 date: { type: string }
+                rawDate: { type: string }
                 time: { type: string }
                 room: { type: string }
+                examiner: { type: string }
+                commissionMembers: { type: string }
+                consultation: { type: string }
                 status: { type: string, enum: [scheduled, date_changed, room_changed, postponed, cancelled] }
                 changeNote: { type: string, nullable: true }
                 notifyGroup: { type: boolean }
                 targetGroup: { type: string }
                 subject: { type: string }
       responses:
-        '200': { description: OK }
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ExamEntry' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/Validation' }
   /staff/groups:
     get:
       summary: Staff only. Academic groups directory with summary statistics.
       responses:
-        '200': { description: OK, content: { application/json: { schema: { type: array, items: { type: object } } } } }
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/AcademicGroup' } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
   /staff/groups/{code}/students:
     get:
       summary: Staff only. Student roster for an academic group.
       parameters: [ { name: code, in: path, required: true, schema: { type: string } } ]
       responses:
-        '200': { description: OK, content: { application/json: { schema: { type: array, items: { type: object } } } } }
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/StudentListItem' } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
   /staff/students:
     get:
       summary: Staff only. Full student directory across all groups.
       responses:
-        '200': { description: OK, content: { application/json: { schema: { type: array, items: { type: object } } } } }
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/StudentListItem' } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
   /staff/students/{id}/dossier:
     get:
       summary: Staff only. Full personal student dossier (profile, grades, requests).
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
+      parameters: [ { name: id, in: path, required: true, schema: { type: string, format: uuid } } ]
       responses:
-        '200': { description: OK, content: { application/json: { schema: { type: object } } } }
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/StudentDossier' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }

@@ -1,36 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="shieldBg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#142D4E"/>
-      <stop offset="100%" stop-color="#0E241F"/>
+    <linearGradient id="dtBg" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#222736" />
+      <stop offset="100%" stop-color="#12151e" />
     </linearGradient>
-    <linearGradient id="goldGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#F2DDAD"/>
-      <stop offset="50%" stop-color="#245A91"/>
-      <stop offset="100%" stop-color="#967738"/>
+    <linearGradient id="dtEm" x1="32" y1="16" x2="32" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#63ec41" />
+      <stop offset="55%" stop-color="#45d320" />
+      <stop offset="100%" stop-color="#33b712" />
     </linearGradient>
   </defs>
 
-  <!-- Deep Academic Green Squircle Base -->
-  <rect width="32" height="32" rx="7" fill="url(#shieldBg)"/>
-  <rect x="1" y="1" width="30" height="30" rx="6" stroke="url(#goldGrad)" stroke-width="1.2" stroke-opacity="0.85"/>
+  <!-- Obsidian Squircle App Icon Surface (PWA Maskable Safe Zone) -->
+  <rect width="64" height="64" rx="16" fill="url(#dtBg)" />
+  <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="14.75" stroke="#33b712" stroke-opacity="0.55" stroke-width="1.5" />
 
-  <!-- Heraldic Escutcheon (Shield) -->
-  <path d="M16 5.5 L24 9.5 V17.5 C24 22 20.5 25.5 16 27 C11.5 25.5 8 22 8 17.5 V9.5 L16 5.5 Z" 
-        fill="#0E1F36" stroke="url(#goldGrad)" stroke-width="1.2" stroke-linejoin="round"/>
-
-  <!-- Guiding Polaris Beacon Star (Veritas & Knowledge) -->
-  <path d="M16 8 L17 10.3 L19.3 11.2 L17 12.1 L16 14.5 L15 12.1 L12.7 11.2 L15 10.3 Z" fill="#FFFFFF"/>
-  <circle cx="16" cy="11.2" r="0.8" fill="#245A91"/>
-
-  <!-- Open Academic Codex (Book of Science) -->
-  <path d="M11.5 17.5 C13.5 16.7 15 17.3 16 18.5 C17 17.3 18.5 16.7 20.5 17.5 V22.8 C18.5 22 17 22.6 16 23.8 C15 22.6 13.5 22 11.5 22.8 V17.5 Z" 
-        fill="#FFFFFF" stroke="#245A91" stroke-width="0.8" stroke-linejoin="round"/>
-  <!-- Book spine line -->
-  <line x1="16" y1="18.5" x2="16" y2="23.8" stroke="#142D4E" stroke-width="0.8"/>
-  <!-- Book illuminated text marks -->
-  <line x1="13" y1="19.3" x2="15" y2="19.8" stroke="#142D4E" stroke-width="0.6" stroke-linecap="round"/>
-  <line x1="13" y1="20.8" x2="15" y2="21.3" stroke="#142D4E" stroke-width="0.6" stroke-linecap="round"/>
-  <line x1="17" y1="19.8" x2="19" y2="19.3" stroke="#142D4E" stroke-width="0.6" stroke-linecap="round"/>
-  <line x1="17" y1="21.3" x2="19" y2="20.8" stroke="#142D4E" stroke-width="0.6" stroke-linecap="round"/>
+  <!-- Digital Rotunda Columns Emblem -->
+  <g transform="translate(9 9) scale(0.383333)">
+    <path d="M20 44 L60 20 L100 44" stroke="#FFFFFF" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="60" cy="36.5" r="5.8" fill="url(#dtEm)" />
+    <rect x="24" y="54" width="15" height="35" rx="7.5" fill="#FFFFFF" />
+    <rect x="52.5" y="46.5" width="15" height="42.5" rx="7.5" fill="url(#dtEm)" />
+    <rect x="81" y="54" width="15" height="35" rx="7.5" fill="#FFFFFF" />
+    <rect x="17" y="96" width="86" height="10" rx="5" fill="#FFFFFF" />
+    <rect x="47" y="96" width="26" height="10" rx="5" fill="url(#dtEm)" />
+  </g>
 </svg>

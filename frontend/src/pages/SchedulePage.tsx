@@ -11,7 +11,7 @@ import {
   X,
   Plus,
 } from 'lucide-react';
-import { ScheduleEntry, ScheduleStatus, ExamEntry } from '../types';
+import { ScheduleEntry, ScheduleStatus, ExamEntry, AcademicGroup } from '../types';
 import { api } from '../services/api';
 import { ExamEditModal } from '../components/ExamEditModal';
 import {
@@ -51,6 +51,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
   const [activeSubTab, setActiveSubTab] = useState<'classes' | 'exams'>('classes');
   const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
   const [exams, setExams] = useState<ExamEntry[]>([]);
+  const [staffGroups, setStaffGroups] = useState<AcademicGroup[]>([]);
   const [selectedDay, setSelectedDay] = useState<number>(1); // 1=Mon ... 6=Sat
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
   const [filterType, setFilterType] = useState<string>('all');
@@ -92,13 +93,15 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
     const activeGrp = isStaff ? selectedGroup : studentGroup;
     (async () => {
       try {
-        const [data, examData] = await Promise.all([
+        const [data, examData, groupsData] = await Promise.all([
           api.getSchedule(undefined, activeGrp),
           api.getExams(activeGrp),
+          isStaff ? api.getStaffGroups().catch(() => [] as AcademicGroup[]) : Promise.resolve([]),
         ]);
         if (!cancelled) {
           setSchedule(data);
           setExams(examData);
+          if (isStaff) setStaffGroups(groupsData);
         }
       } catch (err) {
         console.error('Error loading schedule:', err);
@@ -110,6 +113,15 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
       cancelled = true;
     };
   }, [user, isStaff, selectedGroup, studentGroup]);
+
+  useEffect(() => {
+    if (!editingEntry) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setEditingEntry(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [editingEntry]);
 
   const daysRu = [
     { num: 1, short: 'ПН', label: 'Понедельник' },
@@ -374,14 +386,16 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* Feedback banner */}
       {feedbackMsg && (
-        <div className="p-4 rounded-xl bg-[#161821] text-[#FFFFFF] border border-[#33b712]/50 flex items-center justify-between shadow-md animate-fade-in text-xs font-sans">
+        <div className="p-4 rounded-xl bg-[#161821] text-[#FFFFFF] border border-[#33b712]/50 flex items-center justify-between gap-2 shadow-md animate-fade-in text-xs font-sans">
           <div className="flex items-center space-x-2">
-            <CheckCircle className="w-5 h-5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
+            <CheckCircle className="w-5 h-5 text-[#45d320] flex-shrink-0" />
             <span>{feedbackMsg}</span>
           </div>
           <button
+            type="button"
             onClick={() => setFeedbackMsg(null)}
-            className="text-[#FFFFFF]/70 hover:text-white p-1 cursor-pointer"
+            aria-label={tr(lang, 'Закрыть уведомление', 'Dismiss notice')}
+            className="text-[#FFFFFF]/70 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center p-1 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -396,14 +410,14 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-sm text-[#161821] dark:text-[#45d320]">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="font-semibold text-sm text-[#161821] dark:text-[#45d320]">
                   {tr(
                     lang,
                     'Служебный режим диспетчера деканата: Управление расписанием',
                     "Dean's Office Dispatcher Mode: Timetable Management"
                   )}
-                </h3>
+                </p>
                 <span className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-[#33b712]/20 text-[#161821] dark:text-[#45d320] border border-[#33b712]/40">
                   {tr(lang, 'ПРАВА ДЕКАНАТА', 'DEAN AUTHORITY')}
                 </span>
@@ -419,8 +433,11 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
           </div>
 
           {/* Group Selector for Staff */}
-          <div className="flex items-center space-x-2 bg-white dark:bg-[#121620] p-1.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142] self-start sm:self-center">
-            <label htmlFor="staff-group-select" className="text-xs font-sans font-semibold text-[#475569] dark:text-[#94A3B8] pl-1.5">
+          <div className="flex items-center space-x-2 bg-white dark:bg-[#121620] px-2 rounded-lg border border-[#e2e4e8] dark:border-[#273142] self-start sm:self-center">
+            <label
+              htmlFor="staff-group-select"
+              className="text-xs font-sans font-semibold text-[#475569] dark:text-[#94A3B8] pl-1.5"
+            >
               {tr(lang, 'Группа:', 'Group:')}
             </label>
             <select
@@ -428,14 +445,30 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
               aria-label={tr(lang, 'Группа:', 'Group:')}
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="bg-transparent text-xs font-sans font-bold text-[#161821] dark:text-[#45d320] focus:outline-none cursor-pointer pr-2"
+              className="bg-transparent min-h-[44px] text-xs font-sans font-bold text-[#161821] dark:text-[#45d320] focus:outline-none cursor-pointer pr-2"
             >
-              <option value="ДУ-101">
-                {tr(lang, 'ДУ-101 (2 курс, МО)', 'ДУ-101 (Year 2, IR)')}
-              </option>
-              <option value="ДУ-205">
-                {tr(lang, 'ДУ-205 (3 курс, Мировая эк.)', 'ДУ-205 (Year 3, World Econ)')}
-              </option>
+              {staffGroups.length > 0 ? (
+                staffGroups.map((g) => (
+                  <option key={g.code} value={g.code}>
+                    {g.code} ({tr(lang, `${g.courseNumber} курс`, `Year ${g.courseNumber}`)})
+                  </option>
+                ))
+              ) : (
+                <>
+                  <option value="ДУ-101">
+                    {tr(lang, 'ДУ-101 (2 курс, МО)', 'ДУ-101 (Year 2, IR)')}
+                  </option>
+                  <option value="ДУ-102">
+                    {tr(lang, 'ДУ-102 (1 курс, МО)', 'ДУ-102 (Year 1, IR)')}
+                  </option>
+                  <option value="ДУ-205">
+                    {tr(lang, 'ДУ-205 (2 курс, Мировая эк.)', 'ДУ-205 (Year 2, World Econ)')}
+                  </option>
+                  <option value="ДУ-301">
+                    {tr(lang, 'ДУ-301 (1 курс магии., Дип.)', 'ДУ-301 (Year 1 M.A., Dipl.)')}
+                  </option>
+                </>
+              )}
             </select>
           </div>
         </div>
@@ -476,21 +509,23 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
           {/* Main SubTab Toggle (Classes vs Exams) */}
           <div className="flex items-center bg-[#f6f6f9] dark:bg-[#121620] rounded-lg p-1 border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans font-medium">
             <button
+              type="button"
               onClick={() => setActiveSubTab('classes')}
-              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+              className={`px-3 py-1.5 min-h-[44px] rounded-md transition-all cursor-pointer ${
                 activeSubTab === 'classes'
                   ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
-                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821]'
+                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821] dark:hover:text-white'
               }`}
             >
               {lang === 'ru' ? 'Занятия' : 'Classes'}
             </button>
             <button
+              type="button"
               onClick={() => setActiveSubTab('exams')}
-              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+              className={`px-3 py-1.5 min-h-[44px] rounded-md transition-all cursor-pointer ${
                 activeSubTab === 'exams'
                   ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
-                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821]'
+                  : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821] dark:hover:text-white'
               }`}
             >
               {lang === 'ru' ? 'Экзамены и сессия' : 'Exams & Session'}
@@ -502,21 +537,23 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
               {/* Day vs Week Mode Toggle */}
               <div className="flex items-center bg-[#f6f6f9] dark:bg-[#121620] rounded-lg p-1 border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans font-medium">
                 <button
+                  type="button"
                   onClick={() => setViewMode('day')}
-                  className={`px-2.5 py-1.5 rounded-md transition-all cursor-pointer ${
+                  className={`px-2.5 py-1.5 min-h-[44px] min-w-[44px] rounded-md transition-all cursor-pointer ${
                     viewMode === 'day'
                       ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
-                      : 'text-[#475569] dark:text-[#CBD5E1]'
+                      : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821] dark:hover:text-white'
                   }`}
                 >
                   {lang === 'ru' ? 'День' : 'Day'}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setViewMode('week')}
-                  className={`px-2.5 py-1.5 rounded-md transition-all cursor-pointer ${
+                  className={`px-2.5 py-1.5 min-h-[44px] min-w-[44px] rounded-md transition-all cursor-pointer ${
                     viewMode === 'week'
                       ? 'bg-[#161821] text-[#FFFFFF] font-semibold shadow-xs'
-                      : 'text-[#475569] dark:text-[#CBD5E1]'
+                      : 'text-[#475569] dark:text-[#CBD5E1] hover:text-[#161821] dark:hover:text-white'
                   }`}
                 >
                   {lang === 'ru' ? 'Вся неделя' : 'Week'}
@@ -525,13 +562,15 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
               {/* ICS Export */}
               <button
+                type="button"
                 onClick={handleExportIcs}
                 title={tr(
                   lang,
                   'Экспорт в персональный календарь (.ics)',
                   'Export to personal calendar (.ics)'
                 )}
-                className="p-2 sm:px-3 sm:py-2 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors flex items-center space-x-1.5 text-xs font-sans font-medium cursor-pointer"
+                aria-label={tr(lang, 'Экспорт .ICS', 'Export .ICS')}
+                className="p-2 sm:px-3 sm:py-2 min-w-[44px] min-h-[44px] rounded-lg bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors flex items-center justify-center space-x-1.5 text-xs font-sans font-medium cursor-pointer"
               >
                 <Download className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span className="hidden sm:inline">{tr(lang, 'Экспорт .ICS', 'Export .ICS')}</span>
@@ -553,9 +592,10 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                 const isSelected = selectedDay === day.num;
                 return (
                   <button
+                    type="button"
                     key={day.num}
                     onClick={() => setSelectedDay(day.num)}
-                    className={`py-3 px-1 rounded-xl text-center border transition-all cursor-pointer ${
+                    className={`py-3 px-1 min-h-[44px] rounded-xl text-center border transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-[#161821] text-[#FFFFFF] border-[#161821] shadow-sm ring-1 ring-[#33b712]/40'
                         : 'bg-white dark:bg-[#171c26] text-[#475569] dark:text-[#CBD5E1] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] border-[#e2e4e8] dark:border-[#273142]'
@@ -583,9 +623,10 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
               { id: 'lab', label: tr(lang, 'Лабораторные', 'Labs') },
             ].map((f) => (
               <button
+                type="button"
                 key={f.id}
                 onClick={() => setFilterType(f.id)}
-                className={`px-3 py-1 rounded-lg border text-xs whitespace-nowrap transition-colors cursor-pointer ${
+                className={`px-3 py-1 min-h-[44px] rounded-lg border text-xs whitespace-nowrap transition-colors cursor-pointer ${
                   filterType === f.id
                     ? 'bg-[#161821] text-[#FFFFFF] border-[#161821] font-semibold'
                     : 'bg-white dark:bg-[#171c26] text-[#475569] dark:text-[#CBD5E1] border-[#e2e4e8] dark:border-[#273142]'
@@ -625,8 +666,9 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                 </p>
                 {filterType !== 'all' && (
                   <button
+                    type="button"
                     onClick={() => setFilterType('all')}
-                    className="mt-1 px-3 py-1 rounded-lg bg-[#161821] text-[#FFFFFF] text-xs font-medium hover:bg-[#11141c] cursor-pointer"
+                    className="mt-1 px-3 py-1 min-h-[44px] rounded-lg bg-[#161821] text-[#FFFFFF] text-xs font-medium hover:bg-[#11141c] cursor-pointer"
                   >
                     {tr(lang, 'Показать все форматы', 'Show All Formats')}
                   </button>
@@ -691,11 +733,11 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                           )}
                         </div>
 
-                        <h3
+                        <h2
                           className={`font-semibold text-base ${isCanceled ? 'line-through text-[#475569] dark:text-[#94A3B8]' : 'text-[#161821] dark:text-[#FFFFFF]'}`}
                         >
                           {localizeText(item.subject, lang)}
-                        </h3>
+                        </h2>
 
                         <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans">
                           {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
@@ -716,19 +758,26 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                       <button
                         type="button"
                         onClick={() => onOpenMap?.(item.room)}
-                        className="flex items-center space-x-1.5 font-sans text-xs font-bold text-[#161821] dark:text-[#45d320] hover:text-[#166534] dark:hover:text-[#86efac] transition-colors cursor-pointer group"
-                        title={lang === 'ru' ? 'Найти аудиторию на карте кампуса' : 'Locate room on campus map'}
+                        className="flex items-center space-x-1.5 min-h-[44px] font-sans text-xs font-bold text-[#161821] dark:text-[#45d320] hover:text-[#166534] dark:hover:text-[#86efac] transition-colors cursor-pointer group"
+                        title={
+                          lang === 'ru'
+                            ? 'Найти аудиторию на карте кампуса'
+                            : 'Locate room on campus map'
+                        }
                       >
                         <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
-                        <span className="underline decoration-dotted underline-offset-2">{localizeText(item.room, lang)}</span>
+                        <span className="underline decoration-dotted underline-offset-2">
+                          {localizeText(item.room, lang)}
+                        </span>
                       </button>
 
                       {isStaff && (
                         <button
+                          type="button"
                           onClick={() => handleOpenEdit(item)}
-                          className="px-2.5 py-1 rounded-md bg-[#161821] text-[#FFFFFF] text-xs font-sans font-medium hover:bg-[#11141c] flex items-center space-x-1 cursor-pointer"
+                          className="px-3 py-1.5 min-h-[44px] rounded-md bg-[#161821] text-[#FFFFFF] text-xs font-sans font-medium hover:bg-[#11141c] flex items-center space-x-1 cursor-pointer"
                         >
-                          <Edit3 className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
+                          <Edit3 className="w-3.5 h-3.5 text-[#45d320]" />
                           <span>{tr(lang, 'Изменить', 'Edit')}</span>
                         </button>
                       )}
@@ -762,7 +811,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                   {tr(lang, `Группа ${activeGroup}`, `Group ${activeGroup}`)}
                 </span>
               </div>
-              <h3 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
+              <h2 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
                 {isStaff
                   ? tr(
                       lang,
@@ -770,7 +819,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                       'Faculty Examination Session Dispatcher'
                     )
                   : tr(lang, 'График экзаменов и консультаций', 'Exam & Consultation Timetable')}
-              </h3>
+              </h2>
               <p className="text-xs text-[#475569] dark:text-[#CBD5E1] font-sans max-w-2xl">
                 {isStaff
                   ? tr(
@@ -788,10 +837,11 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
             {isStaff && (
               <button
+                type="button"
                 onClick={handleAddNewExam}
-                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 shadow-xs transition-colors cursor-pointer self-start sm:self-auto flex-shrink-0"
+                className="inline-flex items-center space-x-1.5 px-4 py-2.5 min-h-[44px] rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 shadow-xs transition-colors cursor-pointer self-start sm:self-auto flex-shrink-0"
               >
-                <Plus className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+                <Plus className="w-4 h-4 text-[#45d320]" />
                 <span>{tr(lang, 'Назначить экзамен / пересдачу', 'Schedule Exam / Retake')}</span>
               </button>
             )}
@@ -835,11 +885,11 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         <span className="font-sans text-xs font-bold px-2.5 py-0.5 rounded bg-[#161821] text-[#FFFFFF] whitespace-nowrap shrink-0 inline-flex items-center">
                           {ex.code}
                         </span>
-                        <h4
+                        <h3
                           className={`font-semibold text-base ${isCancelled ? 'line-through text-[#475569] dark:text-[#94A3B8]' : 'text-[#161821] dark:text-[#FFFFFF]'}`}
                         >
                           {localizeText(ex.subject, lang)}
-                        </h4>
+                        </h3>
 
                         {/* Status Badges */}
                         {isDateChanged && (
@@ -875,10 +925,11 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                         </span>
                         {isStaff && (
                           <button
+                            type="button"
                             onClick={() => handleOpenEditExam(ex)}
-                            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold transition-colors cursor-pointer shadow-xs"
+                            className="inline-flex items-center space-x-1 px-3 py-1.5 min-h-[44px] rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold transition-colors cursor-pointer shadow-xs"
                           >
-                            <Edit3 className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
+                            <Edit3 className="w-3.5 h-3.5 text-[#45d320]" />
                             <span>{tr(lang, 'Изменить дату / комиссию', 'Edit Date / Board')}</span>
                           </button>
                         )}
@@ -968,19 +1019,25 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
           ───────────────────────────────────────────────────────────── */}
       {editingEntry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="relative w-full max-w-lg bg-white dark:bg-[#171c26] rounded-xl border border-[#e2e4e8] dark:border-[#273142] shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
-              <div className="flex items-center space-x-2">
-                <Edit3 className="w-5 h-5 text-[#161821] dark:text-[#45d320]" />
-                <h3 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF]">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={tr(lang, 'Управление занятием', 'Manage Class')}
+            className="relative w-full max-w-lg bg-white dark:bg-[#171c26] rounded-xl border border-[#e2e4e8] dark:border-[#273142] shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
+              <div className="flex items-center space-x-2 min-w-0">
+                <Edit3 className="w-5 h-5 text-[#161821] dark:text-[#45d320] flex-shrink-0" />
+                <h2 className="font-semibold text-base text-[#161821] dark:text-[#FFFFFF] truncate">
                   {tr(lang, 'Управление занятием:', 'Manage Class:')}{' '}
                   {localizeText(editingEntry.subject, lang)}
-                </h3>
+                </h2>
               </div>
               <button
+                type="button"
                 onClick={() => setEditingEntry(null)}
                 aria-label={tr(lang, 'Закрыть', 'Close')}
-                className="text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] p-1 cursor-pointer"
+                className="text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] min-w-[44px] min-h-[44px] flex items-center justify-center p-1 cursor-pointer flex-shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -988,7 +1045,10 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
             <form onSubmit={handleSaveScheduleChange} className="space-y-4 text-xs font-sans">
               <div>
-                <label htmlFor="edit-class-status-select" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
+                <label
+                  htmlFor="edit-class-status-select"
+                  className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1"
+                >
                   {tr(lang, 'Статус проведения занятия:', 'Class Status:')}
                 </label>
                 <select
@@ -1013,7 +1073,10 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="edit-class-start-input" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
+                  <label
+                    htmlFor="edit-class-start-input"
+                    className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1"
+                  >
                     {tr(lang, 'Время начала:', 'Start time:')}
                   </label>
                   <input
@@ -1026,7 +1089,10 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="edit-class-end-input" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
+                  <label
+                    htmlFor="edit-class-end-input"
+                    className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1"
+                  >
                     {tr(lang, 'Время окончания:', 'End time:')}
                   </label>
                   <input
@@ -1041,7 +1107,10 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
               </div>
 
               <div>
-                <label htmlFor="edit-class-room-input" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
+                <label
+                  htmlFor="edit-class-room-input"
+                  className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1"
+                >
                   {tr(lang, 'Аудитория:', 'Room:')}
                 </label>
                 <input
@@ -1060,12 +1129,19 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
               </div>
 
               <div>
-                <label htmlFor="edit-class-note-textarea" className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1">
+                <label
+                  htmlFor="edit-class-note-textarea"
+                  className="block font-medium text-[#161821] dark:text-[#FFFFFF] mb-1"
+                >
                   {tr(lang, 'Официальное примечание деканата:', "Official Dean's Office Note:")}
                 </label>
                 <textarea
                   id="edit-class-note-textarea"
-                  aria-label={tr(lang, 'Официальное примечание деканата:', "Official Dean's Office Note:")}
+                  aria-label={tr(
+                    lang,
+                    'Официальное примечание деканата:',
+                    "Official Dean's Office Note:"
+                  )}
                   rows={2}
                   value={editNote}
                   onChange={(e) => setEditNote(e.target.value)}
@@ -1098,27 +1174,27 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                 </label>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-[#e2e4e8] dark:border-[#273142]">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#e2e4e8] dark:border-[#273142]">
                 <button
                   type="button"
                   onClick={handleResetToNormal}
                   disabled={saving}
-                  className="px-3 py-1.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] text-xs font-sans text-[#475569] dark:text-[#94A3B8] cursor-pointer"
+                  className="px-3 py-1.5 min-h-[44px] rounded-lg border border-[#e2e4e8] dark:border-[#273142] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] text-xs font-sans text-[#475569] dark:text-[#94A3B8] cursor-pointer"
                 >
                   {tr(lang, 'Сбросить в штатное', 'Restore Regular')}
                 </button>
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setEditingEntry(null)}
-                    className="px-3 py-1.5 rounded-lg border border-[#e2e4e8] dark:border-[#273142] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] text-xs font-sans text-[#475569] dark:text-[#94A3B8] cursor-pointer"
+                    className="px-3 py-1.5 min-h-[44px] rounded-lg border border-[#e2e4e8] dark:border-[#273142] hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] text-xs font-sans text-[#475569] dark:text-[#94A3B8] cursor-pointer"
                   >
                     {tr(lang, 'Отмена', 'Cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-4 py-1.5 rounded-lg bg-[#161821] text-[#FFFFFF] text-xs font-sans font-semibold hover:bg-[#11141c] cursor-pointer"
+                    className="px-4 py-1.5 min-h-[44px] rounded-lg bg-[#161821] text-[#FFFFFF] text-xs font-sans font-semibold hover:bg-[#11141c] cursor-pointer"
                   >
                     {saving
                       ? tr(lang, 'Сохранение...', 'Saving...')

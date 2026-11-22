@@ -367,7 +367,11 @@ const CAMPUS_ROOMS: RoomData[] = [
     wingEn: 'West Wing • Floor 3',
     capacity: 35,
     equipmentRu: ['Круглый стол для дебатов', 'Видеоконференцсвязь (ВКС)', 'Интерактивная доска'],
-    equipmentEn: ['Roundtable Debate Setup', 'High-Def Video Conferencing', 'Interactive Whiteboard'],
+    equipmentEn: [
+      'Roundtable Debate Setup',
+      'High-Def Video Conferencing',
+      'Interactive Whiteboard',
+    ],
     amenitiesRu: ['Аудитория А-314 (15 м)', 'Лифтовой холл (25 м)'],
     amenitiesEn: ['Auditorium A-314 (15 m)', 'Elevator Hall (25 m)'],
     walkTimeRu: '45 сек от главного лифта 3-го этажа',
@@ -495,9 +499,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
   if (!isOpen) return null;
 
   // Rooms visible on current floor SVG
-  const floorRooms = CAMPUS_ROOMS.filter(
-    (r) => r.floor === selectedFloor && r.category === 'room'
-  );
+  const floorRooms = CAMPUS_ROOMS.filter((r) => r.floor === selectedFloor && r.category === 'room');
 
   // ── DYNAMIC SVG ROUTE PATH CALCULATION ──────────────────────────────
   let routePathD = '';
@@ -584,11 +586,21 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
             {/* Origin Dropdown */}
             <div className="md:col-span-5 space-y-1">
-              <label className="text-[11px] font-heading font-semibold text-[#166534] dark:text-[#45d320] flex items-center space-x-1.5 uppercase tracking-wider">
+              <label
+                htmlFor="campus-origin-select"
+                className="text-[11px] font-heading font-semibold text-[#166534] dark:text-[#45d320] flex items-center space-x-1.5 uppercase tracking-wider"
+              >
                 <span className="w-2 h-2 rounded-full bg-[#166534] dark:bg-[#45d320]" />
-                <span>{tr(lang, 'Откуда (Точка отправления / Вход)', 'From (Starting Point / Entrance)')}</span>
+                <span>
+                  {tr(
+                    lang,
+                    'Откуда (Точка отправления / Вход)',
+                    'From (Starting Point / Entrance)'
+                  )}
+                </span>
               </label>
               <select
+                id="campus-origin-select"
                 value={originId}
                 onChange={(e) => {
                   setOriginId(e.target.value);
@@ -603,21 +615,27 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label={lang === 'ru' ? 'Лифтовые узлы и лестницы' : 'Elevator Hubs & Stairs'}>
+                <optgroup
+                  label={lang === 'ru' ? 'Лифтовые узлы и лестницы' : 'Elevator Hubs & Stairs'}
+                >
                   {CAMPUS_ROOMS.filter((r) => r.category === 'elevator').map((r) => (
                     <option key={r.id} value={r.id}>
                       🛗 {r.code} ({r.floor} {lang === 'ru' ? 'этаж' : 'F'})
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label={lang === 'ru' ? 'Аудитории и лаборатории (1 этаж)' : 'Floor 1 Rooms'}>
+                <optgroup
+                  label={lang === 'ru' ? 'Аудитории и лаборатории (1 этаж)' : 'Floor 1 Rooms'}
+                >
                   {CAMPUS_ROOMS.filter((r) => r.floor === 1 && r.category === 'room').map((r) => (
                     <option key={r.id} value={r.id}>
                       🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}>
+                <optgroup
+                  label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}
+                >
                   {CAMPUS_ROOMS.filter((r) => r.floor === 2 && r.category === 'room').map((r) => (
                     <option key={r.id} value={r.id}>
                       🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
@@ -649,11 +667,17 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 
             {/* Destination Dropdown */}
             <div className="md:col-span-5 space-y-1">
-              <label className="text-[11px] font-heading font-semibold text-[#be123c] dark:text-[#fecdd3] flex items-center space-x-1.5 uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-[#be123c] dark:text-[#fecdd3]" />
-                <span>{tr(lang, 'Куда (Точка назначения / Аудитория)', 'To (Destination Room)')}</span>
+              <label
+                htmlFor="campus-destination-select"
+                className="text-[11px] font-heading font-semibold text-[#be123c] dark:text-[#fecdd3] flex items-center space-x-1.5 uppercase tracking-wider"
+              >
+                <span className="w-2 h-2 rounded-full bg-[#be123c] dark:bg-[#fecdd3]" />
+                <span>
+                  {tr(lang, 'Куда (Точка назначения / Аудитория)', 'To (Destination Room)')}
+                </span>
               </label>
               <select
+                id="campus-destination-select"
                 value={destinationId}
                 onChange={(e) => {
                   setDestinationId(e.target.value);
@@ -668,7 +692,9 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}>
+                <optgroup
+                  label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}
+                >
                   {CAMPUS_ROOMS.filter((r) => r.floor === 2 && r.category === 'room').map((r) => (
                     <option key={r.id} value={r.id}>
                       🚪 {r.code} — {lang === 'ru' ? r.nameRu : r.nameEn}
@@ -712,7 +738,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     ? 'bg-[#d97706] text-white animate-bounce'
                     : floorDiff < 0
                       ? 'bg-[#0284c7] text-white animate-bounce'
-                      : 'bg-[#166534] dark:bg-[#45d320] text-white'
+                      : 'bg-[#166534] text-white'
                 }`}
               >
                 {floorDiff > 0 ? (
@@ -776,11 +802,11 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 
             {/* Quick Multi-Stage Floor Jumper */}
             {floorDiff !== 0 && (
-              <div className="flex items-center space-x-1.5 self-end sm:self-auto flex-shrink-0">
+              <div className="flex flex-wrap items-center gap-1.5 self-end sm:self-auto flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setSelectedFloorOverride(originLocation.floor)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-sans font-semibold transition-colors cursor-pointer border ${
+                  className={`px-2.5 py-1 min-h-[44px] rounded-lg text-[11px] font-sans font-semibold transition-colors cursor-pointer border ${
                     selectedFloor === originLocation.floor
                       ? 'bg-[#161821] text-white border-[#161821]'
                       : 'bg-white dark:bg-[#121620] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#273142]'
@@ -792,7 +818,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedFloorOverride(destLocation.floor)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-sans font-semibold transition-colors cursor-pointer border ${
+                  className={`px-2.5 py-1 min-h-[44px] rounded-lg text-[11px] font-sans font-semibold transition-colors cursor-pointer border ${
                     selectedFloor === destLocation.floor
                       ? 'bg-[#161821] text-white border-[#161821]'
                       : 'bg-white dark:bg-[#121620] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#273142]'
@@ -809,8 +835,8 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
             3. INTERACTIVE SVG MAP DISPLAY
             ───────────────────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
               <Compass className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
               <span className="font-bold text-[#161821] dark:text-white uppercase tracking-wider">
                 {lang === 'ru' ? `Просмотр: ${selectedFloor} этаж` : `View: Floor ${selectedFloor}`}
@@ -826,14 +852,15 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
             </div>
 
             {/* Floor Switcher Tabs */}
-            <div className="flex items-center bg-[#f6f6f9] dark:bg-[#121620] p-1 rounded-full border border-[#e2e4e8] dark:border-[#273142] shadow-xs">
+            <div className="flex flex-wrap items-center gap-1 bg-[#f6f6f9] dark:bg-[#121620] p-1 rounded-full border border-[#e2e4e8] dark:border-[#273142] shadow-xs self-start sm:self-auto">
               {[1, 2, 3].map((floor) => (
                 <button
+                  type="button"
                   key={floor}
                   onClick={() => setSelectedFloorOverride(floor)}
-                  className={`px-3 py-1 min-h-[32px] rounded-full text-xs font-heading font-semibold transition-all cursor-pointer flex items-center space-x-1 ${
+                  className={`px-3 py-1 min-h-[44px] rounded-full text-xs font-heading font-semibold transition-all cursor-pointer flex items-center space-x-1 ${
                     selectedFloor === floor
-                      ? 'bg-[#161821] text-white dark:bg-[#33b712] dark:text-white shadow-xs'
+                      ? 'bg-[#161821] text-white dark:bg-[#45d320] dark:text-[#161821] shadow-xs'
                       : 'text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-white'
                   }`}
                 >
@@ -938,10 +965,16 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     fontFamily="Inter, sans-serif"
                   >
                     {floorDiff > 0
-                      ? (lang === 'ru' ? '▲ ВВЕРХ' : '▲ UP')
+                      ? lang === 'ru'
+                        ? '▲ ВВЕРХ'
+                        : '▲ UP'
                       : floorDiff < 0
-                      ? (lang === 'ru' ? '▼ ВНИЗ' : '▼ DOWN')
-                      : (lang === 'ru' ? 'УЗЕЛ' : 'HUB')}
+                        ? lang === 'ru'
+                          ? '▼ ВНИЗ'
+                          : '▼ DOWN'
+                        : lang === 'ru'
+                          ? 'УЗЕЛ'
+                          : 'HUB'}
                   </text>
                 </g>
 
@@ -985,13 +1018,27 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 {/* Restrooms & Water Fountains */}
                 <g transform="translate(330, 203)">
                   <rect x="0" y="0" width="30" height="24" rx="4" fill="#64748b" opacity="0.3" />
-                  <text x="15" y="16" textAnchor="middle" fill="currentColor" fontSize="8" fontWeight="bold">
+                  <text
+                    x="15"
+                    y="16"
+                    textAnchor="middle"
+                    fill="currentColor"
+                    fontSize="8"
+                    fontWeight="bold"
+                  >
                     WC
                   </text>
                 </g>
                 <g transform="translate(440, 203)">
                   <rect x="0" y="0" width="30" height="24" rx="4" fill="#0284c7" opacity="0.2" />
-                  <text x="15" y="16" textAnchor="middle" fill="#0284c7" fontSize="8" fontWeight="bold">
+                  <text
+                    x="15"
+                    y="16"
+                    textAnchor="middle"
+                    fill="#0284c7"
+                    fontSize="8"
+                    fontWeight="bold"
+                  >
                     H2O
                   </text>
                 </g>
@@ -1086,9 +1133,23 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                       {/* Beacon Marker */}
                       {isDestination && (
                         <g transform={`translate(${room.x + room.w - 36}, ${room.y + 14})`}>
-                          <circle cx="12" cy="12" r="14" fill="#be123c" opacity="0.3" className="animate-ping" />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="14"
+                            fill="#be123c"
+                            opacity="0.3"
+                            className="animate-ping"
+                          />
                           <circle cx="12" cy="12" r="10" fill="#be123c" />
-                          <text x="12" y="15" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
+                          <text
+                            x="12"
+                            y="15"
+                            textAnchor="middle"
+                            fill="#ffffff"
+                            fontSize="9"
+                            fontWeight="bold"
+                          >
                             B
                           </text>
                         </g>
@@ -1096,9 +1157,23 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 
                       {isOrigin && !isDestination && (
                         <g transform={`translate(${room.x + room.w - 36}, ${room.y + 14})`}>
-                          <circle cx="12" cy="12" r="14" fill="#33b712" opacity="0.3" className="animate-ping" />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="14"
+                            fill="#33b712"
+                            opacity="0.3"
+                            className="animate-ping"
+                          />
                           <circle cx="12" cy="12" r="10" fill="#166534" />
-                          <text x="12" y="15" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
+                          <text
+                            x="12"
+                            y="15"
+                            textAnchor="middle"
+                            fill="#ffffff"
+                            fontSize="9"
+                            fontWeight="bold"
+                          >
                             A
                           </text>
                         </g>
@@ -1141,7 +1216,8 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     1
                   </span>
                   <span>
-                    <strong>{originLocation.code}</strong> ({originLocation.floor} эт.) — старт движения.
+                    <strong>{originLocation.code}</strong> ({originLocation.floor} эт.) — старт
+                    движения.
                   </span>
                 </li>
 
@@ -1167,7 +1243,8 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     {floorDiff !== 0 ? 3 : 2}
                   </span>
                   <span>
-                    Прибытие в <strong>{destLocation.code}</strong> ({destLocation.floor} эт., {lang === 'ru' ? destLocation.wingRu : destLocation.wingEn}).
+                    Прибытие в <strong>{destLocation.code}</strong> ({destLocation.floor} эт.,{' '}
+                    {lang === 'ru' ? destLocation.wingRu : destLocation.wingEn}).
                   </span>
                 </li>
               </ol>
@@ -1233,8 +1310,8 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
             <span>
               {tr(
                 lang,
-                'Навигатор кампуса синхронизирован с расписанием весенней сессии 2026 г.',
-                'Campus wayfinding is synchronized with the Spring 2026 timetable.'
+                'Навигатор кампуса синхронизирован с расписанием осеннего семестра 2026/2027 г.',
+                'Campus wayfinding is synchronized with the Fall 2026/2027 timetable.'
               )}
             </span>
           </div>

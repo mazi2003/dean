@@ -54,7 +54,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
       labelColor: 'rgb(69, 211, 32)',
       barcode: {
         format: 'PKBarcodeFormatQR',
-        message: `DEMOTECH-PASS:${studentId}:${user?.id || 'std'}:VALID_2026`,
+        message: `DEMOTECH-PASS:${studentId}:${user?.id || 'std'}:VALID_2027`,
         messageEncoding: 'iso-8859-1',
         altText: studentId,
       },
@@ -85,7 +85,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           {
             key: 'valid',
             label: lang === 'ru' ? 'ДЕЙСТВИТЕЛЕН ПО' : 'VALID THRU',
-            value: '31.08.2026',
+            value: '31.08.2027',
           },
           {
             key: 'faculty',
@@ -134,7 +134,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
       id: studentId,
       name: user?.fullName || 'Студент',
       group: profile?.group || 'ДУ-101',
-      validUntil: '2026-08-31',
+      validUntil: '2027-08-31',
       token: `SKUD-${studentId.replace(/[^0-9]/g, '') || '84920'}`,
     });
 
@@ -250,8 +250,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           {/* Top header navigation */}
           <div className="w-full flex items-center justify-between pb-3 mb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
             <button
+              type="button"
               onClick={() => setIsQrExpanded(false)}
-              className="flex items-center space-x-1.5 text-xs font-heading font-medium text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:text-[#45d320] transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 min-h-[44px] px-2 text-xs font-heading font-medium text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>{lang === 'ru' ? 'Назад' : 'Back'}</span>
@@ -265,8 +266,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             </div>
 
             <button
+              type="button"
               onClick={() => setIsQrExpanded(false)}
-              className="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] transition-colors cursor-pointer"
+              className="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] text-[#161821] dark:text-[#ffffff] transition-colors cursor-pointer"
               aria-label={tr(lang, 'Закрыть сканер', 'Close scanner view')}
             >
               <X className="w-5 h-5" />
@@ -281,9 +283,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               className="w-10 h-10 rounded-full object-cover border-2 border-[#33b712]"
             />
             <div className="text-left flex-1 min-w-0">
-              <h4 className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff] truncate">
+              <p className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff] truncate">
                 {localizePersonName(user.fullName, lang)}
-              </h4>
+              </p>
               <p className="text-[10px] text-[#475569] dark:text-[#94a3b8] truncate font-sans">
                 {tr(lang, 'Гр.', 'Group')} {profile?.group || 'ДУ-101'} • № {profile?.studentNumber}
               </p>
@@ -321,7 +323,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             {/* University Central Emblem Watermark in QR Code */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-10 h-10 rounded-full bg-[#161821] border border-[#33b712] p-1 shadow-md flex items-center justify-center">
-                <UniversityEmblem size={24} />
+                <UniversityEmblem size={24} tone="dark" />
               </div>
             </div>
           </div>
@@ -340,7 +342,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   {totpToken || '849-210'}
                 </strong>
               </span>
-              <span className="text-[10px] text-[#166534] dark:text-[#45d320]">({tokenSecondsLeft}s)</span>
+              <span className="text-[10px] text-[#166534] dark:text-[#45d320]">
+                ({tokenSecondsLeft}s)
+              </span>
             </div>
           </div>
 
@@ -359,11 +363,12 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               </div>
             ) : (
               <button
+                type="button"
                 onClick={handleQrScanSimulate}
                 disabled={isScanning}
                 className="w-full min-h-[44px] py-2.5 px-4 rounded-full btn-brand-primary text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md disabled:opacity-50"
               >
-                <Scan className="w-4 h-4 text-white" />
+                <Scan className="w-4 h-4" />
                 <span>
                   {isScanning
                     ? tr(lang, 'Лазерное сканирование...', 'Scanning optical QR...')
@@ -410,7 +415,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   <button
                     type="button"
                     onClick={() => handleExportWallet('google')}
-                    className="min-h-[44px] py-2 px-3 rounded-xl bg-white dark:bg-[#1e2533] hover:bg-[#f6f6f9] text-[#161821] dark:text-white text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-xs border border-[#e2e4e8] dark:border-[#273142]"
+                    className="min-h-[44px] py-2 px-3 rounded-xl bg-white dark:bg-[#1e2533] hover:bg-[#f6f6f9] dark:hover:bg-[#273142] text-[#161821] dark:text-white text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-xs border border-[#e2e4e8] dark:border-[#273142]"
                     title={tr(lang, 'Сохранить в Google Wallet', 'Save to Google Wallet')}
                   >
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
@@ -465,24 +470,24 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
             {/* Dynamic decorative green gradient glow */}
             <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-[#33b712]/20 blur-2xl pointer-events-none" />
             <div className="absolute right-0 bottom-0 translate-x-10 translate-y-10 opacity-15 pointer-events-none">
-              <UniversityEmblem size={240} variant="gold" />
+              <UniversityEmblem size={240} variant="gold" tone="dark" />
             </div>
 
             {/* Top Bar with right padding */}
             <div className="flex items-center justify-between mb-4 relative z-10 border-b border-white/10 pb-3 pr-10">
               <div className="flex items-center space-x-2.5">
                 <div className="w-10 h-10 rounded-2xl bg-[#11141c] border border-[#33b712]/60 flex items-center justify-center p-1.5 shadow-inner flex-shrink-0">
-                  <UniversityEmblem size={28} />
+                  <UniversityEmblem size={28} tone="dark" />
                 </div>
                 <div>
                   <div className="text-[9px] font-sans tracking-wider text-[#45d320] uppercase font-semibold">
                     {lang === 'ru'
-                      ? 'МИНОБРНАУКИ РОССИИ • ГОСАККРЕДИТАЦИЯ'
-                      : 'STATE ACCREDITED UNIVERSITY'}
+                      ? 'ДЕМОТЕХ КАМПУС • СТУДЕНЧЕСКИЙ ПРОПУСК'
+                      : 'DEMOTECH CAMPUS • STUDENT PASS'}
                   </div>
-                  <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-white">
+                  <p className="font-heading font-bold text-xs uppercase tracking-wider text-white">
                     {lang === 'ru' ? UNIVERSITY_INFO.name : UNIVERSITY_INFO.nameEn}
-                  </h3>
+                  </p>
                   <p className="text-[10px] text-white/80 font-sans tracking-wide">
                     {lang === 'ru' ? 'Студенческий билет № ' : 'Student ID No. '}
                     <span className="font-bold text-[#45d320]">
@@ -525,7 +530,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                     {getStudyFormLabel(profile?.studyForm || 'Бюджет', lang)}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-[#33b712]/20 border border-[#33b712]/40 text-[#45d320] font-semibold text-[9px]">
-                    {lang === 'ru' ? 'АКТИВЕН ДО 31.08.2026' : 'VALID TO 31.08.2026'}
+                    {lang === 'ru' ? 'АКТИВЕН ДО 31.08.2027' : 'VALID TO 31.08.2027'}
                   </span>
                 </div>
               </div>
@@ -538,15 +543,16 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               </span>
               <span>
                 {lang === 'ru'
-                  ? 'Приказ № 841-СТ от 25.08.2024 г.'
-                  : 'Decree No. 841-ST of 25.08.2024'}
+                  ? 'Приказ № 412-СТ от 25.08.2024 г.'
+                  : 'Decree No. 412-ST of Aug 25, 2024'}
               </span>
             </div>
 
             {/* Interactive Dynamic QR Verification Code */}
-            <div
+            <button
+              type="button"
               onClick={() => setIsQrExpanded(true)}
-              className="bg-white/10 hover:bg-white/15 rounded-2xl p-3 flex items-center justify-between border border-white/10 hover:border-[#33b712] transition-all cursor-pointer group shadow-sm relative z-10"
+              className="w-full text-left bg-white/10 hover:bg-white/15 rounded-2xl p-3 flex items-center justify-between border border-white/10 hover:border-[#33b712] transition-all cursor-pointer group shadow-sm relative z-10"
               title={
                 lang === 'ru'
                   ? 'Нажмите, чтобы открыть QR-код на весь экран для турникета'
@@ -585,7 +591,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   <Maximize2 className="w-2.5 h-2.5" />
                 </div>
               </div>
-            </div>
+            </button>
 
             {/* Security Chip Notice */}
             <div className="mt-3 text-center text-[10px] font-sans font-medium text-[#45d320] flex items-center justify-center space-x-1.5">
@@ -615,11 +621,12 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               </div>
             ) : (
               <button
+                type="button"
                 onClick={handleNfcSimulate}
                 disabled={isNfcTapping}
                 className="w-full min-h-[44px] py-2.5 px-4 rounded-full btn-brand-primary text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-md disabled:opacity-50"
               >
-                <Wifi className={`w-4 h-4 text-white ${isNfcTapping ? 'animate-ping' : ''}`} />
+                <Wifi className={`w-4 h-4 ${isNfcTapping ? 'animate-ping' : ''}`} />
                 <span>
                   {isNfcTapping
                     ? tr(lang, 'Симуляция считывания...', 'Simulating NFC read...')
@@ -670,7 +677,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
                   <button
                     type="button"
                     onClick={() => handleExportWallet('google')}
-                    className="min-h-[44px] py-2 px-3 rounded-xl bg-white dark:bg-[#1e2533] hover:bg-[#f6f6f9] text-[#161821] dark:text-white text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-xs border border-[#e2e4e8] dark:border-[#273142]"
+                    className="min-h-[44px] py-2 px-3 rounded-xl bg-white dark:bg-[#1e2533] hover:bg-[#f6f6f9] dark:hover:bg-[#273142] text-[#161821] dark:text-white text-xs font-heading font-semibold flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-xs border border-[#e2e4e8] dark:border-[#273142]"
                     title={tr(lang, 'Сохранить в Google Wallet', 'Save to Google Wallet')}
                   >
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">

@@ -122,13 +122,13 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
         <div className="p-4 bg-[#161821] text-white flex items-center justify-between border-b border-white/10 shadow-xs">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-[#11141c] border border-[#33b712]/50 flex items-center justify-center p-1.5 shadow-inner">
-              <UniversityEmblem size={26} />
+              <UniversityEmblem size={26} tone="dark" />
             </div>
             <div>
-              <h3 className="font-heading font-semibold text-sm flex items-center space-x-2 text-white">
+              <h2 className="font-heading font-semibold text-sm flex items-center space-x-2 text-white">
                 <span>{tr(lang, 'Консультант деканата', "Dean's Office AI Advisor")}</span>
                 <span className="w-2 h-2 rounded-full bg-[#33b712] inline-block animate-pulse" />
-              </h3>
+              </h2>
               <p className="text-[10px] text-[#45d320] font-sans font-medium">
                 {profile?.group
                   ? tr(
@@ -157,9 +157,10 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
           </span>
           {quickPrompts.map((q, idx) => (
             <button
+              type="button"
               key={idx}
               onClick={() => handleSend(q)}
-              className="px-3.5 py-1.5 rounded-full bg-white dark:bg-[#171c26] hover:bg-[#ebfbee] dark:hover:bg-[#1e2d24] text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:text-[#45d320] border border-[#e2e4e8] dark:border-[#273142] whitespace-nowrap transition-colors flex-shrink-0 cursor-pointer font-heading shadow-2xs"
+              className="px-3.5 py-1.5 min-h-[44px] rounded-full bg-white dark:bg-[#171c26] hover:bg-[#ebfbee] dark:hover:bg-[#1e2d24] text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:hover:text-[#45d320] border border-[#e2e4e8] dark:border-[#273142] whitespace-nowrap transition-colors flex-shrink-0 cursor-pointer font-heading shadow-2xs"
             >
               {q}
             </button>
@@ -177,7 +178,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
               >
                 {!isUser ? (
                   <div className="w-8 h-8 rounded-full bg-[#161821] text-[#45d320] flex items-center justify-center flex-shrink-0 border border-[#33b712]/40 shadow-xs">
-                    <UniversityEmblem size={20} />
+                    <UniversityEmblem size={20} tone="dark" />
                   </div>
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-center flex-shrink-0 text-[#161821] dark:text-[#ffffff] shadow-xs">
@@ -246,6 +247,11 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
           >
             <input
               type="text"
+              aria-label={tr(
+                lang,
+                'Вопрос консультанту деканата',
+                'Ask a question to the academic advisor'
+              )}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={tr(
@@ -253,15 +259,15 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
                 'Задайте вопрос по учебе, справкам или сессии...',
                 'Ask a question about studies, certificates, or exams...'
               )}
-              className="flex-1 bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-xs text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:outline-none focus:ring-2 focus:ring-[#33b712]"
+              className="flex-1 min-h-[44px] bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-xs text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:outline-none focus:ring-2 focus:ring-[#33b712]"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
               aria-label={tr(lang, 'Отправить сообщение', 'Send message')}
-              className="min-w-[44px] min-h-[44px] px-5 py-2.5 rounded-full btn-brand-primary text-white font-heading font-semibold text-xs flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
+              className="min-w-[44px] min-h-[44px] px-5 py-2.5 rounded-full btn-brand-primary font-heading font-semibold text-xs flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5 text-white" />
+              <Send className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{tr(lang, 'Отправить', 'Send')}</span>
             </button>
           </form>

@@ -49,7 +49,7 @@ export const LoginPage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────
           GLOBAL UTILITY HEADER (Modern Minimalist Style)
           ───────────────────────────────────────────────────────────── */}
-      <div className="w-full bg-white dark:bg-[#171c26] text-[#161821] dark:text-[#cbd5e1] border-b border-[#e2e4e8] dark:border-[#273142] py-2.5 px-4 sm:px-6 lg:px-8">
+      <header className="w-full bg-white dark:bg-[#171c26] text-[#161821] dark:text-[#cbd5e1] border-b border-[#e2e4e8] dark:border-[#273142] py-2.5 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
             <UniversityEmblem size={26} variant="full" />
@@ -94,44 +94,46 @@ export const LoginPage: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* ─────────────────────────────────────────────────────────────
           MAIN AUTHENTICATION PORTAL (Two-Pane Modern Academic Layout)
           ───────────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10">
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-10">
         <div className="w-full max-w-4xl bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
           {/* Left Column: High-Tech Brand Showcase */}
           <div className="lg:col-span-5 bg-[#161821] text-white p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden">
             {/* Dynamic decorative green gradient glow */}
             <div className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-[#33b712]/20 blur-3xl pointer-events-none" />
             <div className="absolute right-0 bottom-0 translate-x-8 translate-y-8 opacity-15 pointer-events-none">
-              <UniversityEmblem size={240} variant="gold" />
+              <UniversityEmblem size={240} variant="gold" tone="dark" />
             </div>
 
             <div className="relative z-10 space-y-6">
               {/* Brand Emblem */}
               <div className="flex items-center space-x-3.5">
                 <div className="w-14 h-14 rounded-2xl bg-[#11141c] border border-[#33b712]/60 flex items-center justify-center p-2 shadow-md">
-                  <UniversityEmblem size={44} variant="full" />
+                  <UniversityEmblem size={44} variant="full" tone="dark" />
                 </div>
                 <div>
-                  <h2 className="font-heading font-bold text-lg tracking-tight uppercase text-white leading-none">
+                  <p className="font-heading font-bold text-lg tracking-tight uppercase text-white leading-none">
                     DemoTech
-                  </h2>
+                  </p>
                   <p className="text-[11px] text-[#45d320] font-heading font-semibold uppercase tracking-wider mt-1">
                     University
                   </p>
-                  <p className="text-[10px] text-white/70 font-sans mt-0.5 font-medium">DemoTech Campus • 2026</p>
+                  <p className="text-[10px] text-white/70 font-sans mt-0.5 font-medium">
+                    DemoTech Campus • 2026
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-2 border-t border-white/10 pt-4">
-                <h3 className="font-heading font-semibold text-base sm:text-lg text-white leading-snug">
+                <p className="font-heading font-semibold text-base sm:text-lg text-white leading-snug">
                   {lang === 'ru'
                     ? 'Цифровой деканат будущего • Личный кабинет'
                     : 'Digital Dean of the Future • Student Hub'}
-                </h3>
+                </p>
                 <p className="text-xs text-white/75 font-sans leading-relaxed">
                   {lang === 'ru'
                     ? 'Единая защищенная платформа доступа к расписанию занятий, электронной зачетке и сервисам деканата.'
@@ -210,7 +212,10 @@ export const LoginPage: React.FC = () => {
                 className="space-y-4 text-xs sm:text-sm font-sans select-text"
               >
                 <div>
-                  <label className="block font-medium text-[#161821] dark:text-[#ffffff] mb-1.5 text-xs font-heading">
+                  <label
+                    htmlFor="login-email"
+                    className="block font-medium text-[#161821] dark:text-[#ffffff] mb-1.5 text-xs font-heading"
+                  >
                     {lang === 'ru' ? 'Университетская почта' : 'Institutional Email'}
                   </label>
                   <div className="relative">
@@ -218,19 +223,23 @@ export const LoginPage: React.FC = () => {
                       <Mail className="w-4 h-4" />
                     </div>
                     <input
+                      id="login-email"
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="student@demo.edu"
-                      className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full pl-10 pr-4 py-2.5 text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:ring-2 focus:ring-[#33b712] focus:border-transparent focus:outline-none transition-all"
+                      className="w-full min-h-[44px] bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full pl-10 pr-4 py-2.5 text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:ring-2 focus:ring-[#33b712] focus:border-transparent focus:outline-none transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5 text-xs">
-                    <label className="font-medium text-[#161821] dark:text-[#ffffff] font-heading">
+                    <label
+                      htmlFor="login-password"
+                      className="font-medium text-[#161821] dark:text-[#ffffff] font-heading"
+                    >
                       {lang === 'ru' ? 'Пароль учетной записи' : 'Account Password'}
                     </label>
                   </div>
@@ -239,12 +248,13 @@ export const LoginPage: React.FC = () => {
                       <Lock className="w-4 h-4" />
                     </div>
                     <input
+                      id="login-password"
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full pl-10 pr-11 py-2.5 text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:ring-2 focus:ring-[#33b712] focus:border-transparent focus:outline-none transition-all font-sans"
+                      className="w-full min-h-[44px] bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full pl-10 pr-11 py-2.5 text-[#161821] dark:text-[#ffffff] placeholder-[#8a8b90]/60 focus:ring-2 focus:ring-[#33b712] focus:border-transparent focus:outline-none transition-all font-sans"
                     />
                     <button
                       type="button"
@@ -302,16 +312,32 @@ export const LoginPage: React.FC = () => {
                     ,{' '}
                     <code className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                       lina.okafor@demo.edu
+                    </code>{' '}
+                    (пароль:{' '}
+                    <code className="font-sans text-[#161821] dark:text-white font-bold">
+                      DemoStudent123!
                     </code>
-                    {' '}(пароль: <code className="font-sans text-[#161821] dark:text-white font-bold">DemoStudent123!</code>)
+                    )
                   </>
                 ) : (
                   <>
                     <strong>Students:</strong>{' '}
-                    <code className="font-sans text-[#166534] dark:text-[#45d320]">aigul.nurova@demo.edu</code>,{' '}
-                    <code className="font-sans text-[#166534] dark:text-[#45d320]">timur.belov@demo.edu</code>,{' '}
-                    <code className="font-sans text-[#166534] dark:text-[#45d320]">lina.okafor@demo.edu</code>
-                    {' '}(pass: <code className="font-sans text-[#161821] dark:text-white">DemoStudent123!</code>)
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">
+                      aigul.nurova@demo.edu
+                    </code>
+                    ,{' '}
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">
+                      timur.belov@demo.edu
+                    </code>
+                    ,{' '}
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">
+                      lina.okafor@demo.edu
+                    </code>{' '}
+                    (pass:{' '}
+                    <code className="font-sans text-[#161821] dark:text-white">
+                      DemoStudent123!
+                    </code>
+                    )
                   </>
                 )}
               </p>
@@ -321,21 +347,28 @@ export const LoginPage: React.FC = () => {
                     <strong>Сотрудник деканата:</strong>{' '}
                     <code className="font-sans text-[#166534] dark:text-[#45d320] font-semibold">
                       dean.office@demo.edu
+                    </code>{' '}
+                    (пароль:{' '}
+                    <code className="font-sans text-[#161821] dark:text-white font-bold">
+                      DemoStaff123!
                     </code>
-                    {' '}(пароль: <code className="font-sans text-[#161821] dark:text-white font-bold">DemoStaff123!</code>)
+                    )
                   </>
                 ) : (
                   <>
                     <strong>Dean staff:</strong>{' '}
-                    <code className="font-sans text-[#166534] dark:text-[#45d320]">dean.office@demo.edu</code>
-                    {' '}(pass: <code className="font-sans text-[#161821] dark:text-white">DemoStaff123!</code>)
+                    <code className="font-sans text-[#166534] dark:text-[#45d320]">
+                      dean.office@demo.edu
+                    </code>{' '}
+                    (pass:{' '}
+                    <code className="font-sans text-[#161821] dark:text-white">DemoStaff123!</code>)
                   </>
                 )}
               </p>
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* ─────────────────────────────────────────────────────────────
           MANDATORY LEGAL DISCLAIMER

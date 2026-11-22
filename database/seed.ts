@@ -839,7 +839,7 @@ async function main(): Promise<void> {
     }
   }
 
-  // Aigul (avg 88.5, GPA 4.8, 24/30 credits earned)
+  // Aigul (avg 89.5, GPA 4.8, 20/30 credits earned)
   const aigulGrades = [
     {
       sub: 'Международное публичное право',
@@ -925,7 +925,7 @@ async function main(): Promise<void> {
     });
   }
 
-  // Timur (avg 64.2, GPA 3.4, failed Statistics retake on 2026-11-28)
+  // Timur (avg 64.2, GPA 3.2, failed Statistics retake on 2026-11-28)
   const timurRetakeDate = new Date('2026-11-28T00:00:00Z');
   const timurGrades = [
     {
@@ -1001,7 +1001,7 @@ async function main(): Promise<void> {
     });
   }
 
-  // Lina (avg 76.4, GPA 4.2)
+  // Lina (avg 78.2, GPA 4.0)
   const linaGrades = [
     {
       sub: 'Макроэкономика',
@@ -1188,6 +1188,7 @@ async function main(): Promise<void> {
         {
           name: 'purpose',
           label: 'Место предъявления',
+          labelEn: 'Purpose / Recipient',
           type: 'text',
           required: true,
           placeholder: 'Например: Пенсионный фонд РФ, По месту работы',
@@ -1195,6 +1196,7 @@ async function main(): Promise<void> {
         {
           name: 'copies',
           label: 'Количество экземпляров',
+          labelEn: 'Number of copies',
           type: 'number',
           required: true,
           placeholder: '1',
@@ -1202,13 +1204,16 @@ async function main(): Promise<void> {
         {
           name: 'delivery',
           label: 'Форма получения',
+          labelEn: 'Delivery format',
           type: 'select',
           required: true,
           options: ['Электронный макет (PDF, демо)', 'Бумажная в деканате'],
+          optionsEn: ['Electronic draft (PDF, demo)', "Paper copy at the Dean's Office"],
         },
         {
           name: 'notes',
           label: 'Дополнительные примечания',
+          labelEn: 'Additional notes',
           type: 'textarea',
           required: false,
           placeholder: 'Укажите период или дополнительные требования',
@@ -1224,6 +1229,7 @@ async function main(): Promise<void> {
         {
           name: 'militaryOffice',
           label: 'Наименование военного комиссариата',
+          labelEn: 'Military commissariat name',
           type: 'text',
           required: true,
           placeholder: 'Например: ОВК по Раменскому району г. Москвы',
@@ -1231,6 +1237,7 @@ async function main(): Promise<void> {
         {
           name: 'copies',
           label: 'Количество экземпляров',
+          labelEn: 'Number of copies',
           type: 'number',
           required: true,
           placeholder: '1',
@@ -1238,9 +1245,14 @@ async function main(): Promise<void> {
         {
           name: 'delivery',
           label: 'Способ получения',
+          labelEn: 'Delivery method',
           type: 'select',
           required: true,
           options: ['Лично в деканате с оригиналом паспорта', 'Электронная копия (демо-макет)'],
+          optionsEn: [
+            "In person at the Dean's Office with passport",
+            'Electronic copy (demo draft)',
+          ],
         },
       ],
     },
@@ -1254,6 +1266,7 @@ async function main(): Promise<void> {
         {
           name: 'category',
           label: 'Категория достижений',
+          labelEn: 'Achievement category',
           type: 'select',
           required: true,
           options: [
@@ -1262,10 +1275,17 @@ async function main(): Promise<void> {
             'Общественная и волонтерская',
             'Спортивная',
           ],
+          optionsEn: [
+            'Research (papers, conferences)',
+            'Academic (excellent grades)',
+            'Social & volunteering',
+            'Sports',
+          ],
         },
         {
           name: 'achievements',
           label: 'Перечень подтверждающих документов',
+          labelEn: 'Supporting documents list',
           type: 'textarea',
           required: true,
           placeholder: '1. Диплом I степени в олимпиаде...\n2. Публикация в сборнике...',
@@ -1273,6 +1293,7 @@ async function main(): Promise<void> {
         {
           name: 'accountNumber',
           label: 'Номер карты "МИР" для начисления',
+          labelEn: 'MIR bank card number',
           type: 'text',
           required: true,
           placeholder: '2200 0000 0000 0000',
@@ -1289,13 +1310,16 @@ async function main(): Promise<void> {
         {
           name: 'language',
           label: 'Язык документа',
+          labelEn: 'Document language',
           type: 'select',
           required: true,
           options: ['Русский', 'Английский (English)', 'Двуязычный (RU/EN)'],
+          optionsEn: ['Russian', 'English', 'Bilingual (RU/EN)'],
         },
         {
           name: 'purpose',
           label: 'Цель получения',
+          labelEn: 'Purpose',
           type: 'text',
           required: true,
           placeholder: 'Для стажировки, перевода или гранта',
@@ -1303,6 +1327,7 @@ async function main(): Promise<void> {
         {
           name: 'copies',
           label: 'Количество копий',
+          labelEn: 'Number of copies',
           type: 'number',
           required: true,
           placeholder: '1',
@@ -1318,6 +1343,7 @@ async function main(): Promise<void> {
         {
           name: 'homeCity',
           label: 'Город постоянной регистрации',
+          labelEn: 'City of permanent registration',
           type: 'text',
           required: true,
           placeholder: 'Например: Владивосток',
@@ -1325,6 +1351,7 @@ async function main(): Promise<void> {
         {
           name: 'benefitCategory',
           label: 'Льготная категория (при наличии)',
+          labelEn: 'Priority / benefit category (if applicable)',
           type: 'select',
           required: false,
           options: [
@@ -1333,13 +1360,24 @@ async function main(): Promise<void> {
             'Инвалид I или II группы',
             'Многодетная семья',
           ],
+          optionsEn: [
+            'No priority (general pool)',
+            'Orphan / without parental care',
+            'Disability group I or II',
+            'Large family',
+          ],
         },
         {
           name: 'preferredCampus',
           label: 'Предпочтительный корпус',
+          labelEn: 'Preferred campus building',
           type: 'select',
           required: true,
           options: ['Студгородок №1 (ул. Университетская)', 'Студгородок №2 (пр. Науки)'],
+          optionsEn: [
+            'Campus Dormitory #1 (Universitetskaya St.)',
+            'Campus Dormitory #2 (Nauki Ave.)',
+          ],
         },
       ],
     },
@@ -1353,6 +1391,7 @@ async function main(): Promise<void> {
         {
           name: 'reason',
           label: 'Основание для отпуска',
+          labelEn: 'Reason for leave',
           type: 'select',
           required: true,
           options: [
@@ -1360,17 +1399,25 @@ async function main(): Promise<void> {
             'По семейным обстоятельствам',
             'Призыв на военную службу',
           ],
+          optionsEn: [
+            'Medical grounds (medical board certificate)',
+            'Family circumstances',
+            'Military conscription',
+          ],
         },
         {
           name: 'duration',
           label: 'Срок отпуска',
+          labelEn: 'Leave duration',
           type: 'select',
           required: true,
           options: ['1 семестр', '1 академический год', '2 академических года'],
+          optionsEn: ['1 semester', '1 academic year', '2 academic years'],
         },
         {
           name: 'documentDetails',
           label: 'Реквизиты подтверждающего документа',
+          labelEn: 'Supporting document details',
           type: 'textarea',
           required: true,
           placeholder: 'Справка врачебной комиссии №... от...',

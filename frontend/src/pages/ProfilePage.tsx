@@ -28,7 +28,7 @@ export const ProfilePage: React.FC = () => {
               className="w-24 h-24 rounded-full object-cover border-2 border-[#33b712] shadow-sm"
             />
             <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#161821] border border-[#33b712] flex items-center justify-center">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#45d320]" />
             </span>
           </div>
 
@@ -64,9 +64,9 @@ export const ProfilePage: React.FC = () => {
             </p>
 
             <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
-              <span>ID: {user?.id}</span>
+              <span className="break-all">ID: {user?.id}</span>
               <span>•</span>
-              <span>Email: {user?.email}</span>
+              <span className="break-all">Email: {user?.email}</span>
               {!isStaff && (
                 <>
                   <span>•</span>
@@ -79,8 +79,9 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <button
+            type="button"
             onClick={logout}
-            className="px-4 py-2 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#fff2f5] hover:text-[#be123c] dark:text-[#fecdd3] border border-[#e2e4e8] dark:border-[#273142] text-xs font-heading font-semibold transition-colors flex items-center space-x-1.5 self-center sm:self-start cursor-pointer shadow-2xs"
+            className="px-4 py-2 min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#fff2f5] dark:hover:bg-[#38161f] hover:text-[#be123c] dark:text-[#fecdd3] dark:hover:text-[#fecdd3] border border-[#e2e4e8] dark:border-[#273142] text-xs font-heading font-semibold transition-colors flex items-center space-x-1.5 self-center sm:self-start cursor-pointer shadow-2xs shrink-0"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>{tr(lang, 'Выйти из кабинета', 'Sign Out')}</span>
@@ -94,86 +95,92 @@ export const ProfilePage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Academic Enrollment Info */}
         <div className="p-6 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs space-y-4">
-          <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
+          <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
             <GraduationCap className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
             <span>
               {isStaff
                 ? tr(lang, 'Служебные реквизиты сотрудника', 'Staff Credentials')
                 : tr(lang, 'Учебные реквизиты студента', 'Student Enrollment Record')}
             </span>
-          </h3>
+          </h2>
 
           <div className="space-y-2.5 text-xs font-sans">
-            <div className="flex justify-between py-1 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
-              <span className="text-[#475569] dark:text-[#94a3b8]">
+            <div className="flex items-start justify-between gap-3 py-1.5 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
+              <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
                 {tr(lang, 'Учебное заведение:', 'Institution:')}
               </span>
-              <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+              <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff] text-right min-w-0 break-words">
                 {lang === 'ru' ? UNIVERSITY_INFO.name : UNIVERSITY_INFO.nameEn}
               </span>
             </div>
-            <div className="flex justify-between py-1 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
-              <span className="text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'Факультет:', 'Faculty:')}</span>
-              <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+            <div className="flex items-start justify-between gap-3 py-1.5 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
+              <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
+                {tr(lang, 'Факультет:', 'Faculty:')}
+              </span>
+              <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff] text-right min-w-0 break-words">
                 {localizeText(profile?.faculty, lang)}
               </span>
             </div>
-            <div className="flex justify-between py-1 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
-              <span className="text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'Направление:', 'Program:')}</span>
-              <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+            <div className="flex items-start justify-between gap-3 py-1.5 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
+              <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
+                {tr(lang, 'Направление:', 'Program:')}
+              </span>
+              <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff] text-right min-w-0 break-words">
                 {localizeText(profile?.program, lang)}
               </span>
             </div>
             {!isStaff ? (
               <>
-                <div className="flex justify-between py-1 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
-                  <span className="text-[#475569] dark:text-[#94a3b8]">
+                <div className="flex items-start justify-between gap-3 py-1.5 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
+                  <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
                     {tr(lang, 'Академическая группа:', 'Academic Group:')}
                   </span>
-                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320]">
+                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320] text-right min-w-0 break-words">
                     {profile?.group}
                   </span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
-                  <span className="text-[#475569] dark:text-[#94a3b8]">
+                <div className="flex items-start justify-between gap-3 py-1.5 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
+                  <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
                     {tr(lang, 'Форма обучения:', 'Study Mode:')}
                   </span>
-                  <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+                  <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff] text-right min-w-0 break-words">
                     {profile?.studyForm
                       ? getStudyFormLabel(profile.studyForm, lang)
                       : tr(lang, 'Очная', 'Full-time')}
                   </span>
                 </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-[#475569] dark:text-[#94a3b8]">
+                <div className="flex items-start justify-between gap-3 py-1.5">
+                  <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
                     {tr(lang, 'Номер студенческого билета:', 'Student ID Number:')}
                   </span>
-                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320]">
+                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320] text-right min-w-0 break-words">
                     {profile?.studentNumber}
                   </span>
                 </div>
               </>
             ) : (
               <>
-                <div className="flex justify-between py-1 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
-                  <span className="text-[#475569] dark:text-[#94a3b8]">
+                <div className="flex items-start justify-between gap-3 py-1.5 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
+                  <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
                     {tr(lang, 'Табельный номер:', 'Staff ID:')}
                   </span>
-                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320]">
+                  <span className="font-sans font-bold text-[#166534] dark:text-[#45d320] text-right min-w-0 break-words">
                     ТАБ-0441
                   </span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
-                  <span className="text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'Должность:', 'Position:')}</span>
-                  <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+                <div className="flex items-start justify-between gap-3 py-1.5 border-b border-[#e2e4e8]/60 dark:border-[#273142]">
+                  <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
+                    {tr(lang, 'Должность:', 'Position:')}
+                  </span>
+                  <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff] text-right min-w-0 break-words">
                     {tr(lang, 'Зам. декана по УМР', 'Vice Dean for Academic Affairs')}
                   </span>
                 </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-[#475569] dark:text-[#94a3b8]">
+                <div className="flex items-start justify-between gap-3 py-1.5">
+                  <span className="text-[#475569] dark:text-[#94a3b8] shrink-0">
                     {tr(lang, 'Кабинет и часы приема:', 'Office & Hours:')}
                   </span>
-                  <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+                  <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff] text-right min-w-0 break-words">
                     {tr(lang, 'Каб. 312 • Пн-Пт 9-18', 'Rm 312 • Mon–Fri 9–18')}
                   </span>
                 </div>
@@ -184,38 +191,40 @@ export const ProfilePage: React.FC = () => {
 
         {/* Account Security & Access Info */}
         <div className="p-6 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs space-y-4">
-          <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
+          <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
             <ShieldCheck className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-            <span>
-              {tr(lang, 'Безопасность учетной записи', 'Account Security')}
-            </span>
-          </h3>
+            <span>{tr(lang, 'Безопасность учетной записи', 'Account Security')}</span>
+          </h2>
 
           <div className="space-y-3 text-xs font-sans">
-            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
-              <div>
+            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
                 <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] block">
                   {tr(lang, 'Статус аутентификации', 'Authentication Status')}
                 </span>
                 <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
-                  {tr(lang, 'Единый университетский аккаунт (SSO)', 'Institutional Single Sign-On (SSO)')}
+                  {tr(
+                    lang,
+                    'Единый университетский аккаунт (SSO)',
+                    'Institutional Single Sign-On (SSO)'
+                  )}
                 </span>
               </div>
-              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border border-[#33b712]/30">
+              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border border-[#33b712]/30 shrink-0">
                 {tr(lang, 'Активен', 'Active')}
               </span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
-              <div>
+            <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
                 <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] block">
                   {tr(lang, 'Университетская почта', 'Institutional Email')}
                 </span>
-                <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
+                <span className="font-heading font-semibold text-[#161821] dark:text-[#ffffff] break-all">
                   {user?.email}
                 </span>
               </div>
-              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30">
+              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30 shrink-0">
                 {tr(lang, 'Подтвержден', 'Verified')}
               </span>
             </div>

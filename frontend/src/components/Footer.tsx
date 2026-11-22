@@ -18,12 +18,12 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-2xl bg-[#161821] dark:bg-[#11141c] border border-[#33b712]/40 flex items-center justify-center p-1 shadow-xs">
-                <UniversityEmblem size={30} variant="full" />
+                <UniversityEmblem size={30} variant="full" tone="dark" />
               </div>
               <div>
-                <h4 className="font-heading font-bold text-sm text-[#161821] dark:text-[#ffffff] tracking-tight uppercase leading-none">
+                <p className="font-heading font-bold text-sm text-[#161821] dark:text-[#ffffff] tracking-tight uppercase leading-none">
                   DemoTech
-                </h4>
+                </p>
                 <p className="text-[10px] text-[#166534] dark:text-[#45d320] font-heading font-semibold uppercase tracking-wider mt-1">
                   University
                 </p>
@@ -39,24 +39,24 @@ export const Footer: React.FC = () => {
             <div className="pt-1 text-[11px] font-sans space-y-1.5 text-[#4b5563] dark:text-[#cbd5e1]">
               <div className="flex items-center space-x-2">
                 <MapPin className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
-                <span>
-                  {lang === 'ru'
-                    ? 'Главный кампус • Университетский проспект, 1'
-                    : 'Main Campus • 1 University Avenue'}
-                </span>
+                <span>{lang === 'ru' ? UNIVERSITY_INFO.addressRu : UNIVERSITY_INFO.addressEn}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Building className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
-                <span>{UNIVERSITY_INFO.deanOfficeLocation}</span>
+                <span>
+                  {lang === 'ru'
+                    ? UNIVERSITY_INFO.deanOfficeLocation
+                    : UNIVERSITY_INFO.deanOfficeLocationEn}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Column 2: Academic Program & Faculty */}
           <div className="space-y-3">
-            <h5 className="font-heading font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
+            <p className="font-heading font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
               {lang === 'ru' ? 'Академические программы' : 'Academic Faculties'}
-            </h5>
+            </p>
             <ul className="text-xs space-y-2 text-[#4b5563] dark:text-[#cbd5e1]">
               <li>
                 <span className="font-medium text-[#161821] dark:text-[#ffffff]">
@@ -91,15 +91,15 @@ export const Footer: React.FC = () => {
 
           {/* Column 3: Dean's Office Contacts */}
           <div className="space-y-3">
-            <h5 className="font-heading font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
+            <p className="font-heading font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
               {lang === 'ru' ? 'Контакты деканата' : "Dean's Office Contacts"}
-            </h5>
+            </p>
             <div className="text-xs space-y-2 text-[#4b5563] dark:text-[#cbd5e1]">
               <div className="flex items-center space-x-2">
                 <Mail className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
                 <a
                   href={`mailto:${UNIVERSITY_INFO.deanOfficeEmail}`}
-                  className="hover:underline font-sans"
+                  className="hover:underline font-sans inline-flex items-center min-h-[44px]"
                 >
                   {UNIVERSITY_INFO.deanOfficeEmail}
                 </a>
@@ -109,16 +109,18 @@ export const Footer: React.FC = () => {
                 <span className="font-sans">{UNIVERSITY_INFO.deanOfficePhone}</span>
               </div>
               <p className="text-[11px] text-[#475569] dark:text-[#94a3b8] pt-1 leading-relaxed">
-                {UNIVERSITY_INFO.deanOfficeHours}
+                {lang === 'ru'
+                  ? UNIVERSITY_INFO.deanOfficeHours
+                  : UNIVERSITY_INFO.deanOfficeHoursEn}
               </p>
             </div>
           </div>
 
           {/* Column 4: Quality & Legal Disclaimer */}
           <div className="space-y-3">
-            <h5 className="font-heading font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
+            <p className="font-heading font-semibold text-xs uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
               {lang === 'ru' ? 'Статус платформы' : 'Platform Status'}
-            </h5>
+            </p>
             <div className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] text-[11px] space-y-2">
               <div className="flex items-center space-x-2 text-[#166534] dark:text-[#45d320] font-heading font-semibold">
                 <ShieldCheck className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />

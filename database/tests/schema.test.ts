@@ -3,7 +3,8 @@
  * Competition concept, fictional data only.
  *
  * These tests run against a LIVE PostgreSQL instance.
- * Set TEST_DATABASE_URL env var (or DATABASE_URL) before running.
+ * Set TEST_DATABASE_URL (or DATABASE_URL), SEED_STUDENT_PASSWORD, and
+ * SEED_STAFF_PASSWORD env vars before running.
  *
  * Tests:
  * 1. Schema migration on empty DB creates all tables
@@ -14,8 +15,13 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Use a dedicated test DB if provided, fall back to DATABASE_URL
 const TEST_DB_URL = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL ?? '';
@@ -103,6 +109,13 @@ describe('Database schema & seed', () => {
       for (const f of fields) {
         expect(typeof f.name).toBe('string');
         expect((f.name as string).length).toBeGreaterThan(0);
+        expect(typeof f.labelEn).toBe('string');
+        expect((f.labelEn as string).length).toBeGreaterThan(0);
+        if (f.type === 'select') {
+          expect(Array.isArray(f.options)).toBe(true);
+          expect(Array.isArray(f.optionsEn)).toBe(true);
+          expect((f.optionsEn as unknown[]).length).toBe((f.options as unknown[]).length);
+        }
         expect(f).not.toHaveProperty('key');
       }
     }
@@ -128,23 +141,59 @@ describe('Database schema & seed', () => {
     expect(statRetake!.isDebt).toBe(true);
   });
 
-  it('2e. Seed is idempotent – running counts twice gives same result', async () => {
-    // We read counts before and after a second "seed" pass.
-    // Since the seed script isn't re-executed here, we verify that the
-    // existing counts match expectations (the CI pipeline runs seed twice).
-    const userCount = await prisma.user.count();
-    const announcementCount = await prisma.announcement.count();
-    const requestTypeCount = await prisma.requestType.count();
+  it('2e. Seed is idempotent – re-running seed.ts preserves exact row counts', async () => {
+    const studentPass = process.env.SEED_STUDENT_PASSWORD;
+    const staffPass = process.env.SEED_STAFF_PASSWORD;
+    if (!studentPass || !staffPass) {
+      throw new Error(
+        'Set SEED_STUDENT_PASSWORD and SEED_STAFF_PASSWORD before running seed idempotency test.'
+      );
+    }
 
-    // Run same queries again – counts must be stable
-    const userCount2 = await prisma.user.count();
-    const announcementCount2 = await prisma.announcement.count();
-    const requestTypeCount2 = await prisma.requestType.count();
+    const snapshotCounts = async () => ({
+      users: await prisma.user.count(),
+      studentProfiles: await prisma.studentProfile.count(),
+      groups: await prisma.group.count(),
+      subjects: await prisma.subject.count(),
+      scheduleEntries: await prisma.scheduleEntry.count(),
+      grades: await prisma.grade.count(),
+      requestTypes: await prisma.requestType.count(),
+      requests: await prisma.request.count(),
+      requestStatusHistory: await prisma.requestStatusHistory.count(),
+      exams: await prisma.exam.count(),
+      announcements: await prisma.announcement.count(),
+      notifications: await prisma.notification.count(),
+    });
 
-    expect(userCount2).toBe(userCount);
-    expect(announcementCount2).toBe(announcementCount);
-    expect(requestTypeCount2).toBe(requestTypeCount);
-  });
+    const before = await snapshotCounts();
+
+    const dbDir = path.resolve(__dirname, '..');
+    const tsxCli = path.resolve(dbDir, 'node_modules/tsx/dist/cli.mjs');
+    const seedPath = path.resolve(dbDir, 'seed.ts');
+
+    execFileSync(process.execPath, [tsxCli, seedPath], {
+      cwd: dbDir,
+      env: {
+        ...process.env,
+        DATABASE_URL: TEST_DB_URL,
+        SEED_STUDENT_PASSWORD: studentPass,
+        SEED_STAFF_PASSWORD: staffPass,
+      },
+      stdio: 'pipe',
+    });
+
+    const after = await snapshotCounts();
+    expect(after).toEqual(before);
+    expect(after.users).toBe(16);
+    expect(after.studentProfiles).toBe(15);
+    expect(after.groups).toBe(4);
+    expect(after.subjects).toBe(20);
+    expect(after.requestTypes).toBe(6);
+    expect(after.requests).toBe(3);
+    expect(after.exams).toBe(12);
+    expect(after.announcements).toBeGreaterThanOrEqual(8);
+    expect(after.notifications).toBe(9);
+  }, 45_000);
 
   it('3a. Constraint: duplicate email is rejected', async () => {
     await expect(

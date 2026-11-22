@@ -68,6 +68,15 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
     };
   }, [user]);
 
+  useEffect(() => {
+    if (!isWizardOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsWizardOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isWizardOpen]);
+
   const handleCancelRequest = async (id: string) => {
     if (
       !confirm(
@@ -89,8 +98,15 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
   };
 
   const handleOpenWizard = (type?: RequestType) => {
-    setSelectedType(type || requestTypes[0] || null);
-    setFormData({});
+    const chosenType = type || requestTypes[0] || null;
+    const initialData: Record<string, unknown> = {};
+    chosenType?.fields?.forEach((f) => {
+      if (f.type === 'number') {
+        initialData[f.name] = 1;
+      }
+    });
+    setSelectedType(chosenType);
+    setFormData(initialData);
     setIsWizardOpen(true);
   };
 
@@ -121,37 +137,43 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
   const statusConfig = {
     submitted: {
       label: getRequestStatusLabel('submitted', lang, 'student'),
-      pillClass: 'bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border-[#3598fe]/30',
+      pillClass:
+        'bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border-[#3598fe]/30',
       dotClass: 'bg-[#3598fe]',
       icon: Clock,
     },
     in_review: {
       label: getRequestStatusLabel('in_review', lang, 'student'),
-      pillClass: 'bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border-[#3598fe]/30',
+      pillClass:
+        'bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border-[#3598fe]/30',
       dotClass: 'bg-[#3598fe]',
       icon: Clock,
     },
     needs_info: {
       label: getRequestStatusLabel('needs_info', lang, 'student'),
-      pillClass: 'bg-[#fff9e6] dark:bg-[#2c2210] text-[#b45309] dark:text-[#fde68a] border-[#ffeeba] dark:border-[#523e1b]',
+      pillClass:
+        'bg-[#fff9e6] dark:bg-[#2c2210] text-[#b45309] dark:text-[#fde68a] border-[#ffeeba] dark:border-[#523e1b]',
       dotClass: 'bg-[#f4b400]',
       icon: AlertCircle,
     },
     ready: {
       label: getRequestStatusLabel('ready', lang, 'student'),
-      pillClass: 'bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border-[#33b712]/30',
+      pillClass:
+        'bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border-[#33b712]/30',
       dotClass: 'bg-[#33b712]',
       icon: CheckCircle2,
     },
     rejected: {
       label: getRequestStatusLabel('rejected', lang, 'student'),
-      pillClass: 'bg-[#fff2f5] dark:bg-[#38161f] text-[#be123c] dark:text-[#fecdd3] border-[#ff4d8b]/30',
+      pillClass:
+        'bg-[#fff2f5] dark:bg-[#38161f] text-[#be123c] dark:text-[#fecdd3] border-[#ff4d8b]/30',
       dotClass: 'bg-[#ff4d8b]',
       icon: XCircle,
     },
     cancelled: {
       label: getRequestStatusLabel('cancelled', lang, 'student'),
-      pillClass: 'bg-[#f6f6f9] dark:bg-[#1f2937] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#374151]',
+      pillClass:
+        'bg-[#f6f6f9] dark:bg-[#1f2937] text-[#475569] dark:text-[#94a3b8] border-[#e2e4e8] dark:border-[#374151]',
       dotClass: 'bg-[#8a8b90]',
       icon: XCircle,
     },
@@ -195,10 +217,11 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
         </div>
 
         <button
+          type="button"
           onClick={() => handleOpenWizard()}
           className="px-5 py-2.5 min-h-[44px] rounded-full btn-brand-primary text-xs sm:text-sm font-heading font-semibold flex items-center space-x-2 self-start sm:self-center cursor-pointer shadow-md"
         >
-          <Plus className="w-4 h-4 text-white" />
+          <Plus className="w-4 h-4" />
           <span>{lang === 'ru' ? 'Подать новое заявление' : 'Order Document'}</span>
         </button>
       </div>
@@ -231,15 +254,16 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                     {tr(lang, `Срок: ${t.slaDays} дн.`, `SLA: ${t.slaDays}d`)}
                   </span>
                 </div>
-                <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] leading-snug">
+                <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] leading-snug">
                   {localizeText(t.title, lang)}
-                </h3>
+                </h2>
                 <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans leading-relaxed">
                   {localizeText(t.description, lang)}
                 </p>
               </div>
 
               <button
+                type="button"
                 onClick={() => handleOpenWizard(t)}
                 className="w-full py-2.5 px-4 min-h-[44px] rounded-full bg-white dark:bg-[#161821] hover:bg-[#161821] hover:text-white dark:hover:bg-white dark:hover:text-[#161821] border border-[#e2e4e8] dark:border-[#273142] text-xs font-heading font-semibold text-[#161821] dark:text-[#ffffff] transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-2xs"
               >
@@ -255,16 +279,16 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
           3. MY PETITIONS REGISTRY (Digital Registry Kanban List)
           ───────────────────────────────────────────────────────────── */}
       <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] overflow-hidden shadow-xs">
-        <div className="p-5 bg-[#f6f6f9] dark:bg-[#121620] border-b border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
+        <div className="p-5 bg-[#f6f6f9] dark:bg-[#121620] border-b border-[#e2e4e8] dark:border-[#273142] flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
             <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-            <h3 className="font-heading font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
+            <h2 className="font-heading font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
               {tr(
                 lang,
                 `Журнал поданных заявлений (${requests.length})`,
                 `Submitted Petitions (${requests.length})`
               )}
-            </h3>
+            </h2>
           </div>
           <span className="text-[11px] font-sans text-[#475569] dark:text-[#94a3b8]">
             {tr(lang, 'Архив с 2026 г.', 'Archive since 2026')}
@@ -298,22 +322,28 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                   className="p-5 hover:bg-[#f6f6f9]/50 dark:hover:bg-[#121620]/50 transition-colors"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-sans text-xs text-[#475569] dark:text-[#94a3b8]">№ {req.id}</span>
-                        <h4 className="font-heading font-semibold text-sm sm:text-base text-[#161821] dark:text-[#ffffff]">
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-sans text-xs text-[#475569] dark:text-[#94a3b8]">
+                          № {req.id}
+                        </span>
+                        <h3 className="font-heading font-semibold text-sm sm:text-base text-[#161821] dark:text-[#ffffff]">
                           {localizeText(req.typeTitle, lang)}
-                        </h4>
+                        </h3>
                       </div>
                       <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans">
                         {tr(lang, 'Подано:', 'Submitted:')}{' '}
-                        <span className="font-sans">{formatNotificationDate(req.createdAt, lang)}</span> •{' '}
-                        {tr(lang, 'Срок исполнения: до', 'Expected by:')}{' '}
-                        <span className="font-sans font-medium">{localizeText(req.expectedDate, lang)}</span>
+                        <span className="font-sans">
+                          {formatNotificationDate(req.createdAt, lang)}
+                        </span>{' '}
+                        • {tr(lang, 'Срок исполнения: до', 'Expected by:')}{' '}
+                        <span className="font-sans font-medium">
+                          {localizeText(req.expectedDate, lang)}
+                        </span>
                       </p>
                     </div>
 
-                    <div className="flex items-center space-x-2.5">
+                    <div className="flex flex-wrap items-center gap-2.5">
                       {/* Status indicator pill */}
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-heading font-semibold border flex items-center space-x-2 ${cfg.pillClass}`}
@@ -324,15 +354,17 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
 
                       {isReady && (
                         <button
+                          type="button"
                           onClick={() => onPreviewCert(req)}
-                          className="px-4 py-2 min-h-[44px] rounded-full bg-[#161821] dark:bg-white text-white dark:text-[#161821] text-xs font-heading font-bold flex items-center space-x-1.5 shadow-xs hover:bg-[#262a38] transition-colors cursor-pointer"
+                          className="px-4 py-2 min-h-[44px] rounded-full bg-[#161821] dark:bg-white text-white dark:text-[#161821] text-xs font-heading font-bold flex items-center space-x-1.5 shadow-xs hover:bg-[#262a38] dark:hover:bg-[#e2e4e8] transition-colors cursor-pointer"
                         >
-                          <Eye className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
+                          <Eye className="w-3.5 h-3.5 text-[#45d320] dark:text-[#166534]" />
                           <span>{tr(lang, 'Макет PDF', 'Preview PDF')}</span>
                         </button>
                       )}
 
                       <button
+                        type="button"
                         onClick={() => setExpandedId(isExpanded ? null : req.id)}
                         className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-white hover:bg-[#f6f6f9] dark:hover:bg-[#121620] transition-colors cursor-pointer"
                         aria-label={tr(lang, 'Подробнее', 'Details')}
@@ -357,7 +389,10 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                           <div className="space-y-1">
                             {Object.entries(req.data).map(([k, v]) => (
                               <p key={k} className="text-[#4b5563] dark:text-[#cbd5e1]">
-                                <span className="font-medium text-[#475569] dark:text-[#94a3b8]">{k}:</span> {String(v)}
+                                <span className="font-medium text-[#475569] dark:text-[#94a3b8]">
+                                  {localizeText(k, lang)}:
+                                </span>{' '}
+                                {localizeText(String(v), lang)}
                               </p>
                             ))}
                           </div>
@@ -385,8 +420,9 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
 
                         {(req.status === 'submitted' || req.status === 'in_review') && (
                           <button
+                            type="button"
                             onClick={() => handleCancelRequest(req.id)}
-                            className="text-xs text-[#be123c] dark:text-[#fecdd3] hover:underline self-start pt-2 cursor-pointer font-medium"
+                            className="text-xs text-[#be123c] dark:text-[#fecdd3] hover:underline self-start inline-flex items-center min-h-[44px] px-2 cursor-pointer font-medium"
                           >
                             {tr(lang, 'Отозвать заявление', 'Withdraw Request')}
                           </button>
@@ -410,16 +446,17 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
             role="dialog"
             aria-modal="true"
             aria-label={localizeText(selectedType.title, lang)}
-            className="relative w-full max-w-lg bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] shadow-2xl p-6 sm:p-8 space-y-5"
+            className="relative w-full max-w-lg bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] shadow-2xl p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
-              <div className="flex items-center space-x-2">
-                <FileBadge className="w-5 h-5 text-[#166534] dark:text-[#45d320]" />
-                <h3 className="font-heading font-bold text-base sm:text-lg text-[#161821] dark:text-[#ffffff]">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
+              <div className="flex items-center space-x-2 min-w-0">
+                <FileBadge className="w-5 h-5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
+                <h2 className="font-heading font-bold text-base sm:text-lg text-[#161821] dark:text-[#ffffff]">
                   {localizeText(selectedType.title, lang)}
-                </h3>
+                </h2>
               </div>
               <button
+                type="button"
                 onClick={() => setIsWizardOpen(false)}
                 className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-[#f6f6f9] dark:bg-[#121620] flex items-center justify-center text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-white transition-colors cursor-pointer"
                 aria-label="Close dialog"
@@ -438,62 +475,105 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
             </p>
 
             <form onSubmit={handleSubmitRequest} className="space-y-4 text-xs font-sans">
-              {selectedType.fields?.map((f) => (
-                <div key={f.name}>
-                  <label className="block font-heading font-semibold text-[#161821] dark:text-[#ffffff] mb-1">
-                    {f.label} {f.required && <span className="text-[#be123c] dark:text-[#fecdd3]">*</span>}
-                  </label>
-                  {f.type === 'select' ? (
-                    <select
-                      required={f.required}
-                      aria-label={f.label || f.name}
-                      onChange={(e) => handleFieldChange(f.name, e.target.value)}
-                      className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
-                    >
-                      <option value="">
-                        {tr(lang, '— Выберите вариант —', '— Select an option —')}
-                      </option>
-                      {f.options?.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  ) : f.type === 'number' ? (
-                    <input
-                      type="number"
-                      required={f.required}
-                      min={1}
-                      max={10}
-                      defaultValue={1}
-                      placeholder={f.placeholder}
-                      onChange={(e) => handleFieldChange(f.name, Number(e.target.value))}
-                      className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      required={f.required}
-                      placeholder={f.placeholder}
-                      onChange={(e) => handleFieldChange(f.name, e.target.value)}
-                      className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
-                    />
-                  )}
-                </div>
-              ))}
+              {selectedType.fields?.map((f) => {
+                const fieldId = `request-field-${f.name}`;
+                const fieldLabel =
+                  lang === 'en' ? f.labelEn || localizeText(f.label, lang) : f.label;
+                const fieldPlaceholder =
+                  lang === 'en'
+                    ? f.placeholderEn || (f.placeholder ? localizeText(f.placeholder, lang) : '')
+                    : f.placeholder;
 
-              <div className="pt-3 flex items-center justify-end space-x-2">
+                return (
+                  <div key={f.name}>
+                    <label
+                      htmlFor={fieldId}
+                      className="block font-heading font-semibold text-[#161821] dark:text-[#ffffff] mb-1"
+                    >
+                      {fieldLabel}{' '}
+                      {f.required && <span className="text-[#be123c] dark:text-[#fecdd3]">*</span>}
+                    </label>
+                    {f.type === 'select' ? (
+                      <select
+                        id={fieldId}
+                        required={f.required}
+                        aria-label={fieldLabel || f.name}
+                        value={String(formData[f.name] ?? '')}
+                        onChange={(e) => handleFieldChange(f.name, e.target.value)}
+                        className="w-full min-h-[44px] bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
+                      >
+                        <option value="">
+                          {tr(lang, '— Выберите вариант —', '— Select an option —')}
+                        </option>
+                        {f.options?.map((opt, idx) => (
+                          <option key={opt} value={opt}>
+                            {lang === 'en' ? f.optionsEn?.[idx] || localizeText(opt, lang) : opt}
+                          </option>
+                        ))}
+                      </select>
+                    ) : f.type === 'textarea' ? (
+                      <textarea
+                        id={fieldId}
+                        rows={3}
+                        required={f.required}
+                        placeholder={fieldPlaceholder}
+                        value={String(formData[f.name] ?? '')}
+                        onChange={(e) => handleFieldChange(f.name, e.target.value)}
+                        className="w-full bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-2xl px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
+                      />
+                    ) : f.type === 'date' ? (
+                      <input
+                        id={fieldId}
+                        type="date"
+                        required={f.required}
+                        value={String(formData[f.name] ?? '')}
+                        onChange={(e) => handleFieldChange(f.name, e.target.value)}
+                        className="w-full min-h-[44px] bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
+                      />
+                    ) : f.type === 'number' ? (
+                      <input
+                        id={fieldId}
+                        type="number"
+                        required={f.required}
+                        min={1}
+                        max={10}
+                        value={formData[f.name] === '' ? '' : Number(formData[f.name] ?? 1)}
+                        placeholder={fieldPlaceholder}
+                        onChange={(e) =>
+                          handleFieldChange(
+                            f.name,
+                            e.target.value === '' ? '' : Number(e.target.value)
+                          )
+                        }
+                        className="w-full min-h-[44px] bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
+                      />
+                    ) : (
+                      <input
+                        id={fieldId}
+                        type="text"
+                        required={f.required}
+                        placeholder={fieldPlaceholder}
+                        value={String(formData[f.name] ?? '')}
+                        onChange={(e) => handleFieldChange(f.name, e.target.value)}
+                        className="w-full min-h-[44px] bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] rounded-full px-4 py-2.5 text-[#161821] dark:text-[#ffffff] focus:ring-2 focus:ring-[#33b712] focus:outline-none"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+
+              <div className="pt-3 flex flex-wrap items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsWizardOpen(false)}
-                  className="px-5 py-2.5 rounded-full border border-[#e2e4e8] dark:border-[#273142] text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-white transition-colors cursor-pointer font-heading"
+                  className="px-5 py-2.5 min-h-[44px] rounded-full border border-[#e2e4e8] dark:border-[#273142] text-[#475569] dark:text-[#94a3b8] hover:text-[#161821] dark:hover:text-white transition-colors cursor-pointer font-heading"
                 >
                   {tr(lang, 'Отмена', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 rounded-full btn-brand-primary text-white font-heading font-semibold flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-6 py-2.5 min-h-[44px] rounded-full btn-brand-primary font-heading font-semibold flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>

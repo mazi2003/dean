@@ -195,10 +195,7 @@ export const AuthenticatedShell: React.FC = () => {
       )}
       {certToPreview && (
         <Suspense fallback={null}>
-          <CertificatePreviewModal
-            request={certToPreview}
-            onClose={() => setCertToPreview(null)}
-          />
+          <CertificatePreviewModal request={certToPreview} onClose={() => setCertToPreview(null)} />
         </Suspense>
       )}
       {isMapOpen && (

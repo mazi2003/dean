@@ -197,35 +197,57 @@ export async function requestsRoutes(app: FastifyInstance) {
         return reply.code(422).send({ code: 'VALIDATION_ERROR', message: 'Unknown request type' });
       }
 
-      const newRequest = await prisma.request.create({
-        data: {
-          studentId: userId,
-          typeCode: parsed.data.typeCode as RequestTypeCode,
-          data: parsed.data.data as Prisma.InputJsonValue,
-          status: 'submitted',
-          history: {
-            create: [
-              {
-                status: 'submitted',
-                actorId: userId,
-                comment: 'Заявление отправлено в деканат на рассмотрение.',
-              },
-            ],
-          },
-        },
-        include: requestInclude,
-      });
+      const fields = Array.isArray(rt.fields)
+        ? (rt.fields as Array<{ name?: string; required?: boolean }>)
+        : [];
+      const missingFields = fields
+        .filter((f) => f.required && typeof f.name === 'string')
+        .filter((f) => {
+          const val = parsed.data.data[f.name!];
+          return val === undefined || val === null || String(val).trim() === '';
+        })
+        .map((f) => f.name!);
+      if (missingFields.length > 0) {
+        return reply.code(422).send({
+          code: 'VALIDATION_ERROR',
+          message: 'Missing required fields',
+          details: { missingFields },
+        });
+      }
 
-      // Confirmation notification for student
-      await prisma.notification.create({
-        data: {
-          userId,
-          kind: 'request_update',
-          title: `Заявление принято: ${rt.title}`,
-          body: `Ваше заявление зарегистрировано и передано на рассмотрение в деканат.`,
-          priority: 'normal',
-          link: '/requests',
-        },
+      const newRequest = await prisma.$transaction(async (tx) => {
+        const created = await tx.request.create({
+          data: {
+            studentId: userId,
+            typeCode: parsed.data.typeCode as RequestTypeCode,
+            data: parsed.data.data as Prisma.InputJsonValue,
+            status: 'submitted',
+            history: {
+              create: [
+                {
+                  status: 'submitted',
+                  actorId: userId,
+                  comment: 'Заявление отправлено в деканат на рассмотрение.',
+                },
+              ],
+            },
+          },
+          include: requestInclude,
+        });
+
+        // Confirmation notification for student
+        await tx.notification.create({
+          data: {
+            userId,
+            kind: 'request_update',
+            title: `Заявление принято: ${rt.title}`,
+            body: `Ваше заявление зарегистрировано и передано на рассмотрение в деканат.`,
+            priority: 'normal',
+            link: '/requests',
+          },
+        });
+
+        return created;
       });
 
       return reply.code(201).send(formatRequest(newRequest));

@@ -85,9 +85,9 @@ async function createFallbackStore() {
       programId: programs[1].id,
       year: 3,
       admissionYear: 2022,
-      studentsCount: 25,
+      studentsCount: 24,
       budgetCount: 14,
-      contractCount: 11,
+      contractCount: 10,
       curatorName: 'доц. Ковалев С.И.',
       curatorContact: 's.kovalev@demo.edu • Ауд. 210',
       starostaName: 'Алина Захарова',
@@ -100,9 +100,9 @@ async function createFallbackStore() {
       programId: programs[2].id,
       year: 1,
       admissionYear: 2024,
-      studentsCount: 18,
+      studentsCount: 16,
       budgetCount: 12,
-      contractCount: 6,
+      contractCount: 4,
       curatorName: 'чл.-корр. Романов Б.С.',
       curatorContact: 'b.romanov@demo.edu • Каб. 320',
       starostaName: 'Дмитрий Савельев',
@@ -149,24 +149,10 @@ async function createFallbackStore() {
       role: 'student',
     },
     {
-      id: '11111111-1111-4111-8111-111111111103b',
-      email: 'lina.petrova@demo.edu',
-      passwordHash: studentPasswordHash,
-      fullName: 'Лина Петрова',
-      role: 'student',
-    },
-    {
       id: ids.staffUserId,
       email: 'dean.office@demo.edu',
       passwordHash: staffPasswordHash,
       fullName: 'Мария Волкова (Сотрудник деканата)',
-      role: 'staff',
-    },
-    {
-      id: '11111111-1111-4111-8111-111111111104b',
-      email: 'marina.volkova@demo.edu',
-      passwordHash: staffPasswordHash,
-      fullName: 'Марина Волкова (Сотрудник деканата)',
       role: 'staff',
     },
     {
@@ -251,21 +237,6 @@ async function createFallbackStore() {
       status: 'active',
       dormitoryInfo: 'Проживание по постоянной регистрации (г. Москва)',
       snils: '175-319-604 44',
-    },
-    {
-      id: 'sp-lina-petrova',
-      userId: '11111111-1111-4111-8111-111111111103b',
-      facultyId: faculty.id,
-      programId: programs[0].id,
-      groupId: groups[0].id,
-      year: 1,
-      studentNumber: 'СТ-2024-0312',
-      phone: '+7 (999) 345-67-89',
-      studyForm: 'Бюджет',
-      isStarosta: false,
-      status: 'active',
-      dormitoryInfo: 'Общежитие №2, комн. 412',
-      snils: '175-319-604 55',
     },
     {
       id: 'sp-morozov',
@@ -408,6 +379,58 @@ async function createFallbackStore() {
       changeNote: null as string | null,
     },
     {
+      id: '44444444-4444-4444-8444-444444444405',
+      groupId: groups[0].id,
+      subjectId: subjects[2].id,
+      teacherId: teachers[1].id,
+      roomId: rooms[0].id,
+      date: addDays(monday, 3),
+      startTime: '10:15',
+      endTime: '11:50',
+      type: 'lecture',
+      status: 'normal',
+      changeNote: null as string | null,
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444406',
+      groupId: groups[0].id,
+      subjectId: subjects[4].id,
+      teacherId: teachers[2].id,
+      roomId: rooms[1].id,
+      date: addDays(monday, 4),
+      startTime: '12:00',
+      endTime: '13:35',
+      type: 'seminar',
+      status: 'normal',
+      changeNote: null as string | null,
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444407',
+      groupId: groups[0].id,
+      subjectId: subjects[5].id,
+      teacherId: teachers[0].id,
+      roomId: rooms[3].id,
+      date: addDays(monday, 5),
+      startTime: '10:15',
+      endTime: '11:50',
+      type: 'lab',
+      status: 'normal',
+      changeNote: null as string | null,
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444408',
+      groupId: groups[0].id,
+      subjectId: subjects[0].id,
+      teacherId: teachers[0].id,
+      roomId: rooms[0].id,
+      date: addDays(monday, 7),
+      startTime: '08:30',
+      endTime: '10:05',
+      type: 'lecture',
+      status: 'normal',
+      changeNote: null as string | null,
+    },
+    {
       id: '44444444-4444-4444-8444-444444444404',
       groupId: groups[1].id,
       subjectId: subjects[3].id,
@@ -417,6 +440,32 @@ async function createFallbackStore() {
       startTime: '14:00',
       endTime: '15:35',
       type: 'lab',
+      status: 'normal',
+      changeNote: null as string | null,
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444409',
+      groupId: groups[1].id,
+      subjectId: subjects[2].id,
+      teacherId: teachers[1].id,
+      roomId: rooms[2].id,
+      date: addDays(monday, 3),
+      startTime: '14:00',
+      endTime: '15:35',
+      type: 'lecture',
+      status: 'normal',
+      changeNote: null as string | null,
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444410',
+      groupId: groups[1].id,
+      subjectId: subjects[3].id,
+      teacherId: teachers[1].id,
+      roomId: rooms[2].id,
+      date: addDays(monday, 7),
+      startTime: '10:15',
+      endTime: '11:50',
+      type: 'seminar',
       status: 'normal',
       changeNote: null as string | null,
     },
@@ -601,46 +650,248 @@ async function createFallbackStore() {
     {
       code: 'study_certificate',
       title: 'Справка об обучении',
-      description: 'Официальная справка о статусе обучающегося',
-      fields: [{ name: 'purpose', label: 'Место требования', type: 'text', required: true }],
+      description:
+        'Подтверждение статуса студента для визовых центров, налоговой или места работы.',
       slaDays: 2,
+      fields: [
+        {
+          name: 'purpose',
+          label: 'Место предъявления',
+          labelEn: 'Purpose / Recipient',
+          type: 'text',
+          required: true,
+          placeholder: 'Например: Пенсионный фонд РФ, По месту работы',
+        },
+        {
+          name: 'copies',
+          label: 'Количество экземпляров',
+          labelEn: 'Number of copies',
+          type: 'number',
+          required: true,
+          placeholder: '1',
+        },
+        {
+          name: 'delivery',
+          label: 'Форма получения',
+          labelEn: 'Delivery format',
+          type: 'select',
+          required: true,
+          options: ['Электронный макет (PDF, демо)', 'Бумажная в деканате'],
+          optionsEn: ['Electronic draft (PDF, demo)', "Paper copy at the Dean's Office"],
+        },
+        {
+          name: 'notes',
+          label: 'Дополнительные примечания',
+          labelEn: 'Additional notes',
+          type: 'textarea',
+          required: false,
+          placeholder: 'Укажите период или дополнительные требования',
+        },
+      ],
     },
     {
       code: 'military_certificate',
       title: 'Справка для военкомата (Приложение №4)',
-      description: 'Воинский учет',
+      description: 'Для подтверждения отсрочки от призыва в Вооруженные Силы РФ.',
+      slaDays: 3,
       fields: [
-        { name: 'commissariat', label: 'Военный комиссариат', type: 'text', required: true },
+        {
+          name: 'militaryOffice',
+          label: 'Наименование военного комиссариата',
+          labelEn: 'Military commissariat name',
+          type: 'text',
+          required: true,
+          placeholder: 'Например: ОВК по Раменскому району г. Москвы',
+        },
+        {
+          name: 'copies',
+          label: 'Количество экземпляров',
+          labelEn: 'Number of copies',
+          type: 'number',
+          required: true,
+          placeholder: '1',
+        },
+        {
+          name: 'delivery',
+          label: 'Способ получения',
+          labelEn: 'Delivery method',
+          type: 'select',
+          required: true,
+          options: ['Лично в деканате с оригиналом паспорта', 'Электронная копия (демо-макет)'],
+          optionsEn: [
+            "In person at the Dean's Office with passport",
+            'Electronic copy (demo draft)',
+          ],
+        },
       ],
-      slaDays: 5,
     },
     {
       code: 'scholarship_application',
-      title: 'Заявление на повышенную стипендию (ПГАС)',
-      description: 'Конкурс достижений',
-      fields: [{ name: 'category', label: 'Номинация', type: 'text', required: true }],
-      slaDays: 10,
-    },
-    {
-      code: 'academic_leave',
-      title: 'Академический отпуск',
-      description: 'Временный перерыв в обучении',
-      fields: [{ name: 'reason', label: 'Основание', type: 'text', required: true }],
-      slaDays: 14,
+      title: 'Заявление на повышенную стипендию',
+      description:
+        'За особые достижения в учебной, научно-исследовательской или общественной деятельности.',
+      slaDays: 5,
+      fields: [
+        {
+          name: 'category',
+          label: 'Категория достижений',
+          labelEn: 'Achievement category',
+          type: 'select',
+          required: true,
+          options: [
+            'Научно-исследовательская (статьи, конференции)',
+            'Учебная (отличная успеваемость)',
+            'Общественная и волонтерская',
+            'Спортивная',
+          ],
+          optionsEn: [
+            'Research (papers, conferences)',
+            'Academic (excellent grades)',
+            'Social & volunteering',
+            'Sports',
+          ],
+        },
+        {
+          name: 'achievements',
+          label: 'Перечень подтверждающих документов',
+          labelEn: 'Supporting documents list',
+          type: 'textarea',
+          required: true,
+          placeholder: '1. Диплом I степени в олимпиаде...\n2. Публикация в сборнике...',
+        },
+        {
+          name: 'accountNumber',
+          label: 'Номер карты "МИР" для начисления',
+          labelEn: 'MIR bank card number',
+          type: 'text',
+          required: true,
+          placeholder: '2200 0000 0000 0000',
+        },
+      ],
     },
     {
       code: 'transcript',
-      title: 'Академическая справка (Транскрипт)',
-      description: 'Выписка оценок и кредитов ECTS',
-      fields: [{ name: 'language', label: 'Язык документа', type: 'text', required: true }],
-      slaDays: 5,
+      title: 'Транскрипт (Академическая справка)',
+      description:
+        'Выписка всех изученных дисциплин с часами, кредитами и оценками (в т.ч. на английском языке).',
+      slaDays: 4,
+      fields: [
+        {
+          name: 'language',
+          label: 'Язык документа',
+          labelEn: 'Document language',
+          type: 'select',
+          required: true,
+          options: ['Русский', 'Английский (English)', 'Двуязычный (RU/EN)'],
+          optionsEn: ['Russian', 'English', 'Bilingual (RU/EN)'],
+        },
+        {
+          name: 'purpose',
+          label: 'Цель получения',
+          labelEn: 'Purpose',
+          type: 'text',
+          required: true,
+          placeholder: 'Для стажировки, перевода или гранта',
+        },
+        {
+          name: 'copies',
+          label: 'Количество копий',
+          labelEn: 'Number of copies',
+          type: 'number',
+          required: true,
+          placeholder: '1',
+        },
+      ],
     },
     {
       code: 'dormitory_application',
-      title: 'Заявление на предоставление общежития',
-      description: 'Заселение в студгородок',
-      fields: [{ name: 'reason', label: 'Причина обращения', type: 'text', required: true }],
+      title: 'Заявление на место в общежитии',
+      description: 'Предоставление места проживания в студенческом городке университета.',
       slaDays: 7,
+      fields: [
+        {
+          name: 'homeCity',
+          label: 'Город постоянной регистрации',
+          labelEn: 'City of permanent registration',
+          type: 'text',
+          required: true,
+          placeholder: 'Например: Владивосток',
+        },
+        {
+          name: 'benefitCategory',
+          label: 'Льготная категория (при наличии)',
+          labelEn: 'Priority / benefit category (if applicable)',
+          type: 'select',
+          required: false,
+          options: [
+            'Нет льготы (общий конкурс)',
+            'Сирота / оставшийся без попечения',
+            'Инвалид I или II группы',
+            'Многодетная семья',
+          ],
+          optionsEn: [
+            'No priority (general pool)',
+            'Orphan / without parental care',
+            'Disability group I or II',
+            'Large family',
+          ],
+        },
+        {
+          name: 'preferredCampus',
+          label: 'Предпочтительный корпус',
+          labelEn: 'Preferred campus building',
+          type: 'select',
+          required: true,
+          options: ['Студгородок №1 (ул. Университетская)', 'Студгородок №2 (пр. Науки)'],
+          optionsEn: [
+            'Campus Dormitory #1 (Universitetskaya St.)',
+            'Campus Dormitory #2 (Nauki Ave.)',
+          ],
+        },
+      ],
+    },
+    {
+      code: 'academic_leave',
+      title: 'Заявление на академический отпуск',
+      description:
+        'Оформление временного перерыва в обучении по медицинским или семейным обстоятельствам.',
+      slaDays: 10,
+      fields: [
+        {
+          name: 'reason',
+          label: 'Основание для отпуска',
+          labelEn: 'Reason for leave',
+          type: 'select',
+          required: true,
+          options: [
+            'По медицинским показаниям (справка ВКК)',
+            'По семейным обстоятельствам',
+            'Призыв на военную службу',
+          ],
+          optionsEn: [
+            'Medical grounds (medical board certificate)',
+            'Family circumstances',
+            'Military conscription',
+          ],
+        },
+        {
+          name: 'duration',
+          label: 'Срок отпуска',
+          labelEn: 'Leave duration',
+          type: 'select',
+          required: true,
+          options: ['1 семестр', '1 академический год', '2 академических года'],
+          optionsEn: ['1 semester', '1 academic year', '2 academic years'],
+        },
+        {
+          name: 'documentDetails',
+          label: 'Реквизиты подтверждающего документа',
+          labelEn: 'Supporting document details',
+          type: 'textarea',
+          required: true,
+          placeholder: 'Справка врачебной комиссии №... от...',
+        },
+      ],
     },
   ];
 
@@ -730,6 +981,7 @@ async function createFallbackStore() {
     kind: string;
     title: string;
     body: string;
+    priority: string;
     read: boolean;
     link: string | null;
     createdAt: Date;
@@ -740,6 +992,7 @@ async function createFallbackStore() {
       kind: 'request_update',
       title: 'Справка об обучении в обработке',
       body: 'Ваше заявление передано на подпись в деканат.',
+      priority: 'normal',
       read: false,
       link: '/requests',
       createdAt: new Date(),
@@ -750,6 +1003,7 @@ async function createFallbackStore() {
       kind: 'request_update',
       title: 'Требуется уточнение по заявлению на общежитие',
       body: 'Пожалуйста, загрузите справку о доходах.',
+      priority: 'urgent',
       read: false,
       link: '/requests',
       createdAt: new Date(),
@@ -760,6 +1014,7 @@ async function createFallbackStore() {
       kind: 'schedule_change',
       title: 'Замена аудитории (Международное право)',
       body: 'Семинар перенесен в ауд. Б-115.',
+      priority: 'urgent',
       read: false,
       link: '/schedule',
       createdAt: new Date(),
@@ -770,6 +1025,7 @@ async function createFallbackStore() {
       kind: 'announcement',
       title: 'Прием заявок на ПГАС до 25 ноября',
       body: 'Подайте документы через раздел «Справки и заявления».',
+      priority: 'high',
       read: false,
       link: '/requests',
       createdAt: new Date(),
@@ -780,6 +1036,7 @@ async function createFallbackStore() {
       kind: 'announcement',
       title: 'Опубликован график зимней экзаменационной сессии',
       body: 'Проверьте даты консультаций и экзаменов во вкладке «Расписание».',
+      priority: 'high',
       read: false,
       link: '/schedule',
       createdAt: new Date(),
@@ -833,56 +1090,135 @@ async function createFallbackStore() {
     originalSnapshot: Record<string, unknown> | null;
   }> = [
     {
-      id: 'ex-101-1',
+      id: '66666666-6666-4666-8666-666666666601',
       code: 'LAW-201',
       groupId: groups[0].id,
       subject: 'Международное публичное право',
       format: 'Устный экзамен по билетам',
-      examiner: 'проф. Воронов А.Н.',
-      commissionMembers: 'доц. Лебедев Д.В.',
-      date: '16 декабря 2026',
-      rawDate: '2026-12-16',
+      examiner: 'Проф. Воронов А.Н.',
+      commissionMembers: 'Доц. Романова Е.В., доц. Смирнов А.К.',
+      date: '12 декабря 2026',
+      rawDate: '2026-12-12',
       time: '10:00 – 14:00',
-      room: 'Ауд. А-204',
-      consultation: '14 декабря в 15:00, ауд. А-204',
+      room: 'Главный корпус, ауд. 312',
+      consultation: '10 декабря в 15:00 (ауд. 312)',
       credits: 5,
       status: 'scheduled',
       changeNote: null,
       retakeDate: null,
       isDebt: false,
       originalSnapshot: {
-        date: '16 декабря 2026',
-        rawDate: '2026-12-16',
+        date: '12 декабря 2026',
+        rawDate: '2026-12-12',
         time: '10:00 – 14:00',
-        room: 'Ауд. А-204',
-        consultation: '14 декабря в 15:00, ауд. А-204',
-        examiner: 'проф. Воронов А.Н.',
-        commissionMembers: 'доц. Лебедев Д.В.',
+        room: 'Главный корпус, ауд. 312',
+        consultation: '10 декабря в 15:00 (ауд. 312)',
+        examiner: 'Проф. Воронов А.Н.',
+        commissionMembers: 'Доц. Романова Е.В., доц. Смирнов А.К.',
         status: 'scheduled',
         changeNote: null,
       },
     },
     {
-      id: 'ex-205-1',
-      code: 'STAT-302',
+      id: '66666666-6666-4666-8666-666666666602',
+      code: 'STAT-102',
       groupId: groups[1].id,
-      subject: 'Статистика (Комиссионная пересдача)',
-      format: 'Письменная работа + защита',
-      examiner: 'доц. Ковалев С.И.',
-      commissionMembers: 'проф. Соколов И.В.',
+      subject: 'Математическая статистика и анализ данных',
+      format: 'Комиссионная пересдача (Комиссия факультета)',
+      examiner: 'Проф. Соколов Д.М.',
+      commissionMembers: 'Доц. Иванова К.А., доц. Ковалев С.А.',
       date: '28 ноября 2026',
       rawDate: '2026-11-28',
-      time: '14:00 – 16:30',
+      time: '14:00 – 17:00',
       room: 'Ауд. А-314',
-      consultation: '26 ноября в 16:00, ауд. А-314',
+      consultation: '26 ноября в 17:00 (каф. статистики)',
       credits: 4,
       status: 'scheduled',
-      changeNote: 'Направление деканата №412-П',
+      changeNote: 'Комиссионная пересдача за осенний семестр',
       retakeDate: '2026-11-28',
       isDebt: true,
-      originalSnapshot: null,
+      originalSnapshot: {
+        date: '28 ноября 2026',
+        rawDate: '2026-11-28',
+        time: '14:00 – 17:00',
+        room: 'Ауд. А-314',
+        consultation: '26 ноября в 17:00 (каф. статистики)',
+        examiner: 'Проф. Соколов Д.М.',
+        commissionMembers: 'Доц. Иванова К.А., доц. Ковалев С.А.',
+        status: 'scheduled',
+        changeNote: 'Комиссионная пересдача за осенний семестр',
+      },
+    },
+    {
+      id: '66666666-6666-4666-8666-666666666603',
+      code: 'MAG-101',
+      groupId: groups[2].id,
+      subject: 'Современная дипломатическая практика',
+      format: 'Защита аналитических записок',
+      examiner: 'Чл.-корр. Романов Б.С.',
+      commissionMembers: 'Проф. Воронов А.Н., посол Ильин К.В.',
+      date: '15 декабря 2026',
+      rawDate: '2026-12-15',
+      time: '11:00 – 15:00',
+      room: 'Зал Ученого совета',
+      consultation: '13 декабря в 16:00 (Зал совета)',
+      credits: 6,
+      status: 'scheduled',
+      changeNote: null,
+      retakeDate: null,
+      isDebt: false,
+      originalSnapshot: {
+        date: '15 декабря 2026',
+        rawDate: '2026-12-15',
+        time: '11:00 – 15:00',
+        room: 'Зал Ученого совета',
+        consultation: '13 декабря в 16:00 (Зал совета)',
+        examiner: 'Чл.-корр. Романов Б.С.',
+        commissionMembers: 'Проф. Воронов А.Н., посол Ильин К.В.',
+        status: 'scheduled',
+        changeNote: null,
+      },
+    },
+    {
+      id: '66666666-6666-4666-8666-666666666604',
+      code: 'ILAW-101',
+      groupId: groups[3].id,
+      subject: 'История государства и права зарубежных стран',
+      format: 'Устный экзамен по билетам',
+      examiner: 'Доц. Громов В.П.',
+      commissionMembers: 'Проф. Воронов А.Н.',
+      date: '17 декабря 2026',
+      rawDate: '2026-12-17',
+      time: '09:30 – 13:00',
+      room: 'Ауд. 112',
+      consultation: '15 декабря в 14:00 (ауд. 112)',
+      credits: 4,
+      status: 'scheduled',
+      changeNote: null,
+      retakeDate: null,
+      isDebt: false,
+      originalSnapshot: {
+        date: '17 декабря 2026',
+        rawDate: '2026-12-17',
+        time: '09:30 – 13:00',
+        room: 'Ауд. 112',
+        consultation: '15 декабря в 14:00 (ауд. 112)',
+        examiner: 'Доц. Громов В.П.',
+        commissionMembers: 'Проф. Воронов А.Н.',
+        status: 'scheduled',
+        changeNote: null,
+      },
     },
   ];
+
+  function safeUserFields(u: (typeof users)[number]) {
+    return {
+      id: u.id,
+      email: u.email,
+      fullName: u.fullName,
+      role: u.role,
+    };
+  }
 
   function hydrateStudentProfile(
     sp: (typeof studentProfiles)[number],
@@ -898,7 +1234,7 @@ async function createFallbackStore() {
       }));
     const usr = users.find((u) => u.id === sp.userId)!;
     const res: Record<string, unknown> = { ...sp };
-    if (include?.user) res.user = usr;
+    if (include?.user) res.user = safeUserFields(usr);
     if (include?.faculty) res.faculty = faculty;
     if (include?.program) res.program = prog;
     if (include?.grades) res.grades = spGrades;
@@ -915,10 +1251,13 @@ async function createFallbackStore() {
     const rt = requestTypes.find((t) => t.code === r.typeCode)!;
     const hist = histories
       .filter((h) => h.requestId === r.id)
-      .map((h) => ({
-        ...h,
-        actor: h.actorId ? (users.find((u) => u.id === h.actorId) ?? null) : null,
-      }));
+      .map((h) => {
+        const actorUser = h.actorId ? (users.find((u) => u.id === h.actorId) ?? null) : null;
+        return {
+          ...h,
+          actor: actorUser ? { fullName: actorUser.fullName } : null,
+        };
+      });
     const stu = users.find((u) => u.id === r.studentId)!;
     const sp = studentProfiles.find((p) => p.userId === stu.id);
     const grp = sp ? groups.find((g) => g.id === sp.groupId) : null;
@@ -927,7 +1266,12 @@ async function createFallbackStore() {
       ...(include?.requestType ? { requestType: rt } : {}),
       ...(include?.history ? { history: hist } : {}),
       ...(include?.student
-        ? { student: { ...stu, studentProfile: sp ? { ...sp, group: grp } : null } }
+        ? {
+            student: {
+              ...safeUserFields(stu),
+              studentProfile: sp ? { ...sp, group: grp } : null,
+            },
+          }
         : {}),
     };
   }
@@ -942,7 +1286,7 @@ async function createFallbackStore() {
     };
   }
 
-  return {
+  const client = {
     user: {
       findUnique: async ({
         where,
@@ -969,12 +1313,15 @@ async function createFallbackStore() {
               : undefined;
           out.requests = requests
             .filter((r) => r.studentId === u.id)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             .map((r) => hydrateRequest(r, reqInc));
         }
         return out;
       },
       findMany: async ({ where }: { where?: { role?: string } } = {}) => {
-        return users.filter((u) => !where?.role || u.role === where.role);
+        return users
+          .filter((u) => !where?.role || u.role === where.role)
+          .map((u) => safeUserFields(u));
       },
       count: async () => users.length,
     },
@@ -990,22 +1337,27 @@ async function createFallbackStore() {
         return sp ? hydrateStudentProfile(sp, include) : null;
       },
       findMany: async ({ include }: { include?: Record<string, unknown> } = {}) => {
-        return studentProfiles.map((sp) => hydrateStudentProfile(sp, include));
+        return [...studentProfiles]
+          .sort((a, b) => a.studentNumber.localeCompare(b.studentNumber))
+          .map((sp) => hydrateStudentProfile(sp, include));
       },
     },
     group: {
       findMany: async () => {
-        return groups.map((g) => ({
-          ...g,
-          program: { ...programs.find((p) => p.id === g.programId)!, faculty },
-          studentProfiles: studentProfiles
-            .filter((sp) => sp.groupId === g.id)
-            .map((sp) => hydrateStudentProfile(sp, { user: true, grades: true })),
-        }));
+        return [...groups]
+          .sort((a, b) => a.code.localeCompare(b.code))
+          .map((g) => ({
+            ...g,
+            program: { ...programs.find((p) => p.id === g.programId)!, faculty },
+            studentProfiles: studentProfiles
+              .filter((sp) => sp.groupId === g.id)
+              .map((sp) => hydrateStudentProfile(sp, { user: true, grades: true })),
+          }));
       },
       findFirst: async ({ where }: { where?: { code?: string } } = {}) => {
         const normalized = normalizeGroupCode(where?.code);
-        const g = normalized ? groups.find((x) => x.code === normalized) : groups[0];
+        const sorted = [...groups].sort((a, b) => a.code.localeCompare(b.code));
+        const g = normalized ? sorted.find((x) => x.code === normalized) : sorted[0];
         if (!g) return null;
         return {
           ...g,
@@ -1039,6 +1391,7 @@ async function createFallbackStore() {
             }
             return true;
           })
+          .sort((a, b) => a.rawDate.localeCompare(b.rawDate))
           .map((ex) => ({ ...ex, group: groups.find((g) => g.id === ex.groupId) ?? null }));
       },
       findFirst: async ({ where }: { where: { id?: string; code?: string } }) => {
@@ -1068,6 +1421,9 @@ async function createFallbackStore() {
       },
       update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
         const idx = exams.findIndex((x) => x.id === where.id);
+        if (idx === -1) {
+          throw Object.assign(new Error('Exam not found'), { code: 'P2025' });
+        }
         Object.assign(exams[idx], data);
         return { ...exams[idx], group: groups.find((g) => g.id === exams[idx].groupId) ?? null };
       },
@@ -1076,31 +1432,38 @@ async function createFallbackStore() {
       findMany: async ({
         where,
       }: {
-        where: { groupId: string; date?: { gte?: Date; lte?: Date } };
+        where: { groupId?: string; date?: { gte?: Date; lte?: Date } };
       }) => {
         return scheduleEntries
           .filter((s) => {
-            if (s.groupId !== where.groupId) return false;
+            if (where.groupId && s.groupId !== where.groupId) return false;
             if (where.date?.gte && s.date < new Date(where.date.gte.toISOString().split('T')[0]))
               return false;
             if (where.date?.lte && s.date > new Date(where.date.lte.toISOString().split('T')[0]))
               return false;
             return true;
           })
+          .sort(
+            (a, b) => a.date.getTime() - b.date.getTime() || a.startTime.localeCompare(b.startTime)
+          )
           .map(hydrateSchedule);
       },
       findFirst: async ({
         where,
       }: {
-        where: { groupId: string; date?: { gt?: Date }; status?: { not?: string } };
+        where: { groupId?: string; date?: { gt?: Date }; status?: { not?: string } };
       }) => {
-        const found = scheduleEntries.find(
-          (s) =>
-            s.groupId === where.groupId &&
-            (!where.status?.not || s.status !== where.status.not) &&
-            (!where.date?.gt || s.date > where.date.gt)
-        );
-        return found ? hydrateSchedule(found) : null;
+        const matching = scheduleEntries
+          .filter(
+            (s) =>
+              (!where.groupId || s.groupId === where.groupId) &&
+              (!where.status?.not || s.status !== where.status.not) &&
+              (!where.date?.gt || s.date > where.date.gt)
+          )
+          .sort(
+            (a, b) => a.date.getTime() - b.date.getTime() || a.startTime.localeCompare(b.startTime)
+          );
+        return matching[0] ? hydrateSchedule(matching[0]) : null;
       },
       findUnique: async ({ where }: { where: { id: string } }) => {
         const found = scheduleEntries.find((s) => s.id === where.id);
@@ -1117,6 +1480,9 @@ async function createFallbackStore() {
       },
       update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
         const idx = scheduleEntries.findIndex((s) => s.id === where.id);
+        if (idx === -1) {
+          throw Object.assign(new Error('Schedule entry not found'), { code: 'P2025' });
+        }
         Object.assign(scheduleEntries[idx], data);
         return hydrateSchedule(scheduleEntries[idx]);
       },
@@ -1132,7 +1498,8 @@ async function createFallbackStore() {
           .map((g) => ({
             ...g,
             subject: subjects.find((s) => s.id === g.subjectId)!,
-          }));
+          }))
+          .sort((a, b) => a.semester - b.semester || a.subject.name.localeCompare(b.subject.name));
       },
     },
     requestType: {
@@ -1237,7 +1604,10 @@ async function createFallbackStore() {
         };
         include?: Record<string, unknown>;
       }) => {
-        const r = requests.find((x) => x.id === where.id)!;
+        const r = requests.find((x) => x.id === where.id);
+        if (!r) {
+          throw Object.assign(new Error('Request not found'), { code: 'P2025' });
+        }
         r.status = data.status;
         r.updatedAt = new Date();
         for (const h of data.history?.create ?? []) {
@@ -1282,7 +1652,10 @@ async function createFallbackStore() {
       findFirst: async ({ where }: { where: { id: string; userId: string } }) =>
         notifications.find((n) => n.id === where.id && n.userId === where.userId) ?? null,
       update: async ({ where, data }: { where: { id: string }; data: { read: boolean } }) => {
-        const n = notifications.find((x) => x.id === where.id)!;
+        const n = notifications.find((x) => x.id === where.id);
+        if (!n) {
+          throw Object.assign(new Error('Notification not found'), { code: 'P2025' });
+        }
         n.read = data.read;
         return n;
       },
@@ -1305,9 +1678,22 @@ async function createFallbackStore() {
       create: async ({
         data,
       }: {
-        data: { userId: string; kind: string; title: string; body: string; link: string | null };
+        data: {
+          userId: string;
+          kind: string;
+          title: string;
+          body: string;
+          priority?: string;
+          link: string | null;
+        };
       }) => {
-        const created = { id: crypto.randomUUID(), ...data, read: false, createdAt: new Date() };
+        const created = {
+          id: crypto.randomUUID(),
+          priority: data.priority ?? 'normal',
+          ...data,
+          read: false,
+          createdAt: new Date(),
+        };
         notifications.unshift(created);
         return created;
       },
@@ -1319,12 +1705,14 @@ async function createFallbackStore() {
           kind: string;
           title: string;
           body: string;
+          priority?: string;
           link: string | null;
         }>;
       }) => {
         for (const d of data) {
           notifications.unshift({
             id: crypto.randomUUID(),
+            priority: d.priority ?? 'normal',
             ...d,
             read: false,
             createdAt: new Date(),
@@ -1365,13 +1753,19 @@ async function createFallbackStore() {
       },
       delete: async ({ where }: { where: { id: string } }) => {
         const idx = announcements.findIndex((a) => a.id === where.id);
-        if (idx === -1) throw new Error('Not found');
+        if (idx === -1) {
+          throw Object.assign(new Error('Not found'), { code: 'P2025' });
+        }
         const [removed] = announcements.splice(idx, 1);
         return removed;
       },
     },
-    $transaction: async <T>(ops: Array<Promise<T>>) => Promise.all(ops),
+    $transaction: async <T>(
+      arg: Array<Promise<T>> | ((tx: PrismaClient) => Promise<T>)
+    ): Promise<T | T[]> => (typeof arg === 'function' ? arg(client) : Promise.all(arg)),
   } as unknown as PrismaClient;
+
+  return client;
 }
 
 let cachedFallbackPromise: Promise<PrismaClient> | null = null;

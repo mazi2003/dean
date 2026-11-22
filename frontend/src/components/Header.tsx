@@ -89,9 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Term indicator */}
             <div className="hidden md:flex items-center space-x-1.5 text-[#166534] dark:text-[#45d320] font-sans text-[11px] font-medium bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full">
               <CalendarDays className="w-3 h-3 text-[#166534] dark:text-[#45d320]" />
-              <span>
-                {lang === 'ru' ? 'Весенний семестр 2026 • 8-я неделя' : 'Spring Term 2026 • Week 8'}
-              </span>
+              <span>{lang === 'ru' ? 'Осенний семестр 2026/2027' : 'Fall Term 2026/2027'}</span>
             </div>
 
             <span className="hidden md:inline text-[#e2e4e8] dark:text-[#334155]">•</span>
@@ -112,8 +110,8 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={toggleAccessibilityMode}
               className={`p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-colors cursor-pointer border ${
                 accessibilityMode
-                  ? 'bg-[#33b712] border-[#33b712] text-white'
-                  : 'bg-[#f6f6f9] dark:bg-[#1e2533] text-[#161821] dark:text-[#cbd5e1] hover:bg-[#ebeef3] border-[#e2e4e8] dark:border-[#273142]'
+                  ? 'bg-[#166534] border-[#166534] text-white'
+                  : 'bg-[#f6f6f9] dark:bg-[#1e2533] text-[#161821] dark:text-[#cbd5e1] hover:bg-[#ebeef3] dark:hover:bg-[#273142] border-[#e2e4e8] dark:border-[#273142]'
               }`}
               title={
                 lang === 'ru'
@@ -154,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* PWA Offline-First Mode Status & Simulator Button */}
             <button
               onClick={() => setSimulateOffline(!simulateOffline)}
-              className={`hidden lg:flex items-center space-x-1.5 text-[11px] font-sans px-2.5 py-1 min-h-[36px] rounded-full transition-all cursor-pointer border ${
+              className={`hidden lg:flex items-center space-x-1.5 text-[11px] font-sans px-2.5 py-1 min-h-[44px] rounded-full transition-all cursor-pointer border ${
                 isActuallyOffline
                   ? 'bg-[#fef3c7] dark:bg-[#451a03] text-[#92400e] dark:text-[#fde68a] border-[#f59e0b]'
                   : 'bg-[#ebfbee] dark:bg-[#1e2d24] text-[#166534] dark:text-[#45d320] border-[#33b712]/30 hover:border-[#33b712]'
@@ -172,7 +170,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </>
               ) : (
                 <>
-                  <Wifi className="w-3 h-3 text-[#33b712]" />
+                  <Wifi className="w-3 h-3 text-[#166534] dark:text-[#45d320]" />
                   <span>{lang === 'ru' ? 'Офлайн-кэш готов' : 'Offline Ready'}</span>
                 </>
               )}
@@ -197,7 +195,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <button
               onClick={() => setSimulateOffline(false)}
-              className="text-[10px] font-sans font-bold px-2.5 py-1 rounded-full bg-white/20 hover:bg-white/30 text-white cursor-pointer flex-shrink-0"
+              className="text-[10px] font-sans font-bold px-3 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white cursor-pointer flex-shrink-0"
             >
               {simulateOffline
                 ? tr(lang, 'Выключить тест', 'Exit Demo')
@@ -213,20 +211,21 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
           {/* University Brand Lockup */}
-          <div
-            className="flex items-center space-x-2.5 sm:space-x-3.5 cursor-pointer group min-w-0 flex-1"
+          <button
+            type="button"
+            className="flex items-center space-x-2.5 sm:space-x-3.5 cursor-pointer group min-w-0 flex-1 min-h-[44px] text-left"
             onClick={() => setActiveTab(isStaff ? 'staff_requests' : 'today')}
           >
             <div className="relative flex-shrink-0">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#161821] dark:bg-[#11141c] border border-[#33b712]/40 flex items-center justify-center p-1 sm:p-1.5 shadow-xs group-hover:border-[#33b712] transition-all">
-                <UniversityEmblem size={36} variant="full" />
+                <UniversityEmblem size={36} variant="full" tone="dark" />
               </div>
               <span className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-[#33b712] ring-2 ring-white dark:ring-[#171c26]" />
             </div>
 
             <div className="hidden sm:block min-w-0">
               <div className="flex items-center space-x-1.5 sm:space-x-2">
-                <span className="font-heading font-bold text-base sm:text-2xl tracking-tight text-[#161821] dark:text-[#ffffff] group-hover:text-[#166534] dark:text-[#45d320] transition-colors leading-none whitespace-nowrap">
+                <span className="font-heading font-bold text-base sm:text-2xl tracking-tight text-[#161821] dark:text-[#ffffff] group-hover:text-[#166534] dark:group-hover:text-[#45d320] transition-colors leading-none whitespace-nowrap">
                   DemoTech
                 </span>
                 <span className="inline-block text-[10px] font-heading font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full border border-[#33b712]/30 text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] flex-shrink-0">
@@ -245,7 +244,7 @@ export const Header: React.FC<HeaderProps> = ({
                   : "Digital Dean's Office • Student Portal"}
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Academic Actions & Identity Pill Bar */}
           <div className="flex items-center space-x-1 sm:space-x-2.5 flex-shrink-0">
@@ -256,10 +255,8 @@ export const Header: React.FC<HeaderProps> = ({
               title={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
               aria-label={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
             >
-              <Sparkles className="w-3.5 h-3.5 text-white" />
-              <span className="hidden sm:inline">
-                {lang === 'ru' ? 'Консультант' : 'Copilot'}
-              </span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{lang === 'ru' ? 'Консультант' : 'Copilot'}</span>
             </button>
 
             {/* Digital Student ID Card (students only) */}
@@ -319,7 +316,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={logout}
                 title={lang === 'ru' ? 'Выйти из личного кабинета' : 'Sign out'}
-                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center ml-1 text-[#475569] hover:text-[#be123c] dark:text-[#fecdd3] rounded-full hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] transition-colors cursor-pointer"
+                className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center ml-1 text-[#475569] dark:text-[#94a3b8] hover:text-[#be123c] dark:hover:text-[#fecdd3] rounded-full hover:bg-[#f6f6f9] dark:hover:bg-[#1e2533] transition-colors cursor-pointer"
                 aria-label="Logout"
               >
                 <LogOut className="w-5 h-5" />

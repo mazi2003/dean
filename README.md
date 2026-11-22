@@ -119,10 +119,10 @@ npm run test:e2e
 npm run test:load
 
 # Или запуск по модулям:
-# Backend (typecheck + build + 32 unit/IDOR/RBAC/performance-headers теста)
+# Backend (typecheck + build + 44 unit/IDOR/RBAC/transaction/performance-headers теста)
 cd backend && npm run typecheck && npm run build && npm test
 
-# Frontend (oxlint + ESLint + 14 Vitest тестов + production bundle)
+# Frontend (oxlint + ESLint + 22 Vitest теста + production bundle)
 cd frontend && npm run lint && npm test && npm run build
 
 # E2E на реальном стеке PostgreSQL + Fastify + Vite (42 теста: Desktop 1280x800 + Mobile 360x740 + Axe WCAG + Security Audit)
@@ -134,19 +134,20 @@ cd e2e && npx playwright test
 ## 📁 Структура репозитория
 
 ```
-├── contract/             # Спецификация OpenAPI 3.0.3 и правила сида (openapi.yaml, seed-spec.md)
-├── database/             # Схема Prisma, SQL-миграции, Dockerfile миграций, seed.ts и database/README.md
-├── backend/              # Сервер Fastify v5 (auth, profile, schedule, exams, grades, requests, staff, assistant) и backend/README.md
-├── frontend/             # Клиентское PWA-приложение React 19 + Vite 8 + Tailwind v4 и frontend/README.md
-├── deploy/               # Скрипты автоматического развертывания на VPS (bootstrap-vps.sh, backup.sh, healthcheck.sh) и инструкции Vercel
-├── scripts/              # Локальный полный стек без Docker (local-stack.mjs, generate-submission-pdf.mjs, measure-web-vitals.mjs, audit-responsive.mjs)
-├── e2e/                  # Сквозные тесты Playwright (42 теста Desktop/Mobile, WCAG Axe, RBAC/IDOR, load-smoke.mjs) и e2e/README.md
-├── docs/                 # Документация для жюри: submission.md/.pdf, architecture.md, process-log.md, test-accounts.md, test-report.md, performance-report.md
-├── prompts/              # Промпты мультиагентной разработки (00-architect .. 05-docs-submission, survey-questions)
-├── .github/workflows/    # CI-пайплайн GitHub Actions (ci.yml)
-├── AGENTS.md             # Правила безопасности и архитектурные ограничения
-├── PROJECT_MAP.md        # Архитектурная карта проекта
-└── LICENSE               # Открытая лицензия MIT с конкурсным дисклеймером
+├── contract/                 # Спецификация OpenAPI 3.0.3 и правила сида (openapi.yaml, seed-spec.md)
+├── database/                 # Схема Prisma, SQL-миграции, Dockerfile миграций, seed.ts и database/README.md
+├── backend/                  # Сервер Fastify v5 (auth, profile, schedule, exams, grades, requests, staff, assistant) и backend/README.md
+├── frontend/                 # Клиентское PWA-приложение React 19 + Vite 8 + Tailwind v4 и frontend/README.md
+├── deploy/                   # Скрипты автоматического развертывания на VPS (bootstrap-vps.sh, backup.sh, healthcheck.sh) и инструкции Vercel
+├── scripts/                  # Локальный полный стек без Docker (local-stack.mjs, generate-submission-pdf.mjs, measure-web-vitals.mjs, audit-responsive.mjs)
+├── e2e/                      # Сквозные тесты Playwright (42 теста Desktop/Mobile, WCAG Axe, RBAC/IDOR, load-smoke.mjs) и e2e/README.md
+├── docs/                     # Документация для жюри: submission.md/.pdf, competition-audit.md, architecture.md, process-log.md, test-accounts.md, test-report.md, performance-report.md
+├── prompts/                  # Промпты мультиагентной разработки (00-architect .. 05-docs-submission, survey-questions)
+├── .github/workflows/        # CI-пайплайн GitHub Actions (ci.yml)
+├── AGENTS.md                 # Правила безопасности и архитектурные ограничения
+├── PROJECT_MAP.md            # Архитектурная карта проекта
+├── THIRD_PARTY_LICENSES.md   # Реестр открытых лицензий сторонних библиотек, шрифтов и иконок (MIT, ISC, Apache-2.0, OFL-1.1)
+└── LICENSE                   # Открытая лицензия MIT с конкурсным дисклеймером
 ```
 
 ---

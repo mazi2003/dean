@@ -56,10 +56,10 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
         className="relative w-full max-w-2xl bg-white dark:bg-[#171c26] rounded-xl shadow-2xl overflow-hidden border border-[#e2e4e8] dark:border-[#273142] flex flex-col my-auto"
       >
         {/* Top Control Bar */}
-        <div className="px-5 py-3.5 bg-[#161821] text-[#FFFFFF] border-b border-[#45d320]/30 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-            <span className="font-semibold text-sm text-[#FFFFFF]">
+        <div className="px-4 sm:px-5 py-3.5 bg-[#161821] text-[#FFFFFF] border-b border-[#45d320]/30 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center space-x-2 min-w-0">
+            <ShieldCheck className="w-4 h-4 text-[#45d320] flex-shrink-0" />
+            <span className="font-semibold text-sm text-[#FFFFFF] truncate">
               {tr(
                 lang,
                 'Макет электронной справки (иллюстрация)',
@@ -67,24 +67,28 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
               )}
             </span>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 shrink-0">
             <button
+              type="button"
               onClick={handlePrint}
-              className="px-3 py-1.5 rounded-md bg-[#11141c] hover:bg-[#161821] border border-[#45d320]/40 text-[#FFFFFF] text-xs font-sans font-medium flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+              className="px-3 py-1.5 min-w-[44px] min-h-[44px] rounded-md bg-[#11141c] hover:bg-[#161821] border border-[#45d320]/40 text-[#FFFFFF] text-xs font-sans font-medium flex items-center justify-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
               title={tr(lang, 'Распечатать макет', 'Print preview')}
+              aria-label={tr(lang, 'Печать', 'Print')}
             >
-              <Printer className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
+              <Printer className="w-3.5 h-3.5 text-[#45d320]" />
               <span className="hidden sm:inline">{tr(lang, 'Печать', 'Print')}</span>
             </button>
             <button
+              type="button"
               onClick={handlePrint}
-              className="px-3 py-1.5 rounded-md bg-[#33b712] hover:bg-[#45d320] text-[#161821] text-xs font-sans font-bold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer border border-[#45d320]/30"
+              className="px-3 py-1.5 min-w-[44px] min-h-[44px] rounded-md bg-[#33b712] hover:bg-[#45d320] text-[#161821] text-xs font-sans font-bold flex items-center justify-center space-x-1.5 shadow-xs transition-colors cursor-pointer border border-[#45d320]/30"
               title={tr(lang, 'Сохранить макет в PDF', 'Save preview as PDF')}
             >
-              <Download className="w-3.5 h-3.5 text-[#FFFFFF]" />
+              <Download className="w-3.5 h-3.5 text-[#161821]" />
               <span>PDF</span>
             </button>
             <button
+              type="button"
               onClick={onClose}
               className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md text-[#FFFFFF]/75 hover:text-white hover:bg-[#11141c] transition-colors cursor-pointer"
               aria-label={tr(lang, 'Закрыть', 'Close')}
@@ -108,33 +112,24 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
           {/* Official Letterhead */}
           <div className="text-center border-b-2 border-[#161821] pb-4 space-y-1.5">
             <div className="flex items-center justify-center space-x-2 mb-2">
-              <UniversityEmblem size={44} />
+              <UniversityEmblem size={44} tone="light" />
             </div>
             <p className="font-sans text-[10px] uppercase tracking-widest text-[#475569] font-semibold">
               {tr(
                 lang,
-                'Министерство науки и высшего образования Российской Федерации',
-                'Ministry of Science and Higher Education'
+                'Учебный портал • Конкурсный концепт',
+                'Digital Dean Portal • Competition Concept'
               )}
             </p>
-            <h2 className="text-base sm:text-lg font-semibold tracking-wide uppercase text-[#161821]">
-              {tr(
-                lang,
-                'ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ АВТОНОМНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ',
-                'HIGHER EDUCATION INSTITUTION'
-              )}
-              <br />«{UNIVERSITY_INFO.name.toUpperCase()}»
-            </h2>
+            <p className="text-base sm:text-lg font-semibold tracking-wide uppercase text-[#161821]">
+              {lang === 'ru' ? UNIVERSITY_INFO.fullTitleRu : UNIVERSITY_INFO.fullTitleEn}
+            </p>
             <p className="text-[11px] font-sans text-[#475569]">
               {localizeText(UNIVERSITY_INFO.faculty, lang)}
             </p>
             <p className="text-[10px] font-sans text-[#475569]">
-              {tr(
-                lang,
-                'г. Москва, ул. Академика Сахарова, д. 12',
-                '12 Akademika Sakharova St., Moscow'
-              )}{' '}
-              • {tr(lang, 'Тел:', 'Tel:')} {UNIVERSITY_INFO.deanOfficePhone} • E-mail:{' '}
+              {lang === 'ru' ? UNIVERSITY_INFO.addressRu : UNIVERSITY_INFO.addressEn} •{' '}
+              {tr(lang, 'Тел:', 'Tel:')} {UNIVERSITY_INFO.deanOfficePhone} • E-mail:{' '}
               {UNIVERSITY_INFO.deanOfficeEmail}
             </p>
           </div>
@@ -169,9 +164,9 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
 
           {/* Certificate Title */}
           <div className="text-center py-3">
-            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-[#161821]">
+            <h2 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-[#161821]">
               {localizeText(request.typeTitle, lang)}
-            </h1>
+            </h2>
           </div>
 
           {/* Main Body Text */}
@@ -182,15 +177,12 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
                   Дана настоящая <strong>{request.studentName || 'Студенту'}</strong> в том, что
                   он(а) действительно является студентом{' '}
                   <strong>{studentYear} курса очной формы обучения</strong> факультета «
-                  {UNIVERSITY_INFO.faculty}» федерального государственного автономного
-                  образовательного учреждения высшего образования «{UNIVERSITY_INFO.name}»,
-                  обучающимся по направлению подготовки бакалавриата «{studentProgram}».
+                  {UNIVERSITY_INFO.faculty}» вымышленного учебного заведения «{UNIVERSITY_INFO.name}
+                  », обучающимся по направлению подготовки бакалавриата «{studentProgram}».
                 </p>
                 <p>
-                  Обучение осуществляется на основании лицензии на право осуществления
-                  образовательной деятельности № 2841 от 14.04.2021 г. и свидетельства о
-                  государственной аккредитации образовательной деятельности № 3105 от 19.05.2021 г.,
-                  выданных Федеральной службой по надзору в сфере образования и науки.
+                  Обучение осуществляется в рамках учебного плана Осеннего семестра 2026/2027
+                  учебного года (конкурсный демонстрационный макет, данные вымышлены).
                 </p>
                 <p>
                   Справка выдана для предъявления:{' '}
@@ -207,12 +199,12 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
                       : 'Student'}
                   </strong>{' '}
                   is a full-time <strong>Year {studentYear} undergraduate student</strong> at the{' '}
-                  {localizeText(UNIVERSITY_INFO.faculty, 'en')} of {UNIVERSITY_INFO.name}, enrolled
-                  in the Bachelor&apos;s degree program in {studentProgram}.
+                  {localizeText(UNIVERSITY_INFO.faculty, 'en')} of {UNIVERSITY_INFO.nameEn},
+                  enrolled in the Bachelor&apos;s degree program in {studentProgram}.
                 </p>
                 <p>
-                  Studies are conducted under educational license No. 2841 dated April 14, 2021 and
-                  state accreditation certificate No. 3105 dated May 19, 2021.
+                  Studies are conducted under the Fall Term 2026/2027 curriculum (fictional
+                  competition prototype concept).
                 </p>
                 <p>
                   Issued for presentation to: <strong>{reqPurpose || 'where requested'}</strong>.

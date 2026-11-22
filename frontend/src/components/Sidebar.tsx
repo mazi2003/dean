@@ -139,9 +139,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           <div className="overflow-hidden flex-1 min-w-0">
-            <h4 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] truncate">
+            <p className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] truncate">
               {localizePersonName(user?.fullName, lang)}
-            </h4>
+            </p>
             <p className="text-[11px] font-sans text-[#166534] dark:text-[#45d320] font-semibold truncate mt-0.5">
               {isStaff
                 ? lang === 'ru'
@@ -165,7 +165,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </span>
             <div className="flex items-center space-x-1.5 font-sans font-bold text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full border border-[#33b712]/30">
               <Award className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
-              <span>{profile?.gpa ? profile.gpa.toFixed(2) : '4.80'}</span>
+              <span>{typeof profile?.gpa === 'number' ? profile.gpa.toFixed(2) : '—'}</span>
             </div>
           </div>
         )}
@@ -196,8 +196,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Icon
                   className={`w-4 h-4 flex-shrink-0 transition-colors ${
                     isActive
-                      ? 'text-[#166534] dark:text-[#45d320]'
-                      : 'text-[#475569] dark:text-[#94a3b8] group-hover:text-[#166534] dark:text-[#45d320]'
+                      ? 'text-[#45d320] dark:text-[#166534]'
+                      : 'text-[#475569] dark:text-[#94a3b8] group-hover:text-[#166534] dark:group-hover:text-[#45d320]'
                   }`}
                 />
                 <div className="truncate">
@@ -215,15 +215,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {item.badge !== undefined && item.badge > 0 ? (
                 <span
                   className={`text-[10px] font-sans font-bold px-2 py-0.5 rounded-full ${
-                    isActive
-                      ? 'bg-[#166534] text-white'
-                      : 'bg-[#be123c] text-white'
+                    isActive ? 'bg-[#166534] text-white' : 'bg-[#be123c] text-white'
                   }`}
                 >
                   {item.badge}
                 </span>
               ) : isActive ? (
-                <ChevronRight className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#45d320] dark:text-[#166534] flex-shrink-0" />
               ) : null}
             </button>
           );
@@ -237,7 +235,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {!isStaff && (
           <button
             onClick={onOpenCard}
-            className="w-full flex items-center space-x-2.5 px-4 py-2.5 rounded-full text-xs font-heading font-semibold bg-white dark:bg-[#171c26] hover:bg-[#ebeef3] dark:hover:bg-[#1f293d] text-[#161821] dark:text-[#ffffff] transition-all border border-[#e2e4e8] dark:border-[#273142] cursor-pointer shadow-2xs"
+            className="w-full min-h-[44px] flex items-center space-x-2.5 px-4 py-2.5 rounded-full text-xs font-heading font-semibold bg-white dark:bg-[#171c26] hover:bg-[#ebeef3] dark:hover:bg-[#1f293d] text-[#161821] dark:text-[#ffffff] transition-all border border-[#e2e4e8] dark:border-[#273142] cursor-pointer shadow-2xs"
           >
             <IdCard className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
             <span>{lang === 'ru' ? 'Студенческий билет' : 'Digital Student Pass'}</span>
@@ -246,7 +244,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <button
           onClick={onOpenAssistant}
-          className="w-full flex items-center space-x-2.5 px-4 py-2.5 rounded-full text-xs font-heading font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] hover:bg-[#d8f7e6] text-[#161821] dark:text-[#ffffff] border border-[#33b712]/30 transition-all cursor-pointer shadow-2xs"
+          className="w-full min-h-[44px] flex items-center space-x-2.5 px-4 py-2.5 rounded-full text-xs font-heading font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] hover:bg-[#d8f7e6] dark:hover:bg-[#24382c] text-[#161821] dark:text-[#ffffff] border border-[#33b712]/30 transition-all cursor-pointer shadow-2xs"
         >
           <Sparkles className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
           <span>{lang === 'ru' ? 'Консультант деканата' : "Dean's AI Advisor"}</span>

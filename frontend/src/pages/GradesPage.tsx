@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { AlertOctagon, FileCheck2, Award, BookOpen, Layers } from 'lucide-react';
-import { GradesSummary } from '../types';
+import { ExamEntry, GradesSummary, ScheduleEntry } from '../types';
 import { api } from '../services/api';
 import {
   tr,
@@ -9,16 +9,33 @@ import {
   getGradeDescription,
   localizeText,
   localizePersonName,
+  Lang,
 } from '../utils/i18n';
-import { ScheduleCollisionAlert } from '../components/ScheduleCollisionAlert';
+import { ScheduleCollisionAlert, ConflictingClassInfo } from '../components/ScheduleCollisionAlert';
 
 interface GradesPageProps {
   onOpenMap?: (room?: string) => void;
 }
 
+function formatRetakeIsoDate(dateStr: string, lang: Lang): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const parsed = new Date(`${dateStr}T00:00:00`);
+    if (!Number.isNaN(parsed.getTime())) {
+      return new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(parsed);
+    }
+  }
+  return localizeText(dateStr, lang);
+}
+
 export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
   const { user, profile, lang } = useAuth();
   const [grades, setGrades] = useState<GradesSummary | null>(null);
+  const [exams, setExams] = useState<ExamEntry[]>([]);
+  const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
   const [selectedSemester, setSelectedSemester] = useState<number>(3);
   const [loading, setLoading] = useState(true);
 
@@ -26,8 +43,16 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
     let cancelled = false;
     const load = async () => {
       try {
-        const data = await api.getGrades(selectedSemester);
-        if (!cancelled) setGrades(data);
+        const [data, examsData, scheduleData] = await Promise.all([
+          api.getGrades(selectedSemester),
+          api.getExams(profile?.group).catch(() => [] as ExamEntry[]),
+          api.getSchedule().catch(() => [] as ScheduleEntry[]),
+        ]);
+        if (!cancelled) {
+          setGrades(data);
+          setExams(examsData);
+          setSchedule(scheduleData);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -38,7 +63,7 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
     return () => {
       cancelled = true;
     };
-  }, [user, selectedSemester]);
+  }, [user, profile?.group, selectedSemester]);
 
   if (loading || !grades) {
     return (
@@ -51,6 +76,48 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
 
   // Check if there is any debt/failed subject
   const failedSubject = grades.items.find((g) => g.creditStatus === 'failed');
+  const debtExam = failedSubject
+    ? exams.find(
+        (e) =>
+          e.isDebt ||
+          e.subject.toLowerCase().includes(failedSubject.subject.toLowerCase()) ||
+          failedSubject.subject.toLowerCase().includes(e.subject.toLowerCase())
+      )
+    : undefined;
+
+  const retakeDateDisplay = debtExam?.date
+    ? localizeText(debtExam.date, lang)
+    : failedSubject?.retakeDate
+      ? formatRetakeIsoDate(failedSubject.retakeDate, lang)
+      : '';
+  const retakeTimeDisplay = debtExam?.time || '';
+  const retakeRoomRaw = debtExam?.room || '';
+  const retakeRoomCode = retakeRoomRaw.replace(/^(?:ауд\.|Ауд\.)\s*/i, '').trim();
+
+  const conflictingScheduleEntry =
+    failedSubject && (debtExam || failedSubject.retakeDate)
+      ? schedule.find((s) => {
+          const sameDate =
+            (debtExam?.rawDate && s.date === debtExam.rawDate) ||
+            (failedSubject.retakeDate && s.date === failedSubject.retakeDate);
+          const sameStart =
+            debtExam?.time && s.start && debtExam.time.trim().startsWith(s.start.trim());
+          const subjectMatch =
+            s.subject &&
+            (s.subject.toLowerCase().includes('консультация') ||
+              s.subject.toLowerCase().includes(failedSubject.subject.toLowerCase()));
+          return (sameDate && sameStart) || subjectMatch;
+        })
+      : undefined;
+
+  const conflictingClass: ConflictingClassInfo | null = conflictingScheduleEntry
+    ? {
+        subject: conflictingScheduleEntry.subject,
+        time: `${conflictingScheduleEntry.start} – ${conflictingScheduleEntry.end}`,
+        room: conflictingScheduleEntry.room,
+        teacher: conflictingScheduleEntry.teacher,
+      }
+    : null;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
@@ -77,10 +144,11 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
         </div>
 
         {/* Semester Selector (Capsule Pills) */}
-        <div className="flex items-center space-x-1.5 bg-[#f6f6f9] dark:bg-[#121620] p-1.5 rounded-full border border-[#e2e4e8] dark:border-[#273142] text-xs font-heading font-medium">
+        <div className="flex flex-wrap sm:flex-nowrap justify-center items-center gap-1.5 bg-[#f6f6f9] dark:bg-[#121620] p-1.5 rounded-full border border-[#e2e4e8] dark:border-[#273142] text-xs font-heading font-medium">
           <button
+            type="button"
             onClick={() => setSelectedSemester(3)}
-            className={`px-4 py-1.5 rounded-full transition-all cursor-pointer ${
+            className={`px-4 py-1.5 min-h-[44px] rounded-full transition-all cursor-pointer ${
               selectedSemester === 3
                 ? 'bg-[#161821] dark:bg-white text-white dark:text-[#161821] font-semibold shadow-xs'
                 : 'text-[#4b5563] dark:text-[#cbd5e1] hover:text-[#161821] dark:hover:text-[#ffffff]'
@@ -89,8 +157,9 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
             {tr(lang, '3 семестр (текущий)', 'Semester 3 (Current)')}
           </button>
           <button
+            type="button"
             onClick={() => setSelectedSemester(2)}
-            className={`px-4 py-1.5 rounded-full transition-all cursor-pointer ${
+            className={`px-4 py-1.5 min-h-[44px] rounded-full transition-all cursor-pointer ${
               selectedSemester === 2
                 ? 'bg-[#161821] dark:bg-white text-white dark:text-[#161821] font-semibold shadow-xs'
                 : 'text-[#4b5563] dark:text-[#cbd5e1] hover:text-[#161821] dark:hover:text-[#ffffff]'
@@ -185,11 +254,11 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
           <div className="flex items-start space-x-3.5">
             <AlertOctagon className="w-5 h-5 text-[#be123c] dark:text-[#fecdd3] flex-shrink-0 mt-0.5" />
             <div className="flex-1 space-y-1">
-              <div className="flex items-center space-x-2">
-                <h3 className="font-heading font-semibold text-base text-[#be123c] dark:text-[#fecdd3]">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-heading font-semibold text-base text-[#be123c] dark:text-[#fecdd3]">
                   {tr(lang, 'Академическая задолженность:', 'Academic Debt:')}{' '}
                   {localizeText(failedSubject.subject, lang)}
-                </h3>
+                </h2>
                 <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
                   {tr(lang, 'НЕЗАЧЕТ', 'FAILED')}
                 </span>
@@ -201,33 +270,55 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
                   'Faculty board retake assessment has been scheduled. All pending lab coursework must be submitted for admission.'
                 )}
               </p>
-              <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-sans text-[#be123c] dark:text-[#fecdd3] font-semibold">
-                <span>
-                  {tr(lang, 'Дата пересдачи: 28 ноября 2026 г.', 'Retake Date: Nov 28, 2026')}
-                </span>
-                <span>•</span>
-                <span>{tr(lang, 'Время: 14:00', 'Time: 14:00')}</span>
-                <span>•</span>
-                <button
-                  type="button"
-                  onClick={() => onOpenMap?.('A-314')}
-                  className="underline decoration-dotted underline-offset-2 hover:opacity-80 cursor-pointer text-left"
-                  title={tr(lang, 'Показать аудиторию на карте кампуса', 'Show room on campus map')}
-                >
-                  {tr(lang, 'Аудитория: А-314', 'Room: A-314')}
-                </button>
-              </div>
+              {(retakeDateDisplay || retakeTimeDisplay || retakeRoomRaw) && (
+                <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-sans text-[#be123c] dark:text-[#fecdd3] font-semibold">
+                  {retakeDateDisplay && (
+                    <span>
+                      {tr(lang, 'Дата пересдачи:', 'Retake Date:')} {retakeDateDisplay}
+                    </span>
+                  )}
+                  {retakeTimeDisplay && (
+                    <>
+                      {retakeDateDisplay && <span>•</span>}
+                      <span>
+                        {tr(lang, 'Время:', 'Time:')} {retakeTimeDisplay}
+                      </span>
+                    </>
+                  )}
+                  {retakeRoomRaw && (
+                    <>
+                      {(retakeDateDisplay || retakeTimeDisplay) && <span>•</span>}
+                      <button
+                        type="button"
+                        onClick={() => onOpenMap?.(retakeRoomCode || retakeRoomRaw)}
+                        className="inline-flex items-center min-h-[44px] underline decoration-dotted underline-offset-2 hover:opacity-80 cursor-pointer text-left"
+                        title={tr(
+                          lang,
+                          'Показать аудиторию на карте кампуса',
+                          'Show room on campus map'
+                        )}
+                      >
+                        {tr(lang, 'Аудитория:', 'Room:')}{' '}
+                        {localizeText(retakeRoomCode || retakeRoomRaw, lang)}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Automatic Schedule Collision Detector */}
-              <div className="pt-2">
-                <ScheduleCollisionAlert
-                  retakeDate="28 ноября 2026 г."
-                  retakeTime="14:00"
-                  retakeSubject={failedSubject.subject}
-                  retakeRoom="А-314"
-                  onOpenMap={onOpenMap}
-                />
-              </div>
+              {conflictingClass && retakeDateDisplay && (
+                <div className="pt-2">
+                  <ScheduleCollisionAlert
+                    retakeDate={debtExam?.date || retakeDateDisplay}
+                    retakeTime={retakeTimeDisplay || conflictingClass.time}
+                    retakeSubject={failedSubject.subject}
+                    retakeRoom={retakeRoomCode || conflictingClass.room}
+                    conflictingClass={conflictingClass}
+                    onOpenMap={onOpenMap}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -240,13 +331,13 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
         <div className="p-5 bg-[#f6f6f9] dark:bg-[#121620] border-b border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <FileCheck2 className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-            <h3 className="font-heading font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
+            <h2 className="font-heading font-semibold text-xs sm:text-sm uppercase tracking-wider text-[#161821] dark:text-[#ffffff]">
               {tr(
                 lang,
                 `${selectedSemester} семестр • Дисциплины учебного плана`,
                 `Semester ${selectedSemester} • Curriculum Courses`
               )}
-            </h3>
+            </h2>
           </div>
           <span className="text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
             {tr(lang, `${grades.items.length} дисциплин`, `${grades.items.length} courses`)}

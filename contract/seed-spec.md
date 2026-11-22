@@ -43,11 +43,11 @@ Dates generated dynamically relative to UTC Monday of current week (`weekOffset`
 Each week includes: 3 `room_changed` (2 in `ДУ-101`, 1 in `ДУ-205`), 2 `cancelled` (1 in `ДУ-101`, 1 in `ДУ-205`), 1 `moved` (in `ДУ-101`).
 
 ## Exams (12 seeded entries)
-12 exams with `originalSnapshot`: 4 for `ДУ-101`, 4 for `ДУ-205` (including `STAT-102` debt retake for `'Статистика'` with `isDebt: true`, `rawDate: 2026-11-28`), 2 for `ДУ-301`, 2 for `ДУ-102`.
+12 exams with `originalSnapshot`: 4 for `ДУ-101`, 4 for `ДУ-205` (including `STAT-102` debt retake `'Математическая статистика и анализ данных'`, linked to Timur's failed `'Статистика'` grade, with `isDebt: true`, `rawDate: 2026-11-28`), 2 for `ДУ-301`, 2 for `ДУ-102`.
 
 ## Request types (6 types)
 `study_certificate`, `military_certificate`, `scholarship_application`, `academic_leave`, `transcript`, `dormitory_application`.
-Each defines `title`, `description`, `slaDays`, and `fields[]` items following `{ name, label, type ('text' | 'textarea' | 'select' | 'number' | 'date'), required, placeholder?, options? }`.
+Each defines `title`, `description`, `slaDays`, and `fields[]` items following `{ name, label, labelEn?, type ('text' | 'textarea' | 'select' | 'number' | 'date'), required, placeholder?, options?, optionsEn? }`.
 Status flow: `submitted` -> `in_review` -> (`needs_info` -> `in_review`) -> `ready` | `rejected`; student may cancel while `submitted` or `in_review`.
 
 ## Notifications / announcements

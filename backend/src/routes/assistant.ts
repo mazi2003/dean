@@ -47,9 +47,7 @@ function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContex
   const q = question.toLowerCase();
   const rawFirst = ctx.fullName.split(' ')[0];
   const firstName =
-    lang === 'en'
-      ? (FIRST_NAME_EN_MAP[rawFirst] ?? rawFirst ?? 'Student')
-      : (rawFirst || 'Студент');
+    lang === 'en' ? (FIRST_NAME_EN_MAP[rawFirst] ?? rawFirst ?? 'Student') : rawFirst || 'Студент';
 
   // 1. Academic debts / retakes
   if (

@@ -103,10 +103,13 @@ export interface RequestTypeField {
   name: string;
   key?: string;
   label: string;
+  labelEn?: string;
   type: 'text' | 'number' | 'select' | 'textarea' | 'date';
   required: boolean;
   options?: string[];
+  optionsEn?: string[];
   placeholder?: string;
+  placeholderEn?: string;
 }
 
 export interface RequestType {

@@ -142,7 +142,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
       budgetCount: budget,
       contractCount: contract,
       withDebtsCount: withDebts,
-      avgGpa: total > 0 ? (gpaSum / total).toFixed(2) : '4.35',
+      avgGpa: total > 0 ? (gpaSum / total).toFixed(2) : '—',
     };
   }, [students]);
 
@@ -201,12 +201,13 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           <div className="flex flex-wrap items-center gap-2.5 self-start">
             {onOpenAnnouncement && (
               <button
+                type="button"
                 onClick={() =>
                   onOpenAnnouncement(selectedGroup !== 'all' ? selectedGroup : undefined)
                 }
-                className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 shadow-xs cursor-pointer transition-colors"
+                className="inline-flex items-center space-x-2 px-4 py-2.5 min-h-[44px] rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 shadow-xs cursor-pointer transition-colors"
               >
-                <Megaphone className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+                <Megaphone className="w-4 h-4 text-[#45d320]" />
                 <span>
                   {selectedGroup !== 'all'
                     ? tr(lang, `Написать группе ${selectedGroup}`, `Message Group ${selectedGroup}`)
@@ -223,9 +224,10 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Groups */}
-        <div
+        <button
+          type="button"
           onClick={() => setSelectedGroup('all')}
-          className={`p-4 rounded-xl bg-white dark:bg-[#171c26] border shadow-xs transition-all cursor-pointer space-y-1 ${
+          className={`w-full text-left p-4 rounded-xl bg-white dark:bg-[#171c26] border shadow-xs transition-all cursor-pointer space-y-1 ${
             selectedGroup === 'all'
               ? 'border-[#161821] dark:border-[#33b712] ring-1 ring-[#161821]/20'
               : 'border-[#e2e4e8] dark:border-[#273142] hover:border-[#161821]'
@@ -238,20 +240,23 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             <span className="font-sans text-2xl font-bold text-[#161821] dark:text-[#45d320]">
               {groups.length}
             </span>
-            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'группы', 'groups')}</span>
+            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">
+              {tr(lang, 'группы', 'groups')}
+            </span>
           </div>
           <p className="text-[11px] text-[#475569] dark:text-[#CBD5E1]">
             {tr(lang, 'Бакалавриат & Магистратура', "Bachelor's & Master's")}
           </p>
-        </div>
+        </button>
 
         {/* Card 2: Total Students */}
-        <div
+        <button
+          type="button"
           onClick={() => {
             setSelectedGroup('all');
             setStatusFilter('all');
           }}
-          className="p-4 rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#161821] transition-all space-y-1"
+          className="w-full text-left p-4 rounded-xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#161821] transition-all space-y-1"
         >
           <span className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8] uppercase tracking-wider block">
             {tr(lang, 'Контингент студентов', 'Enrolled Students')}
@@ -260,7 +265,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             <span className="font-sans text-2xl font-bold text-[#161821] dark:text-[#45d320]">
               {totalStudents}
             </span>
-            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'в реестре', 'registered')}</span>
+            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">
+              {tr(lang, 'в реестре', 'registered')}
+            </span>
           </div>
           <p className="text-[11px] text-[#475569] dark:text-[#CBD5E1]">
             {tr(
@@ -269,12 +276,13 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
               `${budgetCount} state-funded • ${contractCount} tuition`
             )}
           </p>
-        </div>
+        </button>
 
         {/* Card 3: Debts */}
-        <div
+        <button
+          type="button"
           onClick={() => setStatusFilter(statusFilter === 'debts' ? 'all' : 'debts')}
-          className={`p-4 rounded-xl bg-white dark:bg-[#171c26] border shadow-xs transition-all cursor-pointer space-y-1 ${
+          className={`w-full text-left p-4 rounded-xl bg-white dark:bg-[#171c26] border shadow-xs transition-all cursor-pointer space-y-1 ${
             statusFilter === 'debts'
               ? 'border-rose-500 ring-1 ring-rose-500/20'
               : 'border-[#e2e4e8] dark:border-[#273142] hover:border-rose-400'
@@ -287,19 +295,22 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             <span className="font-sans text-2xl font-bold text-rose-600 dark:text-rose-400">
               {withDebtsCount}
             </span>
-            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'обучающихся', 'students')}</span>
+            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">
+              {tr(lang, 'обучающихся', 'students')}
+            </span>
           </div>
           <p className="text-[11px] text-rose-700 dark:text-rose-300 font-medium">
             {statusFilter === 'debts'
               ? tr(lang, '✓ Фильтр применен', '✓ Filter active')
               : tr(lang, 'Требуют ликвидации долгов', 'Require retake clearance')}
           </p>
-        </div>
+        </button>
 
         {/* Card 4: Average GPA */}
-        <div
+        <button
+          type="button"
           onClick={() => setStatusFilter(statusFilter === 'honors' ? 'all' : 'honors')}
-          className={`p-4 rounded-xl bg-white dark:bg-[#171c26] border shadow-xs transition-all cursor-pointer space-y-1 ${
+          className={`w-full text-left p-4 rounded-xl bg-white dark:bg-[#171c26] border shadow-xs transition-all cursor-pointer space-y-1 ${
             statusFilter === 'honors'
               ? 'border-emerald-500 ring-1 ring-emerald-500/20'
               : 'border-[#e2e4e8] dark:border-[#273142] hover:border-emerald-400'
@@ -312,14 +323,16 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             <span className="font-sans text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               {avgGpa}
             </span>
-            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">{tr(lang, 'из 5.0', 'out of 5.0')}</span>
+            <span className="text-xs text-[#475569] dark:text-[#94A3B8]">
+              {tr(lang, 'из 5.0', 'out of 5.0')}
+            </span>
           </div>
           <p className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">
             {statusFilter === 'honors'
               ? tr(lang, '✓ Только отличники', '✓ Honors only')
               : tr(lang, 'Показатель успеваемости', 'Academic performance index')}
           </p>
-        </div>
+        </button>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -342,8 +355,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
 
           {selectedGroup !== 'all' && (
             <button
+              type="button"
               onClick={() => setSelectedGroup('all')}
-              className="text-xs font-sans text-[#161821] dark:text-[#45d320] hover:underline flex items-center space-x-1 cursor-pointer"
+              className="text-xs font-sans text-[#161821] dark:text-[#45d320] hover:underline flex items-center space-x-1 min-h-[44px] px-2 cursor-pointer"
             >
               <span>{tr(lang, 'Показать все группы', 'Show All Groups')}</span>
               <X className="w-3.5 h-3.5" />
@@ -357,14 +371,17 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             return (
               <div
                 key={group.id}
-                onClick={() => setSelectedGroup(isSelected ? 'all' : group.code)}
-                className={`p-4 rounded-xl bg-white dark:bg-[#171c26] border transition-all cursor-pointer shadow-xs relative flex flex-col justify-between ${
+                className={`p-4 rounded-xl bg-white dark:bg-[#171c26] border transition-all shadow-xs relative flex flex-col justify-between ${
                   isSelected
                     ? 'border-[#161821] dark:border-[#33b712] ring-2 ring-[#161821]/20 dark:ring-[#33b712]/20 bg-[#f6f6f9] dark:bg-[#14263E]'
                     : 'border-[#e2e4e8] dark:border-[#273142] hover:border-[#161821] dark:hover:border-[#33b712]/60'
                 }`}
               >
-                <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup(isSelected ? 'all' : group.code)}
+                  className="w-full text-left space-y-3 cursor-pointer"
+                >
                   {/* Group Code & Year Badge */}
                   <div className="flex items-center justify-between">
                     <span className="font-sans text-base font-bold text-[#161821] dark:text-[#45d320] bg-[#161821]/10 dark:bg-[#33b712]/15 px-2.5 py-1 rounded-md">
@@ -443,31 +460,38 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       </div>
                     </div>
                   )}
-                </div>
+                </button>
 
                 {/* Card Action footer */}
                 <div className="mt-4 pt-3 border-t border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between text-xs font-sans">
-                  <span className="text-[11px] font-medium text-[#161821] dark:text-[#45d320] flex items-center space-x-1">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGroup(isSelected ? 'all' : group.code)}
+                    className="text-[11px] font-medium text-[#161821] dark:text-[#45d320] flex items-center space-x-1 min-h-[44px] cursor-pointer"
+                  >
                     <span>
                       {isSelected
                         ? tr(lang, '✓ Выбрана', '✓ Selected')
                         : tr(lang, 'Открыть список', 'Open Roster')}
                     </span>
                     <ChevronRight className="w-3.5 h-3.5" />
-                  </span>
+                  </button>
 
                   {onOpenAnnouncement && (
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenAnnouncement(group.code);
-                      }}
+                      type="button"
+                      onClick={() => onOpenAnnouncement(group.code)}
                       title={tr(
                         lang,
                         `Написать объявление группе ${group.code}`,
                         `Send announcement to group ${group.code}`
                       )}
-                      className="p-1.5 rounded-md text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#166534] dark:text-[#45d320] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] transition-colors cursor-pointer"
+                      aria-label={tr(
+                        lang,
+                        `Написать объявление группе ${group.code}`,
+                        `Send announcement to group ${group.code}`
+                      )}
+                      className="p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#45d320] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] transition-colors cursor-pointer"
                     >
                       <Megaphone className="w-4 h-4" />
                     </button>
@@ -517,9 +541,14 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
 
             {/* Search Input */}
             <div className="relative w-full sm:w-72">
-              <Search className="w-4 h-4 text-[#475569] dark:text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#475569] dark:text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
+                aria-label={tr(
+                  lang,
+                  'Поиск студентов по ФИО или номеру студбилета',
+                  'Search students by name or student ID'
+                )}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={tr(
@@ -527,13 +556,14 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                   'Поиск по ФИО, студбилету...',
                   'Search by name, student ID...'
                 )}
-                className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#161821] dark:text-[#FFFFFF] placeholder-[#667085] dark:placeholder-[#94A3B8] focus:outline-hidden focus:border-[#161821] dark:focus:border-[#33b712]"
+                className="w-full min-h-[44px] pl-9 pr-11 py-2 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#161821] dark:text-[#FFFFFF] placeholder-[#667085] dark:placeholder-[#94A3B8] focus:outline-hidden focus:border-[#161821] dark:focus:border-[#33b712]"
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
                   aria-label={tr(lang, 'Очистить поиск', 'Clear search')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF]"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -549,8 +579,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             </span>
 
             <button
+              type="button"
               onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
+              className={`px-3 py-1 min-h-[44px] rounded-md transition-colors cursor-pointer ${
                 statusFilter === 'all'
                   ? 'bg-[#161821] text-[#FFFFFF] font-medium'
                   : 'bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142]'
@@ -560,11 +591,12 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={() => setStatusFilter('debts')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer flex items-center space-x-1.5 ${
+              className={`px-3 py-1 min-h-[44px] rounded-md transition-colors cursor-pointer flex items-center space-x-1.5 ${
                 statusFilter === 'debts'
                   ? 'bg-rose-600 text-white font-medium'
-                  : 'bg-[#f6f6f9] dark:bg-[#121620] text-rose-700 dark:text-rose-400 hover:bg-rose-50 border border-rose-200 dark:border-rose-900/60'
+                  : 'bg-[#f6f6f9] dark:bg-[#121620] text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60'
               }`}
             >
               <AlertTriangle className="w-3 h-3" />
@@ -578,11 +610,12 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={() => setStatusFilter('honors')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer flex items-center space-x-1.5 ${
+              className={`px-3 py-1 min-h-[44px] rounded-md transition-colors cursor-pointer flex items-center space-x-1.5 ${
                 statusFilter === 'honors'
-                  ? 'bg-emerald-600 text-white font-medium'
-                  : 'bg-[#f6f6f9] dark:bg-[#121620] text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 border border-emerald-200 dark:border-emerald-900/60'
+                  ? 'bg-emerald-700 text-white font-medium'
+                  : 'bg-[#f6f6f9] dark:bg-[#121620] text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60'
               }`}
             >
               <Award className="w-3 h-3" />
@@ -590,8 +623,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={() => setStatusFilter('budget')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
+              className={`px-3 py-1 min-h-[44px] rounded-md transition-colors cursor-pointer ${
                 statusFilter === 'budget'
                   ? 'bg-[#161821] text-[#FFFFFF] font-medium'
                   : 'bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142]'
@@ -601,8 +635,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={() => setStatusFilter('contract')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
+              className={`px-3 py-1 min-h-[44px] rounded-md transition-colors cursor-pointer ${
                 statusFilter === 'contract'
                   ? 'bg-[#161821] text-[#FFFFFF] font-medium'
                   : 'bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142]'
@@ -612,8 +647,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={() => setStatusFilter('starosta')}
-              className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
+              className={`px-3 py-1 min-h-[44px] rounded-md transition-colors cursor-pointer ${
                 statusFilter === 'starosta'
                   ? 'bg-[#33b712] text-[#161821] font-bold'
                   : 'bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142]'
@@ -636,12 +672,13 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
               )}
             </p>
             <button
+              type="button"
               onClick={() => {
                 setSelectedGroup('all');
                 setStatusFilter('all');
                 setSearchQuery('');
               }}
-              className="text-[#161821] dark:text-[#45d320] font-semibold hover:underline"
+              className="text-[#161821] dark:text-[#45d320] font-semibold hover:underline inline-flex items-center min-h-[44px] px-3 cursor-pointer"
             >
               {tr(lang, 'Сбросить фильтры', 'Reset Filters')}
             </button>
@@ -653,11 +690,14 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
               return (
                 <div
                   key={student.id}
-                  onClick={() => handleOpenDossier(student.id)}
-                  className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#f6f6f9] dark:hover:bg-[#14263E]/60 transition-colors cursor-pointer group"
+                  className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#f6f6f9] dark:hover:bg-[#14263E]/60 transition-colors"
                 >
                   {/* Left: Avatar, Name, Group, Student ID */}
-                  <div className="flex items-center space-x-3.5">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenDossier(student.id)}
+                    className="flex items-center space-x-3.5 text-left cursor-pointer group min-w-0 flex-1"
+                  >
                     <div className="relative flex-shrink-0">
                       <img
                         src={resolveAvatarSrc(student.avatarUrl, student.fullName)}
@@ -671,9 +711,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                       )}
                     </div>
 
-                    <div className="space-y-0.5">
+                    <div className="space-y-0.5 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h4 className="text-sm font-semibold text-[#161821] dark:text-[#FFFFFF] group-hover:text-[#161821] dark:group-hover:text-[#166534] dark:text-[#45d320] transition-colors">
+                        <h4 className="text-sm font-semibold text-[#161821] dark:text-[#FFFFFF] group-hover:text-[#166534] dark:group-hover:text-[#45d320] transition-colors">
                           {localizePersonName(student.fullName, lang)}
                         </h4>
                         <span className="px-1.5 py-0.2 rounded-md font-sans text-[10px] font-bold bg-[#161821] text-[#FFFFFF]">
@@ -695,10 +735,10 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         )}
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-[#475569] dark:text-[#94A3B8] font-sans">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#475569] dark:text-[#94A3B8] font-sans">
                         <span className="font-sans text-[11px]">{student.studentNumber}</span>
                         <span>•</span>
-                        <span>{student.email}</span>
+                        <span className="break-all">{student.email}</span>
                         {student.phone && (
                           <>
                             <span>•</span>
@@ -707,14 +747,16 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         )}
                       </div>
                     </div>
-                  </div>
+                  </button>
 
                   {/* Middle / Right: Standing Metrics & Actions */}
-                  <div className="flex items-center justify-between md:justify-end space-x-4 self-stretch md:self-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#e2e4e8] dark:border-[#273142]">
+                  <div className="flex flex-wrap items-center justify-between md:justify-end gap-3 self-stretch md:self-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#e2e4e8] dark:border-[#273142]">
                     {/* GPA & Debts Badge */}
                     <div className="text-left md:text-right space-y-0.5">
                       <div className="flex items-center md:justify-end space-x-1.5">
-                        <span className="text-[11px] text-[#475569] dark:text-[#94A3B8] font-sans">GPA:</span>
+                        <span className="text-[11px] text-[#475569] dark:text-[#94A3B8] font-sans">
+                          GPA:
+                        </span>
                         <span
                           className={`font-sans text-sm font-bold ${
                             student.gpa >= 4.5
@@ -737,8 +779,8 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                           <span>
                             {tr(
                               lang,
-                              `${student.debtCount} долг (${student.debtSubjects?.[0] || 'Статистика'})`,
-                              `${student.debtCount} arrear (${localizeText(student.debtSubjects?.[0] || 'Статистика', 'en')})`
+                              `${student.debtCount} долг (${student.debtSubjects?.[0] || 'Задолженность'})`,
+                              `${student.debtCount} arrear (${localizeText(student.debtSubjects?.[0] || 'Course', 'en')})`
                             )}
                           </span>
                         </div>
@@ -752,11 +794,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                     {/* Quick Button: Open Dossier */}
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenDossier(student.id);
-                        }}
-                        className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#233029] text-[#161821] dark:text-[#45d320] border border-[#e2e4e8] dark:border-[#273142] text-xs font-semibold transition-colors cursor-pointer shadow-xs flex items-center space-x-1"
+                        type="button"
+                        onClick={() => handleOpenDossier(student.id)}
+                        className="px-3 py-1.5 min-h-[44px] rounded-lg bg-white dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#233029] text-[#161821] dark:text-[#45d320] border border-[#e2e4e8] dark:border-[#273142] text-xs font-semibold transition-colors cursor-pointer shadow-xs flex items-center space-x-1"
                       >
                         <FileText className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
                         <span>{tr(lang, 'Личное дело', 'Student Dossier')}</span>
@@ -764,16 +804,21 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
 
                       {onOpenAnnouncement && (
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onOpenAnnouncement(undefined, student.id, student.fullName);
-                          }}
+                          type="button"
+                          onClick={() =>
+                            onOpenAnnouncement(undefined, student.id, student.fullName)
+                          }
                           title={tr(
                             lang,
                             `Отправить уведомление ${student.fullName}`,
                             `Send notification to ${localizePersonName(student.fullName, 'en')}`
                           )}
-                          className="p-1.5 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#166534] dark:text-[#45d320] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142] transition-colors cursor-pointer"
+                          aria-label={tr(
+                            lang,
+                            `Отправить уведомление ${student.fullName}`,
+                            `Send notification to ${localizePersonName(student.fullName, 'en')}`
+                          )}
+                          className="p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#45d320] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142] transition-colors cursor-pointer"
                         >
                           <Send className="w-3.5 h-3.5" />
                         </button>

@@ -179,6 +179,32 @@ export async function createStatefulMockPrisma() {
       status: 'normal',
       changeNote: null as string | null,
     },
+    {
+      id: '44444444-4444-4444-8444-444444444404',
+      groupId: groups[0].id,
+      subjectId: subjects[2].id,
+      teacherId: teachers[1].id,
+      roomId: rooms[0].id,
+      date: new Date(today.toISOString().split('T')[0]),
+      startTime: '12:00',
+      endTime: '13:35',
+      type: 'lecture',
+      status: 'cancelled',
+      changeNote: 'Cancelled for test coverage',
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444405',
+      groupId: groups[0].id,
+      subjectId: subjects[1].id,
+      teacherId: teachers[0].id,
+      roomId: rooms[1].id,
+      date: new Date(today.toISOString().split('T')[0]),
+      startTime: '15:45',
+      endTime: '17:20',
+      type: 'seminar',
+      status: 'normal',
+      changeNote: null as string | null,
+    },
   ];
 
   const grades = [
@@ -254,43 +280,232 @@ export async function createStatefulMockPrisma() {
     {
       code: 'study_certificate',
       title: 'Справка об обучении',
-      description: 'Официальная справка',
-      fields: [{ name: 'purpose', label: 'Цель', type: 'text', required: true }],
+      description: 'Официальная справка о статусе обучающегося',
+      fields: [
+        {
+          name: 'purpose',
+          label: 'Место предъявления',
+          labelEn: 'Purpose / Recipient',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'copies',
+          label: 'Количество экземпляров',
+          labelEn: 'Number of copies',
+          type: 'number',
+          required: true,
+        },
+        {
+          name: 'delivery',
+          label: 'Форма получения',
+          labelEn: 'Delivery format',
+          type: 'select',
+          required: true,
+          options: ['Электронный макет (PDF, демо)', 'Бумажная в деканате'],
+          optionsEn: ['Electronic draft (PDF, demo)', "Paper copy at the Dean's Office"],
+        },
+        {
+          name: 'notes',
+          label: 'Дополнительные примечания',
+          labelEn: 'Additional notes',
+          type: 'textarea',
+          required: false,
+        },
+      ],
       slaDays: 2,
     },
     {
       code: 'military_certificate',
       title: 'Справка для военкомата',
       description: 'Для военкомата',
-      fields: [],
-      slaDays: 5,
+      fields: [
+        {
+          name: 'militaryOffice',
+          label: 'Наименование военного комиссариата',
+          labelEn: 'Military commissariat name',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'copies',
+          label: 'Количество экземпляров',
+          labelEn: 'Number of copies',
+          type: 'number',
+          required: true,
+        },
+        {
+          name: 'delivery',
+          label: 'Способ получения',
+          labelEn: 'Delivery method',
+          type: 'select',
+          required: true,
+          options: ['Лично в деканате с оригиналом паспорта', 'Электронная копия (демо-макет)'],
+          optionsEn: [
+            "In person at the Dean's Office with passport",
+            'Electronic copy (demo draft)',
+          ],
+        },
+      ],
+      slaDays: 3,
     },
     {
       code: 'scholarship_application',
       title: 'Заявление на стипендию',
       description: 'ПГАС',
-      fields: [],
-      slaDays: 10,
+      fields: [
+        {
+          name: 'category',
+          label: 'Категория достижений',
+          labelEn: 'Achievement category',
+          type: 'select',
+          required: true,
+          options: [
+            'Научно-исследовательская (статьи, конференции)',
+            'Учебная (отличная успеваемость)',
+            'Общественная и волонтерская',
+            'Спортивная',
+          ],
+          optionsEn: [
+            'Research (papers, conferences)',
+            'Academic (excellent grades)',
+            'Social & volunteering',
+            'Sports',
+          ],
+        },
+        {
+          name: 'achievements',
+          label: 'Перечень подтверждающих документов',
+          labelEn: 'Supporting documents list',
+          type: 'textarea',
+          required: true,
+        },
+        {
+          name: 'accountNumber',
+          label: 'Номер карты "МИР" для начисления',
+          labelEn: 'MIR bank card number',
+          type: 'text',
+          required: true,
+        },
+      ],
+      slaDays: 5,
     },
     {
       code: 'academic_leave',
       title: 'Академический отпуск',
       description: 'Перерыв в обучении',
-      fields: [],
-      slaDays: 14,
+      fields: [
+        {
+          name: 'reason',
+          label: 'Основание для отпуска',
+          labelEn: 'Reason for leave',
+          type: 'select',
+          required: true,
+          options: [
+            'По медицинским показаниям (справка ВКК)',
+            'По семейным обстоятельствам',
+            'Призыв на военную службу',
+          ],
+          optionsEn: [
+            'Medical grounds (medical board certificate)',
+            'Family circumstances',
+            'Military conscription',
+          ],
+        },
+        {
+          name: 'duration',
+          label: 'Срок отпуска',
+          labelEn: 'Leave duration',
+          type: 'select',
+          required: true,
+          options: ['1 семестр', '1 академический год', '2 академических года'],
+          optionsEn: ['1 semester', '1 academic year', '2 academic years'],
+        },
+        {
+          name: 'documentDetails',
+          label: 'Реквизиты подтверждающего документа',
+          labelEn: 'Supporting document details',
+          type: 'textarea',
+          required: true,
+        },
+      ],
+      slaDays: 10,
     },
     {
       code: 'transcript',
       title: 'Транскрипт',
       description: 'Выписка оценок',
-      fields: [],
-      slaDays: 5,
+      fields: [
+        {
+          name: 'language',
+          label: 'Язык документа',
+          labelEn: 'Document language',
+          type: 'select',
+          required: true,
+          options: ['Русский', 'Английский (English)', 'Двуязычный (RU/EN)'],
+          optionsEn: ['Russian', 'English', 'Bilingual (RU/EN)'],
+        },
+        {
+          name: 'purpose',
+          label: 'Цель получения',
+          labelEn: 'Purpose',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'copies',
+          label: 'Количество копий',
+          labelEn: 'Number of copies',
+          type: 'number',
+          required: true,
+        },
+      ],
+      slaDays: 4,
     },
     {
       code: 'dormitory_application',
       title: 'Общежитие',
       description: 'Заселение',
-      fields: [],
+      fields: [
+        {
+          name: 'homeCity',
+          label: 'Город постоянной регистрации',
+          labelEn: 'City of permanent registration',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'benefitCategory',
+          label: 'Льготная категория (при наличии)',
+          labelEn: 'Priority / benefit category (if applicable)',
+          type: 'select',
+          required: false,
+          options: [
+            'Нет льготы (общий конкурс)',
+            'Сирота / оставшийся без попечения',
+            'Инвалид I или II группы',
+            'Многодетная семья',
+          ],
+          optionsEn: [
+            'No priority (general pool)',
+            'Orphan / without parental care',
+            'Disability group I or II',
+            'Large family',
+          ],
+        },
+        {
+          name: 'preferredCampus',
+          label: 'Предпочтительный корпус',
+          labelEn: 'Preferred campus building',
+          type: 'select',
+          required: true,
+          options: ['Студгородок №1 (ул. Университетская)', 'Студгородок №2 (пр. Науки)'],
+          optionsEn: [
+            'Campus Dormitory #1 (Universitetskaya St.)',
+            'Campus Dormitory #2 (Nauki Ave.)',
+          ],
+        },
+      ],
       slaDays: 7,
     },
   ];
@@ -697,31 +912,38 @@ export async function createStatefulMockPrisma() {
       findMany: async ({
         where,
       }: {
-        where: { groupId: string; date?: { gte?: Date; lte?: Date } };
+        where: { groupId?: string; date?: { gte?: Date; lte?: Date } };
       }) => {
         return scheduleEntries
           .filter((s) => {
-            if (s.groupId !== where.groupId) return false;
+            if (where.groupId && s.groupId !== where.groupId) return false;
             if (where.date?.gte && s.date < new Date(where.date.gte.toISOString().split('T')[0]))
               return false;
             if (where.date?.lte && s.date > new Date(where.date.lte.toISOString().split('T')[0]))
               return false;
             return true;
           })
+          .sort(
+            (a, b) => a.date.getTime() - b.date.getTime() || a.startTime.localeCompare(b.startTime)
+          )
           .map(hydrateSchedule);
       },
       findFirst: async ({
         where,
       }: {
-        where: { groupId: string; date?: { gt?: Date }; status?: { not?: string } };
+        where: { groupId?: string; date?: { gt?: Date }; status?: { not?: string } };
       }) => {
-        const found = scheduleEntries.find(
-          (s) =>
-            s.groupId === where.groupId &&
-            (!where.status?.not || s.status !== where.status.not) &&
-            (!where.date?.gt || s.date > where.date.gt)
-        );
-        return found ? hydrateSchedule(found) : null;
+        const matching = scheduleEntries
+          .filter(
+            (s) =>
+              (!where.groupId || s.groupId === where.groupId) &&
+              (!where.status?.not || s.status !== where.status.not) &&
+              (!where.date?.gt || s.date > where.date.gt)
+          )
+          .sort(
+            (a, b) => a.date.getTime() - b.date.getTime() || a.startTime.localeCompare(b.startTime)
+          );
+        return matching[0] ? hydrateSchedule(matching[0]) : null;
       },
       findUnique: async ({ where }: { where: { id: string } }) => {
         const found = scheduleEntries.find((s) => s.id === where.id);
@@ -986,12 +1208,14 @@ export async function createStatefulMockPrisma() {
       },
       delete: async ({ where }: { where: { id: string } }) => {
         const idx = announcements.findIndex((a) => a.id === where.id);
-        if (idx === -1) throw new Error('Not found');
+        if (idx === -1) throw Object.assign(new Error('Not found'), { code: 'P2025' });
         const [removed] = announcements.splice(idx, 1);
         return removed;
       },
     },
-    $transaction: async <T>(ops: Array<Promise<T>>) => Promise.all(ops),
+    $transaction: async <T>(
+      arg: Array<Promise<T>> | ((tx: typeof mockPrisma) => Promise<T>)
+    ): Promise<T | T[]> => (typeof arg === 'function' ? arg(mockPrisma) : Promise.all(arg)),
   };
 
   return { mockPrisma, ids };

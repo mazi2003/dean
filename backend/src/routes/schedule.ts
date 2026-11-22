@@ -92,6 +92,11 @@ export function formatExam(ex: {
   };
 }
 
+function toMinutes(hhmm: string): number {
+  const [h, m] = hhmm.split(':').map(Number);
+  return (Number.isFinite(h) ? h : 0) * 60 + (Number.isFinite(m) ? m : 0);
+}
+
 export async function scheduleRoutes(app: FastifyInstance) {
   // GET /api/v1/schedule?from=&to=&date=&group=
   app.get('/schedule', {
@@ -107,14 +112,16 @@ export async function scheduleRoutes(app: FastifyInstance) {
       }
 
       const userId = request.user!.sub;
-      let targetGroupId: string | null = null;
+      let targetGroupId: string | undefined;
 
       if (request.user!.role === 'staff') {
-        if (parsed.data.group && parsed.data.group !== 'all') {
+        if (parsed.data.group === 'all') {
+          targetGroupId = undefined;
+        } else if (parsed.data.group) {
           const grp = await prisma.group.findFirst({ where: { code: parsed.data.group } });
-          if (grp) targetGroupId = grp.id;
-        }
-        if (!targetGroupId) {
+          if (!grp) return reply.send([]);
+          targetGroupId = grp.id;
+        } else {
           const firstGrp = await prisma.group.findFirst({ orderBy: { code: 'asc' } });
           if (!firstGrp) return reply.send([]);
           targetGroupId = firstGrp.id;
@@ -151,7 +158,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
 
       const entries = await prisma.scheduleEntry.findMany({
         where: {
-          groupId: targetGroupId,
+          ...(targetGroupId ? { groupId: targetGroupId } : {}),
           date: { gte: from, lte: to },
         },
         include: {
@@ -183,7 +190,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
         Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999)
       );
 
-      const [todayEntries, nextEntry] = await Promise.all([
+      const [todayEntries, futureNextEntry] = await Promise.all([
         prisma.scheduleEntry.findMany({
           where: { groupId: sp.groupId, date: { gte: todayStart, lte: todayEnd } },
           include: { subject: true, room: true, teacher: true, group: true },
@@ -199,6 +206,12 @@ export async function scheduleRoutes(app: FastifyInstance) {
           orderBy: [{ date: 'asc' }, { startTime: 'asc' }],
         }),
       ]);
+
+      const nowMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+      const nextToday = todayEntries.find(
+        (e) => e.status !== 'cancelled' && toMinutes(e.startTime) > nowMinutes
+      );
+      const nextEntry = nextToday ?? futureNextEntry;
 
       return reply.send({
         today: todayEntries.map(formatEntry),

@@ -55,7 +55,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
               }`}
             >
               <div className="relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.4] text-[#166534] dark:text-[#45d320]' : 'stroke-[1.8]'}`} />
+                <Icon
+                  className={`w-5 h-5 ${isActive ? 'stroke-[2.4] text-[#166534] dark:text-[#45d320]' : 'stroke-[1.8]'}`}
+                />
                 {isActive && (
                   <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#33b712]" />
                 )}

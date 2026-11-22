@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
 import { isVercelRuntime } from './config';
 import { getServerlessFallbackPrisma } from './serverlessFallbackPrisma';
 
@@ -16,6 +16,18 @@ function resolveConnectionUrl(): string | undefined {
       process.env.POSTGRES_PRISMA_URL ??
       process.env.POSTGRES_URL
     )?.trim() || undefined
+  );
+}
+
+function isConnectionError(err: unknown): boolean {
+  const errObj = err as { code?: string; name?: string; message?: string } | null;
+  return Boolean(
+    errObj?.name === 'PrismaClientInitializationError' ||
+    (typeof errObj?.code === 'string' && /^P10\d\d$/.test(errObj.code)) ||
+    (typeof errObj?.message === 'string' &&
+      /Can't reach database server|Connection refused|ECONNREFUSED|ENOTFOUND|ETIMEDOUT/i.test(
+        errObj.message
+      ))
   );
 }
 
@@ -50,68 +62,100 @@ function getRealPrismaClient(): PrismaClient | null {
   }
 }
 
+type DynamicModelDelegate = Record<string, (...a: unknown[]) => Promise<unknown>>;
+
 function createModelWrapper(modelName: keyof PrismaClient, methods: string[]) {
   const wrapper: Record<string, (...args: unknown[]) => Promise<unknown>> = {};
 
   for (const methodProp of methods) {
-    wrapper[methodProp] = async (...args: unknown[]) => {
+    wrapper[methodProp] = (...args: unknown[]): Promise<unknown> => {
       const real = getRealPrismaClient();
-      if (real) {
-        try {
-          const model = (
-            real as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>
-          )[String(modelName)];
-          const result = await model[methodProp](...args);
-
-          if (
-            isVercelRuntime() &&
-            !globalForPrisma.checkedSeededUsers &&
-            modelName === 'user' &&
-            methodProp === 'findUnique' &&
-            result === null
-          ) {
-            const totalUsers = await model.count();
-            globalForPrisma.checkedSeededUsers = true;
-            if (totalUsers === 0) {
-              globalForPrisma.useFallbackOnly = true;
-              const fallback = await getServerlessFallbackPrisma();
-              const fbModel = (
-                fallback as unknown as Record<
-                  string,
-                  Record<string, (...a: unknown[]) => Promise<unknown>>
-                >
-              )[String(modelName)];
-              return fbModel[methodProp](...args);
-            }
-          }
-
-          return result;
-        } catch (err) {
-          const errObj = err as { code?: string; name?: string; message?: string } | null;
-          const isConnectionError =
-            errObj?.name === 'PrismaClientInitializationError' ||
-            (typeof errObj?.code === 'string' && /^P10\d\d$/.test(errObj.code)) ||
-            (typeof errObj?.message === 'string' &&
-              /Can't reach database server|Connection refused|ECONNREFUSED|ENOTFOUND|ETIMEDOUT/i.test(
-                errObj.message
-              ));
-          if (isVercelRuntime() && isConnectionError) {
-            globalForPrisma.useFallbackOnly = true;
-          } else {
-            throw err;
-          }
-        }
+      if (real && !isVercelRuntime()) {
+        // Keep PrismaPromise lazy (non-async) so batched $transaction([...]) works natively
+        const model = (real as unknown as Record<string, DynamicModelDelegate>)[String(modelName)];
+        return model[methodProp](...args);
       }
 
-      const fallback = await getServerlessFallbackPrisma();
-      const fbModel = (
-        fallback as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>
-      )[String(modelName)];
-      return fbModel[methodProp](...args);
+      return (async () => {
+        if (real) {
+          try {
+            const model = (real as unknown as Record<string, DynamicModelDelegate>)[
+              String(modelName)
+            ];
+            const result = await model[methodProp](...args);
+
+            if (
+              isVercelRuntime() &&
+              !globalForPrisma.checkedSeededUsers &&
+              modelName === 'user' &&
+              methodProp === 'findUnique' &&
+              result === null
+            ) {
+              const totalUsers = await model.count();
+              globalForPrisma.checkedSeededUsers = true;
+              if (totalUsers === 0) {
+                globalForPrisma.useFallbackOnly = true;
+                const fallback = await getServerlessFallbackPrisma();
+                const fbModel = (fallback as unknown as Record<string, DynamicModelDelegate>)[
+                  String(modelName)
+                ];
+                return fbModel[methodProp](...args);
+              }
+            }
+
+            return result;
+          } catch (err) {
+            if (isVercelRuntime() && isConnectionError(err)) {
+              globalForPrisma.useFallbackOnly = true;
+            } else {
+              throw err;
+            }
+          }
+        }
+
+        const fallback = await getServerlessFallbackPrisma();
+        const fbModel = (fallback as unknown as Record<string, DynamicModelDelegate>)[
+          String(modelName)
+        ];
+        return fbModel[methodProp](...args);
+      })();
     };
   }
 
   return wrapper;
+}
+
+type TransactionCallback<T> = (tx: Prisma.TransactionClient) => Promise<T>;
+
+async function runTransaction<T>(
+  arg: Array<Promise<T>> | TransactionCallback<T>,
+  options?: unknown
+): Promise<T | T[]> {
+  const real = getRealPrismaClient();
+  if (real) {
+    try {
+      if (typeof arg === 'function') {
+        return await (
+          real.$transaction as unknown as (fn: TransactionCallback<T>, opts?: unknown) => Promise<T>
+        )(arg, options);
+      }
+      return await (
+        real.$transaction as unknown as (ops: Array<Promise<T>>, opts?: unknown) => Promise<T[]>
+      )(arg, options);
+    } catch (err) {
+      if (isVercelRuntime() && isConnectionError(err)) {
+        globalForPrisma.useFallbackOnly = true;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  const fallback = await getServerlessFallbackPrisma();
+  if (typeof arg === 'function') {
+    return arg(fallback as unknown as Prisma.TransactionClient);
+  }
+  return Promise.all(arg);
 }
 
 export const prisma: PrismaClient = {
@@ -146,5 +190,5 @@ export const prisma: PrismaClient = {
     'createMany',
   ]),
   announcement: createModelWrapper('announcement', ['findMany', 'create', 'delete']),
-  $transaction: async <T>(ops: Array<Promise<T>>) => Promise.all(ops),
+  $transaction: runTransaction,
 } as unknown as PrismaClient;

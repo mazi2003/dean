@@ -145,9 +145,7 @@ describe('Backend Performance: Compression & Cache-Control Security Headers', ()
     expect(gzipRes.statusCode).toBe(200);
     expect(gzipRes.headers['content-encoding']).toBe('gzip');
     expect(gzipRes.rawPayload.length).toBeLessThan(rawRes.rawPayload.length);
-    expect(JSON.parse(zlib.gunzipSync(gzipRes.rawPayload).toString('utf8'))).toEqual(
-      rawRes.json()
-    );
+    expect(JSON.parse(zlib.gunzipSync(gzipRes.rawPayload).toString('utf8'))).toEqual(rawRes.json());
   });
 
   it('skips compression for small payloads below the 1024-byte threshold', async () => {

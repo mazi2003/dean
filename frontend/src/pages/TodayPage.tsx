@@ -19,7 +19,14 @@ import {
   FileBadge,
   Users,
 } from 'lucide-react';
-import { ScheduleEntry, StudentRequest, Notification, ExamEntry } from '../types';
+import {
+  ScheduleEntry,
+  StudentRequest,
+  Notification,
+  ExamEntry,
+  GradesSummary,
+  AcademicGroup,
+} from '../types';
 import { api } from '../services/api';
 import { UniversityEmblem } from '../components/UniversityEmblem';
 import { ScheduleCollisionAlert } from '../components/ScheduleCollisionAlert';
@@ -54,6 +61,8 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   const [requests, setRequests] = useState<StudentRequest[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [exams, setExams] = useState<ExamEntry[]>([]);
+  const [gradesSummary, setGradesSummary] = useState<GradesSummary | null>(null);
+  const [staffGroups, setStaffGroups] = useState<AcademicGroup[]>([]);
   const [loading, setLoading] = useState(true);
 
   const userGroup = profile?.group || 'ДУ-101';
@@ -62,27 +71,31 @@ export const TodayPage: React.FC<TodayPageProps> = ({
     const loadData = async () => {
       try {
         if (isStaff) {
-          const [sch, reqs, notifs, exList] = await Promise.all([
+          const [sch, reqs, notifs, exList, grpList] = await Promise.all([
             api.getSchedule(undefined, 'ДУ-101'),
             api.getStaffRequests(),
             api.getNotifications(),
             api.getExams('ДУ-101'),
+            api.getStaffGroups().catch(() => [] as AcademicGroup[]),
           ]);
           setSchedule(sch);
           setRequests(reqs);
           setNotifications(notifs);
           setExams(exList);
+          setStaffGroups(grpList);
         } else {
-          const [sch, reqs, notifs, exList] = await Promise.all([
+          const [sch, reqs, notifs, exList, gradesData] = await Promise.all([
             api.getSchedule(),
             api.getRequests(),
             api.getNotifications(),
             api.getExams(userGroup),
+            api.getGrades().catch(() => null),
           ]);
           setSchedule(sch);
           setRequests(reqs);
           setNotifications(notifs);
           setExams(exList);
+          setGradesSummary(gradesData);
         }
       } catch (err) {
         console.error(err);
@@ -120,63 +133,22 @@ export const TodayPage: React.FC<TodayPageProps> = ({
   );
 
   const upcomingExams = useMemo(() => {
-    if (exams.length > 0) {
-      return exams.map((e) => ({
-        code: e.code,
-        subject: e.subject,
-        type: e.format,
-        date: e.date,
-        time: e.time,
-        room: e.room,
-        teacher: e.examiner,
-        credits: e.credits,
-        status: e.status,
-        changeNote: e.changeNote,
-        isDebt: e.isDebt,
-      }));
-    }
-    return [
-      {
-        code: 'LAW-201',
-        subject: 'Международное публичное право',
-        type: 'Экзамен',
-        date: '12 декабря 2026',
-        time: '10:00',
-        room: 'Ауд. 312',
-        teacher: 'Проф. Воронов А.Н.',
-        credits: 5,
-        status: 'scheduled',
-        changeNote: null,
-        isDebt: false,
-      },
-      {
-        code: 'DIP-104',
-        subject: 'История дипломатических отношений',
-        type: 'Дифференцированный зачет',
-        date: '18 декабря 2026',
-        time: '12:30',
-        room: 'Конференц-зал Б',
-        teacher: 'Доц. Романова Е.В.',
-        credits: 4,
-        status: 'scheduled',
-        changeNote: null,
-        isDebt: false,
-      },
-      {
-        code: 'STAT-102',
-        subject: 'Математическая статистика и анализ данных',
-        type: 'Комиссионная пересдача',
-        date: '28 ноября 2026',
-        time: '14:00',
-        room: 'Ауд. А-314',
-        teacher: 'Проф. Соколов Д.М.',
-        credits: 3,
-        status: 'scheduled',
-        changeNote: null,
-        isDebt: profile?.studentNumber === 'СТ-2022-0082',
-      },
-    ];
-  }, [exams, profile?.studentNumber]);
+    if (exams.length === 0) return [];
+    return exams.map((e) => ({
+      code: e.code,
+      subject: e.subject,
+      type: e.format,
+      date: e.date,
+      rawDate: e.rawDate,
+      time: e.time,
+      room: e.room,
+      teacher: e.examiner,
+      credits: e.credits,
+      status: e.status,
+      changeNote: e.changeNote,
+      isDebt: e.isDebt,
+    }));
+  }, [exams]);
 
   if (loading) {
     return (
@@ -228,7 +200,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                 {tr(
                   lang,
                   'Единая диспетчерская панель сотрудника деканата: обработка входящих заявлений студентов, списки групп, расписание и экзаменационные сессии.',
-                  "Staff Command Center: processing student inquiries, managing cohorts, schedule dispatch, and examination sessions."
+                  'Staff Command Center: processing student inquiries, managing cohorts, schedule dispatch, and examination sessions.'
                 )}
               </p>
             </div>
@@ -257,22 +229,25 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           {/* Quick Staff Navigation */}
           <div className="mt-6 pt-5 border-t border-[#e2e4e8] dark:border-[#273142] flex flex-wrap gap-2.5 text-xs">
             <button
+              type="button"
               onClick={() => setActiveTab('staff_requests')}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full btn-brand-primary text-xs font-heading cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 min-h-[44px] rounded-full btn-brand-primary text-xs font-heading cursor-pointer"
             >
-              <Inbox className="w-3.5 h-3.5 text-white" />
+              <Inbox className="w-3.5 h-3.5" />
               <span>{tr(lang, 'Очередь заявлений', 'Inquiries Queue')}</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('staff_students')}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
             >
               <Users className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
               <span>{tr(lang, 'Группы и личные дела', 'Groups & Dossiers')}</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('schedule')}
-              className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-4 py-2 min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
             >
               <Calendar className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
               <span>{tr(lang, 'Диспетчер расписания', 'Timetable Dispatch')}</span>
@@ -282,9 +257,10 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
         {/* 4 Metric Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div
+          <button
+            type="button"
             onClick={() => setActiveTab('staff_requests')}
-            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
+            className="w-full text-left p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
             <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
               {tr(lang, 'Новые заявления', 'New Inquiries')}
@@ -293,16 +269,19 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <span className="font-sans text-2xl font-bold text-[#be123c] dark:text-[#fecdd3]">
                 {newRequestsCount}
               </span>
-              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'ожидают', 'pending')}</span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">
+                {tr(lang, 'ожидают', 'pending')}
+              </span>
             </div>
             <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Требуют первичной проверки', 'Initial check required')}
             </p>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => setActiveTab('staff_requests')}
-            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
+            className="w-full text-left p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
             <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
               {tr(lang, 'В обработке', 'In Review')}
@@ -311,16 +290,19 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <span className="font-sans text-2xl font-bold text-[#0369a1] dark:text-[#38bdf8]">
                 {inReviewCount}
               </span>
-              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'заявлений', 'requests')}</span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">
+                {tr(lang, 'заявлений', 'requests')}
+              </span>
             </div>
             <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Проверка данных инспектором', 'Inspector verification')}
             </p>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => setActiveTab('staff_requests')}
-            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
+            className="w-full text-left p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
             <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
               {tr(lang, 'Готово к выдаче', 'Ready to Issue')}
@@ -329,48 +311,56 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <span className="font-sans text-2xl font-bold text-[#166534] dark:text-[#45d320]">
                 {readyCount}
               </span>
-              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'готовых', 'ready')}</span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">
+                {tr(lang, 'готовых', 'ready')}
+              </span>
             </div>
             <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
               {tr(lang, 'Макеты сформированы', 'Previews generated')}
             </p>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => setActiveTab('schedule')}
-            className="p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
+            className="w-full text-left p-5 rounded-3xl bg-white dark:bg-[#171c26] border border-[#e2e4e8] dark:border-[#273142] shadow-xs cursor-pointer hover:border-[#33b712] transition-all space-y-1.5"
           >
             <span className="text-[11px] font-heading text-[#475569] dark:text-[#94a3b8] uppercase tracking-wider block">
               {tr(lang, 'Потоки в расписании', 'Active Streams')}
             </span>
             <div className="flex items-baseline space-x-2">
               <span className="font-sans text-2xl font-bold text-[#161821] dark:text-[#ffffff]">
-                2
+                {staffGroups.length || 4}
               </span>
-              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">{tr(lang, 'группы', 'groups')}</span>
+              <span className="text-xs text-[#475569] dark:text-[#94a3b8]">
+                {tr(lang, 'группы', 'groups')}
+              </span>
             </div>
             <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1]">
-              {tr(lang, 'ДУ-101 и ДУ-205 под контролем', 'ДУ-101 & ДУ-205 monitored')}
+              {staffGroups.length > 0
+                ? staffGroups.map((g) => g.code).join(', ')
+                : tr(lang, 'ДУ-101, ДУ-102, ДУ-205, ДУ-301', 'ДУ-101, ДУ-102, ДУ-205, ДУ-301')}
             </p>
-          </div>
+          </button>
         </div>
 
         {/* Recent student requests requiring review */}
         <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
             <div className="flex items-center space-x-2">
               <Inbox className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-              <h3 className="font-heading font-semibold text-base text-[#161821] dark:text-[#ffffff]">
+              <h2 className="font-heading font-semibold text-base text-[#161821] dark:text-[#ffffff]">
                 {tr(
                   lang,
                   'Очередь последних входящих заявлений студентов',
                   'Recent Student Petition Queue'
                 )}
-              </h3>
+              </h2>
             </div>
             <button
+              type="button"
               onClick={() => setActiveTab('staff_requests')}
-              className="text-xs font-heading font-semibold text-[#166534] dark:text-[#45d320] hover:underline flex items-center space-x-1 cursor-pointer"
+              className="text-xs font-heading font-semibold text-[#166534] dark:text-[#45d320] hover:underline inline-flex items-center space-x-1 min-h-[44px] px-2 cursor-pointer"
             >
               <span>
                 {tr(
@@ -394,7 +384,9 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     <span className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
                       {localizeText(req.typeTitle, lang)}
                     </span>
-                    <span className="font-sans text-[11px] text-[#475569] dark:text-[#94a3b8]">№ {req.id}</span>
+                    <span className="font-sans text-[11px] text-[#475569] dark:text-[#94a3b8]">
+                      № {req.id}
+                    </span>
                   </div>
                   <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5">
                     {tr(lang, 'Студент:', 'Student:')}{' '}
@@ -417,8 +409,9 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     {getRequestStatusLabel(req.status, lang, 'staff')}
                   </span>
                   <button
+                    type="button"
                     onClick={() => setActiveTab('staff_requests')}
-                    className="px-3 py-1 rounded-full bg-[#161821] text-white text-xs font-heading font-medium hover:bg-[#262a38] cursor-pointer"
+                    className="px-3 py-1 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full bg-[#161821] text-white text-xs font-heading font-medium hover:bg-[#262a38] cursor-pointer"
                   >
                     {tr(lang, 'Открыть', 'Open')}
                   </button>
@@ -445,16 +438,18 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         </div>
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0">
             {/* Academic metadata pill */}
-            <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
               <span className="font-sans text-[#166534] dark:text-[#45d320] font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0">
                 {profile?.group}
               </span>
               <span>•</span>
-              <span className="whitespace-nowrap">{tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}</span>
+              <span className="whitespace-nowrap">
+                {tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}
+              </span>
               <span>•</span>
-              <span className="capitalize whitespace-nowrap">{todayStr}</span>
+              <span className="capitalize">{todayStr}</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
@@ -480,14 +475,20 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               </p>
               <div className="flex items-baseline space-x-1.5">
                 <span className="font-sans text-xl font-bold text-[#161821] dark:text-[#ffffff]">
-                  {profile?.gpa ? profile.gpa.toFixed(2) : '4.80'}
+                  {typeof profile?.gpa === 'number'
+                    ? profile.gpa.toFixed(2)
+                    : typeof gradesSummary?.gpa === 'number'
+                      ? gradesSummary.gpa.toFixed(2)
+                      : '—'}
                 </span>
                 <span className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
                   / 5.0 GPA
                 </span>
-                <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-sans font-bold pl-1">
-                  (48 ECTS)
-                </span>
+                {gradesSummary && (
+                  <span className="text-[10px] text-[#166534] dark:text-[#45d320] font-sans font-bold pl-1">
+                    ({gradesSummary.creditsEarned} ECTS)
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -496,29 +497,33 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         {/* Quick Action Pills (Pill Filter Controls) */}
         <div className="mt-6 pt-5 border-t border-[#e2e4e8] dark:border-[#273142] flex flex-wrap gap-2.5 text-xs">
           <button
+            type="button"
             onClick={() => setActiveTab('requests')}
-            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full btn-brand-primary text-xs font-heading cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 min-h-[44px] rounded-full btn-brand-primary text-xs font-heading cursor-pointer"
           >
-            <FileText className="w-3.5 h-3.5 text-white" />
+            <FileText className="w-3.5 h-3.5" />
             <span>{lang === 'ru' ? 'Заказать справку' : 'Request Certificate'}</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('schedule')}
-            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
           >
             <Calendar className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
             <span>{lang === 'ru' ? 'Расписание и сессия' : 'Timetable & Exams'}</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('grades')}
-            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] text-[#161821] dark:text-[#ffffff] border border-[#e2e4e8] dark:border-[#273142] font-heading font-medium transition-colors cursor-pointer"
           >
             <BookOpen className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
             <span>{lang === 'ru' ? 'Зачетная книжка и БРС' : 'Academic Records'}</span>
           </button>
           <button
+            type="button"
             onClick={onOpenAssistant}
-            className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] hover:bg-[#d8f7e6] text-[#161821] dark:text-[#ffffff] border border-[#33b712]/30 font-heading font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 min-h-[44px] rounded-full bg-[#ebfbee] dark:bg-[#1e2d24] hover:bg-[#d8f7e6] dark:hover:bg-[#24382c] text-[#161821] dark:text-[#ffffff] border border-[#33b712]/30 font-heading font-semibold transition-colors cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320]" />
             <span>{lang === 'ru' ? 'Консультант деканата' : 'Ask Academic Copilot'}</span>
@@ -533,16 +538,16 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
           <div className="flex items-center space-x-2">
             <CalendarDays className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-            <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
+            <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
               {lang === 'ru'
-                ? 'Академический календарь: Весенний семестр 2026'
-                : 'Academic Calendar & Semester Milestones'}
-            </h3>
+                ? 'Академический календарь: Осенний семестр 2026/2027'
+                : 'Academic Calendar: Fall Term 2026/2027'}
+            </h2>
           </div>
           <span className="text-xs font-sans font-semibold text-[#166534] dark:text-[#45d320] bg-[#ebfbee] dark:bg-[#1e2d24] px-3 py-1 rounded-full">
             {lang === 'ru'
-              ? '8-я учебная неделя из 16 (50% семестра)'
-              : 'Week 8 of 16 (50% Term Completed)'}
+              ? '12-я учебная неделя из 16 (75% семестра)'
+              : 'Week 12 of 16 (75% Term Completed)'}
           </span>
         </div>
 
@@ -550,7 +555,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-sans">
           <div className="p-3.5 rounded-2xl bg-[#ebfbee] dark:bg-[#1e2d24] border border-[#33b712]/30 space-y-1">
             <span className="text-[10px] font-sans text-[#166534] dark:text-[#45d320] uppercase font-bold block">
-              {tr(lang, '1 февраля 2026', 'Feb 1, 2026')}
+              {tr(lang, '1 сентября 2026', 'Sep 1, 2026')}
             </span>
             <div className="flex items-center space-x-1.5 font-heading font-semibold text-[#161821] dark:text-[#ffffff]">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
@@ -604,21 +609,22 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           3. URGENT ACADEMIC NOTICE (Academic Warning Card)
           ───────────────────────────────────────────────────────────── */}
       {urgentNotif && (
-        <section className="bg-[#fff9e6] dark:bg-[#2c2210] border border-[#ffeeba] dark:border-[#523e1b] p-4 rounded-3xl text-[#161821] dark:text-[#ffffff] flex items-start justify-between gap-4 shadow-xs">
-          <div className="flex items-start space-x-3">
+        <section className="bg-[#fff9e6] dark:bg-[#2c2210] border border-[#ffeeba] dark:border-[#523e1b] p-4 rounded-3xl text-[#161821] dark:text-[#ffffff] flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 shadow-xs">
+          <div className="flex items-start space-x-3 min-w-0">
             <ShieldAlert className="w-5 h-5 text-[#b45309] dark:text-[#fbbf24] flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-heading font-semibold text-sm text-[#b45309] dark:text-[#fbbf24]">
+            <div className="min-w-0">
+              <h2 className="font-heading font-semibold text-sm text-[#b45309] dark:text-[#fbbf24]">
                 {localizeText(urgentNotif.title, lang)}
-              </h3>
+              </h2>
               <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5 leading-relaxed">
                 {localizeText(urgentNotif.message, lang)}
               </p>
             </div>
           </div>
           <button
+            type="button"
             onClick={() => setActiveTab('notifications')}
-            className="text-xs font-heading font-semibold text-[#b45309] dark:text-[#fbbf24] hover:underline flex items-center space-x-1 flex-shrink-0 cursor-pointer"
+            className="text-xs font-heading font-semibold text-[#b45309] dark:text-[#fbbf24] hover:underline inline-flex items-center space-x-1 min-h-[44px] px-2 flex-shrink-0 self-start sm:self-center cursor-pointer"
           >
             <span>{lang === 'ru' ? 'Подробнее' : 'Details'}</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -635,7 +641,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           {/* Next Lecture Focal Card */}
           {nextClass ? (
             <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs relative">
-              <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
                 <div className="flex items-center space-x-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#33b712] animate-pulse" />
                   <span className="text-[11px] font-heading font-semibold uppercase tracking-wider text-[#166534] dark:text-[#45d320]">
@@ -649,9 +655,9 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                 <div className="sm:col-span-2 space-y-1.5">
-                  <h3 className="text-lg sm:text-xl font-heading font-semibold text-[#161821] dark:text-[#ffffff] leading-snug">
+                  <h2 className="text-lg sm:text-xl font-heading font-semibold text-[#161821] dark:text-[#ffffff] leading-snug">
                     {localizeText(nextClass.subject, lang)}
-                  </h3>
+                  </h2>
                   <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans">
                     {tr(lang, 'Преподаватель:', 'Instructor:')}{' '}
                     <strong className="text-[#161821] dark:text-[#ffffff]">
@@ -660,7 +666,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   </p>
                 </div>
 
-                <div className="sm:border-l sm:border-[#e2e4e8] sm:dark:border-[#273142] sm:pl-4 space-y-2">
+                <div className="sm:border-l sm:border-[#e2e4e8] sm:dark:border-[#273142] sm:pl-4 space-y-1">
                   <div className="flex items-center space-x-2 text-xs font-sans text-[#161821] dark:text-[#ffffff]">
                     <Clock className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                     <span className="font-bold text-sm">
@@ -668,14 +674,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </span>
                   </div>
                   <button
+                    type="button"
                     onClick={() => onOpenMap?.(nextClass.room)}
-                    className="flex items-center space-x-2 text-xs font-sans text-[#4b5563] dark:text-[#cbd5e1] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
+                    className="inline-flex items-center space-x-2 min-h-[44px] text-xs font-sans text-[#4b5563] dark:text-[#cbd5e1] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
                     title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
                   >
                     <MapPin className="w-4 h-4 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
                     <span>
                       {tr(lang, 'Аудитория', 'Room')}{' '}
-                      <strong className="underline decoration-dotted underline-offset-2">{localizeText(nextClass.room, lang)}</strong>
+                      <strong className="underline decoration-dotted underline-offset-2">
+                        {localizeText(nextClass.room, lang)}
+                      </strong>
                     </span>
                   </button>
                 </div>
@@ -691,14 +700,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
           {/* Today's Full Schedule Table */}
           <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142] mb-4">
-              <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] flex items-center space-x-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142] mb-4">
+              <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>{lang === 'ru' ? 'Расписание на сегодня' : "Today's Classes"}</span>
-              </h3>
+              </h2>
               <button
+                type="button"
                 onClick={() => setActiveTab('schedule')}
-                className="text-xs font-heading text-[#166534] dark:text-[#45d320] hover:underline font-semibold cursor-pointer"
+                className="text-xs font-heading text-[#166534] dark:text-[#45d320] hover:underline font-semibold inline-flex items-center min-h-[44px] px-1 cursor-pointer"
               >
                 {lang === 'ru' ? 'Вся неделя и сессия →' : 'Full Timetable →'}
               </button>
@@ -708,19 +718,21 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               {todayClasses.map((item, idx) => (
                 <div
                   key={item.id}
-                  className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-between text-xs hover:border-[#33b712]/50 transition-colors"
+                  className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs hover:border-[#33b712]/50 transition-colors"
                 >
-                  <div className="flex items-center space-x-3">
-                    <span className="font-sans text-[#166534] dark:text-[#45d320] font-bold text-[11px] w-6">
-                      {idx + 1}
-                    </span>
-                    <span className="font-sans text-[#475569] dark:text-[#94a3b8] text-[11px] w-24">
-                      {item.start}–{item.end}
-                    </span>
-                    <div>
-                      <h4 className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff]">
+                  <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-2 shrink-0 pt-0.5 sm:pt-0">
+                      <span className="font-sans text-[#166534] dark:text-[#45d320] font-bold text-[11px] w-4">
+                        {idx + 1}
+                      </span>
+                      <span className="font-sans text-[#475569] dark:text-[#94a3b8] text-[11px] w-auto sm:w-24 whitespace-nowrap">
+                        {item.start}–{item.end}
+                      </span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff] break-words">
                         {localizeText(item.subject, lang)}
-                      </h4>
+                      </h3>
                       <p className="text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
                         {localizeText(item.teacher, lang)} •{' '}
                         <span className="uppercase font-sans">
@@ -730,12 +742,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => onOpenMap?.(item.room)}
-                    className="flex items-center space-x-1 font-sans font-bold text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
+                    className="self-start sm:self-center shrink-0 min-h-[44px] min-w-[44px] inline-flex items-center space-x-1 font-sans font-bold text-[#161821] dark:text-[#ffffff] hover:text-[#166534] dark:hover:text-[#45d320] transition-colors cursor-pointer group"
                     title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
                   >
                     <MapPin className="w-3.5 h-3.5 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
-                    <span className="underline decoration-dotted underline-offset-2">{localizeText(item.room, lang)}</span>
+                    <span className="underline decoration-dotted underline-offset-2">
+                      {localizeText(item.room, lang)}
+                    </span>
                   </button>
                 </div>
               ))}
@@ -746,92 +761,131 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               EXAMINATION PROGRAM & UPCOMING ASSESSMENTS
               ───────────────────────────────────────────────────────────── */}
           <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
               <div className="flex items-center space-x-2">
                 <FileBadge className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-                <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
+                <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff]">
                   {lang === 'ru'
                     ? 'Программа промежуточной аттестации и сессии'
                     : 'Upcoming Examination Program'}
-                </h3>
+                </h2>
               </div>
               <span className="text-[11px] font-sans text-[#475569] dark:text-[#94a3b8]">
-                {lang === 'ru' ? 'Зимняя сессия 2026' : 'Winter Session 2026'}
+                {lang === 'ru' ? 'Зимняя сессия 2026/2027' : 'Winter Session 2026/2027'}
               </span>
             </div>
 
-            <div className="space-y-2.5">
-              {upcomingExams.map((ex, i) => (
-                <div key={i} className="space-y-2">
-                  <div
-                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs ${
-                      ex.isDebt
-                        ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15 border-[#ff4d8b]/30'
-                        : 'bg-[#f6f6f9] dark:bg-[#121620] border-[#e2e4e8] dark:border-[#273142]'
-                    }`}
-                  >
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-sans text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#161821] text-white whitespace-nowrap shrink-0 inline-flex items-center">
-                          {ex.code}
-                        </span>
-                        <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#161821] dark:text-[#ffffff]">
-                          {localizeText(ex.subject, lang)}
-                        </h4>
-                        {ex.status === 'date_changed' && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white whitespace-nowrap shrink-0 inline-flex items-center">
-                            {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
-                          </span>
-                        )}
-                        {ex.status === 'room_changed' && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white whitespace-nowrap shrink-0 inline-flex items-center">
-                            {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
-                          </span>
-                        )}
-                        {ex.isDebt && (
-                          <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white whitespace-nowrap shrink-0 inline-flex items-center">
-                            {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans">
-                        {localizeText(ex.teacher, lang)} • {tr(lang, 'Формат:', 'Format:')}{' '}
-                        <strong>{localizeText(ex.type, lang)}</strong> ({ex.credits} ECTS)
-                      </p>
-                    </div>
+            {upcomingExams.length === 0 ? (
+              <p className="text-xs text-[#475569] dark:text-[#94a3b8] py-4 text-center">
+                {tr(
+                  lang,
+                  'Экзамены и пересдачи для вашей группы пока не назначены.',
+                  'No upcoming exams or retakes scheduled for your group yet.'
+                )}
+              </p>
+            ) : (
+              <div className="space-y-2.5">
+                {upcomingExams.map((ex, i) => {
+                  const matchingConflict = ex.isDebt
+                    ? schedule.find((s) => {
+                        const sameDate = ex.rawDate && s.date === ex.rawDate;
+                        const slotOverlap = ex.time && s.start && ex.time.startsWith(s.start);
+                        return (
+                          (sameDate && slotOverlap) ||
+                          (s.subject && s.subject.toLowerCase().includes('консультация'))
+                        );
+                      })
+                    : undefined;
+                  return (
+                    <div key={i} className="space-y-2">
+                      <div
+                        className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs ${
+                          ex.isDebt
+                            ? 'bg-[#ff4d8b]/5 dark:bg-[#ff4d8b]/15 border-[#ff4d8b]/30'
+                            : 'bg-[#f6f6f9] dark:bg-[#121620] border-[#e2e4e8] dark:border-[#273142]'
+                        }`}
+                      >
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-sans text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#161821] text-white whitespace-nowrap shrink-0 inline-flex items-center">
+                              {ex.code}
+                            </span>
+                            <h3 className="font-heading font-semibold text-xs sm:text-sm text-[#161821] dark:text-[#ffffff]">
+                              {localizeText(ex.subject, lang)}
+                            </h3>
+                            {ex.status === 'date_changed' && (
+                              <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#0369a1] text-white whitespace-nowrap shrink-0 inline-flex items-center">
+                                {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
+                              </span>
+                            )}
+                            {ex.status === 'room_changed' && (
+                              <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#6d28d9] text-white whitespace-nowrap shrink-0 inline-flex items-center">
+                                {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
+                              </span>
+                            )}
+                            {ex.isDebt && (
+                              <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white whitespace-nowrap shrink-0 inline-flex items-center">
+                                {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-[#4b5563] dark:text-[#cbd5e1] font-sans">
+                            {localizeText(ex.teacher, lang)} • {tr(lang, 'Формат:', 'Format:')}{' '}
+                            <strong>{localizeText(ex.type, lang)}</strong> ({ex.credits} ECTS)
+                          </p>
+                        </div>
 
-                    <div className="flex items-center space-x-4 font-sans text-xs flex-shrink-0">
-                      <div className="text-left sm:text-right">
-                        <span className="font-bold text-[#166534] dark:text-[#45d320] block whitespace-nowrap">
-                          {localizeText(ex.date, lang)}
-                        </span>
-                        <button
-                          onClick={() => onOpenMap?.(ex.room)}
-                          className="text-[#475569] dark:text-[#94a3b8] hover:text-[#166534] dark:hover:text-[#45d320] text-[11px] flex items-center sm:justify-end space-x-1 cursor-pointer group transition-colors whitespace-nowrap"
-                          title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
-                        >
-                          <span>{tr(lang, 'в', 'at')} {ex.time} •</span>
-                          <MapPin className="w-3 h-3 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
-                          <span className="underline decoration-dotted underline-offset-2">{localizeText(ex.room, lang)}</span>
-                        </button>
+                        <div className="flex items-center space-x-4 font-sans text-xs flex-shrink-0">
+                          <div className="text-left sm:text-right">
+                            <span className="font-bold text-[#166534] dark:text-[#45d320] block whitespace-nowrap">
+                              {localizeText(ex.date, lang)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => onOpenMap?.(ex.room)}
+                              className="text-[#475569] dark:text-[#94a3b8] hover:text-[#166534] dark:hover:text-[#45d320] text-[11px] min-h-[44px] inline-flex items-center sm:justify-end space-x-1 cursor-pointer group transition-colors whitespace-nowrap"
+                              title={
+                                lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'
+                              }
+                            >
+                              <span>
+                                {tr(lang, 'в', 'at')} {ex.time} •
+                              </span>
+                              <MapPin className="w-3 h-3 text-[#be123c] dark:text-[#fecdd3] group-hover:scale-110 transition-transform" />
+                              <span className="underline decoration-dotted underline-offset-2">
+                                {localizeText(ex.room, lang)}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Schedule Collision Alert for Retakes */}
-                  {ex.isDebt && (
-                    <ScheduleCollisionAlert
-                      compact
-                      retakeDate={ex.date}
-                      retakeTime={ex.time}
-                      retakeSubject={ex.subject}
-                      retakeRoom={ex.room}
-                      onOpenMap={onOpenMap}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
+                      {/* Schedule Collision Alert for Retakes */}
+                      {ex.isDebt && (
+                        <ScheduleCollisionAlert
+                          compact
+                          retakeDate={ex.date}
+                          retakeTime={ex.time}
+                          retakeSubject={ex.subject}
+                          retakeRoom={ex.room}
+                          conflictingClass={
+                            matchingConflict
+                              ? {
+                                  subject: matchingConflict.subject,
+                                  time: `${matchingConflict.start} – ${matchingConflict.end}`,
+                                  room: matchingConflict.room,
+                                  teacher: matchingConflict.teacher,
+                                }
+                              : null
+                          }
+                          onOpenMap={onOpenMap}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
         </div>
 
@@ -842,35 +896,36 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <section className="bg-[#161821] text-white rounded-3xl p-6 shadow-sm border border-[#33b712]/40 space-y-3.5">
               <div className="flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-[#45d320]" />
-                <h3 className="font-heading font-semibold text-sm text-white">
+                <h2 className="font-heading font-semibold text-sm text-white">
                   {lang === 'ru' ? 'Готовые официальные справки' : 'Issued Certified Documents'}
-                </h3>
+                </h2>
               </div>
               <p className="text-xs text-white/80 font-sans leading-relaxed">
                 {tr(
                   lang,
-                  'Заказанные справки подписаны деканатом и готовы к просмотру.',
+                  'Заказанные справки оформлены деканатом и готовы к просмотру.',
                   'Your requested documents are approved and ready to preview.'
                 )}
               </p>
               <div className="space-y-2 pt-1">
                 {readyRequests.map((r) => (
-                  <div
+                  <button
+                    type="button"
                     key={r.id}
                     onClick={() => onPreviewCert(r)}
-                    className="p-3.5 rounded-2xl bg-white/10 border border-white/10 hover:border-[#33b712] cursor-pointer transition-all flex items-center justify-between"
+                    className="w-full text-left p-3.5 min-h-[44px] rounded-2xl bg-white/10 border border-white/10 hover:border-[#33b712] cursor-pointer transition-all flex flex-wrap items-center justify-between gap-2"
                   >
-                    <div>
-                      <span className="font-heading font-semibold text-xs text-white block">
+                    <div className="min-w-0 flex-1">
+                      <span className="font-heading font-semibold text-xs text-white block truncate">
                         {localizeText(r.typeTitle, lang)}
                       </span>
                       <span className="text-[10px] font-sans text-[#45d320]">№ {r.id}</span>
                     </div>
-                    <span className="text-[11px] font-heading font-semibold text-[#45d320] flex items-center space-x-1">
+                    <span className="text-[11px] font-heading font-semibold text-[#45d320] inline-flex items-center space-x-1 shrink-0">
                       <span>{tr(lang, 'Открыть PDF', 'Open PDF')}</span>
                       <ArrowUpRight className="w-3 h-3" />
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </section>
@@ -878,14 +933,15 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
           {/* Active Applications in Progress */}
           <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-3.5">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
-              <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] flex items-center space-x-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#e2e4e8] dark:border-[#273142]">
+              <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                 <span>{lang === 'ru' ? 'Заявления на рассмотрении' : 'Active Petitions'}</span>
-              </h3>
+              </h2>
               <button
+                type="button"
                 onClick={() => setActiveTab('requests')}
-                className="text-xs font-heading text-[#166534] dark:text-[#45d320] hover:underline font-semibold cursor-pointer"
+                className="text-xs font-heading text-[#166534] dark:text-[#45d320] hover:underline font-semibold inline-flex items-center min-h-[44px] px-1 cursor-pointer"
               >
                 {tr(lang, `Все (${requests.length}) →`, `All (${requests.length}) →`)}
               </button>
@@ -902,26 +958,27 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             ) : (
               <div className="space-y-2.5">
                 {activeRequests.map((r) => (
-                  <div
+                  <button
+                    type="button"
                     key={r.id}
                     onClick={() => setActiveTab('requests')}
-                    className="p-3.5 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712]/50 cursor-pointer transition-all space-y-1.5"
+                    className="w-full text-left p-3.5 min-h-[44px] rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712]/50 cursor-pointer transition-all space-y-1.5"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff]">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff] min-w-0 flex-1 break-words">
                         {localizeText(r.typeTitle, lang)}
                       </span>
-                      <span className="text-[10px] font-sans px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30 font-semibold">
+                      <span className="text-[10px] font-sans px-2.5 py-0.5 rounded-full bg-[#e8f4fd] dark:bg-[#1a2838] text-[#0369a1] dark:text-[#38bdf8] border border-[#3598fe]/30 font-semibold shrink-0">
                         {getRequestStatusLabel(r.status, lang, 'staff')}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#475569] dark:text-[#94a3b8] font-sans">
                       <span>
                         {tr(lang, `Срок: до ${r.expectedDate}`, `Due: ${r.expectedDate}`)}
                       </span>
                       <span>№ {r.id}</span>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
@@ -931,21 +988,22 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               ADMINISTRATIVE SERVICES DIRECTORY
               ───────────────────────────────────────────────────────────── */}
           <section className="bg-white dark:bg-[#171c26] rounded-3xl border border-[#e2e4e8] dark:border-[#273142] p-6 shadow-xs space-y-3.5">
-            <h3 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
+            <h2 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] pb-2 border-b border-[#e2e4e8] dark:border-[#273142] flex items-center space-x-2">
               <Building className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
               <span>
                 {lang === 'ru' ? 'Службы и сервисы университета' : 'University Services Directory'}
               </span>
-            </h3>
+            </h2>
 
             <div className="space-y-2 text-xs font-sans">
-              <div
+              <button
+                type="button"
                 onClick={() => setActiveTab('requests')}
-                className="p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between"
+                className="w-full text-left p-3 min-h-[44px] rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between gap-2"
               >
-                <div className="flex items-center space-x-3">
-                  <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-                  <div>
+                <div className="flex items-center space-x-3 min-w-0">
+                  <FileText className="w-4 h-4 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
+                  <div className="min-w-0">
                     <span className="font-heading font-medium text-[#161821] dark:text-[#ffffff] block">
                       {tr(lang, 'Канцелярия деканата', "Dean's Registry")}
                     </span>
@@ -958,16 +1016,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8]" />
-              </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8] flex-shrink-0" />
+              </button>
 
-              <div
+              <button
+                type="button"
                 onClick={onOpenAssistant}
-                className="p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between"
+                className="w-full text-left p-3 min-h-[44px] rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between gap-2"
               >
-                <div className="flex items-center space-x-3">
-                  <Sparkles className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-                  <div>
+                <div className="flex items-center space-x-3 min-w-0">
+                  <Sparkles className="w-4 h-4 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
+                  <div className="min-w-0">
                     <span className="font-heading font-medium text-[#161821] dark:text-[#ffffff] block">
                       {tr(lang, 'Цифровой консультант', 'Academic Copilot')}
                     </span>
@@ -980,16 +1039,17 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8]" />
-              </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8] flex-shrink-0" />
+              </button>
 
-              <div
+              <button
+                type="button"
                 onClick={onOpenCard}
-                className="p-3 rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between"
+                className="w-full text-left p-3 min-h-[44px] rounded-2xl bg-[#f6f6f9] dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] hover:border-[#33b712] transition-colors cursor-pointer flex items-center justify-between gap-2"
               >
-                <div className="flex items-center space-x-3">
-                  <IdCard className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
-                  <div>
+                <div className="flex items-center space-x-3 min-w-0">
+                  <IdCard className="w-4 h-4 text-[#166534] dark:text-[#45d320] flex-shrink-0" />
+                  <div className="min-w-0">
                     <span className="font-heading font-medium text-[#161821] dark:text-[#ffffff] block">
                       {tr(lang, 'Студенческий пропуск', 'Digital Student Pass')}
                     </span>
@@ -1002,8 +1062,8 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8]" />
-              </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[#475569] dark:text-[#94a3b8] flex-shrink-0" />
+              </button>
             </div>
           </section>
         </div>

@@ -76,7 +76,7 @@ const REQUEST_STATUS_LABELS: Record<RequestStatus, { ru: string; en: string }> =
   submitted: { ru: 'Подано в деканат', en: 'Submitted' },
   in_review: { ru: 'На рассмотрении инспектором', en: 'In Review' },
   needs_info: { ru: 'Требуется уточнение данных', en: 'Needs Clarification' },
-  ready: { ru: 'Подписано ЭЦП (Готово)', en: 'Ready (Signed)' },
+  ready: { ru: 'Готово (макет документа)', en: 'Ready (Preview)' },
   rejected: { ru: 'Отклонено деканатом', en: 'Rejected' },
   cancelled: { ru: 'Отозвано студентом', en: 'Cancelled' },
 };
@@ -85,7 +85,7 @@ const STAFF_REQUEST_STATUS_LABELS: Record<RequestStatus, { ru: string; en: strin
   submitted: { ru: 'Новое', en: 'New' },
   in_review: { ru: 'В работе', en: 'In Review' },
   needs_info: { ru: 'Уточнение', en: 'Needs Info' },
-  ready: { ru: 'Подписано ЭЦП', en: 'Signed' },
+  ready: { ru: 'Готово', en: 'Ready' },
   rejected: { ru: 'Отклонено', en: 'Rejected' },
   cancelled: { ru: 'Отозвано', en: 'Cancelled' },
 };
@@ -210,52 +210,43 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   // Notifications: Titles & Bodies
   'Справка об обучении в обработке': 'Enrollment Certificate in Processing',
   'Ваше заявление передано на подпись в деканат.':
-    'Your application has been forwarded for signature at the Dean\'s Office.',
+    "Your application has been forwarded for signature at the Dean's Office.",
   'Требуется уточнение по заявлению на общежитие':
     'Clarification Required: Dormitory Housing Application',
-  'Пожалуйста, загрузите справку о доходах.':
-    'Please upload your family income statement.',
+  'Пожалуйста, загрузите справку о доходах.': 'Please upload your family income statement.',
   'Замена аудитории (Международное право)': 'Room Change: International Law',
   'Семинар перенесен в ауд. Б-115.': 'Seminar relocated to Room B-115.',
   'Прием заявок на ПГАС до 25 ноября': 'Merit Scholarship Applications Open until Nov 25',
   'Подайте документы через раздел «Справки и заявления».':
     'Submit supporting documents via the "Certificates & Petitions" tab.',
-  'Опубликован график зимней экзаменационной сессии':
-    'Winter Examination Schedule Published',
+  'Опубликован график зимней экзаменационной сессии': 'Winter Examination Schedule Published',
   'Проверьте даты консультаций и экзаменов во вкладке «Расписание».':
     'Check consultation and exam dates in the "Timetable" section.',
-  'Утверждено расписание зимней экзаменационной сессии':
-    'Winter Examination Schedule Approved',
+  'Утверждено расписание зимней экзаменационной сессии': 'Winter Examination Schedule Approved',
   'График экзаменов и предэкзаменационных консультаций доступен в личных кабинетах студентов.':
     'Exam and consultation schedules are now available in student accounts.',
-  'Сроки ликвидации академических задолженностей':
-    'Academic Debt Clearance Deadlines',
+  'Сроки ликвидации академических задолженностей': 'Academic Debt Clearance Deadlines',
   'Внимание студентам! График комиссионных пересдач осеннего семестра утвержден. Пересдачи пройдут с 24 по 30 ноября. Пожалуйста, согласуйте допуск в деканате.':
-    'Attention students! The fall semester committee retake schedule is approved. Retakes will take place Nov 24–30. Please confirm admission at the Dean\'s Office.',
-  'Прием заявлений на повышенную стипендию (ПГАС)':
-    'Merit Scholarship (PGAS) Applications Open',
+    "Attention students! The fall semester committee retake schedule is approved. Retakes will take place Nov 24–30. Please confirm admission at the Dean's Office.",
+  'Прием заявлений на повышенную стипендию (ПГАС)': 'Merit Scholarship (PGAS) Applications Open',
   'Прием заявлений и подтверждающих документов на ПГАС открыт до 25 ноября. Подать заявление можно через раздел "Справки и заявления".':
     'Applications and supporting documents for PGAS are open until Nov 25. Submit via "Certificates & Petitions".',
   'Деканат Факультета международных отношений опубликовал график консультаций и экзаменов на декабрь 2026 года. Проверьте даты и аудитории в разделе «Расписание».':
     'The Faculty Dean\'s Office has published the December 2026 exam and consultation schedule. Check dates and rooms in "Timetable".',
-  'Временное изменение аудиторий в корпусе Б':
-    'Temporary Room Relocations in Bldg B',
+  'Временное изменение аудиторий в корпусе Б': 'Temporary Room Relocations in Bldg B',
   'В связи с плановой модернизацией мультимедийного оборудования часть семинаров группы ДУ-205 перенесена в аудитории главного корпуса. Следите за статусом пар в расписании.':
     'Due to multimedia equipment modernization, select seminars for group DU-205 are relocated to the Main Bldg. Monitor timetable status.',
-  'График работы деканата в праздничные дни':
-    'Dean\'s Office Holiday Operating Hours',
+  'График работы деканата в праздничные дни': "Dean's Office Holiday Operating Hours",
   'Информируем о режиме работы учебного офиса DemoTech University: в государственные праздничные дни прием очных заявлений не ведется, электронные заявки принимаются круглосуточно.':
     'Notice on DemoTech University academic office hours: in-person desk is closed on public holidays; online requests are accepted 24/7.',
-  'Плановый профилактический медосмотр студентов':
-    'Annual Student Health Screening',
+  'Плановый профилактический медосмотр студентов': 'Annual Student Health Screening',
   'До 30 ноября студентам 1–3 курсов необходимо пройти ежегодный флюорографический осмотр в университетской поликлинике (корпус Д, каб. 104).':
     'Students of Years 1–3 must complete the annual chest X-ray screening at the university clinic (Bldg D, Rm 104) by Nov 30.',
   'Конкурс на программы академической мобильности (весна 2027)':
     'Academic Mobility Exchange Program (Spring 2027)',
   'Открыт прием заявок на семестровый обмен для студентов 2 курса. Дедлайн подачи мотивационного письма и транскрипта — 1 декабря.':
     'Semester exchange applications open for 2nd year students. Deadline for motivation letter and transcript is Dec 1.',
-  'Предзащита курсовых проектов магистратуры':
-    'Master\'s Coursework Project Pre-Defense',
+  'Предзащита курсовых проектов магистратуры': "Master's Coursework Project Pre-Defense",
   'Студентам группы ДУ-301 необходимо загрузить черновики аналитических докладов куратору до 5 декабря для допуска к итоговой защите.':
     'Group DU-301 students must upload draft reports to their advisor by Dec 5 for final defense clearance.',
   'Адаптационный семинар и продление пропусков СКУД для 1 курса':
@@ -268,12 +259,10 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   'Перенос аудитории на сегодня!': 'Classroom Relocated Today!',
   'Пара "Международное публичное право" в 10:15 перенесена из А-101 в Б-115.':
     'Class "International Public Law" at 10:15 relocated from A-101 to B-115.',
-  'Прием документов на повышенную стипендию':
-    'Merit Scholarship Applications Open',
+  'Прием документов на повышенную стипендию': 'Merit Scholarship Applications Open',
   'Деканат открыл прием заявлений на ПГАС за достижения в науке и учебе до 25 ноября включительно.':
-    'Dean\'s Office opened applications for enhanced merit scholarships until Nov 25.',
-  'Требуется уточнение по заявке на общежитие':
-    'Clarification Required for Dormitory Petition',
+    "Dean's Office opened applications for enhanced merit scholarships until Nov 25.",
+  'Требуется уточнение по заявке на общежитие': 'Clarification Required for Dormitory Petition',
   'Инспектор запросил скан справки о доходах семьи за 6 месяцев. Откройте заявку для отправки данных.':
     'Inspector requested a 6-month family income statement. Open petition to submit document.',
   'Назначена дата пересдачи по Статистике': 'Statistics Retake Date Scheduled',
@@ -292,20 +281,20 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   'Семинар по Политической философии в 12:00 отменен (участие лектора в симпозиуме).':
     'Political Philosophy seminar at 12:00 is cancelled (lecturer attending symposium).',
   'Ваше заявление зарегистрировано и передано на рассмотрение в деканат.':
-    'Your application has been registered and forwarded to the Dean\'s Office for review.',
+    "Your application has been registered and forwarded to the Dean's Office for review.",
 
   // Inspector Remarks & History Comments
   'Заявление принято в работу канцелярией. Проводится верификация данных.':
     'Petition accepted by the Registry. Data verification in progress.',
   'Заявление принято инспектором деканата в обработку':
-    'Application accepted for processing by Dean\'s Office inspector',
+    "Application accepted for processing by Dean's Office inspector",
   'Пожалуйста, приложите справку о составе семьи и доходах':
     'Please attach proof of family composition and income',
   'Академический транскрипт сформирован и готов к выдаче':
     'Academic transcript generated and ready for issuance',
   'Принято в работу': 'Accepted into workflow',
   'Заявка принята в работу инспектором деканата Волковой М.В. Формируется электронный макет справки.':
-    'Application accepted into workflow by Dean\'s Office inspector M.V. Volkova. Electronic certificate layout is in progress.',
+    "Application accepted into workflow by Dean's Office inspector M.V. Volkova. Electronic certificate layout is in progress.",
   'Необходимо прикрепить скан справки о доходах семьи за последние 6 месяцев для расчета баллов на заселение.':
     'Please attach scanned family income statement for the last 6 months to compute housing points.',
   'Электронный макет транскрипта сформирован (демонстрационная печать и QR-код). Доступен для просмотра и скачивания в личном кабинете.':
@@ -335,7 +324,7 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   'Лингво-2': 'Linguo-2',
   'Актовый зал 3': 'Assembly Hall 3',
   'В-302': 'V-302',
-  'Спорткомплекс': 'Sports Complex',
+  Спорткомплекс: 'Sports Complex',
   'А-312': 'A-312',
   'Компьютерный класс 4': 'Computer Lab 4',
   'Б-208': 'B-208',
@@ -375,16 +364,19 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   // Institutional Names & Orders
   'ДЕМОТЕХ УНИВЕРСИТЕТ': 'DEMOTECH UNIVERSITY',
   'ДемоТех Университет': 'DemoTech University',
-  'Факультет международных отношений и цифровой дипломатии': 'Faculty of International Relations & Digital Diplomacy',
-  'Факультет международных отношений • Деканат': "Faculty of International Relations • Dean's Office",
-  'Единый деканат факультета международных отношений': "Unified Dean's Office of Faculty of International Relations",
+  'Факультет международных отношений и цифровой дипломатии':
+    'Faculty of International Relations & Digital Diplomacy',
+  'Факультет международных отношений • Деканат':
+    "Faculty of International Relations • Dean's Office",
+  'Единый деканат факультета международных отношений':
+    "Unified Dean's Office of Faculty of International Relations",
   'Кафедра международных отношений': 'Department of International Relations',
-  'Приказ № 841-СТ от 25.08.2024 г.': 'Decree No. 841-ST of Aug 25, 2024',
-  'Приказ № 841-СТ': 'Decree No. 841-ST',
+  'Приказ № 412-СТ от 25.08.2024 г.': 'Decree No. 412-ST of Aug 25, 2024',
+  'Приказ № 412-СТ': 'Decree No. 412-ST',
   'Основание выдачи:': 'Matriculation Order:',
   'Студенческий билет № ': 'Student ID No. ',
-  'АКТИВЕН ДО 31.08.2026': 'VALID THRU 31.08.2026',
-  'МИНОБРНАУКИ РОССИИ • ГОСАККРЕДИТАЦИЯ': 'STATE ACCREDITED UNIVERSITY',
+  'АКТИВЕН ДО 31.08.2027': 'VALID THRU 31.08.2027',
+  'ДЕМОТЕХ КАМПУС • СТУДЕНЧЕСКИЙ ПОРТАЛ': 'DEMOTECH CAMPUS • STUDENT PORTAL',
 
   // Exam Formats
   'Письменная работа + защита': 'Written Paper + Defense',
@@ -394,7 +386,7 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   'Компьютерное тестирование': 'Computerized Testing',
   'Комиссионный экзамен': 'Commission Examination',
   'Зачет с оценкой': 'Graded Credit',
-  'Зачет': 'Credit',
+  Зачет: 'Credit',
 
   // Request Reasons, Purposes & Form Values
   'По месту работы родителей': "For parents' employment verification",
@@ -405,6 +397,20 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   'Для военкомата': 'For military enlistment office',
   'Общежитие №2': 'Dormitory No. 2',
   'Корпус №2': 'Building No. 2',
+  'Количество копий': 'Number of copies',
+  'Цель / Место предъявления': 'Purpose / Recipient',
+  'Место предъявления': 'Recipient Organization',
+  Комментарий: 'Notes / Comments',
+  'Учебные и научные достижения': 'Academic & Research Achievements',
+  'Основание и реквизиты документов': 'Reason & Supporting Document Details',
+  'Язык выписки': 'Transcript Language',
+  'Желаемый корпус общежития': 'Preferred Dormitory Building',
+  Причина: 'Reason',
+  'На русском': 'Russian only',
+  'На английском': 'English only',
+  'На русском и английском': 'Bilingual (RU/EN)',
+  'Обычный (бумажный с печатью)': 'Standard Paper Copy',
+  'Электронный макет (PDF)': 'Digital Preview (PDF)',
 
   // Student & Staff Names (RU -> EN)
   'Мария Волкова (Сотрудник деканата)': "Maria Volkova (Dean's Office Staff)",
@@ -447,14 +453,72 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
 };
 
 const CYRILLIC_TO_LATIN_MAP: Record<string, string> = {
-  А: 'A', Б: 'B', В: 'V', Г: 'G', Д: 'D', Е: 'E', Ё: 'Yo', Ж: 'Zh', З: 'Z', И: 'I',
-  Й: 'Y', К: 'K', Л: 'L', М: 'M', Н: 'N', О: 'O', П: 'P', Р: 'R', С: 'S', Т: 'T',
-  У: 'U', Ф: 'F', Х: 'Kh', Ц: 'Ts', Ч: 'Ch', Ш: 'Sh', Щ: 'Shch', Ъ: '', Ы: 'Y',
-  Ь: '', Э: 'E', Ю: 'Yu', Я: 'Ya',
-  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i',
-  й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't',
-  у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch', ъ: '', ы: 'y',
-  ь: '', э: 'e', ю: 'yu', я: 'ya',
+  А: 'A',
+  Б: 'B',
+  В: 'V',
+  Г: 'G',
+  Д: 'D',
+  Е: 'E',
+  Ё: 'Yo',
+  Ж: 'Zh',
+  З: 'Z',
+  И: 'I',
+  Й: 'Y',
+  К: 'K',
+  Л: 'L',
+  М: 'M',
+  Н: 'N',
+  О: 'O',
+  П: 'P',
+  Р: 'R',
+  С: 'S',
+  Т: 'T',
+  У: 'U',
+  Ф: 'F',
+  Х: 'Kh',
+  Ц: 'Ts',
+  Ч: 'Ch',
+  Ш: 'Sh',
+  Щ: 'Shch',
+  Ъ: '',
+  Ы: 'Y',
+  Ь: '',
+  Э: 'E',
+  Ю: 'Yu',
+  Я: 'Ya',
+  а: 'a',
+  б: 'b',
+  в: 'v',
+  г: 'g',
+  д: 'd',
+  е: 'e',
+  ё: 'yo',
+  ж: 'zh',
+  з: 'z',
+  и: 'i',
+  й: 'y',
+  к: 'k',
+  л: 'l',
+  м: 'm',
+  н: 'n',
+  о: 'o',
+  п: 'p',
+  р: 'r',
+  с: 's',
+  т: 't',
+  у: 'u',
+  ф: 'f',
+  х: 'kh',
+  ц: 'ts',
+  ч: 'ch',
+  ш: 'sh',
+  щ: 'shch',
+  ъ: '',
+  ы: 'y',
+  ь: '',
+  э: 'e',
+  ю: 'yu',
+  я: 'ya',
 };
 
 export function transliterateCyrillic(str: string): string {
@@ -496,7 +560,7 @@ export function formatNotificationDate(dateStr: string | undefined | null, lang:
 export function localizeText(text: string | undefined | null, lang: Lang): string {
   if (!text) return '';
   if (lang === 'ru') return text;
-  
+
   const direct = RU_TO_EN_DICTIONARY[text];
   if (direct) return direct;
 

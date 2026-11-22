@@ -1,5 +1,5 @@
-// DemoTech Digital Dean's Office PWA Service Worker (v2)
-const CACHE_NAME = 'demotech-dean-v2';
+// DemoTech Digital Dean's Office PWA Service Worker (v3)
+const CACHE_NAME = 'demotech-dean-v3';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg'];
 
 self.addEventListener('install', (event) => {

@@ -141,11 +141,23 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
 
     const created = await aigul.post('/api/v1/requests').send({
       typeCode: 'military_certificate',
-      data: { militaryOffice: 'OVK Ramenki', copies: 1 },
+      data: {
+        militaryOffice: 'OVK Ramenki',
+        copies: 1,
+        delivery: 'Лично в деканате с оригиналом паспорта',
+      },
     });
     expect(created.status).toBe(201);
     expect(created.body.status).toBe('submitted');
     expect(created.body.history.length).toBe(1);
+
+    // Missing required fields for study_certificate -> 422 VALIDATION_ERROR
+    const missingReqFields = await aigul.post('/api/v1/requests').send({
+      typeCode: 'study_certificate',
+      data: { notes: 'only optional note' },
+    });
+    expect(missingReqFields.status).toBe(422);
+    expect(missingReqFields.body.code).toBe('VALIDATION_ERROR');
 
     const ownGet = await aigul.get(`/api/v1/requests/${created.body.id}`);
     expect(ownGet.status).toBe(200);
@@ -261,6 +273,89 @@ describe('Student API Flows, Data Isolation & IDOR Protection', () => {
       globalThis.fetch = origFetch;
       delete process.env.AI_API_KEY;
       delete process.env.AI_BASE_URL;
+    }
+  });
+
+  it('GET /api/v1/grades supports ?semester= filter and rejects invalid semester with 422', async () => {
+    const aigul = await loginAs('aigul.nurova@demo.edu');
+
+    const sem3 = await aigul.get('/api/v1/grades?semester=3');
+    expect(sem3.status).toBe(200);
+    expect(sem3.body.semester).toBe(3);
+    expect(sem3.body.items.length).toBe(3);
+
+    const sem1 = await aigul.get('/api/v1/grades?semester=1');
+    expect(sem1.status).toBe(200);
+    expect(sem1.body.semester).toBe(1);
+    expect(sem1.body.items).toEqual([]);
+    expect(sem1.body.creditsEarned).toBe(0);
+    expect(sem1.body.averagePoints).toBe(0);
+
+    const badSem = await aigul.get('/api/v1/grades?semester=0');
+    expect(badSem.status).toBe(422);
+  });
+
+  it('GET /api/v1/notifications filters by ?kind=, paginates, and rejects invalid kind with 422', async () => {
+    const lina = await loginAs('lina.okafor@demo.edu');
+
+    const schKind = await lina.get('/api/v1/notifications?kind=schedule_change');
+    expect(schKind.status).toBe(200);
+    expect(schKind.body.total).toBe(2);
+    expect(schKind.body.items.every((n: { kind: string }) => n.kind === 'schedule_change')).toBe(
+      true
+    );
+
+    const annKind = await lina.get('/api/v1/notifications?kind=announcement');
+    expect(annKind.status).toBe(200);
+    expect(annKind.body.total).toBe(2);
+    expect(annKind.body.items.every((n: { kind: string }) => n.kind === 'announcement')).toBe(true);
+
+    const paged = await lina.get('/api/v1/notifications?page=1&pageSize=2');
+    expect(paged.status).toBe(200);
+    expect(paged.body.total).toBe(4);
+    expect(paged.body.items.length).toBe(2);
+
+    const badKind = await lina.get('/api/v1/notifications?kind=invalid');
+    expect(badKind.status).toBe(422);
+  });
+
+  it('GET /api/v1/schedule?date= filters single day for own group and GET /schedule/today picks same-day remaining uncancelled next class', async () => {
+    const aigul = await loginAs('aigul.nurova@demo.edu');
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    const badDate = await aigul.get('/api/v1/schedule?date=invalid');
+    expect(badDate.status).toBe(422);
+
+    const singleDay = await aigul.get(`/api/v1/schedule?date=${todayStr}`);
+    expect(singleDay.status).toBe(200);
+    expect(singleDay.body.length).toBe(3);
+    expect(
+      singleDay.body.every(
+        (e: { date: string; groupId: string }) => e.date === todayStr && e.groupId === 'DU-101'
+      )
+    ).toBe(true);
+
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      // Before 08:30 -> picks 08:30 entry
+      vi.setSystemTime(new Date(`${todayStr}T07:00:00.000Z`));
+      const morningRes = await aigul.get('/api/v1/schedule/today');
+      expect(morningRes.status).toBe(200);
+      expect(morningRes.body.next?.id).toBe(ids.du101ScheduleId);
+
+      // At 09:00 -> 12:00 is cancelled, so picks 15:45 entry later today
+      vi.setSystemTime(new Date(`${todayStr}T09:00:00.000Z`));
+      const middayRes = await aigul.get('/api/v1/schedule/today');
+      expect(middayRes.status).toBe(200);
+      expect(middayRes.body.next?.id).toBe('44444444-4444-4444-8444-444444444405');
+
+      // After 15:45 -> falls back to future day entry
+      vi.setSystemTime(new Date(`${todayStr}T17:00:00.000Z`));
+      const eveningRes = await aigul.get('/api/v1/schedule/today');
+      expect(eveningRes.status).toBe(200);
+      expect(eveningRes.body.next?.id).toBe('44444444-4444-4444-8444-444444444402');
+    } finally {
+      vi.useRealTimers();
     }
   });
 });
