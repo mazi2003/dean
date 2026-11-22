@@ -184,11 +184,83 @@ function markdownToHtml(md) {
   return out.join('\n');
 }
 
+function buildShotsGalleryHtml(shotsDir) {
+  if (!shotsDir || !fs.existsSync(shotsDir)) return '';
+  const specs = [
+    {
+      file: '01-login-desktop.png',
+      title: '1. Единый вход (SSO) и айдентика DemoTech University',
+      desc: 'Авторский герб, вход без обхода пароля и обязательный дисклеймер конкурса (Desktop 1280×800).',
+      mobile: false,
+    },
+    {
+      file: '02-today-aigul.png',
+      title: '2. Главный экран «Сегодня» (академический дашборд)',
+      desc: 'Айгуль Нурова (гр. ДУ-101): GPA 4.75, кредиты ECTS, ближайшая пара и активные справки.',
+      mobile: false,
+    },
+    {
+      file: '03-schedule-week.png',
+      title: '3. Расписание на неделю с оперативными заменами',
+      desc: 'Наглядные бейджи переносов/замен аудиторий, календарь сессии и экспорт в .ICS.',
+      mobile: false,
+    },
+    {
+      file: '04-student-card.png',
+      title: '4. Цифровой студенческий билет СКУД',
+      desc: 'Динамический верифицируемый QR-код и интерактивная симуляция NFC-прохода через турникет.',
+      mobile: false,
+    },
+    {
+      file: '05-timur-debt-isolation.png',
+      title: '5. Изоляция данных разных студентов (IDOR-защита)',
+      desc: 'Тимур Белов (гр. ДУ-205): собственный учебный план, академический долг и дата пересдачи.',
+      mobile: false,
+    },
+    {
+      file: '06-staff-dean-desk.png',
+      title: '6. Рабочее место сотрудника деканата (АРМ инспектора)',
+      desc: 'Ролевой контур (dean.office@demo.edu): обработка заявок студентов, досье групп и объявления.',
+      mobile: false,
+    },
+    {
+      file: '07-mobile-today.png',
+      title: '7. Мобильная версия кабинета (смартфон 375px)',
+      desc: 'Нижний таб-бар (≥48px), чёткая иерархия карточек, 0px горизонтального скролла и без авто-зума.',
+      mobile: true,
+    },
+    {
+      file: '08-mobile-campus-map.png',
+      title: '8. Интерактивная карта кампуса на телефоне',
+      desc: 'Маршрутизация 1 → 3 этаж, единый скролл, быстрый выбор аудиторий и кнопка масштаба.',
+      mobile: true,
+    },
+  ];
+
+  const cards = [];
+  for (const s of specs) {
+    const p = path.join(shotsDir, s.file);
+    if (!fs.existsSync(p)) continue;
+    const uri = `data:image/png;base64,${fs.readFileSync(p).toString('base64')}`;
+    cards.push(
+      `<div class="gallery-card${s.mobile ? ' mobile-card' : ''}">` +
+        `<div class="gallery-caption"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.desc)}</span></div>` +
+        `<div class="gallery-img-wrap"><img src="${uri}" alt="${escapeHtml(s.title)}" /></div>` +
+      `</div>`
+    );
+  }
+  if (cards.length === 0) return '';
+
+  return `<div class="page-break"></div><h2>9. Скриншоты работающего прототипа (https://deans-nine.vercel.app/)</h2><p>Ниже представлены актуальные снимки экрана рабочего веб-приложения и мобильной версии (Desktop 1280×800 и Mobile 375×760), подтверждающие полный пользовательский сценарий от входа SSO до АРМ сотрудника деканата.</p><div class="gallery-grid">${cards.join('\n')}</div>`;
+}
+
 async function main() {
   const mdPath = path.join(rootDir, 'docs', 'submission.md');
   const outPdf = path.join(rootDir, 'docs', 'submission.pdf');
+  const shotsArg = process.argv.find((a) => a.startsWith('--shots-dir='));
+  const shotsDir = shotsArg ? shotsArg.slice('--shots-dir='.length) : null;
   const md = fs.readFileSync(mdPath, 'utf8');
-  const bodyHtml = markdownToHtml(md);
+  const bodyHtml = markdownToHtml(md) + buildShotsGalleryHtml(shotsDir);
 
   const html = `<!doctype html>
 <html lang="ru">
@@ -219,6 +291,14 @@ async function main() {
   .flow-arrow { font-weight: 700; color: #166534; }
   .flow-good { flex: 1; background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; padding: 4pt 7pt; border-radius: 5pt; }
   .seq-table { margin: 4pt 0 0; font-size: 8.5pt; }
+  .page-break { page-break-before: always; }
+  .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; margin-top: 8pt; }
+  .gallery-card { border: 1px solid #DCE2EA; border-radius: 8pt; padding: 7pt; background: #F8FAFC; page-break-inside: avoid; display: flex; flex-direction: column; gap: 5pt; }
+  .gallery-caption { display: flex; flex-direction: column; gap: 2pt; font-size: 8.5pt; color: #334155; }
+  .gallery-caption strong { color: #142D4E; font-size: 9pt; }
+  .gallery-img-wrap { text-align: center; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 5pt; padding: 3pt; }
+  .gallery-card img { width: 100%; height: auto; max-height: 205px; object-fit: contain; display: block; margin: 0 auto; border-radius: 4pt; }
+  .gallery-card.mobile-card img { width: auto; max-width: 100%; max-height: 245px; }
 </style>
 </head>
 <body>
