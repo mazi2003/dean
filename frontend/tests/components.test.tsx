@@ -997,7 +997,7 @@ describe('Frontend Component & Accessibility Suite', () => {
     await waitFor(() => {
       expect(screen.getByText(/Приложить к турникету/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/2024-БИ-0412/i)).toBeInTheDocument();
+    expect(screen.getByText(/СТ-2023-0194/i)).toBeInTheDocument();
   });
 
   it('localizeText translates notifications and status updates to English correctly', () => {
