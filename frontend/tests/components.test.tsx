@@ -986,7 +986,7 @@ describe('Frontend Component & Accessibility Suite', () => {
     expect(handleOpenMap).toHaveBeenCalledWith('А-314');
   });
 
-  it('StudentCardModal renders Apple Wallet and Google Wallet export buttons and generates pass download', async () => {
+  it('StudentCardModal renders digital student pass with NFC turnstile simulation and expandable QR code', async () => {
     installApiFetchMock('aigul');
     render(
       <AuthProvider>
@@ -995,9 +995,9 @@ describe('Frontend Component & Accessibility Suite', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTitle(/Добавить в Apple Wallet/i)).toBeInTheDocument();
+      expect(screen.getByText(/Приложить к турникету/i)).toBeInTheDocument();
     });
-    expect(screen.getByTitle(/Сохранить в Google Wallet/i)).toBeInTheDocument();
+    expect(screen.getByText(/2024-БИ-0412/i)).toBeInTheDocument();
   });
 
   it('localizeText translates notifications and status updates to English correctly', () => {
