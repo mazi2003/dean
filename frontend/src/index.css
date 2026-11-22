@@ -109,7 +109,7 @@
     font-family: var(--font-heading);
   }
 
-  /* Secondary font: JetBrains Mono exclusively for numerical & tabular data */
+  /* Tabular figures using primary typography */
   .font-mono {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;

@@ -443,13 +443,13 @@ export const TodayPage: React.FC<TodayPageProps> = ({
           <div className="space-y-2">
             {/* Academic metadata pill */}
             <div className="inline-flex items-center space-x-2 text-xs font-sans text-[#475569] dark:text-[#94a3b8]">
-              <span className="font-sans text-[#166534] dark:text-[#45d320] font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full">
+              <span className="font-sans text-[#166534] dark:text-[#45d320] font-semibold bg-[#ebfbee] dark:bg-[#1e2d24] px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0">
                 {profile?.group}
               </span>
               <span>•</span>
-              <span>{tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}</span>
+              <span className="whitespace-nowrap">{tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}</span>
               <span>•</span>
-              <span className="capitalize">{todayStr}</span>
+              <span className="capitalize whitespace-nowrap">{todayStr}</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
@@ -765,26 +765,26 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                         : 'bg-[#f6f6f9] dark:bg-[#121620] border-[#e2e4e8] dark:border-[#273142]'
                     }`}
                   >
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-sans text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#161821] text-white">
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-sans text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#161821] text-white whitespace-nowrap shrink-0 inline-flex items-center">
                           {ex.code}
                         </span>
                         <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#161821] dark:text-[#ffffff]">
                           {localizeText(ex.subject, lang)}
                         </h4>
                         {ex.status === 'date_changed' && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#3598fe] text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {tr(lang, 'ДАТА ПЕРЕНЕСЕНА', 'DATE RESCHEDULED')}
                           </span>
                         )}
                         {ex.status === 'room_changed' && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#8b5cf6] text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {tr(lang, 'АУДИТОРИЯ ИЗМЕНЕНА', 'ROOM CHANGED')}
                           </span>
                         )}
                         {ex.isDebt && (
-                          <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-[#be123c] text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {tr(lang, 'ПЕРЕСДАЧА', 'RETAKE')}
                           </span>
                         )}
@@ -797,12 +797,12 @@ export const TodayPage: React.FC<TodayPageProps> = ({
 
                     <div className="flex items-center space-x-4 font-sans text-xs flex-shrink-0">
                       <div className="text-left sm:text-right">
-                        <span className="font-bold text-[#166534] dark:text-[#45d320] block">
+                        <span className="font-bold text-[#166534] dark:text-[#45d320] block whitespace-nowrap">
                           {localizeText(ex.date, lang)}
                         </span>
                         <button
                           onClick={() => onOpenMap?.(ex.room)}
-                          className="text-[#475569] dark:text-[#94a3b8] hover:text-[#166534] dark:hover:text-[#45d320] text-[11px] flex items-center sm:justify-end space-x-1 cursor-pointer group transition-colors"
+                          className="text-[#475569] dark:text-[#94a3b8] hover:text-[#166534] dark:hover:text-[#45d320] text-[11px] flex items-center sm:justify-end space-x-1 cursor-pointer group transition-colors whitespace-nowrap"
                           title={lang === 'ru' ? 'Найти аудиторию на карте' : 'Locate room on map'}
                         >
                           <span>{tr(lang, 'в', 'at')} {ex.time} •</span>

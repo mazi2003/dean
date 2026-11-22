@@ -129,7 +129,7 @@ const ExamEditModalContent: React.FC<ExamEditModalContentProps> = ({
                 <span className="font-sans text-[10px] font-bold px-2 py-0.5 rounded bg-[#161821] text-[#45d320]">
                   {tr(lang, 'ГРУППА', 'GROUP')} {exam.groupId}
                 </span>
-                <span className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8]">{exam.code}</span>
+                <span className="text-[11px] font-sans text-[#475569] dark:text-[#94A3B8] whitespace-nowrap shrink-0">{exam.code}</span>
               </div>
               <h2 className="font-semibold text-base sm:text-lg text-[#161821] dark:text-[#FFFFFF] mt-0.5">
                 {tr(

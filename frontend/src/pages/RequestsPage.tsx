@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { StudentRequest, RequestType } from '../types';
 import { api } from '../services/api';
-import { tr, getRequestStatusLabel, localizeText } from '../utils/i18n';
+import { tr, getRequestStatusLabel, localizeText, formatNotificationDate } from '../utils/i18n';
 
 interface RequestsPageProps {
   onPreviewCert: (req: StudentRequest) => void;
@@ -307,9 +307,9 @@ export const RequestsPage: React.FC<RequestsPageProps> = ({ onPreviewCert }) => 
                       </div>
                       <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans">
                         {tr(lang, 'Подано:', 'Submitted:')}{' '}
-                        <span className="font-sans">{req.createdAt}</span> •{' '}
+                        <span className="font-sans">{formatNotificationDate(req.createdAt, lang)}</span> •{' '}
                         {tr(lang, 'Срок исполнения: до', 'Expected by:')}{' '}
-                        <span className="font-sans font-medium">{req.expectedDate}</span>
+                        <span className="font-sans font-medium">{localizeText(req.expectedDate, lang)}</span>
                       </p>
                     </div>
 

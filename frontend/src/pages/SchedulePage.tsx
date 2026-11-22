@@ -832,7 +832,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                     {/* Header Row */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#e2e4e8] dark:border-[#273142] pb-2.5">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-sans text-xs font-bold px-2 py-0.5 rounded bg-[#161821] text-[#FFFFFF]">
+                        <span className="font-sans text-xs font-bold px-2.5 py-0.5 rounded bg-[#161821] text-[#FFFFFF] whitespace-nowrap shrink-0 inline-flex items-center">
                           {ex.code}
                         </span>
                         <h4
@@ -843,34 +843,34 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
 
                         {/* Status Badges */}
                         {isDateChanged && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#166534] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#166534] text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {getExamStatusLabel('date_changed', lang)}
                           </span>
                         )}
                         {isRoomChanged && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-blue-600 text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-blue-600 text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {getExamStatusLabel('room_changed', lang)}
                           </span>
                         )}
                         {isPostponed && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-purple-700 text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-purple-700 text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {getExamStatusLabel('postponed', lang)}
                           </span>
                         )}
                         {isCancelled && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#be123c] text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {getExamStatusLabel('cancelled', lang)}
                           </span>
                         )}
                         {ex.isDebt && (
-                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#be123c] text-white">
+                          <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded bg-[#be123c] text-white whitespace-nowrap shrink-0 inline-flex items-center">
                             {tr(lang, 'КОМИССИОННАЯ ПЕРЕСДАЧА', 'COMMITTEE RETAKE')}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center space-x-3 self-end sm:self-auto">
-                        <span className="text-xs font-sans font-bold text-[#161821] dark:text-[#45d320]">
+                      <div className="flex items-center space-x-3 self-end sm:self-auto shrink-0 whitespace-nowrap">
+                        <span className="text-xs font-sans font-bold text-[#161821] dark:text-[#45d320] whitespace-nowrap shrink-0">
                           {ex.credits} ECTS
                         </span>
                         {isStaff && (
