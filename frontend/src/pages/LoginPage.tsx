@@ -147,31 +147,31 @@ export const LoginPage: React.FC = () => {
 
               {/* 3 Pillars */}
               <div className="space-y-3 pt-2 text-xs font-sans">
-                <div className="flex items-start space-x-2.5">
-                  <div className="w-6 h-6 rounded-full bg-[#33b712]/20 border border-[#33b712]/50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-[#33b712]/20 border border-[#33b712]/50 flex items-center justify-center flex-shrink-0">
                     <BookOpen className="w-3 h-3 text-[#45d320]" />
                   </div>
-                  <span className="text-white/90">
+                  <span className="text-white/90 leading-snug">
                     {lang === 'ru'
                       ? 'Европейская кредитная система ECTS и БРС'
                       : 'European Credit Transfer System (ECTS)'}
                   </span>
                 </div>
-                <div className="flex items-start space-x-2.5">
-                  <div className="w-6 h-6 rounded-full bg-[#33b712]/20 border border-[#33b712]/50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-[#33b712]/20 border border-[#33b712]/50 flex items-center justify-center flex-shrink-0">
                     <ShieldCheck className="w-3 h-3 text-[#45d320]" />
                   </div>
-                  <span className="text-white/90">
+                  <span className="text-white/90 leading-snug">
                     {lang === 'ru'
                       ? 'Электронные справки и заявления онлайн'
                       : 'Digital certificates and petitions online'}
                   </span>
                 </div>
-                <div className="flex items-start space-x-2.5">
-                  <div className="w-6 h-6 rounded-full bg-[#33b712]/20 border border-[#33b712]/50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-[#33b712]/20 border border-[#33b712]/50 flex items-center justify-center flex-shrink-0">
                     <Compass className="w-3 h-3 text-[#45d320]" />
                   </div>
-                  <span className="text-white/90">
+                  <span className="text-white/90 leading-snug">
                     {lang === 'ru'
                       ? 'Академический ИИ-консультант деканата'
                       : "Dean's Office AI Academic Advisor"}
