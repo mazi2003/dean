@@ -81,7 +81,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     wingRu: 'Центральный атриум • 1 этаж',
     wingEn: 'Central Atrium • Floor 1',
     capacity: 60,
-    equipmentRu: ['3х скоростных лифта', 'Лестница №1', 'Навигационная стела'],
+    equipmentRu: ['3 скоростных лифта', 'Лестница №1', 'Навигационная стела'],
     equipmentEn: ['3x Express Elevators', 'Stairwell #1', 'Directory Board'],
     amenitiesRu: ['Турникеты (20 м)', 'Кафетерий (15 м)', 'Санузлы (30 м)'],
     amenitiesEn: ['Turnstiles (20 m)', 'Cafeteria (15 m)', 'Restrooms (30 m)'],
@@ -94,40 +94,17 @@ const CAMPUS_ROOMS: RoomData[] = [
     door: { x: 400, y: 215 },
   },
   {
-    id: 'hall-b',
-    code: 'Конференц-зал Б',
-    codeEn: 'Conference Hall B',
-    nameRu: 'Конференц-зал им. академика Сахарова',
-    nameEn: 'Conference Hall B (Sakharov Hall)',
-    floor: 1,
-    category: 'room',
-    wingRu: 'Центральный атриум • 1 этаж',
-    wingEn: 'Central Atrium • Floor 1',
-    capacity: 220,
-    equipmentRu: ['Синхронный перевод', 'LED-видеостена 4K', 'Акустика Dolby Atmos'],
-    equipmentEn: ['Simultaneous Translation', '4K LED Video Wall', 'Dolby Atmos Sound'],
-    amenitiesRu: ['Главный гардероб (20 м)', 'Кафетерий (15 м)', 'Турникеты (30 м)'],
-    amenitiesEn: ['Main Cloakroom (20 m)', 'Cafeteria (15 m)', 'Turnstiles (30 m)'],
-    walkTimeRu: '30 сек от турникетов',
-    walkTimeEn: '30 sec from turnstiles',
-    x: 80,
-    y: 80,
-    w: 240,
-    h: 110,
-    door: { x: 200, y: 190 },
-  },
-  {
     id: 'a-101',
     code: 'А-101',
     codeEn: 'A-101',
-    nameRu: 'Большая поточная лекционная аудитория',
+    nameRu: 'Большая поточная лекционная аудитория 101',
     nameEn: 'Grand Lecture Auditorium 101',
     floor: 1,
     category: 'room',
     wingRu: 'Западное крыло • 1 этаж',
     wingEn: 'West Wing • Floor 1',
     capacity: 150,
-    equipmentRu: ['Парные лазерные проекторы', 'Микрофонные стойки', 'Wi-Fi 6 Eduroam'],
+    equipmentRu: ['Парные лазерные проекторы', 'Микрофонные стойки', 'Беспроводная сеть кампуса'],
     equipmentEn: ['Dual Laser Projectors', 'Wireless Mics', 'Wi-Fi 6 Eduroam'],
     amenitiesRu: ['Лифтовой холл (35 м)', 'Кофе-поинт (25 м)', 'Санузлы (40 м)'],
     amenitiesEn: ['Elevator Hall (35 m)', 'Coffee Point (25 m)', 'Restrooms (40 m)'],
@@ -143,14 +120,14 @@ const CAMPUS_ROOMS: RoomData[] = [
     id: 'e-102',
     code: 'Э-102',
     codeEn: 'E-102',
-    nameRu: 'Аудитория макроэкономического моделирования',
+    nameRu: 'Аудитория макроэкономического моделирования 102',
     nameEn: 'Macroeconomic Modeling Room 102',
     floor: 1,
     category: 'room',
     wingRu: 'Восточное крыло • 1 этаж',
     wingEn: 'East Wing • Floor 1',
     capacity: 60,
-    equipmentRu: ['Интерактивная панель SMART', 'Кондиционирование', 'Терминалы данных'],
+    equipmentRu: ['Интерактивная панель', 'Кондиционирование', 'Терминалы данных'],
     equipmentEn: ['SMART Interactive Panel', 'Air Conditioning', 'Data Terminals'],
     amenitiesRu: ['Банкоматы и терминалы (10 м)', 'Студенческое кафе (30 м)'],
     amenitiesEn: ['ATMs & Kiosks (10 m)', 'Student Cafe (30 m)'],
@@ -163,6 +140,29 @@ const CAMPUS_ROOMS: RoomData[] = [
     door: { x: 600, y: 190 },
   },
   {
+    id: 'hall-b',
+    code: 'Конференц-зал Б',
+    codeEn: 'Conference Hall B',
+    nameRu: 'Конференц-зал им. академика Сахарова',
+    nameEn: 'Conference Hall B (Sakharov Hall)',
+    floor: 1,
+    category: 'room',
+    wingRu: 'Центральный атриум • 1 этаж',
+    wingEn: 'Central Atrium • Floor 1',
+    capacity: 220,
+    equipmentRu: ['Синхронный перевод', 'Светодиодная видеостена', 'Концертная акустика'],
+    equipmentEn: ['Simultaneous Translation', '4K LED Video Wall', 'Dolby Atmos Sound'],
+    amenitiesRu: ['Главный гардероб (20 м)', 'Кафетерий (15 м)', 'Турникеты (30 м)'],
+    amenitiesEn: ['Main Cloakroom (20 m)', 'Cafeteria (15 m)', 'Turnstiles (30 m)'],
+    walkTimeRu: '30 сек от турникетов',
+    walkTimeEn: '30 sec from turnstiles',
+    x: 80,
+    y: 80,
+    w: 240,
+    h: 110,
+    door: { x: 200, y: 190 },
+  },
+  {
     id: 'cafe-1',
     code: 'Кафетерий',
     codeEn: 'Cafeteria',
@@ -173,7 +173,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     wingRu: 'Восточное крыло • 1 этаж',
     wingEn: 'East Wing • Floor 1',
     capacity: 90,
-    equipmentRu: ['Зоны для зарядки гаджетов', 'Быстрый Wi-Fi', 'Микроволновые печи'],
+    equipmentRu: ['Зоны для зарядки устройств', 'Скоростной интернет', 'Микроволновые печи'],
     equipmentEn: ['Device Charging Hubs', 'High-Speed Wi-Fi', 'Microwave Stations'],
     amenitiesRu: ['Кофе-бар (0 м)', 'Зона печати (10 м)', 'Турникеты (25 м)'],
     amenitiesEn: ['Coffee Bar (0 m)', 'Printing Hub (10 m)', 'Turnstiles (25 m)'],
@@ -198,10 +198,10 @@ const CAMPUS_ROOMS: RoomData[] = [
     wingRu: 'Центральный атриум • 2 этаж',
     wingEn: 'Central Atrium • Floor 2',
     capacity: 60,
-    equipmentRu: ['3х скоростных лифта', 'Лестница №1', 'Навигационная панель'],
+    equipmentRu: ['3 скоростных лифта', 'Лестница №1', 'Навигационная панель'],
     equipmentEn: ['3x Express Elevators', 'Stairwell #1', 'Directory Board'],
     amenitiesRu: ['Комп-Класс 1 (15 м)', 'Лаб-2 (25 м)', 'Принт-зона (10 м)'],
-    amenitiesEn: ['Computing Lab 1 (15 m)', 'Lab 2 (25 m)', 'Printing Hub (10 m)'],
+    amenitiesEn: ['Computer Lab 1 (15 m)', 'Lab-2 (25 m)', 'Printing Hub (10 m)'],
     walkTimeRu: '15 сек от лифта',
     walkTimeEn: '15 sec from elevator',
     x: 375,
@@ -214,14 +214,14 @@ const CAMPUS_ROOMS: RoomData[] = [
     id: 'comp-1',
     code: 'Комп-Класс 1',
     codeEn: 'Computer Lab 1',
-    nameRu: 'Лаборатория вычислительных систем и Big Data',
+    nameRu: 'Лаборатория вычислительных систем и больших данных №1',
     nameEn: 'Computing Systems & Big Data Lab 1',
     floor: 2,
     category: 'room',
     wingRu: 'Западное крыло • 2 этаж',
     wingEn: 'West Wing • Floor 2',
     capacity: 32,
-    equipmentRu: ['32x станций Intel Core i9 / RTX 4080', 'Gigabit Ethernet', 'Два монитора 4K'],
+    equipmentRu: ['32 графические рабочие станции', 'Оптоволоконная сеть', 'Двойные мониторы'],
     equipmentEn: ['32x Intel Core i9 / RTX 4080 rigs', 'Gigabit Ethernet', 'Dual 4K Displays'],
     amenitiesRu: ['Лифтовой холл (15 м)', 'Принт-зона (10 м)', 'Кулер с водой (5 м)'],
     amenitiesEn: ['Elevator Hall (15 m)', 'Printing Hub (10 m)', 'Water Station (5 m)'],
@@ -234,40 +234,17 @@ const CAMPUS_ROOMS: RoomData[] = [
     door: { x: 200, y: 190 },
   },
   {
-    id: 'comp-3',
-    code: 'Комп-Класс 3',
-    codeEn: 'Computer Lab 3',
-    nameRu: 'Лаборатория сетевой безопасности и DevOps',
-    nameEn: 'Cybersecurity & Cloud Systems Lab 3',
-    floor: 2,
-    category: 'room',
-    wingRu: 'Западное крыло • 2 этаж',
-    wingEn: 'West Wing • Floor 2',
-    capacity: 28,
-    equipmentRu: ['Серверные стойки Cisco / MikroTik', 'Аппаратные ключи HSM', 'Шумоизоляция'],
-    equipmentEn: ['Cisco / MikroTik Server Racks', 'Hardware HSM Keys', 'Acoustic Isolation'],
-    amenitiesRu: ['Лифтовой холл (20 м)', 'Санузлы (35 м)'],
-    amenitiesEn: ['Elevator Hall (20 m)', 'Restrooms (35 m)'],
-    walkTimeRu: '45 сек от лифта 2-го этажа',
-    walkTimeEn: '45 sec from Floor 2 elevator',
-    x: 80,
-    y: 245,
-    w: 240,
-    h: 120,
-    door: { x: 200, y: 245 },
-  },
-  {
     id: 'lab-2',
     code: 'Лаб-2',
     codeEn: 'Lab-2',
-    nameRu: 'Лаборатория искусственного интеллекта и робототехники',
+    nameRu: 'Лаборатория искусственного интеллекта и робототехники №2',
     nameEn: 'AI & Autonomous Robotics Laboratory 2',
     floor: 2,
     category: 'room',
     wingRu: 'Восточное крыло • 2 этаж',
     wingEn: 'East Wing • Floor 2',
     capacity: 25,
-    equipmentRu: ['GPU-кластер NVIDIA A100', 'Тестовые полигоны дронов', 'Паяльные станции'],
+    equipmentRu: ['Вычислительный кластер ИИ', 'Тестовые полигоны роботов', 'Паяльные станции'],
     equipmentEn: ['NVIDIA A100 GPU Cluster', 'Drone Test Arena', 'Soldering Stations'],
     amenitiesRu: ['Медиатека (15 м)', 'Зона отдыха (20 м)', 'Лифт (25 м)'],
     amenitiesEn: ['Mediatheque (15 m)', 'Lounge Zone (20 m)', 'Elevator (25 m)'],
@@ -280,17 +257,44 @@ const CAMPUS_ROOMS: RoomData[] = [
     door: { x: 600, y: 190 },
   },
   {
+    id: 'comp-3',
+    code: 'Комп-Класс 3',
+    codeEn: 'Computer Lab 3',
+    nameRu: 'Лаборатория сетевой безопасности и облачных систем №3',
+    nameEn: 'Cybersecurity & Cloud Systems Lab 3',
+    floor: 2,
+    category: 'room',
+    wingRu: 'Западное крыло • 2 этаж',
+    wingEn: 'West Wing • Floor 2',
+    capacity: 28,
+    equipmentRu: [
+      'Серверные телекоммуникационные стойки',
+      'Аппаратные модули шифрования',
+      'Шумоизоляция',
+    ],
+    equipmentEn: ['Cisco / MikroTik Server Racks', 'Hardware HSM Keys', 'Acoustic Isolation'],
+    amenitiesRu: ['Лифтовой холл (20 м)', 'Санузлы (35 м)'],
+    amenitiesEn: ['Elevator Hall (20 m)', 'Restrooms (35 m)'],
+    walkTimeRu: '45 сек от лифта 2-го этажа',
+    walkTimeEn: '45 sec from Floor 2 elevator',
+    x: 80,
+    y: 245,
+    w: 240,
+    h: 120,
+    door: { x: 200, y: 245 },
+  },
+  {
     id: 'lingvo-4',
     code: 'Лингво-4',
-    codeEn: 'Linguo-4',
-    nameRu: 'Мультимедийный лингафонный кабинет',
+    codeEn: 'Language Lab 4',
+    nameRu: 'Мультимедийный лингафонный кабинет №4',
     nameEn: 'Multimedia Language Center 4',
     floor: 2,
     category: 'room',
     wingRu: 'Восточное крыло • 2 этаж',
     wingEn: 'East Wing • Floor 2',
     capacity: 24,
-    equipmentRu: ['Наушники Sennheiser с шумоподавлением', 'ПО синхронного перевода Trados'],
+    equipmentRu: ['Гарнитуры с активным шумоподавлением', 'Системы синхронного перевода'],
     equipmentEn: ['Sennheiser ANC Headsets', 'Trados Translation Suites'],
     amenitiesRu: ['Кофейный автомат (10 м)', 'Зона самоподготовки (20 м)'],
     amenitiesEn: ['Coffee Vending (10 m)', 'Self-Study Pods (20 m)'],
@@ -315,7 +319,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     wingRu: 'Центральный атриум • 3 этаж',
     wingEn: 'Central Atrium • Floor 3',
     capacity: 60,
-    equipmentRu: ['3х скоростных лифта', 'Лестница №1', 'Навигационная стела'],
+    equipmentRu: ['3 скоростных лифта', 'Лестница №1', 'Навигационная стела'],
     equipmentEn: ['3x Express Elevators', 'Stairwell #1', 'Directory Board'],
     amenitiesRu: ['Деканат ауд. 312 (10 м)', 'Ауд. А-314 (15 м)', 'Зона кофе (15 м)'],
     amenitiesEn: ["Dean's Office 312 (10 m)", 'Room A-314 (15 m)', 'Coffee Point (15 m)'],
@@ -328,10 +332,60 @@ const CAMPUS_ROOMS: RoomData[] = [
     door: { x: 400, y: 215 },
   },
   {
+    id: 'e-301',
+    code: 'Э-301',
+    codeEn: 'E-301',
+    nameRu: 'Аудитория мировых финансовых рынков 301',
+    nameEn: 'Global Financial Markets Auditorium 301',
+    floor: 3,
+    category: 'room',
+    wingRu: 'Восточное крыло • 3 этаж',
+    wingEn: 'East Wing • Floor 3',
+    capacity: 70,
+    equipmentRu: ['Биржевое информационное табло', 'Двойной проектор', 'Беспроводная сеть кампуса'],
+    equipmentEn: ['Bloomberg Market Ticker', 'Dual Projectors', 'Wi-Fi 6 Eduroam'],
+    amenitiesRu: ['Деканат (35 м)', 'Кофе-поинт (15 м)', 'Санузлы (25 м)'],
+    amenitiesEn: ["Dean's Office (35 m)", 'Coffee Point (15 m)', 'Restrooms (25 m)'],
+    walkTimeRu: '40 сек от главного лифта 3-го этажа',
+    walkTimeEn: '40 sec from Floor 3 main elevator',
+    x: 540,
+    y: 70,
+    w: 180,
+    h: 115,
+    door: { x: 630, y: 185 },
+  },
+  {
+    id: 'a-310',
+    code: 'А-310',
+    codeEn: 'A-310',
+    nameRu: 'Семинарская аудитория дипломатического анализа 310',
+    nameEn: 'Diplomatic Analysis Seminar Room 310',
+    floor: 3,
+    category: 'room',
+    wingRu: 'Западное крыло • 3 этаж',
+    wingEn: 'West Wing • Floor 3',
+    capacity: 35,
+    equipmentRu: ['Круглый стол для дебатов', 'Видеоконференцсвязь (ВКС)', 'Интерактивная доска'],
+    equipmentEn: [
+      'Roundtable Debate Setup',
+      'High-Def Video Conferencing',
+      'Interactive Whiteboard',
+    ],
+    amenitiesRu: ['Аудитория А-314 (15 м)', 'Лифтовой холл (25 м)'],
+    amenitiesEn: ['Auditorium A-314 (15 m)', 'Elevator Hall (25 m)'],
+    walkTimeRu: '45 сек от главного лифта 3-го этажа',
+    walkTimeEn: '45 sec from Floor 3 main elevator',
+    x: 80,
+    y: 70,
+    w: 180,
+    h: 115,
+    door: { x: 170, y: 185 },
+  },
+  {
     id: 'room-312',
     code: '312',
     codeEn: '312',
-    nameRu: 'Единый деканат факультета международных отношений',
+    nameRu: 'Единый деканат факультета международных отношений (каб. 312)',
     nameEn: "Faculty Dean's Office & Student Advisory Center (Room 312)",
     floor: 3,
     category: 'room',
@@ -361,7 +415,7 @@ const CAMPUS_ROOMS: RoomData[] = [
     wingRu: 'Западное крыло • 3 этаж',
     wingEn: 'West Wing • Floor 3',
     capacity: 45,
-    equipmentRu: ['Мультимедиа-проектор 4K', '30 рабочих мест с R/Python', 'Кондиционер'],
+    equipmentRu: ['Мультимедиа-проектор', '30 рабочих мест аналитики данных', 'Кондиционер'],
     equipmentEn: ['4K Multimedia Projector', '30 R/Python Workstations', 'Climate Control'],
     amenitiesRu: ['Деканат ауд. 312 (20 м)', 'Лифт (15 м)', 'Кулер с водой (8 м)'],
     amenitiesEn: ["Dean's Office 312 (20 m)", 'Elevator (15 m)', 'Water Station (8 m)'],
@@ -374,61 +428,11 @@ const CAMPUS_ROOMS: RoomData[] = [
     door: { x: 200, y: 245 },
   },
   {
-    id: 'a-310',
-    code: 'А-310',
-    codeEn: 'A-310',
-    nameRu: 'Семинарская аудитория дипломатического анализа',
-    nameEn: 'Diplomatic Analysis Seminar Room 310',
-    floor: 3,
-    category: 'room',
-    wingRu: 'Западное крыло • 3 этаж',
-    wingEn: 'West Wing • Floor 3',
-    capacity: 35,
-    equipmentRu: ['Круглый стол для дебатов', 'Видеоконференцсвязь (ВКС)', 'Интерактивная доска'],
-    equipmentEn: [
-      'Roundtable Debate Setup',
-      'High-Def Video Conferencing',
-      'Interactive Whiteboard',
-    ],
-    amenitiesRu: ['Аудитория А-314 (15 м)', 'Лифтовой холл (25 м)'],
-    amenitiesEn: ['Auditorium A-314 (15 m)', 'Elevator Hall (25 m)'],
-    walkTimeRu: '45 сек от главного лифта 3-го этажа',
-    walkTimeEn: '45 sec from Floor 3 main elevator',
-    x: 80,
-    y: 70,
-    w: 180,
-    h: 115,
-    door: { x: 170, y: 185 },
-  },
-  {
-    id: 'e-301',
-    code: 'Э-301',
-    codeEn: 'E-301',
-    nameRu: 'Аудитория мировых финансовых рынков',
-    nameEn: 'Global Financial Markets Auditorium 301',
-    floor: 3,
-    category: 'room',
-    wingRu: 'Восточное крыло • 3 этаж',
-    wingEn: 'East Wing • Floor 3',
-    capacity: 70,
-    equipmentRu: ['Биржевой тикер Bloomberg', 'Двойной проектор', 'Wi-Fi 6 Eduroam'],
-    equipmentEn: ['Bloomberg Market Ticker', 'Dual Projectors', 'Wi-Fi 6 Eduroam'],
-    amenitiesRu: ['Деканат (35 м)', 'Кофе-поинт (15 м)', 'Санузлы (25 м)'],
-    amenitiesEn: ["Dean's Office (35 m)", 'Coffee Point (15 m)', 'Restrooms (25 m)'],
-    walkTimeRu: '40 сек от главного лифта 3-го этажа',
-    walkTimeEn: '40 sec from Floor 3 main elevator',
-    x: 540,
-    y: 70,
-    w: 180,
-    h: 115,
-    door: { x: 630, y: 185 },
-  },
-  {
     id: 'a-316',
     code: 'А-316',
     codeEn: 'A-316',
-    nameRu: 'Кафедра международного права и политологии',
-    nameEn: 'Department of International Law & Political Studies',
+    nameRu: 'Кафедра международного права и политологии 316',
+    nameEn: 'Department of International Law & Political Studies 316',
     floor: 3,
     category: 'room',
     wingRu: 'Восточное крыло • 3 этаж',
@@ -528,7 +532,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
   const handleClose = useCallback(() => {
     setSelectedFloorOverride(null);
     onClose();
-  }, [onClose]);
+  }, [onClose, setSelectedFloorOverride]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -573,7 +577,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
       aria-labelledby="campus-map-title"
@@ -595,7 +599,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 >
                   {tr(
                     lang,
-                    'Интерактивная карта кампуса и навигация (Wayfinding)',
+                    'Интерактивная карта кампуса и навигация',
                     'Interactive Campus Map & Indoor Wayfinding'
                   )}
                 </h2>
@@ -653,7 +657,13 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   }}
                   className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#161821] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#33b712] cursor-pointer"
                 >
-                  <optgroup label={lang === 'ru' ? 'Входы и турникеты' : 'Entrances & Gateways'}>
+                  <optgroup
+                    label={
+                      lang === 'ru'
+                        ? 'Входы и турникеты (1 этаж)'
+                        : 'Entrances & Gateways (Floor 1)'
+                    }
+                  >
                     {CAMPUS_ROOMS.filter((r) => r.category === 'entrance').map((r) => (
                       <option key={r.id} value={r.id}>
                         🏛️ {getRoomCode(r)} ({r.floor} {lang === 'ru' ? 'этаж' : 'F'})
@@ -661,16 +671,24 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     ))}
                   </optgroup>
                   <optgroup
-                    label={lang === 'ru' ? 'Лифтовые узлы и лестницы' : 'Elevator Hubs & Stairs'}
+                    label={
+                      lang === 'ru'
+                        ? 'Лифтовые узлы и лестницы (1–3 этаж)'
+                        : 'Elevator Hubs & Stairs (Floors 1–3)'
+                    }
                   >
                     {CAMPUS_ROOMS.filter((r) => r.category === 'elevator').map((r) => (
                       <option key={r.id} value={r.id}>
-                        🛗 {getRoomCode(r)} ({r.floor} {lang === 'ru' ? 'этаж' : 'F'})
+                        🛗 {getRoomCode(r)}
                       </option>
                     ))}
                   </optgroup>
                   <optgroup
-                    label={lang === 'ru' ? 'Аудитории и лаборатории (1 этаж)' : 'Floor 1 Rooms'}
+                    label={
+                      lang === 'ru'
+                        ? '1 этаж — Аудитории и залы'
+                        : 'Floor 1 — Rooms & Lecture Halls'
+                    }
                   >
                     {CAMPUS_ROOMS.filter((r) => r.floor === 1 && r.category === 'room').map((r) => (
                       <option key={r.id} value={r.id}>
@@ -679,7 +697,11 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     ))}
                   </optgroup>
                   <optgroup
-                    label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}
+                    label={
+                      lang === 'ru'
+                        ? '2 этаж — Лаборатории и компьютерные классы'
+                        : 'Floor 2 — Laboratories & Computer Labs'
+                    }
                   >
                     {CAMPUS_ROOMS.filter((r) => r.floor === 2 && r.category === 'room').map((r) => (
                       <option key={r.id} value={r.id}>
@@ -688,7 +710,11 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     ))}
                   </optgroup>
                   <optgroup
-                    label={lang === 'ru' ? 'Аудитории и деканат (3 этаж)' : 'Floor 3 Rooms'}
+                    label={
+                      lang === 'ru'
+                        ? '3 этаж — Аудитории и деканат'
+                        : "Floor 3 — Rooms & Dean's Office"
+                    }
                   >
                     {CAMPUS_ROOMS.filter((r) => r.floor === 3 && r.category === 'room').map((r) => (
                       <option key={r.id} value={r.id}>
@@ -704,9 +730,9 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 <button
                   type="button"
                   onClick={handleSwap}
-                  className="min-w-[44px] min-h-[44px] px-3 py-2 rounded-full bg-white dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#273142] text-[#161821] dark:text-white border border-[#e2e4e8] dark:border-[#273142] transition-transform active:scale-95 flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
+                  className="min-w-[44px] min-h-[44px] px-3 py-2 rounded-full bg-white dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#273142] text-[#161821] dark:text-white border border-[#e2e4e8] dark:border-[#273142] flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
                   title={tr(lang, 'Поменять местами старт и финиш', 'Swap origin and destination')}
-                  aria-label="Swap route direction"
+                  aria-label={tr(lang, 'Поменять направление маршрута', 'Swap route direction')}
                 >
                   <ArrowUpDown className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
                   <span className="md:hidden text-[11px] font-sans font-medium">
@@ -715,7 +741,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                 </button>
               </div>
 
-              {/* Destination Dropdown */}
+              {/* Destination Dropdown (Ordered Floor 1 -> Floor 2 -> Floor 3 -> Entrances/Elevators) */}
               <div className="md:col-span-5 space-y-1 min-w-0">
                 <label
                   htmlFor="campus-destination-select"
@@ -736,7 +762,37 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                   className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-white dark:bg-[#121620] border border-[#e2e4e8] dark:border-[#273142] text-xs font-sans text-[#161821] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#be123c] cursor-pointer"
                 >
                   <optgroup
-                    label={lang === 'ru' ? 'Аудитории и деканат (3 этаж)' : 'Floor 3 Rooms'}
+                    label={
+                      lang === 'ru'
+                        ? '1 этаж — Аудитории и залы'
+                        : 'Floor 1 — Rooms & Lecture Halls'
+                    }
+                  >
+                    {CAMPUS_ROOMS.filter((r) => r.floor === 1 && r.category === 'room').map((r) => (
+                      <option key={r.id} value={r.id}>
+                        🚪 {getRoomCode(r)} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup
+                    label={
+                      lang === 'ru'
+                        ? '2 этаж — Лаборатории и компьютерные классы'
+                        : 'Floor 2 — Laboratories & Computer Labs'
+                    }
+                  >
+                    {CAMPUS_ROOMS.filter((r) => r.floor === 2 && r.category === 'room').map((r) => (
+                      <option key={r.id} value={r.id}>
+                        🚪 {getRoomCode(r)} — {lang === 'ru' ? r.nameRu : r.nameEn}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup
+                    label={
+                      lang === 'ru'
+                        ? '3 этаж — Аудитории и деканат'
+                        : "Floor 3 — Rooms & Dean's Office"
+                    }
                   >
                     {CAMPUS_ROOMS.filter((r) => r.floor === 3 && r.category === 'room').map((r) => (
                       <option key={r.id} value={r.id}>
@@ -745,25 +801,15 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
                     ))}
                   </optgroup>
                   <optgroup
-                    label={lang === 'ru' ? 'Аудитории и лаборатории (2 этаж)' : 'Floor 2 Rooms'}
+                    label={
+                      lang === 'ru'
+                        ? 'Входы и лифты (1–3 этаж)'
+                        : 'Entrances & Elevators (Floors 1–3)'
+                    }
                   >
-                    {CAMPUS_ROOMS.filter((r) => r.floor === 2 && r.category === 'room').map((r) => (
-                      <option key={r.id} value={r.id}>
-                        🚪 {getRoomCode(r)} — {lang === 'ru' ? r.nameRu : r.nameEn}
-                      </option>
-                    ))}
-                  </optgroup>
-                  <optgroup label={lang === 'ru' ? 'Аудитории и залы (1 этаж)' : 'Floor 1 Rooms'}>
-                    {CAMPUS_ROOMS.filter((r) => r.floor === 1 && r.category === 'room').map((r) => (
-                      <option key={r.id} value={r.id}>
-                        🚪 {getRoomCode(r)} — {lang === 'ru' ? r.nameRu : r.nameEn}
-                      </option>
-                    ))}
-                  </optgroup>
-                  <optgroup label={lang === 'ru' ? 'Входы и лифты' : 'Hubs & Entrances'}>
                     {CAMPUS_ROOMS.filter((r) => r.category !== 'room').map((r) => (
                       <option key={r.id} value={r.id}>
-                        📍 {getRoomCode(r)} ({r.floor} {lang === 'ru' ? 'этаж' : 'F'})
+                        📍 {getRoomCode(r)}
                       </option>
                     ))}
                   </optgroup>
@@ -1206,14 +1252,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 
                       {isDestination && (
                         <g transform={`translate(${room.x + room.w - 36}, ${room.y + 14})`}>
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="14"
-                            fill="#be123c"
-                            opacity="0.3"
-                            className="animate-ping"
-                          />
+                          <circle cx="12" cy="12" r="13" fill="#be123c" opacity="0.22" />
                           <circle cx="12" cy="12" r="10" fill="#be123c" />
                           <text
                             x="12"
@@ -1230,14 +1269,7 @@ export const CampusMapModal: React.FC<CampusMapModalProps> = ({
 
                       {isOrigin && !isDestination && (
                         <g transform={`translate(${room.x + room.w - 36}, ${room.y + 14})`}>
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="14"
-                            fill="#33b712"
-                            opacity="0.3"
-                            className="animate-ping"
-                          />
+                          <circle cx="12" cy="12" r="13" fill="#33b712" opacity="0.22" />
                           <circle cx="12" cy="12" r="10" fill="#166534" />
                           <text
                             x="12"
