@@ -71,11 +71,11 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
             <button
               type="button"
               onClick={handlePrint}
-              className="px-3 py-1.5 min-w-[44px] min-h-[44px] rounded-md bg-[#11141c] hover:bg-[#161821] border border-[#45d320]/40 text-[#FFFFFF] text-xs font-sans font-medium flex items-center justify-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+              className="px-3 py-1.5 min-w-[44px] min-h-[44px] rounded-md bg-[#11141c] hover:bg-[#161821] border border-[#45d320]/40 text-[#FFFFFF] text-xs font-sans font-medium flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
               title={tr(lang, 'Распечатать макет', 'Print preview')}
               aria-label={tr(lang, 'Печать', 'Print')}
             >
-              <Printer className="w-3.5 h-3.5 text-[#45d320]" />
+              <Printer className="w-3.5 h-3.5 text-[#45d320] shrink-0" />
               <span className="hidden sm:inline">{tr(lang, 'Печать', 'Print')}</span>
             </button>
             <button

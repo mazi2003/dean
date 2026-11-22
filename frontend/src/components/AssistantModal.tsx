@@ -265,9 +265,9 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
               type="submit"
               disabled={loading || !input.trim()}
               aria-label={tr(lang, 'Отправить сообщение', 'Send message')}
-              className="min-w-[44px] min-h-[44px] px-5 py-2.5 rounded-full btn-brand-primary font-heading font-semibold text-xs flex items-center justify-center space-x-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
+              className="w-11 h-11 sm:w-auto sm:h-auto min-w-[44px] min-h-[44px] p-0 sm:px-5 sm:py-2.5 rounded-full btn-brand-primary font-heading font-semibold text-xs flex items-center justify-center gap-1.5 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5" />
+              <Send className="w-4 h-4 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span className="hidden sm:inline">{tr(lang, 'Отправить', 'Send')}</span>
             </button>
           </form>

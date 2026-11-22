@@ -570,9 +570,9 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onOpenMap }) => {
                   'Export to personal calendar (.ics)'
                 )}
                 aria-label={tr(lang, 'Экспорт .ICS', 'Export .ICS')}
-                className="p-2 sm:px-3 sm:py-2 min-w-[44px] min-h-[44px] rounded-lg bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors flex items-center justify-center space-x-1.5 text-xs font-sans font-medium cursor-pointer"
+                className="p-2 sm:px-3 sm:py-2 min-w-[44px] min-h-[44px] rounded-lg bg-[#f6f6f9] dark:bg-[#121620] hover:bg-[#ebeef3] dark:hover:bg-[#1E2923] text-[#161821] dark:text-[#FFFFFF] border border-[#e2e4e8] dark:border-[#273142] transition-colors flex items-center justify-center gap-1.5 text-xs font-sans font-medium cursor-pointer"
               >
-                <Download className="w-4 h-4 text-[#166534] dark:text-[#45d320]" />
+                <Download className="w-4 h-4 text-[#166534] dark:text-[#45d320] shrink-0" />
                 <span className="hidden sm:inline">{tr(lang, 'Экспорт .ICS', 'Export .ICS')}</span>
               </button>
             </>

@@ -434,9 +434,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
             onClick={() => setIsAnnounceModalOpen(true)}
             aria-label={tr(lang, 'Создать объявление', 'New Announcement')}
             title={tr(lang, 'Создать объявление', 'New Announcement')}
-            className="px-3.5 py-2 min-w-[44px] min-h-[44px] rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 transition-colors flex items-center justify-center space-x-1.5 shadow-xs cursor-pointer"
+            className="px-3.5 py-2 min-w-[44px] min-h-[44px] rounded-lg bg-[#161821] hover:bg-[#11141c] text-[#FFFFFF] text-xs font-sans font-semibold border border-[#33b712]/40 transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
           >
-            <Send className="w-3.5 h-3.5 text-[#45d320]" />
+            <Send className="w-3.5 h-3.5 text-[#45d320] shrink-0" />
             <span className="hidden sm:inline">
               {tr(lang, 'Создать объявление', 'New Announcement')}
             </span>

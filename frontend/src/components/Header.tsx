@@ -251,11 +251,11 @@ export const Header: React.FC<HeaderProps> = ({
             {/* AI Copilot / Dean's Advisory Assistant (Primary Gradient Action Button) */}
             <button
               onClick={onOpenAssistant}
-              className="flex items-center justify-center space-x-1.5 px-3 sm:px-4 py-2 min-w-[44px] min-h-[44px] rounded-full btn-brand-primary text-xs font-heading font-semibold transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 w-11 h-11 sm:w-auto sm:h-auto p-0 sm:px-4 sm:py-2 min-w-[44px] min-h-[44px] rounded-full btn-brand-primary text-xs font-heading font-semibold transition-all cursor-pointer"
               title={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
               aria-label={lang === 'ru' ? 'Консультант деканата' : 'Academic Advisory Copilot'}
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-4 h-4 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span className="hidden sm:inline">{lang === 'ru' ? 'Консультант' : 'Copilot'}</span>
             </button>
 
