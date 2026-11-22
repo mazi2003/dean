@@ -19,14 +19,36 @@
 
 ## 👥 Тестовые учетные записи для жюри
 
-Авторизация в системе выполняется через реальный серверный эндпоинт `POST /api/v1/auth/login` с проверкой `Argon2id`-хеша пароля и установкой `httpOnly + SameSite=Lax` cookie `dean_session`. Переключатели профилей в один клик отсутствуют; система строго изолирует данные на уровне серверной сессии.
+Авторизация в системе выполняется через реальный серверный эндпоинт `POST /api/v1/auth/login` с проверкой `Argon2id`-хеша пароля и установкой `httpOnly + SameSite=Lax` cookie `dean_session`. Переключатели профилей в один клик отсутствуют; система строго изолирует данные на уровне серверной сессии. При переключении языка интерфейса на `EN` все имена студентов и сотрудников автоматически отображаются на английском языке.
 
-| Роль | Логин | Пароль | Сценарий тестирования |
-|---|---|---|---|
-| **Студент 1** | `aigul.nurova@demo.edu` | `DemoStudent123!` | 2 курс, гр. ДУ-101. Отличница (GPA 4.8). 1 активная заявка на справку об обучении со статусом «В обработке». |
-| **Студент 2** | `timur.belov@demo.edu` | `DemoStudent123!` | 3 курс, гр. ДУ-205. Академический долг по «Статистике» (пересдача 28 ноября, ауд. А-314), заявка на общежитие со статусом «Требуется уточнение» и 1 готовый макет транскрипта (PDF). |
-| **Студент 3** | `lina.okafor@demo.edu` | `DemoStudent123!` | 2 курс, гр. ДУ-101. Демонстрация пустых состояний (нет заявлений) и 3 непрочитанных уведомления. |
-| **Сотрудник деканата** | `dean.office@demo.edu` | `DemoStaff123!` | Мария Волкова. Панель сотрудника: обработка заявлений, изменение статусов, группы/досье, перенос экзаменов, публикация объявлений. |
+### Основные демонстрационные аккаунты (Primary Demo Accounts)
+
+| Роль | ФИО (RU / EN) | Логин | Пароль | Сценарий тестирования |
+|---|---|---|---|---|
+| **Студент 1** | Айгуль Нурова / **Aigul Nurova** | `aigul.nurova@demo.edu` | `DemoStudent123!` | 2 курс, гр. ДУ-101. Староста, отличница (GPA 4.80). 1 активная заявка на справку об обучении со статусом «В обработке». |
+| **Студент 2** | Тимур Белов / **Timur Belov** | `timur.belov@demo.edu` | `DemoStudent123!` | 3 курс, гр. ДУ-205. Академический долг по «Статистике» (пересдача 28 ноября, ауд. А-314), заявка на общежитие со статусом «Требуется уточнение» и 1 готовый макет транскрипта (PDF). |
+| **Студент 3** | Лина Окафор / **Lina Okafor** | `lina.okafor@demo.edu` | `DemoStudent123!` | 2 курс, гр. ДУ-101. Демонстрация пустых состояний (нет заявлений) и 3 непрочитанных уведомления. |
+| **Сотрудник деканата** | Мария Волкова / **Maria Volkova** | `dean.office@demo.edu` | `DemoStaff123!` | Инспектор деканата. Панель сотрудника: обработка заявлений, изменение статусов, группы/досье, перенос экзаменов, публикация объявлений. |
+
+<details>
+<summary><strong>Дополнительные учетные записи студентов из списков академических групп (ещё 12 аккаунтов, пароль: <code>DemoStudent123!</code>)</strong></summary>
+
+| Группа | ФИО (RU) | Full Name (EN) | Логин | Пароль | Курс / Форма обучения |
+|---|---|---|---|---|---|
+| `ДУ-101` | Даниил Морозов | **Daniil Morozov** | `d.morozov@demo.edu` | `DemoStudent123!` | 2 курс • Бюджет |
+| `ДУ-101` | София Ким | **Sofia Kim** | `s.kim@demo.edu` | `DemoStudent123!` | 2 курс • Бюджет |
+| `ДУ-101` | Максим Волков | **Maxim Volkov** | `m.volkov@demo.edu` | `DemoStudent123!` | 2 курс • Контракт |
+| `ДУ-101` | Анна Васильева | **Anna Vasilieva** | `a.vasilieva@demo.edu` | `DemoStudent123!` | 2 курс • Бюджет |
+| `ДУ-205` | Алина Захарова | **Alina Zakharova** | `a.zakharova@demo.edu` | `DemoStudent123!` | 3 курс • Бюджет (Староста) |
+| `ДУ-205` | Артур Гаспарян | **Artur Gasparyan** | `a.gasparyan@demo.edu` | `DemoStudent123!` | 3 курс • Бюджет |
+| `ДУ-205` | Екатерина Попова | **Ekaterina Popova** | `e.popova@demo.edu` | `DemoStudent123!` | 3 курс • Бюджет |
+| `ДУ-205` | Кирилл Лебедев | **Kirill Lebedev** | `k.lebedev@demo.edu` | `DemoStudent123!` | 3 курс • Контракт (Акад. долг) |
+| `ДУ-301` | Дмитрий Савельев | **Dmitry Savelev** | `d.savelev@demo.edu` | `DemoStudent123!` | 1 курс (Магистратура) • Бюджет (Староста) |
+| `ДУ-301` | Елена Орлова | **Elena Orlova** | `e.orlova@demo.edu` | `DemoStudent123!` | 1 курс (Магистратура) • Бюджет |
+| `ДУ-102` | Полина Сергеева | **Polina Sergeeva** | `p.sergeeva@demo.edu` | `DemoStudent123!` | 1 курс • Бюджет (Староста) |
+| `ДУ-102` | Роман Кузнецов | **Roman Kuznetsov** | `r.kuznetsov@demo.edu` | `DemoStudent123!` | 1 курс • Контракт (Акад. долг) |
+
+</details>
 
 ---
 
@@ -91,13 +113,19 @@ node scripts/local-stack.mjs
 
 ### Вариант 3: Автотесты и контроль качества
 ```bash
-# Backend (typecheck + build + unit/IDOR/RBAC тесты)
+# Единые команды из корня репозитория (typecheck + lint + unit-тесты + сборка + E2E)
+npm run typecheck && npm run lint && npm test && npm run build
+npm run test:e2e
+npm run test:load
+
+# Или запуск по модулям:
+# Backend (typecheck + build + 32 unit/IDOR/RBAC/performance-headers теста)
 cd backend && npm run typecheck && npm run build && npm test
 
-# Frontend (oxlint + Vitest + production bundle)
+# Frontend (oxlint + ESLint + 14 Vitest тестов + production bundle)
 cd frontend && npm run lint && npm test && npm run build
 
-# E2E на реальном стеке PostgreSQL + Fastify + Vite (Desktop 1280x800 + Mobile 360x740 + Axe WCAG + Security Audit)
+# E2E на реальном стеке PostgreSQL + Fastify + Vite (42 теста: Desktop 1280x800 + Mobile 360x740 + Axe WCAG + Security Audit)
 cd e2e && npx playwright test
 ```
 
@@ -106,16 +134,19 @@ cd e2e && npx playwright test
 ## 📁 Структура репозитория
 
 ```
-├── contract/             # Спецификация OpenAPI 3.0.3 и правила сида
-├── database/             # Схема Prisma, SQL-миграции, Dockerfile миграций и seed.ts
-├── backend/              # Сервер Fastify v5 (auth, profile, schedule, exams, grades, requests, staff, assistant)
-├── frontend/             # Клиентское PWA-приложение React 19 + Tailwind v4 (без client-side auth bypass)
-├── deploy/               # Скрипты автоматического развертывания на VPS, бэкапа и healthcheck
-├── scripts/              # Локальный полный стек без Docker (embedded-postgres + API + Web)
-├── e2e/                  # Сквозные тесты Playwright (Desktop/Mobile, WCAG Axe, RBAC/IDOR, аудит бандла)
-├── docs/                 # Документация для жюри: submission.md/.pdf, architecture.md, process-log.md, performance-baseline.md, performance-optimization-guide.md, performance-report.md, видео и скриншоты
-├── prompts/              # Промпты мультиагентной разработки
-└── AGENTS.md             # Правила безопасности и архитектурные ограничения
+├── contract/             # Спецификация OpenAPI 3.0.3 и правила сида (openapi.yaml, seed-spec.md)
+├── database/             # Схема Prisma, SQL-миграции, Dockerfile миграций, seed.ts и database/README.md
+├── backend/              # Сервер Fastify v5 (auth, profile, schedule, exams, grades, requests, staff, assistant) и backend/README.md
+├── frontend/             # Клиентское PWA-приложение React 19 + Vite 8 + Tailwind v4 и frontend/README.md
+├── deploy/               # Скрипты автоматического развертывания на VPS (bootstrap-vps.sh, backup.sh, healthcheck.sh) и инструкции Vercel
+├── scripts/              # Локальный полный стек без Docker (local-stack.mjs, generate-submission-pdf.mjs, measure-web-vitals.mjs, audit-responsive.mjs)
+├── e2e/                  # Сквозные тесты Playwright (42 теста Desktop/Mobile, WCAG Axe, RBAC/IDOR, load-smoke.mjs) и e2e/README.md
+├── docs/                 # Документация для жюри: submission.md/.pdf, architecture.md, process-log.md, test-accounts.md, test-report.md, performance-report.md, видео и скриншоты
+├── prompts/              # Промпты мультиагентной разработки (00-architect .. 05-docs-submission, survey-questions)
+├── .github/workflows/    # CI-пайплайн GitHub Actions (ci.yml)
+├── AGENTS.md             # Правила безопасности и архитектурные ограничения
+├── PROJECT_MAP.md        # Архитектурная карта проекта
+└── LICENSE               # Открытая лицензия MIT с конкурсным дисклеймером
 ```
 
 ---

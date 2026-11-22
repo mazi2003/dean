@@ -166,18 +166,19 @@ sequenceDiagram
 
 ## 8. Результаты тестирования и доступность прототипа
 
-- **Сборка и производительность:** `npm run build` (`tsc -b && vite build`) выполняется за **2.11 с** без предупреждений. Бандл разбит на чанки (`index.css` — 39.19 КБ gzip, `vendor-react` — 68.27 КБ gzip, `index.js` — 65.20 КБ gzip, `vendor-icons` — 7.17 КБ gzip, `vendor-qr` — 8.86 КБ gzip) со встроенными локальными шрифтами `Inter` и `JetBrains Mono` (OFL-1.1), обеспечен офлайн-кэш через Service Worker (`/sw.js`).
-- **Автотесты и покрытие (`docs/test-report.md`):**
-  - **Backend (`Vitest` + `Supertest`):** **22 / 22** тестов пройдено (auth/Argon2id/timing-attack защита, IDOR `404`, RBAC, экзамены, рабочий процесс деканата, правила и OpenAI-compatible LLM-ассистент); покрытие **77.91% Statements / 81.37% Lines / 91.83% Functions**.
-  - **Frontend (`oxlint` + `Vitest` + Testing Library):** **0 ошибок / 0 предупреждений** линтера, **10 / 10** компонентных и `i18n`-тестов пройдено (без `localStorage`-эмуляции и без `TEST_USERS`).
-  - **E2E на реальном стеке (`Playwright` + `embedded-postgres` 16 + Prisma + Fastify + Vite, Desktop 1280×800 и Mobile 360×740 + Axe WCAG + Security Audit):** **14 / 14** сквозных сценариев пройдено (1.0 мин), подтверждены реальный вход по cookie `httpOnly`, блокировка RBAC (`403`), IDOR (`404`), отсутствие Demo Switcher, отсутствие горизонтального переполнения на 360px, отсутствие JWT в `localStorage` и отсутствие секретов или mock-авторизации в production-бандле.
-  - **Нагрузочный бенчмарк (100 VU, `e2e/load-smoke.mjs`):** **10 600 запросов** за 10.06 с (**1 053.4 RPS**, **0% ошибок**, **p50 79.73 мс**, **p95 149.28 мс**).
-- **Мобильная верстка:** Верифицирована скриншотами (`docs/screens/e2e_verified_mobile_360px.png`, `docs/screens/e2e_verified_staff_groups.png`) на ширине **360px** (сенсорные зоны `BottomNav` ≥ 48px, отсутствие `user-scalable=no`).
-- **Тестовые учетные записи (для жюри):**
-  - `aigul.nurova@demo.edu` / `DemoStudent123!` (Отличница, активная заявка на справку).
-  - `timur.belov@demo.edu` / `DemoStudent123!` (Академическая задолженность по статистике, заявка с уточнением, готовый макет транскрипта PDF).
-  - `lina.okafor@demo.edu` / `DemoStudent123!` (Пустые состояния заявлений, 3 непрочитанных уведомления).
-  - `dean.office@demo.edu` / `DemoStaff123!` (Панель сотрудника деканата: согласование, группы, личные дела, экзамены, приказы).
+- **Сборка и производительность (`docs/performance-report.md`):** `npm run build` (`tsc -b && vite build`) выполняется за **2.60 с** без предупреждений. За счет маршрутного и компонентного разделения кода (`React.lazy` + `Suspense`) начальный JS на странице входа `/login` сокращен на **57.5%** — до **276.99 КБ raw (85.67 КБ gzip / 73.62 КБ Brotli)**, а CSS (`index.css`) — до **84.63 КБ raw (14.23 КБ gzip)** со встроенными локальными подмножествами `Inter` Cyrillic & Latin `.woff2` (OFL-1.1) и офлайн-кэшем через Service Worker v2 (`/sw.js`).
+- **Автотесты и покрытие (`docs/test-report.md`, `docs/performance-report.md`):**
+  - **Backend (`Vitest` + `Supertest`):** **32 / 32** тестов пройдено (auth/Argon2id/timing-attack защита, IDOR `404`, RBAC `403`, экзамены, рабочий процесс деканата, сжатие `@fastify/compress` Brotli/Gzip, `Cache-Control: private, no-store`, правила и OpenAI-compatible LLM-ассистент).
+  - **Frontend (`oxlint` + `ESLint` + `Vitest` + Testing Library):** **0 ошибок / 0 предупреждений** линтеров, **14 / 14** компонентных и `i18n`-тестов пройдено (включая полную локализацию ФИО студентов и сотрудников `RU ↔ EN`).
+  - **E2E на реальном стеке (`Playwright` + `embedded-postgres` + Prisma + Fastify + Vite, Desktop 1280×800 и Mobile 360×740 + Axe WCAG + Security Audit):** **42 / 42** сквозных сценариев пройдено, подтверждены реальный вход по cookie `httpOnly`, сквозной заказ и обработка справок на 4 аккаунтах, перенос времени и аудиторий занятий, блокировка RBAC (`403`), IDOR (`404`), отсутствие Demo Switcher, отсутствие горизонтального переполнения на 360px, отсутствие JWT в `localStorage` и отсутствие секретов в production-бандле.
+  - **Нагрузочный бенчмарк (100 VU, `e2e/load-smoke.mjs`):** **12 267 запросов** за 10.03 с (**1 222.7 RPS**, **0% ошибок**, **p50 73.86 мс**, **p95 155.03 мс**).
+- **Мобильная верстка:** Верифицирована скриншотами (`docs/screens/e2e_verified_mobile_360px.png`, `docs/screens/e2e_verified_staff_groups.png`, `docs/screens/operational-check/06-r3-mobile-360px.png`) на ширине **360px** (сенсорные зоны `BottomNav` ≥ 48px, отсутствие `user-scalable=no`).
+- **Тестовые учетные записи (для жюри, с полной поддержкой RU / EN имен):**
+  - `aigul.nurova@demo.edu` / `DemoStudent123!` — Айгуль Нурова / **Aigul Nurova** (Отличница, староста гр. ДУ-101, активная заявка на справку).
+  - `timur.belov@demo.edu` / `DemoStudent123!` — Тимур Белов / **Timur Belov** (гр. ДУ-205, академическая задолженность по статистике, заявка с уточнением, готовый макет транскрипта PDF).
+  - `lina.okafor@demo.edu` / `DemoStudent123!` — Лина Окафор / **Lina Okafor** (гр. ДУ-101, пустые состояния заявлений, 3 непрочитанных уведомления).
+  - `dean.office@demo.edu` / `DemoStaff123!` — Мария Волкова / **Maria Volkova** (Панель сотрудника деканата: согласование, группы, личные дела, экзамены, приказы).
+  - Плюс **12 дополнительных студенческих аккаунтов** в группах `ДУ-101`, `ДУ-205`, `ДУ-301`, `ДУ-102` (единый пароль `DemoStudent123!`, полный список в `docs/test-accounts.md`).
 - **Реальный серверный контур и доступ из РФ без VPN:** Прототип развертывается как единый стек `PostgreSQL 16 + Prisma + Fastify API + React PWA + Caddy HTTPS` (`docker-compose.yml` + `deploy/bootstrap-vps.sh`) на VPS с доступом из России без VPN. Авторизация и изоляция данных студентов работают исключительно через сервер и БД; клиентский код не содержит заглушек аутентификации и `localStorage`-эмуляции API.
 
 ---
