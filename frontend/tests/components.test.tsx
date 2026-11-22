@@ -14,7 +14,7 @@ import { ProfilePage } from '../src/pages/ProfilePage';
 import { TodayPage } from '../src/pages/TodayPage';
 import { CampusMapModal } from '../src/components/CampusMapModal';
 import { ScheduleCollisionAlert } from '../src/components/ScheduleCollisionAlert';
-import { normalizeScheduleType, localizeText } from '../src/utils/i18n';
+import { normalizeScheduleType, localizeText, localizePersonName } from '../src/utils/i18n';
 
 vi.mock('qrcode', () => ({
   default: {
@@ -602,6 +602,16 @@ describe('Frontend Component & Accessibility Suite', () => {
 
     expect(localizeText('Дипломатический протокол', 'en')).toBe('Diplomatic Protocol');
     expect(localizeText('Дипломатический протокол', 'ru')).toBe('Дипломатический протокол');
+
+    expect(localizePersonName('Айгуль Нурова', 'en')).toBe('Aigul Nurova');
+    expect(localizePersonName('Тимур Белов', 'en')).toBe('Timur Belov');
+    expect(localizePersonName('Лина Окафор', 'en')).toBe('Lina Okafor');
+    expect(localizePersonName('Мария Волкова (Сотрудник деканата)', 'en')).toBe(
+      "Maria Volkova (Dean's Office Staff)"
+    );
+    expect(localizePersonName('Максим Волков', 'en')).toBe('Maxim Volkov');
+    expect(localizePersonName('Дмитрий Савельев', 'en')).toBe('Dmitry Savelev');
+    expect(localizePersonName('Айгуль Нурова', 'ru')).toBe('Айгуль Нурова');
   });
 
   it('CampusMapModal renders interactive SVG floor plan, switches floors, and highlights target room', async () => {

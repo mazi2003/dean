@@ -405,6 +405,45 @@ const RU_TO_EN_DICTIONARY: Record<string, string> = {
   'Для военкомата': 'For military enlistment office',
   'Общежитие №2': 'Dormitory No. 2',
   'Корпус №2': 'Building No. 2',
+
+  // Student & Staff Names (RU -> EN)
+  'Мария Волкова (Сотрудник деканата)': "Maria Volkova (Dean's Office Staff)",
+  'Мария Волкова': 'Maria Volkova',
+  Мария: 'Maria',
+  'Айгуль Нурова': 'Aigul Nurova',
+  Айгуль: 'Aigul',
+  'Тимур Белов': 'Timur Belov',
+  Тимур: 'Timur',
+  'Лина Окафор': 'Lina Okafor',
+  Лина: 'Lina',
+  'Даниил Морозов': 'Daniil Morozov',
+  Даниил: 'Daniil',
+  'София Ким': 'Sofia Kim',
+  София: 'Sofia',
+  'Максим Волков': 'Maxim Volkov',
+  Максим: 'Maxim',
+  'Анна Васильева': 'Anna Vasilieva',
+  Анна: 'Anna',
+  'Алина Захарова': 'Alina Zakharova',
+  Алина: 'Alina',
+  'Артур Гаспарян': 'Artur Gasparyan',
+  Артур: 'Artur',
+  'Екатерина Попова': 'Ekaterina Popova',
+  Екатерина: 'Ekaterina',
+  'Кирилл Лебедев': 'Kirill Lebedev',
+  Кирилл: 'Kirill',
+  'Дмитрий Савельев': 'Dmitry Savelev',
+  Дмитрий: 'Dmitry',
+  'Елена Орлова': 'Elena Orlova',
+  Елена: 'Elena',
+  'Полина Сергеева': 'Polina Sergeeva',
+  Полина: 'Polina',
+  'Роман Кузнецов': 'Roman Kuznetsov',
+  Роман: 'Roman',
+
+  // Dormitory & Residence Info
+  'Проживание по постоянной регистрации (г. Москва)': 'Permanent Residence (Moscow)',
+  'Студгородок №1, корп. 2, комн. 415': 'Campus Dormitory No. 1, Bldg 2, Rm 415',
 };
 
 const CYRILLIC_TO_LATIN_MAP: Record<string, string> = {
@@ -423,6 +462,19 @@ export function transliterateCyrillic(str: string): string {
     .split('')
     .map((char) => CYRILLIC_TO_LATIN_MAP[char] ?? char)
     .join('');
+}
+
+export function localizePersonName(name: string | undefined | null, lang: Lang): string {
+  if (!name) return '';
+  if (lang === 'ru') return name;
+  const trimmed = name.trim();
+  const direct = RU_TO_EN_DICTIONARY[trimmed];
+  if (direct) return direct;
+  if (trimmed.includes('(Сотрудник деканата)')) {
+    const base = trimmed.replace('(Сотрудник деканата)', '').trim();
+    return `${localizePersonName(base, lang)} (Dean's Office Staff)`;
+  }
+  return transliterateCyrillic(trimmed);
 }
 
 export function formatNotificationDate(dateStr: string | undefined | null, lang: Lang): string {

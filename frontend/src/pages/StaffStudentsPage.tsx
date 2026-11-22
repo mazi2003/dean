@@ -20,7 +20,7 @@ const StudentDossierModal = lazy(() =>
   import('../components/StudentDossierModal').then((m) => ({ default: m.StudentDossierModal }))
 );
 import { useAuth } from '../context/AuthContext';
-import { tr, getStudyFormLabel, localizeText, transliterateCyrillic } from '../utils/i18n';
+import { tr, getStudyFormLabel, localizeText, localizePersonName } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
 
 interface StaffStudentsPageProps {
@@ -108,7 +108,9 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
       // Search query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const matchesName = student.fullName.toLowerCase().includes(q);
+        const matchesName =
+          student.fullName.toLowerCase().includes(q) ||
+          localizePersonName(student.fullName, 'en').toLowerCase().includes(q);
         const matchesNum = student.studentNumber.toLowerCase().includes(q);
         const matchesEmail = student.email.toLowerCase().includes(q);
         const matchesGroup = student.group.toLowerCase().includes(q);
@@ -433,9 +435,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                         <UserCheck className="w-3.5 h-3.5" />
                         <span>
                           {tr(lang, 'Староста', 'Group Rep')}:{' '}
-                          {lang === 'en'
-                            ? transliterateCyrillic(group.starostaName)
-                            : group.starostaName}
+                          {localizePersonName(group.starostaName, lang)}
                         </span>
                       </div>
                       <div className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-sans mt-0.5">
@@ -661,7 +661,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                     <div className="relative flex-shrink-0">
                       <img
                         src={resolveAvatarSrc(student.avatarUrl, student.fullName)}
-                        alt={student.fullName}
+                        alt={localizePersonName(student.fullName, lang)}
                         className="w-11 h-11 rounded-lg object-cover border border-[#e2e4e8] dark:border-[#273142] group-hover:border-[#161821] transition-colors"
                       />
                       {student.isStarosta && (
@@ -674,7 +674,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                     <div className="space-y-0.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <h4 className="text-sm font-semibold text-[#161821] dark:text-[#FFFFFF] group-hover:text-[#161821] dark:group-hover:text-[#166534] dark:text-[#45d320] transition-colors">
-                          {student.fullName}
+                          {localizePersonName(student.fullName, lang)}
                         </h4>
                         <span className="px-1.5 py-0.2 rounded-md font-sans text-[10px] font-bold bg-[#161821] text-[#FFFFFF]">
                           {student.group}
@@ -771,7 +771,7 @@ export const StaffStudentsPage: React.FC<StaffStudentsPageProps> = ({
                           title={tr(
                             lang,
                             `Отправить уведомление ${student.fullName}`,
-                            `Send notification to ${student.fullName}`
+                            `Send notification to ${localizePersonName(student.fullName, 'en')}`
                           )}
                           className="p-1.5 rounded-lg bg-[#f6f6f9] dark:bg-[#121620] text-[#475569] dark:text-[#94A3B8] hover:text-[#161821] dark:hover:text-[#166534] dark:text-[#45d320] hover:bg-[#ebeef3] dark:hover:bg-[#1e2533] border border-[#e2e4e8] dark:border-[#273142] transition-colors cursor-pointer"
                         >

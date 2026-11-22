@@ -8,7 +8,7 @@ import {
   ChevronUp,
   ShieldAlert,
 } from 'lucide-react';
-import { tr, localizeText } from '../utils/i18n';
+import { tr, localizeText, localizePersonName } from '../utils/i18n';
 
 interface ScheduleCollisionAlertProps {
   retakeDate?: string;
@@ -144,7 +144,7 @@ export const ScheduleCollisionAlert: React.FC<ScheduleCollisionAlertProps> = ({
             {tr(
               lang,
               `«Об освобождении студента гр. ${profile?.group || 'ДУ-205'} ${profile?.fullName || 'Белова Т.М.'} от аудиторных занятий 28.11.2026 г. с 14:00 до 16:00 в связи с участием в работе аттестационной комиссии по дисциплине «${localizeText(retakeSubject, lang)}». Преподавателю ${conflictingClass.teacherRu} засчитать причину отсутствия уважительной.»`,
-              `"Excused absence directive for student ${profile?.fullName || 'Timur Belov'} (group ${profile?.group || 'DU-205'}) on 28.11.2026 from 14:00 to 16:00 due to commission re-examination in "${localizeText(retakeSubject, lang)}". Academic sanctions shall not apply."`
+              `"Excused absence directive for student ${localizePersonName(profile?.fullName, 'en') || 'Timur Belov'} (group ${profile?.group || 'DU-205'}) on 28.11.2026 from 14:00 to 16:00 due to commission re-examination in "${localizeText(retakeSubject, lang)}". Academic sanctions shall not apply."`
             )}
           </p>
           <div className="flex items-center justify-between text-[10px] text-[#166534] dark:text-[#45d320] font-semibold pt-1">

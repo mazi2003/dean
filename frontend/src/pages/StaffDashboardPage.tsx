@@ -23,7 +23,7 @@ import {
   StudentListItem,
 } from '../types';
 import { api } from '../services/api';
-import { tr, getRequestStatusLabel, localizeText } from '../utils/i18n';
+import { tr, getRequestStatusLabel, localizeText, localizePersonName } from '../utils/i18n';
 
 const StudentDossierModal = lazy(() =>
   import('../components/StudentDossierModal').then((m) => ({ default: m.StudentDossierModal }))
@@ -545,7 +545,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       )}
                     {students.map((stu) => (
                       <option key={stu.id} value={`user:${stu.id}`}>
-                        {tr(lang, `Персонально: ${stu.fullName}`, `Direct: ${stu.fullName}`)}
+                        {tr(
+                          lang,
+                          `Персонально: ${stu.fullName}`,
+                          `Direct: ${localizePersonName(stu.fullName, 'en')}`
+                        )}
                       </option>
                     ))}
                   </select>
@@ -905,7 +909,9 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                       <div className="flex items-center space-x-2">
                         <User className="w-3.5 h-3.5 text-[#161821] dark:text-[#45d320]" />
                         <span className="font-semibold text-[#161821] dark:text-[#FFFFFF]">
-                          {req.studentName || tr(lang, 'Студент факультета', 'Faculty Student')}
+                          {req.studentName
+                            ? localizePersonName(req.studentName, lang)
+                            : tr(lang, 'Студент факультета', 'Faculty Student')}
                         </span>
                         <span className="text-[#475569] dark:text-[#94A3B8]">({req.studentGroup || 'ДУ-101'})</span>
                         <button
@@ -953,8 +959,8 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                   {tr(lang, 'Решение по заявлению №', 'Decision for Request #')} {selectedReq.id}
                 </h3>
                 <p className="text-xs text-[#166534] dark:text-[#45d320] font-sans">
-                  {localizeText(selectedReq.typeTitle, lang)} • {selectedReq.studentName} (
-                  {selectedReq.studentGroup})
+                  {localizeText(selectedReq.typeTitle, lang)} •{' '}
+                  {localizePersonName(selectedReq.studentName, lang)} ({selectedReq.studentGroup})
                 </p>
               </div>
               <button
@@ -1095,7 +1101,7 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
                     <option value="ДУ-205">{tr(lang, 'Группа ДУ-205', 'Group ДУ-205')}</option>
                     {students.map((stu) => (
                       <option key={stu.id} value={`user:${stu.id}`}>
-                        {stu.fullName}
+                        {localizePersonName(stu.fullName, lang)}
                       </option>
                     ))}
                   </select>
@@ -1187,7 +1193,11 @@ export const StaffDashboardPage: React.FC<StaffDashboardPageProps> = ({
               setIsAnnounceModalOpen(true);
               setAnnounceTarget(id ? `user:${id}` : group || 'all');
               setAnnounceTitle(
-                tr(lang, `Уведомление деканата для: ${name}`, `Dean's Office Notice for: ${name}`)
+                tr(
+                  lang,
+                  `Уведомление деканата для: ${name}`,
+                  `Dean's Office Notice for: ${localizePersonName(name, 'en')}`
+                )
               );
             }}
           />

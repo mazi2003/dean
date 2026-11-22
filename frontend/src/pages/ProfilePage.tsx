@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Lock, LogOut, ShieldCheck, GraduationCap } from 'lucide-react';
 import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from '../components/UniversityEmblem';
-import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
+import { tr, getStudyFormLabel, localizeText, localizePersonName } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
 
 export const ProfilePage: React.FC = () => {
@@ -24,7 +24,7 @@ export const ProfilePage: React.FC = () => {
           <div className="relative">
             <img
               src={resolveAvatarSrc(profile?.avatarUrl, user?.fullName)}
-              alt={user?.fullName}
+              alt={localizePersonName(user?.fullName, lang)}
               className="w-24 h-24 rounded-full object-cover border-2 border-[#33b712] shadow-sm"
             />
             <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#161821] border border-[#33b712] flex items-center justify-center">
@@ -56,7 +56,7 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
-              {user?.fullName}
+              {localizePersonName(user?.fullName, lang)}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#4b5563] dark:text-[#cbd5e1] font-sans">

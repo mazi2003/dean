@@ -29,6 +29,7 @@ import {
   getRequestStatusLabel,
   getStudyFormLabel,
   localizeText,
+  localizePersonName,
 } from '../utils/i18n';
 
 interface TodayPageProps {
@@ -220,7 +221,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
                 {lang === 'ru'
                   ? `Добрый день, ${user?.fullName || 'Мария Волкова'}!`
-                  : `Welcome, ${user?.fullName || 'Maria Volkova'}!`}
+                  : `Welcome, ${localizePersonName(user?.fullName, 'en') || 'Maria Volkova'}!`}
               </h1>
 
               <p className="text-xs sm:text-sm text-[#4b5563] dark:text-[#cbd5e1] font-sans max-w-2xl">
@@ -397,8 +398,12 @@ export const TodayPage: React.FC<TodayPageProps> = ({
                   </div>
                   <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5">
                     {tr(lang, 'Студент:', 'Student:')}{' '}
-                    <strong>{req.studentName || tr(lang, 'Студент', 'Student')}</strong> (
-                    {req.studentGroup || 'ДУ-101'}) •{' '}
+                    <strong>
+                      {req.studentName
+                        ? localizePersonName(req.studentName, lang)
+                        : tr(lang, 'Студент', 'Student')}
+                    </strong>{' '}
+                    ({req.studentGroup || 'ДУ-101'}) •{' '}
                     {tr(
                       lang,
                       `Срок готовности: до ${req.expectedDate}`,
@@ -455,7 +460,7 @@ export const TodayPage: React.FC<TodayPageProps> = ({
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold tracking-tight text-[#161821] dark:text-[#ffffff]">
               {lang === 'ru'
                 ? `С возвращением, ${user?.fullName.split(' ')[0]}!`
-                : `Welcome back, ${user?.fullName.split(' ')[0]}!`}
+                : `Welcome back, ${localizePersonName(user?.fullName.split(' ')[0], 'en')}!`}
             </h1>
 
             <p className="text-xs sm:text-sm text-[#4b5563] dark:text-[#cbd5e1] font-sans max-w-2xl">

@@ -19,6 +19,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { resolveAvatarSrc } from '../utils/avatar';
+import { localizePersonName } from '../utils/i18n';
 
 interface SidebarProps {
   activeTab: string;
@@ -129,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="relative flex-shrink-0">
             <img
               src={resolveAvatarSrc(profile?.avatarUrl, user?.fullName)}
-              alt={user?.fullName}
+              alt={localizePersonName(user?.fullName, lang)}
               className="w-12 h-12 rounded-full object-cover border-2 border-[#33b712] shadow-xs"
             />
             <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#33b712] border-2 border-white dark:border-[#171c26] flex items-center justify-center text-[7px] text-white">
@@ -139,7 +140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <div className="overflow-hidden flex-1 min-w-0">
             <h4 className="font-heading font-semibold text-sm text-[#161821] dark:text-[#ffffff] truncate">
-              {user?.fullName}
+              {localizePersonName(user?.fullName, lang)}
             </h4>
             <p className="text-[11px] font-sans text-[#166534] dark:text-[#45d320] font-semibold truncate mt-0.5">
               {isStaff

@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { X, Sparkles, Send, User } from 'lucide-react';
 import { api } from '../services/api';
 import { UniversityEmblem } from './UniversityEmblem';
-import { tr } from '../utils/i18n';
+import { tr, localizePersonName } from '../utils/i18n';
 
 interface AssistantModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ export const AssistantModal: React.FC<AssistantModalProps> = ({ isOpen, onClose 
   const defaultGreeting = tr(
     lang,
     `Здравствуйте, ${user?.fullName ? user.fullName.split(' ')[0] : 'студент'}! Я цифровой консультант деканата DemoTech University. Отвечаю на сервере с учетом только вашего профиля: расписания, задолженностей, сроков ПГАС и статуса заявлений. Чем могу помочь?`,
-    `Hello, ${user?.fullName ? user.fullName.split(' ')[0] : 'Student'}! I am the Digital Dean's Office Assistant at DemoTech University. Answers are generated server-side using only your own profile: schedule, arrears, PGAS deadlines, and request statuses. How can I help you?`
+    `Hello, ${user?.fullName ? localizePersonName(user.fullName.split(' ')[0], 'en') : 'Student'}! I am the Digital Dean's Office Assistant at DemoTech University. Answers are generated server-side using only your own profile: schedule, arrears, PGAS deadlines, and request statuses. How can I help you?`
   );
   const [messages, setMessages] = useState<Message[]>(() => [
     {

@@ -3,7 +3,13 @@ import { useAuth } from '../context/AuthContext';
 import { AlertOctagon, FileCheck2, Award, BookOpen, Layers } from 'lucide-react';
 import { GradesSummary } from '../types';
 import { api } from '../services/api';
-import { tr, getAssessmentTypeLabel, getGradeDescription, localizeText } from '../utils/i18n';
+import {
+  tr,
+  getAssessmentTypeLabel,
+  getGradeDescription,
+  localizeText,
+  localizePersonName,
+} from '../utils/i18n';
 import { ScheduleCollisionAlert } from '../components/ScheduleCollisionAlert';
 
 interface GradesPageProps {
@@ -64,7 +70,8 @@ export const GradesPage: React.FC<GradesPageProps> = ({ onOpenMap }) => {
             {lang === 'ru' ? 'Электронная зачетная книжка' : 'Academic Transcript & Records'}
           </h1>
           <p className="text-xs text-[#4b5563] dark:text-[#cbd5e1] font-sans mt-0.5">
-            {tr(lang, 'Студент:', 'Student:')} <strong>{user?.fullName}</strong> •{' '}
+            {tr(lang, 'Студент:', 'Student:')}{' '}
+            <strong>{localizePersonName(user?.fullName, lang)}</strong> •{' '}
             {tr(lang, 'Академическая группа', 'Academic Group')} <strong>{profile?.group}</strong>
           </p>
         </div>

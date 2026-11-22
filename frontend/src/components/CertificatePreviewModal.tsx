@@ -4,7 +4,7 @@ import { StudentRequest } from '../types';
 import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from './UniversityEmblem';
 import { useAuth } from '../context/AuthContext';
-import { tr, localizeText } from '../utils/i18n';
+import { tr, localizeText, localizePersonName } from '../utils/i18n';
 
 interface CertificatePreviewModalProps {
   request: StudentRequest | null;
@@ -200,8 +200,13 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
             ) : (
               <>
                 <p>
-                  This is to certify that <strong>{request.studentName || 'Student'}</strong> is a
-                  full-time <strong>Year {studentYear} undergraduate student</strong> at the{' '}
+                  This is to certify that{' '}
+                  <strong>
+                    {request.studentName
+                      ? localizePersonName(request.studentName, 'en')
+                      : 'Student'}
+                  </strong>{' '}
+                  is a full-time <strong>Year {studentYear} undergraduate student</strong> at the{' '}
                   {localizeText(UNIVERSITY_INFO.faculty, 'en')} of {UNIVERSITY_INFO.name}, enrolled
                   in the Bachelor&apos;s degree program in {studentProgram}.
                 </p>

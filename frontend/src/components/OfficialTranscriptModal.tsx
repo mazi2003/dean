@@ -3,7 +3,13 @@ import { X, Printer, ShieldCheck, FileText } from 'lucide-react';
 import { StudentDossier } from '../types';
 import { UniversityEmblem } from './UniversityEmblem';
 import { useAuth } from '../context/AuthContext';
-import { tr, getAssessmentTypeLabel, getStudyFormLabel, localizeText } from '../utils/i18n';
+import {
+  tr,
+  getAssessmentTypeLabel,
+  getStudyFormLabel,
+  localizeText,
+  localizePersonName,
+} from '../utils/i18n';
 
 interface OfficialTranscriptModalProps {
   dossier: StudentDossier | null;
@@ -156,7 +162,7 @@ export const OfficialTranscriptModal: React.FC<OfficialTranscriptModalProps> = (
                 {tr(lang, 'ФИО обучающегося:', 'Student Full Name:')}
               </span>
               <span className="font-bold text-sm text-[#161821] dark:text-[#45d320]">
-                {profile.fullName}
+                {localizePersonName(profile.fullName, lang)}
               </span>
             </div>
             <div>

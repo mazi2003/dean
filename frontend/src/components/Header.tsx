@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { UniversityEmblem } from './UniversityEmblem';
 import { resolveAvatarSrc } from '../utils/avatar';
-import { tr } from '../utils/i18n';
+import { tr, localizePersonName } from '../utils/i18n';
 
 interface HeaderProps {
   activeTab: string;
@@ -297,17 +297,18 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={() => setActiveTab('profile')}
                 className="flex items-center justify-center lg:justify-start lg:space-x-2.5 p-1 lg:pr-3 min-w-[44px] min-h-[44px] rounded-full bg-[#f6f6f9] dark:bg-[#1e2533] hover:bg-[#ebeef3] dark:hover:bg-[#273142] border border-[#e2e4e8] dark:border-[#273142] transition-all text-left cursor-pointer"
-                title={`${user?.fullName} • ${isStaff ? (lang === 'ru' ? 'Деканат МО' : "Dean's Office") : profile?.group}`}
-                aria-label={user?.fullName}
+                title={`${localizePersonName(user?.fullName, lang)} • ${isStaff ? (lang === 'ru' ? 'Деканат МО' : "Dean's Office") : profile?.group}`}
+                aria-label={localizePersonName(user?.fullName, lang)}
               >
                 <img
                   src={resolveAvatarSrc(profile?.avatarUrl, user?.fullName)}
-                  alt={user?.fullName}
+                  alt={localizePersonName(user?.fullName, lang)}
                   className="w-8 h-8 rounded-full object-cover border-2 border-[#33b712] shadow-xs"
                 />
                 <div className="hidden lg:block text-left max-w-[130px]">
                   <p className="text-xs font-heading font-semibold text-[#161821] dark:text-[#ffffff] truncate leading-tight">
-                    {user?.fullName?.split(' ')[0]} {user?.fullName?.split(' ')[1]?.[0]}.
+                    {localizePersonName(user?.fullName, lang).split(' ')[0]}{' '}
+                    {localizePersonName(user?.fullName, lang).split(' ')[1]?.[0]}.
                   </p>
                   <p className="text-[10px] text-[#166534] dark:text-[#45d320] font-sans leading-none truncate mt-0.5 font-semibold">
                     {isStaff ? (lang === 'ru' ? 'Инспектор' : 'Inspector') : profile?.group}

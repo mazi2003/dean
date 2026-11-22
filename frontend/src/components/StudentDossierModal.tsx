@@ -20,6 +20,7 @@ import {
   getAssessmentTypeLabel,
   getRequestStatusLabel,
   localizeText,
+  localizePersonName,
 } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
 
@@ -68,7 +69,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
               <div className="relative">
                 <img
                   src={resolveAvatarSrc(profile.avatarUrl, profile.fullName)}
-                  alt={profile.fullName}
+                  alt={localizePersonName(profile.fullName, lang)}
                   className="w-20 h-20 rounded-xl object-cover border-2 border-[#33b712] shadow-md"
                 />
                 <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#161821] border-2 border-white dark:border-[#171c26] flex items-center justify-center text-[10px] text-[#166534] dark:text-[#45d320]">
@@ -110,7 +111,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                 </div>
 
                 <h2 className="text-xl sm:text-2xl font-semibold text-[#161821] dark:text-[#FFFFFF]">
-                  {profile.fullName}
+                  {localizePersonName(profile.fullName, lang)}
                 </h2>
                 <p className="text-xs text-[#475569] dark:text-[#94A3B8] font-sans">
                   {localizeText(profile.program, lang)} • {tr(lang, 'Студ. билет:', 'Student ID:')}{' '}
@@ -318,7 +319,9 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
                             {tr(lang, 'Место проживания:', 'Residence / Dormitory:')}
                           </span>
                           <span className="font-medium">
-                            {profile.dormitoryInfo || tr(lang, 'г. Москва', 'Moscow')}
+                            {profile.dormitoryInfo
+                              ? localizeText(profile.dormitoryInfo, lang)
+                              : tr(lang, 'г. Москва', 'Moscow')}
                           </span>
                         </div>
                       </div>

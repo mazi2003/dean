@@ -24,9 +24,32 @@ interface CallerContext {
   activeRequests: Array<{ title: string; status: string }>;
 }
 
+const FIRST_NAME_EN_MAP: Record<string, string> = {
+  Айгуль: 'Aigul',
+  Тимур: 'Timur',
+  Лина: 'Lina',
+  Мария: 'Maria',
+  Даниил: 'Daniil',
+  София: 'Sofia',
+  Максим: 'Maxim',
+  Анна: 'Anna',
+  Алина: 'Alina',
+  Артур: 'Artur',
+  Екатерина: 'Ekaterina',
+  Кирилл: 'Kirill',
+  Дмитрий: 'Dmitry',
+  Елена: 'Elena',
+  Полина: 'Polina',
+  Роман: 'Roman',
+};
+
 function buildRulesAnswer(question: string, lang: 'ru' | 'en', ctx: CallerContext): string {
   const q = question.toLowerCase();
-  const firstName = ctx.fullName.split(' ')[0] || (lang === 'en' ? 'Student' : 'Студент');
+  const rawFirst = ctx.fullName.split(' ')[0];
+  const firstName =
+    lang === 'en'
+      ? (FIRST_NAME_EN_MAP[rawFirst] ?? rawFirst ?? 'Student')
+      : (rawFirst || 'Студент');
 
   // 1. Academic debts / retakes
   if (

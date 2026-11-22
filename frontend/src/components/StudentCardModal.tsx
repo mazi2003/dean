@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { UNIVERSITY_INFO } from '../constants/university';
 import { UniversityEmblem } from './UniversityEmblem';
-import { tr, getStudyFormLabel, localizeText } from '../utils/i18n';
+import { tr, getStudyFormLabel, localizeText, localizePersonName } from '../utils/i18n';
 import { resolveAvatarSrc } from '../utils/avatar';
 
 interface StudentCardModalProps {
@@ -66,7 +66,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           {
             key: 'student',
             label: lang === 'ru' ? 'СТУДЕНТ' : 'STUDENT',
-            value: user?.fullName || 'Айгуль Нурова',
+            value: localizePersonName(user?.fullName || 'Айгуль Нурова', lang),
           },
         ],
         secondaryFields: [
@@ -277,12 +277,12 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
           <div className="flex items-center space-x-3 w-full bg-[#f6f6f9] dark:bg-[#121620] p-3 rounded-2xl border border-[#e2e4e8] dark:border-[#273142] mb-3 shadow-2xs">
             <img
               src={resolveAvatarSrc(profile?.avatarUrl, user.fullName)}
-              alt={user.fullName}
+              alt={localizePersonName(user.fullName, lang)}
               className="w-10 h-10 rounded-full object-cover border-2 border-[#33b712]"
             />
             <div className="text-left flex-1 min-w-0">
               <h4 className="font-heading font-semibold text-xs text-[#161821] dark:text-[#ffffff] truncate">
-                {user.fullName}
+                {localizePersonName(user.fullName, lang)}
               </h4>
               <p className="text-[10px] text-[#475569] dark:text-[#94a3b8] truncate font-sans">
                 {tr(lang, 'Гр.', 'Group')} {profile?.group || 'ДУ-101'} • № {profile?.studentNumber}
@@ -502,7 +502,7 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               <div className="relative flex-shrink-0">
                 <img
                   src={resolveAvatarSrc(profile?.avatarUrl, user.fullName)}
-                  alt={user.fullName}
+                  alt={localizePersonName(user.fullName, lang)}
                   className="w-20 h-24 rounded-2xl object-cover border-2 border-[#33b712] shadow-md"
                 />
                 <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#161821] border border-[#33b712] flex items-center justify-center">
@@ -511,7 +511,9 @@ export const StudentCardModal: React.FC<StudentCardModalProps> = ({ isOpen, onCl
               </div>
 
               <div className="flex-1 space-y-1">
-                <h2 className="font-heading font-bold text-base text-white leading-snug">{user.fullName}</h2>
+                <h2 className="font-heading font-bold text-base text-white leading-snug">
+                  {localizePersonName(user.fullName, lang)}
+                </h2>
                 <p className="text-[11px] font-sans text-[#45d320] font-semibold">
                   {profile?.group} • {tr(lang, `${profile?.year} курс`, `Year ${profile?.year}`)}
                 </p>
