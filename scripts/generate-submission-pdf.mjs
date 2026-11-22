@@ -29,6 +29,43 @@ function imgDataUri(relPath) {
   return `data:image/png;base64,${buf.toString('base64')}`;
 }
 
+function mermaidToHtml(lines) {
+  const joined = lines.join('\n');
+  if (/^\s*flowchart\b/m.test(joined)) {
+    const pairs = [];
+    for (const l of lines) {
+      const m = l.match(/\["([^"]+)"\]\s*-->\s*[^[]*\["([^"]+)"\]/);
+      if (m) pairs.push({ from: m[1], to: m[2] });
+    }
+    if (pairs.length > 0) {
+      return `<div class="diagram-box"><div class="diagram-title">Схема устранения ошибок ИИ (Problem → Fix)</div>${pairs
+        .map(
+          (p) =>
+            `<div class="flow-row"><span class="flow-bad">${escapeHtml(p.from)}</span><span class="flow-arrow">→</span><span class="flow-good">${escapeHtml(p.to)}</span></div>`
+        )
+        .join('')}</div>`;
+    }
+  }
+  if (/^\s*sequenceDiagram\b/m.test(joined)) {
+    const steps = [];
+    for (const l of lines) {
+      const m = l.match(/^\s*([A-Za-z0-9_]+)\s*(-->>|->>)\s*([A-Za-z0-9_]+)\s*:\s*(.+)$/);
+      if (m) {
+        steps.push({ src: m[1], dst: m[3], msg: m[4].trim(), async: m[2] === '-->>' });
+      }
+    }
+    if (steps.length > 0) {
+      return `<div class="diagram-box"><div class="diagram-title">Архитектура аутентификации и изоляции запросов (IDOR Guard)</div><table class="seq-table"><tr><th>#</th><th>Отправитель → Получатель</th><th>Действие / Защита</th></tr>${steps
+        .map(
+          (s, i) =>
+            `<tr><td>${i + 1}</td><td><code>${escapeHtml(s.src)}</code> → <code>${escapeHtml(s.dst)}</code></td><td>${escapeHtml(s.msg)}</td></tr>`
+        )
+        .join('')}</table></div>`;
+    }
+  }
+  return `<pre class="code-mermaid"><code>${escapeHtml(joined)}</code></pre>`;
+}
+
 function markdownToHtml(md) {
   const lines = md.split(/\r?\n/);
   const out = [];
@@ -69,7 +106,11 @@ function markdownToHtml(md) {
         codeLang = line.slice(3).trim();
         codeLines = [];
       } else {
-        out.push(`<pre class="code-${escapeHtml(codeLang || 'text')}"><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+        if (codeLang === 'mermaid') {
+          out.push(mermaidToHtml(codeLines));
+        } else {
+          out.push(`<pre class="code-${escapeHtml(codeLang || 'text')}"><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+        }
         inCode = false;
       }
       continue;
@@ -154,8 +195,8 @@ async function main() {
 <head>
 <meta charset="utf-8"/>
 <style>
-  @page { size: A4; margin: 16mm 14mm; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; color: #0F1D30; font-size: 10.5pt; line-height: 1.48; }
+  @page { size: A4; margin: 14mm 13mm; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #0F1D30; font-size: 10pt; line-height: 1.42; }
   h1 { color: #142D4E; font-size: 20pt; margin: 0 0 6pt; border-bottom: 2px solid #142D4E; padding-bottom: 6pt; }
   h2 { color: #142D4E; font-size: 13.5pt; margin: 16pt 0 6pt; border-left: 4px solid #245A91; padding-left: 8pt; page-break-after: avoid; }
   h3 { color: #245A91; font-size: 11pt; margin: 10pt 0 4pt; page-break-after: avoid; }
@@ -171,6 +212,13 @@ async function main() {
   hr { border: 0; border-top: 1px solid #DCE2EA; margin: 12pt 0; }
   .shot { margin: 8pt 0 12pt; text-align: center; page-break-inside: avoid; }
   .shot img { max-width: 92%; max-height: 360px; border: 1px solid #DCE2EA; border-radius: 6pt; }
+  .diagram-box { background: #F8FAFC; border: 1px solid #DCE2EA; border-radius: 8pt; padding: 8pt 10pt; margin: 8pt 0; page-break-inside: avoid; }
+  .diagram-title { font-weight: 700; font-size: 9.5pt; color: #142D4E; margin-bottom: 6pt; }
+  .flow-row { display: flex; align-items: center; gap: 6pt; margin: 4pt 0; font-size: 8.8pt; }
+  .flow-bad { flex: 1; background: #FFF1F2; border: 1px solid #FECDD3; color: #9F1239; padding: 4pt 7pt; border-radius: 5pt; }
+  .flow-arrow { font-weight: 700; color: #166534; }
+  .flow-good { flex: 1; background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; padding: 4pt 7pt; border-radius: 5pt; }
+  .seq-table { margin: 4pt 0 0; font-size: 8.5pt; }
 </style>
 </head>
 <body>
